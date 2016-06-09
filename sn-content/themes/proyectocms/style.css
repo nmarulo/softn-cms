@@ -1,0 +1,120 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 11-mar-2016, 19:06:35
+    Author     : MaruloPC-Desk
+*/
+body{
+    color: #333;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+}
+a {
+    color: #428bca;
+}
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    font-size: 17.5px;
+    border-left: 5px solid #eee;
+}
+table {
+    border-collapse: collapse;
+    border: 1px solid #eaedf2;
+    min-width: 100%;
+}
+tr{
+    border-bottom: 1px solid #eaedf2
+}
+tr th{
+    padding: 5px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eaedf2;
+    border-right: 1px solid #eaedf2;
+}
+tr td{
+    padding: 7px;
+    border-right: 1px solid #eaedf2;
+}
+dl,
+dl dd {
+    margin-left: 20px;
+}
+dt {
+    font-weight: bold;
+}
+ul,
+ol {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+abbr,
+acronym{
+    cursor: help;
+    border-bottom: 1px dotted;
+}
+code{
+    padding: 2px 4px;
+    color: #c7254e;
+    background-color: #F9F2D4;
+}
+pre {
+    display: block;
+    padding: 9.5px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    color: #333;
+    word-break: break-all;
+    word-wrap: break-word;
+    background-color: #F5F5F0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.container{margin: 0 auto;}
+
+section header{
+    overflow: hidden;
+}
+
+nav.menu-nav{
+    border-bottom: 1px solid #f1f1f1;
+    position: relative;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+nav.menu-nav ul{
+    list-style: none;
+    padding: 0;
+    position: relative;
+}
+nav.menu-nav ul li{
+    float: left;
+    border-left: 1px solid #f1f1f1;
+}
+nav.menu-nav ul li a{
+    padding: 25px;
+    height: 100%;
+    display: block;
+    text-decoration: none;
+    color: #777;
+}
+nav.menu-nav ul li a:hover{
+    background-color: #FF8539;
+    color: #fff;
+}
+
+@media (max-width: 767px) {
+}
+@media (min-width: 768px) and (max-width: 991px) {
+    .container {width: 750px;}
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+    .container {width: 970px;}
+}
+@media (min-width: 1200px) {
+    .container {width: 1170px;}
+}
