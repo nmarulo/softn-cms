@@ -41,6 +41,7 @@ function generateKey($leng = 64) {
  */
 function execSQL($db) {
     $filename = ABSPATH . 'sn-admin/includes/install.sql';
+//    $filename = ABSPATH . 'eer-softn-cms.sql';
     if (file_exists($filename)) {
         $file = file($filename);
         $sql = file_get_contents($filename);

@@ -173,26 +173,8 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
--- -----------------------------------------------------
--- Data for table `{DB_PREFIX}options`
--- -----------------------------------------------------
-START TRANSACTION;
-INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionTitle', 'Lorem Ipsum');
-INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionDescription', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec mollis.');
-INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionPaged', '10');
-INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionSiteUrl', '{URL_WEB}');
-INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionTheme', 'default');
-COMMIT;
 
-
--- -----------------------------------------------------
--- Data for table `{DB_PREFIX}categories`
--- -----------------------------------------------------
-START TRANSACTION;
-INSERT INTO `{DB_PREFIX}categories` (`ID`, `category_name`, `category_description`, `category_count`) VALUES (NULL, 'Uncategorized', NULL, 0);
-COMMIT;
-
-DELIMITER &&
+-- DELIMITER &&
 
 CREATE DEFINER = CURRENT_USER TRIGGER `{DB_PREFIX}users_BEFORE_DELETE` BEFORE DELETE ON `{DB_PREFIX}users` FOR EACH ROW
 BEGIN
@@ -211,7 +193,7 @@ BEGIN
             SET exist = exist - 1;
         END LOOP;
     CLOSE cursor_posts_ID;
-END&&
+END;
 
 CREATE DEFINER = CURRENT_USER TRIGGER `{DB_PREFIX}posts_BEFORE_DELETE` BEFORE DELETE ON `{DB_PREFIX}posts` FOR EACH ROW
 BEGIN
@@ -247,34 +229,52 @@ BEGIN
             SET exist = exist - 1;
         END LOOP loop_term;
     CLOSE cursor_term_ID;    
-END&&
+END;
 
 CREATE DEFINER = CURRENT_USER TRIGGER `{DB_PREFIX}comments_AFTER_INSERT` AFTER INSERT ON `{DB_PREFIX}comments` FOR EACH ROW
 BEGIN
 	DECLARE count INT;
     SELECT comment_count INTO count FROM {DB_PREFIX}posts WHERE ID = NEW.post_ID;
     UPDATE {DB_PREFIX}posts SET comment_count = count + 1 WHERE ID = NEW.post_ID;
-END&&
+END;
 
 CREATE DEFINER = CURRENT_USER TRIGGER `{DB_PREFIX}comments_BEFORE_DELETE` BEFORE DELETE ON `{DB_PREFIX}comments` FOR EACH ROW
 BEGIN
 	DECLARE count INT;
     SELECT comment_count INTO count FROM {DB_PREFIX}posts WHERE ID = OLD.post_ID;
 	UPDATE {DB_PREFIX}posts SET comment_count = count - 1 WHERE ID = OLD.post_ID;
-END&&
+END;
 
 CREATE DEFINER = CURRENT_USER TRIGGER `{DB_PREFIX}posts_terms_AFTER_INSERT` AFTER INSERT ON `{DB_PREFIX}posts_terms` FOR EACH ROW
 BEGIN
 	DECLARE count INT;
     SELECT term_count INTO count FROM {DB_PREFIX}terms WHERE ID = NEW.relationships_term_ID;
 	UPDATE {DB_PREFIX}terms SET term_count = count + 1 WHERE ID = NEW.relationships_term_ID;
-END&&
+END;
 
 CREATE DEFINER = CURRENT_USER TRIGGER `{DB_PREFIX}posts_categories_AFTER_INSERT` AFTER INSERT ON `{DB_PREFIX}posts_categories` FOR EACH ROW
 BEGIN
 	DECLARE count INT;
     SELECT category_count INTO count FROM {DB_PREFIX}categories WHERE ID = NEW.relationships_category_ID;
 	UPDATE {DB_PREFIX}categories SET category_count = count + 1 WHERE ID = NEW.relationships_category_ID;
-END&&
+END;
 
-DELIMITER ;
+-- DELIMITER ;
+
+-- -----------------------------------------------------
+-- Data for table `{DB_PREFIX}options`
+-- -----------------------------------------------------
+START TRANSACTION;
+INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionTitle', 'Lorem Ipsum');
+INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionDescription', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec mollis.');
+INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionPaged', '10');
+INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionSiteUrl', '{URL_WEB}');
+INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionTheme', 'default');
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `{DB_PREFIX}categories`
+-- -----------------------------------------------------
+START TRANSACTION;
+INSERT INTO `{DB_PREFIX}categories` (`ID`, `category_name`, `category_description`, `category_count`) VALUES (NULL, 'Uncategorized', NULL, 0);
+COMMIT;

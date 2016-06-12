@@ -1,4 +1,4 @@
-SoftN CMS
+SoftN CMS [![Build Status](https://travis-ci.org/nmarulo/softn-cms.svg?branch=v0.1-beta)](https://travis-ci.org/nmarulo/softn-cms)
 ===================
 
 SoftN CMS es un sistema de gestión de contenido con el puede crear sitios web dinámicos e interactivos con una interfaces amigable e intuitiva que se adapta a cualquier tipo de resolución. Desarrollado en PHP como lenguaje de programación y MySQL como gestor de base de datos.
