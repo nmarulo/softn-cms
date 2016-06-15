@@ -1,21 +1,23 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Gestión de las relaciones de entradas con categorias.
+ * @package SoftN-CMS\sn-includes
  */
 
 /**
- * Description of sn-posts-categories
- *
- * @author marulo
+ * Clase que estableces funciones de las relaciones de entradas con categorias.
+ * @author Nicolás Marulanda P.
  */
 class SN_Posts_Categories {
 
-    private $relationships_post_ID;
-    private $relationships_category_ID;
-
+    /**
+     * Metodo que agrega los datos a la tabla de las relaciones de entradas con categorias.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param int $postID Identificador de la entrada.
+     * @param int $categoryID Identificador de la categoría.
+     * @return bool
+     */
     public static function insert($postID, $categoryID) {
         global $sndb;
 
@@ -30,6 +32,13 @@ class SN_Posts_Categories {
         ]);
     }
 
+    /**
+     * Metodo que borra las relaciones de entradas con categorias.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param int $postID Identificador de la entrada.
+     * @param int $categoryID Identificador de la entrada.
+     * @return bool
+     */
     public static function delete($postID, $categoryID = 0) {
         global $sndb;
 
@@ -49,6 +58,12 @@ class SN_Posts_Categories {
         ]);
     }
 
+    /**
+     * Metodo que obtiene todas las publicaciones relacionadas con una categoría.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param int $categoryID Identificador de la categoría.
+     * @return object Retorna un objecto PDOstatement
+     */
     public static function getPosts($categoryID) {
         global $sndb;
 
@@ -59,17 +74,32 @@ class SN_Posts_Categories {
         ]);
     }
 
-    public static function getCategoriesID($post_ID, $fetch = 'fetchAll') {
+    /**
+     * Metodo que obtiene el ID de todas las categorías relacionadas con una entrada.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param int $postID Identificador de la entrada.
+     * @param string $fetch [Opcional] Tipo de datos a retornar.
+     * Con "fetchObject" para retornar los datos como objetos. 
+     * Por defecto, "fetchAll", retorna un array asociativo.
+     * @return array|object
+     */
+    public static function getCategoriesID($postID, $fetch = 'fetchAll') {
         global $sndb;
-        
+
         return $sndb->query([
                     'table' => 'posts_categories',
                     'column' => 'relationships_category_ID',
                     'where' => 'relationships_post_ID = :relationships_post_ID',
-                    'prepare' => [[':relationships_post_ID', $post_ID]]
+                    'prepare' => [[':relationships_post_ID', $postID]]
                         ], $fetch);
     }
 
+    /**
+     * Metodo que obtiene todas las categorías relacionadas con una entrada.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param int $postID Identificador de la entrada.
+     * @return object Retorna un objecto PDOstatement.
+     */
     public static function getCategories($postID) {
         global $sndb;
 

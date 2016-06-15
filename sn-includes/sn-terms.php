@@ -1,17 +1,33 @@
 <?php
 
 /**
- * Description of sn-terms
- *
- * @author marulo
+ * Gestión de etiquetas.
+ * @package SoftN-CMS\sn-includes
+ */
+
+/**
+ * Clase para implementar las etiquetas como objetos.
+ * @author Nicolás Marulanda P.
  */
 class SN_Terms {
 
+    /** @var int Identificador de la etiqueta. */
     private $ID;
+
+    /** @var string Nombre. */
     private $term_name;
+
+    /** @var string Descripción. */
     private $term_description;
+
+    /** @var int Número de publicaciones vinculadas. */
     private $term_count;
 
+    /**
+     * Constructor.
+     * @param array|PDOStatement $arg Datos de la etiqueta.<br/>
+     * <b>NOTA: Los indices del array deben corresponder con el nombre de la tabla.</b>
+     */
     public function __construct($arg) {
         if (is_object($arg)) {
             $this->ID = $arg->ID;
@@ -37,6 +53,13 @@ class SN_Terms {
         }
     }
 
+    /**
+     * Metodo que obtiene una lista con las etiquetas que contienen 
+     * el texto pasado por parametro.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param string $str
+     * @return array
+     */
     public static function search($str) {
         global $sndb;
 
@@ -48,6 +71,13 @@ class SN_Terms {
                         ], 'fetchAll');
     }
 
+    /**
+     * Metodo que borra una etiqueta segun su id.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @global array $dataTable Lista de datos de uso común.
+     * @param int $id Identificador de la etiqueta.
+     * @return bool
+     */
     public static function delete($id) {
         global $sndb, $dataTable;
 
@@ -65,12 +95,27 @@ class SN_Terms {
         return $out;
     }
 
+    /**
+     * Metodo que obtiene todas las etiquetas ordenadas por nombre.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param string $fetch [Opcional] Tipo de datos a retornar.
+     * Con "fetchObject" para retornar los datos como objetos. 
+     * Por defecto, "fetchAll", retorna un array asociativo.
+     * @return array|object
+     */
     public static function dataList($fetch = 'fetchAll') {
         global $sndb;
 
         return $sndb->query(['table' => 'terms', 'orderBy' => 'term_name'], $fetch);
     }
 
+    /**
+     * Metodo que obtiene una etiqueta segun su ID y retorna 
+     * un instancia SN_Terms con los datos.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param int $id Identificador de la etiqueta.
+     * @return object
+     */
     public static function get_instance($id) {
         global $sndb;
 
@@ -86,6 +131,11 @@ class SN_Terms {
         return $out;
     }
 
+    /**
+     * Metodo que obtiene la ultima etiqueta.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @return object Retorna un objeto PDOstatement.
+     */
     public static function get_lastInsert() {
         global $sndb;
 
@@ -96,6 +146,12 @@ class SN_Terms {
                         ), 'fetchObject');
     }
 
+    /**
+     * Metodo que agrega los datos de la etiqueta a la base de datos.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @global array $dataTable Lista de datos de uso común.
+     * @return bool
+     */
     public function insert() {
         global $sndb, $dataTable;
 
@@ -116,12 +172,19 @@ class SN_Terms {
             if ($out) {
                 $this->ID = $out->ID;
                 $dataTable['term']['dataList'] = SN_Terms::dataList();
+                $out = true;
             }
         }
 
         return $out;
     }
 
+    /**
+     * Metodo que actualiza los datos de la etiqueta.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @global array $dataTable Lista de datos de uso común.
+     * @return bool
+     */
     public function update() {
         global $sndb, $dataTable;
 
@@ -144,18 +207,34 @@ class SN_Terms {
         return $out;
     }
 
+    /**
+     * Metodo que obtiene el identificador de la etiqueta.
+     * @return int
+     */
     public function getID() {
         return $this->ID;
     }
 
+    /**
+     * Metodo que obtiene el nombre de la etiqueta.
+     * @return string
+     */
     public function getTerm_name() {
         return $this->term_name;
     }
 
+    /**
+     * Metodo que obtiene la descripción.
+     * @return string
+     */
     public function getTerm_description() {
         return $this->term_description;
     }
 
+    /**
+     * Metodo que obtiene el número de entradas vinculadas a la etiqueta.
+     * @return type
+     */
     public function getTerm_count() {
         return $this->term_count;
     }

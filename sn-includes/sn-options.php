@@ -1,22 +1,30 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Gestión de las configuraciones de la aplicación.
+ * @package SoftN-CMS\sn-includes
  */
 
 /**
- * Description of sn-options
- *
- * @author marulo
+ * Clase para implementar las configuraciones como objetos.
+ * @author Nicolás Marulanda P.
  */
 class SN_Options {
 
+    /** @var int Identificador. */
     private $ID;
+
+    /** @var string Nombre asignado. */
     private $option_name;
+
+    /** @var string Valor. */
     private $option_value;
 
+    /**
+     * Constructor.
+     * @param array|PDOStatement $arg Datos.<br/>
+     * <b>NOTA: Los indices del array deben corresponder con el nombre de la tabla.</b>
+     */
     public function __construct($arg) {
         if (is_object($arg)) {
             $this->ID = $arg->ID;
@@ -39,6 +47,12 @@ class SN_Options {
         }
     }
 
+    /**
+     * Metodo que borra los datos segun su id.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param int $id
+     * @return bool
+     */
     public static function delete($id) {
         global $sndb;
 
@@ -49,12 +63,27 @@ class SN_Options {
         ));
     }
 
+    /**
+     * Metodo que obtiene todas las categorías ordenadas por nombre.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param string $fetch [Opcional] Tipo de datos a retornar.
+     * Con "fetchObject" para retornar los datos como objetos. 
+     * Por defecto, "fetchAll", retorna un array asociativo.
+     * @return array|object
+     */
     public static function dataList($fetch = 'fetchAll') {
         global $sndb;
 
         return $sndb->query(array('table' => 'options', 'orderBy' => 'ID'), $fetch);
     }
 
+    /**
+     * Metodo que obtiene un dato segun su ID y retorna 
+     * un instancia SN_Options.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @param string $name Nombre de la configuración.
+     * @return object
+     */
     public static function get_instance($name) {
         global $sndb;
 
@@ -71,16 +100,11 @@ class SN_Options {
         return $out;
     }
 
-    public static function get_lastInsert() {
-        global $sndb;
-
-        return $sndb->query(array(
-                    'table' => 'options',
-                    'orderBy' => 'ID DESC',
-                    'limit' => '1'
-                        ), 'fetchObject');
-    }
-
+    /**
+     * Metodo que agrega los datos de la configuración a la base de datos.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @return bool
+     */
     public function insert() {
         global $sndb;
 
@@ -96,6 +120,11 @@ class SN_Options {
         ]);
     }
 
+    /**
+     * Metodo que actualiza los datos de la configuración.
+     * @global SN_DB $sndb Conexión de la base de datos.
+     * @return bool
+     */
     public function update() {
         global $sndb;
 
@@ -111,18 +140,34 @@ class SN_Options {
         ]);
     }
 
+    /**
+     * Metodo que obtiene el identificador.
+     * @return int
+     */
     public function getID() {
         return $this->ID;
     }
 
+    /**
+     * Metodo que obtiene el nombre asignado de la configuración.
+     * @return string
+     */
     public function getOption_name() {
         return $this->option_name;
     }
 
+    /**
+     * Metodo que obtiene el valor de la configuración.
+     * @return string
+     */
     public function getOption_value() {
         return $this->option_value;
     }
 
+    /**
+     * Metodo que establece el valor de la configuración.
+     * @param string $option_value
+     */
     public function setOption_value($option_value) {
         $this->option_value = $option_value;
     }
