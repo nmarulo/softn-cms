@@ -26,10 +26,10 @@ get_sidebar();
                         </div>
                         <div class="form-group">
                         <?php
-                        if (filter_input(INPUT_GET, 'action') && $_GET['action'] == 'edit') {
-                            echo "<span class='spanAction btn btn-primary btn-block' data-action='update=$category[ID]'>Actualizar</span>";
+                        if ($action_edit) {
+                            echo "<button class='btnAction btn btn-primary btn-block' data-action='update=$category[ID]'>Actualizar</button>";
                         } else {
-                            echo '<span class="spanAction btn btn-primary btn-block" data-action="publish=1">Publicar</span>';
+                            echo '<button class="btnAction btn btn-primary btn-block" data-action="publish=1">Publicar</button>';
                         }
                         ?>
                     </div>

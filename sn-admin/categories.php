@@ -15,8 +15,11 @@ $category = [
     'category_description' => '',
 ];
 
-if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id')) || filter_input(INPUT_POST, 'update')) {
+//Cambia el texto los botones de publicar y actualizar
+$action_edit = false;
 
+if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id')) || filter_input(INPUT_POST, 'update')) {
+    $action_edit = true;
     $auxCategory = SN_Categories::get_instance(filter_input(INPUT_GET, 'id') | filter_input(INPUT_POST, 'update'));
 
     if ($auxCategory) {
@@ -87,9 +90,9 @@ function reloadData() {
     for ($i = $arg['beginRow']; $i < $arg['endRow']; ++$i) {
         $category = $dataTable['category']['dataList'][$i];
         $str .= "<tr><td class='options'>";
-        $str .= "<a class='label label-primary' href='?action=edit&id=$category[ID]' title='Editar'>";
+        $str .= "<a class='btnAction-sm btn btn-primary' href='?action=edit&id=$category[ID]' title='Editar'>";
         $str .= "<span class='glyphicon glyphicon-edit'></span></a> ";
-        $str .= "<span class='spanAction label label-danger' data-action='action=delete&id=$category[ID]' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></span>";
+        $str .= "<button class='btnAction btnAction-sm btn btn-danger' data-action='action=delete&id=$category[ID]' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></button>";
         $str .= "</td><td><a href='" . siteUrl() . "?category=$category[ID]' title='$category[category_name]'>$category[category_name]</a></td>";
         $str .= "<td><span class='badge'>$category[category_count]</span></td></tr>";
     }

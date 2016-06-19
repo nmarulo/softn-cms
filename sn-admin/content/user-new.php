@@ -17,32 +17,32 @@ get_sidebar();
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputNombre" class="col-sm-2 control-label">Nombre</label>
+                    <label class="col-sm-2 control-label">Nombre</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" name="user_name" value="<?php echo $user['user_name']; ?>">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputEmail" class="col-sm-2 control-label">E-mail</label>
+                    <label class="col-sm-2 control-label">E-mail</label>
                     <div class="col-sm-10">
                         <input type="email" class="form-control" name="user_email" value="<?php echo $user['user_email']; ?>">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputPass1" class="col-sm-2 control-label">Contraseña</label>
+                    <label class="col-sm-2 control-label">Contraseña</label>
                     <div class="col-sm-10">
                         <input type="password" class="form-control" name="user_pass">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputPass2" class="col-sm-2 control-label">Repetir contraseña</label>
+                    <label class="col-sm-2 control-label">Repetir contraseña</label>
                     <div class="col-sm-10">
                         <input type="password" class="form-control" name="user_pass2">
                     </div>
                 </div>
                 <?php if (SN_Users::checkRol()) { ?>
                     <div class="form-group">
-                        <label for="selectTipo" class="col-sm-2 control-label">Tipo de usuario</label>
+                        <label class="col-sm-2 control-label">Tipo de usuario</label>
                         <div class="col-sm-10">
                             <select class="form-control" name="user_rol">
                                 <?php
@@ -59,7 +59,7 @@ get_sidebar();
                     </div>
                 <?php } ?>
                 <div class="form-group">
-                    <label for="inputNombre" class="col-sm-2 control-label">Sitio web</label>
+                    <label class="col-sm-2 control-label">Sitio web</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" name="user_url" value="<?php echo $user['user_url']; ?>">
                     </div>

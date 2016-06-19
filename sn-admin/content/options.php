@@ -49,6 +49,15 @@ get_sidebar();
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="optionMenu" class="col-sm-2 control-label">Seleccionar menu</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" name="optionMenu">
+                            <option value="0">--ninguno--</option>
+                            <?php echo $option['optionMenu']; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         <button class="btn btn-primary" type="submit" name="update" value="update">Guardar cambios</button>
                     </div>

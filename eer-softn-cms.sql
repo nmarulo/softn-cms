@@ -10,13 +10,13 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema softn_cms
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `softn_cms` ;
-
--- -----------------------------------------------------
--- Schema softn_cms
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `softn_cms` DEFAULT CHARACTER SET utf8 ;
-USE `softn_cms` ;
+-- DROP SCHEMA IF EXISTS `softn_cms` ;
+-- 
+-- -- -----------------------------------------------------
+-- -- Schema softn_cms
+-- -- -----------------------------------------------------
+-- CREATE SCHEMA IF NOT EXISTS `softn_cms` DEFAULT CHARACTER SET utf8 ;
+-- USE `softn_cms` ;
 
 -- -----------------------------------------------------
 -- Table `softn_cms`.`sn_users`
@@ -351,6 +351,7 @@ INSERT INTO `softn_cms`.`sn_options` (`ID`, `option_name`, `option_value`) VALUE
 INSERT INTO `softn_cms`.`sn_options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionPaged', '10');
 INSERT INTO `softn_cms`.`sn_options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionSiteUrl', 'http://localhost/');
 INSERT INTO `softn_cms`.`sn_options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionTheme', 'default');
+INSERT INTO `softn_cms`.`sn_options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionMenu', '0');
 
 COMMIT;
 

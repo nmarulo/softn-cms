@@ -225,8 +225,7 @@ function get_comments() {
     global $post, $dataTable;
 
     if ($post->getComment_count()) {
-        $comments = SN_Posts::dataListComments($post->getID());
-
+        $comments = SN_Comments::dataListByPost($post->getID());
         if ($comments) {
             ?>
             <div>

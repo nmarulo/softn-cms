@@ -70,7 +70,8 @@ define('COOKIE_KEY', 'codigo de 64 caracteres');
 
 Ejecutar el script SQL "/eer-softn-cms.sql" desde PHPMyAdmin (Contiene las tablas de la base de datos y otras sentencias), **antes de ejecutar el script** buscar y modificar la ruta “http://localhost/”. Este script es solo para uso local.
 
-De forma opcional, ejecutar el script SQL "/sn-admin/includes/demo.sql". (Agrega datos de prueba)
+De forma opcional, ejecutar el script SQL "/sn-admin/includes/demo.sql". (Agrega datos de prueba. Solo funciona via web, es decir, a través de
+http://localhost/install.php)
 
 Para acceder al panel de administración podemos crear un usuario desde "http://localhost/login.php?action=register" o desde PHPMyAdmin. Todo los usuarios registrados a través del enlace anterior se les asigna el rol "0" que es el más básico, **si quieres que su rol sea de administrador** en la tabla "sn_users" cambia el valor de la columna "user_rol" a "3". Una vez que tengas creado un usuario administrador ya puedes acceder a todas las funciones del panel de administración.
 

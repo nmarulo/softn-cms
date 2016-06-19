@@ -15,8 +15,11 @@ $term = [
     'term_description' => ''
 ];
 
-if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id')) || filter_input(INPUT_POST, 'update')) {
+//Cambia el texto los botones de publicar y actualizar
+$action_edit = false;
 
+if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id')) || filter_input(INPUT_POST, 'update')) {
+    $action_edit = true;
     $auxTerm = SN_Terms::get_instance(filter_input(INPUT_GET, 'id') | filter_input(INPUT_POST, 'update'));
 
     if ($auxTerm) {
@@ -88,9 +91,9 @@ function reloadData() {
         $term = $dataTable['term']['dataList'][$i];
 
         $str .= "<tr><td class='options'>";
-        $str .= "<a class='label label-primary' href='?action=edit&id=$term[ID]' title='Editar'>";
+        $str .= "<a class='btnAction-sm btn btn-primary' href='?action=edit&id=$term[ID]' title='Editar'>";
         $str .= "<span class='glyphicon glyphicon-edit'></span></a> ";
-        $str .= "<span class='spanAction label label-danger' data-action='action=delete&id=$term[ID]' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></span>";
+        $str .= "<button class='btnAction btnAction-sm btn btn-danger' data-action='action=delete&id=$term[ID]' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></button>";
         $str .= "</td><td><a href='" . siteUrl() . "?term=$term[ID]' title='$term[term_name]'>$term[term_name]</a></td>";
         $str .= "<td><span class='badge'>$term[term_count]</span></td></tr>";
     }

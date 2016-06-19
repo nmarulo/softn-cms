@@ -5,12 +5,31 @@
 require 'sn-admin.php';
 SN_Users::checkRol('author', true);
 
-$posFirst = 0; //Posición del primer sidebar.
-$posLast = 0; //Posición del ultimo sidebar.
-if (count($dataTable['sidebar']['dataList']) > 0) {
-    $posFirst = $dataTable['sidebar']['dataList'][0]['sidebar_position'];
-    $posLast = $dataTable['sidebar']['dataList'][count($dataTable['sidebar']['dataList']) - 1]['sidebar_position'];
+/**
+ * Metodo que obtiene la posición del primer y ultimo sidebar.
+ * @global arrya $dataTable
+ * @return array
+ * <ul>
+ *  <li>$posFirst Posición del primer sidebar.</li>
+ *  <li>$posLast Posición del ultimo sidebar.</li>
+ * </ul>
+ */
+function getFirstLastSidebars() {
+    global $dataTable;
+    $out = [
+        'posFirst' => 0, //Posición del primer sidebar.
+        'posLast' => 0 //Posición del ultimo sidebar.
+    ];
+    $leng = count($dataTable['sidebar']['dataList']);
+    if ($leng > 0) {
+        $out['posFirst'] = $dataTable['sidebar']['dataList'][0]['sidebar_position'];
+        $out['posLast'] = $dataTable['sidebar']['dataList'][$leng - 1]['sidebar_position'];
+    }
+
+    return $out;
 }
+
+$positionFirstLast = getFirstLastSidebars();
 
 /*
  * Recoge los datos de la barra lateral. Para mostrar los datos en
@@ -22,8 +41,11 @@ $sidebar = [
     'sidebar_contents' => ''
 ];
 
-if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id')) || filter_input(INPUT_POST, 'update')) {
+//Cambia el texto los botones de publicar y actualizar
+$action_edit = false;
 
+if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id')) || filter_input(INPUT_POST, 'update')) {
+    $action_edit = true;
     $auxSidebar = SN_Sidebars::get_instance(filter_input(INPUT_GET, 'id') | filter_input(INPUT_POST, 'update'));
 
     if ($auxSidebar) {
@@ -75,7 +97,7 @@ if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id'
     if ($auxSidebar) {
         $auxSidebarsList = array_column($dataTable['sidebar']['dataList'], 'sidebar_position', 'ID');
 
-        if ($auxSidebar->getSidebar_position() > $posFirst) {
+        if ($auxSidebar->getSidebar_position() > $positionFirstLast['posFirst']) {
             $position = $auxSidebar->getSidebar_position() - 1;
 
             //Actualizo la posición del sidebar seleccionado
@@ -111,7 +133,7 @@ if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id'
     if ($auxSidebar) {
         $auxSidebarsList = array_column($dataTable['sidebar']['dataList'], 'sidebar_position', 'ID');
 
-        if ($auxSidebar->getSidebar_position() < $posLast) {
+        if ($auxSidebar->getSidebar_position() < $positionFirstLast['posLast']) {
             $position = $auxSidebar->getSidebar_position() + 1;
 
             $auxSidebar->setSidebar_position($position);
@@ -142,77 +164,78 @@ if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id'
     }
 }
 
+$positionFirstLast = getFirstLastSidebars();
+
 /**
  * Metodo que imprime una tabla con los datos de las barras laterales.
  * @global arrya $dataTable
- * @global int $posFirst Posición del primer sidebar.
- * @global int $posLast Posición del ultimo sidebar.
+ * @global array $positionFirstLast
  */
 function reloadData() {
-    global $dataTable, $posFirst, $posLast;
+    global $dataTable, $positionFirstLast;
     ?>
     <div id="contentPost" class="table-responsive"><!-- #contentPost.table-responsive -->
-        <form role="form" method="post">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Posición</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Posición</th>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    <?php
-                    foreach ($dataTable['sidebar']['dataList'] as $sidebar) {
-                        $disabledUp = '';
-                        $disabledDown = '';
-                        if ($sidebar['sidebar_position'] == $posFirst) {
-                            $disabledUp = ' disabled';
-                        }
-                        if ($sidebar['sidebar_position'] == $posLast) {
-                            $disabledDown = ' disabled';
-                        }
-                        ?>
-                        <tr>
-                            <td>
-                                <div class="panel panel-default">
-                                    <div class='panel-heading'>
-                                        <?php
-                                        $btn = "<a class='label label-primary' href='?action=edit&id=$sidebar[ID]' title='Editar'><span class='glyphicon glyphicon-edit'></span></a> ";
-                                        $btn .= "<span class='spanAction label label-danger' data-action='action=delete&id=$sidebar[ID]' title='Editar'><span class='glyphicon glyphicon-remove-sign'></span></span> ";
-                                        echo $btn . $sidebar['sidebar_title'];
-                                        ?>
-                                    </div>
-                                    <div class='panel-body'>
-                                        <?php echo $sidebar['sidebar_contents']; ?>
-                                    </div>
-                                </div> 
-                            </td>
-                            <td>
-                                <ul class="list-inline">
-                                    <li>
-                                        <span class="spanAction btn btn-success<?php echo $disabledUp; ?>" data-action="up=<?php echo $sidebar['ID']; ?>"><span class="glyphicon glyphicon-arrow-up"></span></span>
-                                    </li>
-                                    <li>
-                                        <span class="badge"><?php echo $sidebar['sidebar_position']; ?></span>
-                                    </li>
-                                    <li>
-                                        <span class="spanAction btn btn-danger<?php echo $disabledDown; ?>" data-action="down=<?php echo $sidebar['ID']; ?>"><span class="glyphicon glyphicon-arrow-down"></span></span>
-                                    </li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <?php
+        <!--<form role="form" method="post">-->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Posición</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Posición</th>
+                </tr>
+            </tfoot>
+            <tbody>
+                <?php
+                foreach ($dataTable['sidebar']['dataList'] as $sidebar) {
+                    $disabledUp = '';
+                    $disabledDown = '';
+                    if ($sidebar['sidebar_position'] == $positionFirstLast['posFirst']) {
+                        $disabledUp = ' disabled';
+                    }
+                    if ($sidebar['sidebar_position'] == $positionFirstLast['posLast']) {
+                        $disabledDown = ' disabled';
                     }
                     ?>
-                </tbody>
-            </table>
-        </form>
+                    <tr>
+                        <td>
+                            <div class="panel panel-default">
+                                <div class='panel-heading'>
+                                    <?php
+                                    $btn = "<a class='btnAction-sm btn btn-primary' href='?action=edit&id=$sidebar[ID]' title='Editar'><span class='glyphicon glyphicon-edit'></span></a> ";
+                                    $btn .= "<button class='btnAction btnAction-sm btn btn-danger' data-action='action=delete&id=$sidebar[ID]' title='Editar'><span class='glyphicon glyphicon-remove-sign'></span></button> ";
+                                    echo $btn . $sidebar['sidebar_title'];
+                                    ?>
+                                </div>
+                                <div class='panel-body'>
+                                    <?php echo $sidebar['sidebar_contents']; ?>
+                                </div>
+                            </div> 
+                        </td>
+                        <td>
+                            <ul class="list-inline">
+                                <li>
+                                    <button class="btnAction btn btn-success<?php echo $disabledUp; ?>" data-action="up=<?php echo $sidebar['ID']; ?>"><span class="glyphicon glyphicon-arrow-up"></span></button>
+                                </li>
+                                <li>
+                                    <span class="badge"><?php echo $sidebar['sidebar_position']; ?></span>
+                                </li>
+                                <li>
+                                    <button class="btnAction btn btn-danger<?php echo $disabledDown; ?>" data-action="down=<?php echo $sidebar['ID']; ?>"><span class="glyphicon glyphicon-arrow-down"></span></button>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <?php
+                }
+                ?>
+            </tbody>
+        </table>
+        <!--</form>-->
     </div><!-- #contentPost.table-responsive -->
     <?php
 }

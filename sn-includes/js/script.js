@@ -21,19 +21,18 @@ function eventsOn() {
         e.preventDefault();
     });
 
-    $(document).on('click', 'span.spanAction', function () {
-        var paged = $(document).find('#goToPage');
-        var formData = getFormData($('#formGroup'));
-        if (paged.length) {
-            var paged = '&paged=' + paged.val();
-        }else{
-            paged = '';
-        }
-        
-        if(formData != ''){
+    $(document).on('click', 'button.btnAction', function () {
+        if (!$(this).hasClass('disabled')) {
+            var paged = $(document).find('#goToPage');
+            var formData = getFormData($('#formGroup'));
+            if (paged.length) {
+                var paged = 'paged=' + paged.val();
+            } else {
+                paged = '';
+            }
             formData = '&' + formData;
+            reloadData($(this), $(this).data('action') + formData + paged);
         }
-        reloadData($(this), $(this).data('action') + formData + paged);
     });
 
     $('.sn-menu').on('hide.bs.collapse', function (e) {
@@ -65,19 +64,10 @@ function eventsOn() {
             reloadDataSearch('search=' + $(this).val());
         }
     });
-
-//    $(document).on('click', 'button.btnAction', function(e){
-//        var sendData = getFormData($('#formGroup'));
-//        var paged = $(this).closest('#sn-content').find('ul.pagination li.active a').data('paged');
-//        
-//        reloadData($(this), sendData + paged);
-//        e.preventDefault();
-//    });
 }
 
 /**
  * Metodo de configuraciones iniciales.
- * @returns {undefined}
  */
 function checkInit() {
     var collapse = $(document).find('.sn-content').data('collapse');
@@ -106,9 +96,9 @@ function checkInit() {
 /**
  * Metodo que cambia la clase "glyphicon-chevron-up" por "glyphicon-chevron-down" y viceversa.
  * Solo cambia la palabra final, por ejemplo, cambia "up" por "down" de "glyphicon-chevron-up"
- * @param {string} collapse Identificador del elemento.
- * @param {string} add 
- * @param {string} remove
+ * @param string collapse Identificador del elemento.
+ * @param string add 
+ * @param string remove
  */
 function changeGlyphicon(collapse, add, remove) {
     var span = $(collapse).closest('li').children(':first').children(':last');
@@ -118,8 +108,8 @@ function changeGlyphicon(collapse, add, remove) {
 
 /**
  * Metodo que obtiene los datos de los formularios (input, textarea y select) en la pagina
- * @param {object} element
- * @returns {String} Retorna los datos en una cadena de texto, ejemplo: "action=edit&id=2".
+ * @param object element
+ * @returns String Retorna los datos en una cadena de texto, ejemplo: "action=edit&id=2".
  */
 function getFormData(element) {
     var data = findFormData(element, 'input');
@@ -131,9 +121,9 @@ function getFormData(element) {
 /**
  * Metodo que buscar todos los campos del formulario segun el tipo
  * pasado por parametro.
- * @param {object} element
- * @param {string} find Tipo de campo a buscar
- * @returns {String} Retorna los datos en una cadena de texto, ejemplo: "action=edit&id=2".
+ * @param object element
+ * @param string find Tipo de campo a buscar
+ * @returns String Retorna los datos en una cadena de texto, ejemplo: "action=edit&id=2".
  */
 function findFormData(element, find) {
     var data = '';
@@ -147,7 +137,7 @@ function findFormData(element, find) {
 
 /**
  * Metodo que recarga los datos en la pagina de busqueda.
- * @param {string} data
+ * @param string data
  */
 function reloadDataSearch(data) {
     $.ajax({

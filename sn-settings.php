@@ -15,7 +15,7 @@ define('CONT', 'sn-content'  . DIRECTORY_SEPARATOR);
 /** Guarda la dirección de la carpeta THEMES. */
 define('THEMES', CONT . 'themes'  . DIRECTORY_SEPARATOR);
 /** Versión del actual del CMS. */
-define('VERSION', '0.1-beta');
+define('VERSION', '0.2-beta');
 
 require ABSPATH . INC . 'messages.php';
 require ABSPATH . INC . 'sn-db.php';
@@ -35,6 +35,29 @@ session_start();
 $sndb = new SN_DB();
 
 $siteUrl = SN_Options::get_instance('optionSiteUrl');
+
+/**
+ * Lista con datos de uso frecuente.
+ * <ul>
+ *  <li>['menu']['select']</li>
+ *  <li>['menu']['dataList']</li>
+ *  <li>['post']['dataList']</li>
+ *  <li>['page']['dataList']</li>
+ *  <li>['comment']['dataList']</li>
+ *  <li>['category']['dataList']</li>
+ *  <li>['term']['dataList']</li>
+ *  <li>['user']['dataList']</li>
+ *  <li>['sidebar']['dataList']</li>
+ *  <li>['option']['dataList']</li>
+ *  <li>['option']['numberRows']</li>
+ *  <li>['option']['rol']</li>
+ *  <li>['option']['siteUrl']</li>
+ *  <li>['option']['theme']</li>
+ *  <li>['option']['siteTitle']</li>
+ * </ul>
+ */
+$dataTable = [];
+
 /*
  * Es muy importante saber la dirección web, por tanto, si no existe
  * no se podra continuar

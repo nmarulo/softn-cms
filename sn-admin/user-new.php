@@ -35,33 +35,38 @@ if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id'
                 $login = filter_input(INPUT_POST, 'user_login');
                 $email = filter_input(INPUT_POST, 'user_email');
                 $name = filter_input(INPUT_POST, 'user_name');
-                $pass = filter_input(INPUT_POST, 'user_pass') ? filter_input(INPUT_POST, 'user_pass') : $auxUser->getUser_pass();
+                $pass = filter_input(INPUT_POST, 'user_pass');
+                $pass2 = filter_input(INPUT_POST, 'user_pass2');
                 $rol = filter_input(INPUT_POST, 'user_rol');
                 $url = filter_input(INPUT_POST, 'user_url');
 
-                $arg = array(
-                    'ID' => $auxUser->getID(),
-                    'user_login' => $login,
-                    'user_name' => $name,
-                    'user_email' => $email,
-                    'user_pass' => $pass,
-                    'user_rol' => SN_Users::checkRol() ? $rol : $auxUser->getUser_rol(),
-                    'user_registred' => $auxUser->getUser_registred(),
-                    'user_url' => $url
-                );
+                if ($pass == $pass2) {
+                    $arg = array(
+                        'ID' => $auxUser->getID(),
+                        'user_login' => $login,
+                        'user_name' => $name,
+                        'user_email' => $email,
+                        'user_pass' => $pass ? SN_Users::encrypt($pass) : $auxUser->getUser_pass(),
+                        'user_rol' => SN_Users::checkRol() ? $rol : $auxUser->getUser_rol(),
+                        'user_registred' => $auxUser->getUser_registred(),
+                        'user_url' => $url
+                    );
 
-                $auxUser = new SN_Users($arg);
-                if ($auxUser->update()) {
-                    Messages::add('Usuario actualizado.', Messages::TYPE_S);
-                    /*
-                     * Si se redirecciona a lista de usuario y el usuario 
-                     * no tiene permisos para ver esta lista se mostrara, ademas 
-                     * del mensaje de actualizado, el mensaje "No tiene permisos ..."
-                     * por eso se ha comentado
-                     */
+                    $auxUser = new SN_Users($arg);
+                    if ($auxUser->update()) {
+                        Messages::add('Usuario actualizado.', Messages::TYPE_S);
+                        /*
+                         * Si se redirecciona a lista de usuario y el usuario 
+                         * no tiene permisos para ver esta lista se mostrara, ademas 
+                         * del mensaje de actualizado, el mensaje "No tiene permisos ..."
+                         * por eso se ha comentado
+                         */
 //                    redirect('users', ADM);
+                    } else {
+                        Messages::add('Error al actualizar usuario.', Messages::TYPE_E);
+                    }
                 } else {
-                    Messages::add('Error al actualizar usuario.', Messages::TYPE_E);
+                    Messages::add('Las contraseñas deben ser iguales.', Messages::TYPE_E);
                 }
             }
             $user = [
@@ -82,25 +87,30 @@ if ((filter_input(INPUT_GET, 'action') == 'edit' && filter_input(INPUT_GET, 'id'
         $email = filter_input(INPUT_POST, 'user_email');
         $name = filter_input(INPUT_POST, 'user_name');
         $pass = filter_input(INPUT_POST, 'user_pass');
+        $pass2 = filter_input(INPUT_POST, 'user_pass2');
         $rol = filter_input(INPUT_POST, 'user_rol');
         $url = filter_input(INPUT_POST, 'user_url');
 
-        $arg = [
-            'user_login' => $login,
-            'user_name' => $name,
-            'user_email' => $email,
-            'user_pass' => $pass,
-            'user_rol' => $rol,
-            'user_registred' => $date,
-            'user_url' => $url
-        ];
+        if ($pass == $pass2) {
+            $arg = [
+                'user_login' => $login,
+                'user_name' => $name,
+                'user_email' => $email,
+                'user_pass' => $pass,
+                'user_rol' => $rol,
+                'user_registred' => $date,
+                'user_url' => $url
+            ];
 
-        $auxUser = new SN_Users($arg);
-        if ($auxUser->insert()) {
-            Messages::add('Usuario registrado.', Messages::TYPE_S);
-            redirect('users', ADM);
+            $auxUser = new SN_Users($arg);
+            if ($auxUser->insert()) {
+                Messages::add('Usuario registrado.', Messages::TYPE_S);
+                redirect('users', ADM);
+            } else {
+                Messages::add('Error al registrar usuario.', Messages::TYPE_E);
+            }
         } else {
-            Messages::add('Error al registrar usuario.', Messages::TYPE_E);
+            Messages::add('Las contraseñas deben ser iguales.', Messages::TYPE_E);
         }
     }
 }

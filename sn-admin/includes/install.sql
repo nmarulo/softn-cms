@@ -270,6 +270,7 @@ INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (N
 INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionPaged', '10');
 INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionSiteUrl', '{URL_WEB}');
 INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionTheme', 'default');
+INSERT INTO `{DB_PREFIX}options` (`ID`, `option_name`, `option_value`) VALUES (NULL, 'optionMenu', '0');
 COMMIT;
 
 -- -----------------------------------------------------

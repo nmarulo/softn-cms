@@ -50,5 +50,6 @@ $dataTable['sidebar']['dataList'] = SN_Sidebars::dataList();
 $dataTable['option']['dataList'] = SN_Options::dataList();
 //Numero de filas a mostrar de post, categorias, etiquetas, etc...
 $dataTable['option']['numberRows'] = SN_Options::get_instance('optionPaged')->getOption_value();
+$dataTable['option']['menu'] = SN_Options::get_instance('optionMenu')->getOption_value();
 
 require ABSPATH . ADM . 'functions.php';

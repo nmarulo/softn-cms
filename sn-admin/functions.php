@@ -5,6 +5,15 @@
  */
 
 /**
+ * Metodo que reemplaza los empacio por el simbolo "_" de una cadena de texto.
+ * @param string $str
+ * @return string
+ */
+function str_filter($str){
+    return str_replace(' ', '_', $str);
+}
+
+/**
  * Metodo que retorna un lista con los nombres de las carpetas del directorio
  * "sn-content/themes/"
  * @param string $select Nombre del directorio seleccionado.
@@ -335,107 +344,6 @@ function pagedNav($arg) {
         }
         $echo .= '</ul></nav></div>';
         echo $echo;
-    }
-}
-
-/**
- * Metodo que imprime los elementos del menu seleccionado. Ver menus.php
- * @param object $parent Datos del menu padre.
- * @param array $subChildrens Lista con los menus hijos.
- */
-function listMenu($parent, $subChildrens = 0) {
-
-    if (!empty($parent)) {
-        if (empty($subChildrens)) {
-            $childrens = SN_Menus::getChildrens($parent->ID);
-        } else {
-            $childrens = $subChildrens;
-        }
-
-        //Comprueba si tiene sub menus.
-        if ($childrens) {
-            $count = count($childrens);
-            echo '<ul class="list-untyped">';
-            foreach ($childrens as $menu) {
-                $disabled = [
-                    'up' => ' disabled',
-                    'upup' => ' disabled',
-                    'down' => ' disabled',
-                    'downdown' => ' disabled',
-                    'out' => ' disabled',
-                ];
-                if ($menu['menu_position'] + 1 <= $count) {
-                    $disabled['down'] = '';
-                    $disabled['downdown'] = '';
-                }
-                if ($menu['menu_position'] - 1 >= 1) {
-                    $disabled['up'] = '';
-                    $disabled['upup'] = '';
-                }
-                if ($menu['menu_sub'] != $parent->ID) {
-                    $disabled['out'] = '';
-                }
-                ?>
-                <li>
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="clearfix">
-                                <div class="pull-left">
-                                    <?php
-                                    $btn = '';
-                                    if (SN_Users::checkRol()) {
-                                        $btn = "<a class='label label-primary' href='?action=edit&id=$menu[ID]&selectMenu=$parent->ID' title='Editar'><span class='glyphicon glyphicon-edit'></span></a> ";
-                                        $btn .= "<a class='label label-danger' href='?action=delete&id=$menu[ID]&selectMenu=$parent->ID' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></a> ";
-                                    }
-                                    echo $btn . $menu['menu_title'];
-                                    ?>
-                                </div>
-                                <?php if (SN_Users::checkRol()) { ?>
-                                    <div class="pull-right">
-                                        <ul class="list-inline">
-                                            <li>
-                                                <button class="btn-nostyle<?php echo $disabled['up']; ?>" type="submit" name="up" value="<?php echo $menu['ID']; ?>">
-                                                    <span class="label label-success"><span class="glyphicon glyphicon-arrow-up"></span></span>
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <button class="btn-nostyle<?php echo $disabled['down']; ?>" type="submit" name="down" value="<?php echo $menu['ID']; ?>">
-                                                    <span class="label label-danger"><span class="glyphicon glyphicon-arrow-down"></span></span>
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <span class="badge"><?php echo $menu['menu_position']; ?></span>
-                                            </li>
-                                            <li>
-                                                <button class="btn-nostyle<?php echo $disabled['upup']; ?>" type="submit" name="upup" value="<?php echo $menu['ID']; ?>">
-                                                    <span class="label label-success"><span class="glyphicon glyphicon-arrow-up"></span><span class="glyphicon glyphicon-arrow-up"></span></span>
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <button class="btn-nostyle<?php echo $disabled['downdown']; ?>" type="submit" name="downdown" value="<?php echo $menu['ID']; ?>">
-                                                    <span class="label label-danger"><span class="glyphicon glyphicon-arrow-down"></span><span class="glyphicon glyphicon-arrow-down"></span></span>
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <button class="btn-nostyle<?php echo $disabled['out']; ?>" type="submit" name="out" value="<?php echo $menu['ID']; ?>">
-                                                    <span class="label label-warning"><span class="glyphicon glyphicon-circle-arrow-up"></span></span>
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                <?php } ?>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <?php
-                $subChildrens = SN_Menus::getChildrens($menu['ID']);
-                if ($subChildrens) {
-                    echo '<li>' . listMenu($parent, $subChildrens) . '</li>';
-                }
-            }
-            echo '</ul>';
-        }
     }
 }
 

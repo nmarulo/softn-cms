@@ -42,11 +42,11 @@ class SN_Posts_Terms {
     public static function delete($postID, $termID) {
         global $sndb;
 
-        $where = "relationships_post_ID = :relationships_post_ID";
+        $where = 'relationships_post_ID = :relationships_post_ID';
         $prepare = [[':relationships_post_ID', $postID]];
 
         if (!empty($termID)) {
-            $where .= " AND relationships_term_ID = :relationships_term_ID";
+            $where .= ' AND relationships_term_ID = :relationships_term_ID';
             $prepare[] = [':relationships_term_ID', $termID];
         }
 
@@ -61,7 +61,7 @@ class SN_Posts_Terms {
     /**
      * Metodo que obtiene todas las publicaciones relacionadas con una etiqueta.
      * @global SN_DB $sndb Conexión de la base de datos.
-     * @param type $termID Identificador de la etiqueta.
+     * @param int $termID Identificador de la etiqueta.
      * @return object Retorna un objecto PDOstatement
      */
     public static function getPosts($termID) {
@@ -69,7 +69,8 @@ class SN_Posts_Terms {
 
         return $sndb->query([
                     'table' => 'posts',
-                    'where' => "ID IN (SELECT relationships_post_ID FROM sn_posts_terms WHERE relationships_term_ID = $termID)",
+                    'where' => 'ID IN (SELECT relationships_post_ID FROM ' . DB_PREFIX . 'posts_terms WHERE relationships_term_ID = :relationships_term_ID)',
+                    'prepare' => [[':relationships_term_ID', $termID],],
                     'orderBy' => 'post_date DESC',
         ]);
     }
@@ -103,10 +104,12 @@ class SN_Posts_Terms {
     public static function getTerms($postID) {
         global $sndb;
 
-        return $sndb->query(array(
+        return $sndb->query([
                     'table' => 'terms',
-                    'where' => "ID IN (SELECT relationships_term_ID FROM sn_posts_terms WHERE relationships_post_ID = $postID)"
-        ));
+                    'where' => 'ID IN (SELECT relationships_term_ID FROM ' . DB_PREFIX . 'posts_terms WHERE relationships_post_ID = :relationships_post_ID)',
+                    'prepare' => [[':relationships_post_ID', $postID]],
+                    'orderBy' => 'term_name'
+        ]);
     }
 
 }

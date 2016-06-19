@@ -32,9 +32,9 @@ function reloadData() {
         $postNum = SN_Posts::user_posts_count($user['ID']);
 
         $str .= "<tr><td class='options'>";
-        $str .= "<a class='label label-primary' href='user-new.php?action=edit&id=$user[ID]' title='Editar'>";
+        $str .= "<a class='btnAction-sm btn btn-primary' href='user-new.php?action=edit&id=$user[ID]' title='Editar'>";
         $str .= "<span class='glyphicon glyphicon-edit'></span></a> ";
-        $str .= "<span class='spanAction label label-danger' data-action='action=delete&id=$user[ID]' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></span></td>";
+        $str .= "<button class='btnAction btnAction-sm btn btn-danger' data-action='action=delete&id=$user[ID]' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></button></td>";
         $str .= "<td><a href='" . siteUrl() . "?author=$user[ID]'>$user[user_login]</a></td>";
         $str .= "<td>$user[user_name]</td>";
         $str .= "<td>$user[user_email]</td>";

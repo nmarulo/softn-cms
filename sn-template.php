@@ -1,10 +1,13 @@
 <?php
+
 /**
  * Controlador de la plantilla web.
  */
-
 require INC . 'functions.php';
 require INC . 'template.php';
+if (file_exists(THEMES . $dataTable['option']['theme'] . '/functions.php')) {
+    require THEMES . $dataTable['option']['theme'] . '/functions.php';
+}
 
 //Indica si se usa la pagina del index o no.
 $index = true;
@@ -31,13 +34,13 @@ if (filter_input(INPUT_GET, 'post')) {
         $comment_author_email = filter_input(INPUT_POST, 'comment_author_email');
         $comment_contents = filter_input(INPUT_POST, 'comment_contents');
         $comment_user_ID = SN_Users::getSession()->getID();
-        
-        if($comment_user_ID){
+
+        if ($comment_user_ID) {
             $user = SN_Users::get_instance($comment_user_ID);
             $comment_autor = $user->getUser_name();
             $comment_author_email = $user->getUser_email();
         }
-        
+
         $arg = [
             'comment_status' => $comment_user_ID ? 1 : 0,
             'comment_autor' => $comment_autor,
@@ -47,11 +50,11 @@ if (filter_input(INPUT_GET, 'post')) {
             'comment_user_ID' => $comment_user_ID,
             'post_ID' => $id,
         ];
-        
+
         $comment = new SN_Comments($arg);
-        if($comment->insert()){
+        if ($comment->insert()) {
             Messages::add('Comentario enviado correctamente.', Messages::TYPE_S);
-        }else{
+        } else {
             Messages::add('Error al enviar el comentario.', Messages::TYPE_E);
         }
     }
@@ -73,7 +76,7 @@ if (filter_input(INPUT_GET, 'post')) {
     $posts = SN_Posts_Terms::getPosts($id);
 } elseif (filter_input(INPUT_GET, 'author')) {
     $id = filter_input(INPUT_GET, 'author');
-    $posts = SN_Users::getPosts($id);
+    $posts = SN_Posts::getPostsByAuthor($id);
 } elseif (filter_input(INPUT_GET, 'page')) {
     $id = filter_input(INPUT_GET, 'page');
     $posts = SN_Posts::get_instance($id, 'PDOStatement');

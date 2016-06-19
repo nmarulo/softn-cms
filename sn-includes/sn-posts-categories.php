@@ -42,11 +42,11 @@ class SN_Posts_Categories {
     public static function delete($postID, $categoryID = 0) {
         global $sndb;
 
-        $where = "relationships_post_ID = :relationships_post_ID";
+        $where = 'relationships_post_ID = :relationships_post_ID';
         $prepare = [[':relationships_post_ID', $postID]];
 
         if ($categoryID) {
-            $where .= " AND relationships_category_ID = :relationships_category_ID";
+            $where .= ' AND relationships_category_ID = :relationships_category_ID';
             $prepare[] = ['relationships_category_ID', $categoryID];
         }
 
@@ -69,7 +69,8 @@ class SN_Posts_Categories {
 
         return $sndb->query([
                     'table' => 'posts',
-                    'where' => "ID IN (SELECT relationships_post_ID FROM sn_posts_categories WHERE relationships_category_ID = $categoryID)",
+                    'where' => 'ID IN (SELECT relationships_post_ID FROM ' . DB_PREFIX . 'posts_categories WHERE relationships_category_ID = :relationships_category_ID)',
+                    'prepare' => [[':relationships_category_ID', $categoryID]],
                     'orderBy' => 'post_date DESC',
         ]);
     }
@@ -103,10 +104,12 @@ class SN_Posts_Categories {
     public static function getCategories($postID) {
         global $sndb;
 
-        return $sndb->query(array(
+        return $sndb->query([
                     'table' => 'categories',
-                    'where' => "ID IN (SELECT relationships_category_ID FROM sn_posts_categories WHERE relationships_post_ID = $postID)"
-        ));
+                    'where' => "ID IN (SELECT relationships_category_ID FROM sn_posts_categories WHERE relationships_post_ID = :relationships_post_ID)",
+                    'prepare' => [[':relationships_post_ID', $postID]],
+                    'orderBy' => 'category_name'
+        ]);
     }
 
 }

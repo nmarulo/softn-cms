@@ -44,10 +44,10 @@ function reloadData() {
 
         $str .= "<tr><td class='options'>";
         if (SN_Users::checkRol('editor')) {
-            $str .= "<a class='label label-primary' href='post-new.php?action=edit&id=$post[ID]' title='Editar'>";
+            $str .= "<a class='btnAction-sm btn btn-primary' href='post-new.php?action=edit&id=$post[ID]' title='Editar'>";
             $str .= "<span class='glyphicon glyphicon-edit'></span></a> ";
             if (SN_Users::checkRol()) {
-                $str .= "<span class='spanAction label label-danger' data-action='action=delete&id=$post[ID]' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></span>";
+                $str .= "<button class='btnAction btnAction-sm btn btn-danger' data-action='action=delete&id=$post[ID]' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></button>";
             }
         }
         $str .= "</td><td><a href='" . siteUrl() . "?post=$post[ID]' title='$post[post_title]'>$title</a></td>";

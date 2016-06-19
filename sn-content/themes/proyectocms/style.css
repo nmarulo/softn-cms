@@ -1,16 +1,15 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 11-mar-2016, 19:06:35
-    Author     : MaruloPC-Desk
-*/
 body{
     color: #333;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     line-height: 1.5;
+    /* Evitar que el texto de salga de los contenedores */
+    -moz-white-space: pre-wrap; /* css-3 */
+    -webkit-white-space: pre-wrap; /* css-3 */
+    white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+    -ms-word-wrap: break-word;
 }
 a {
     color: #428bca;
@@ -73,11 +72,18 @@ pre {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+textArea{
+    width: 100%;
+}
 
 .container{margin: 0 auto;}
 
 section header{
     overflow: hidden;
+}
+
+nav.menu-nav .showMenu .titleMenu{
+    display: none;
 }
 
 nav.menu-nav{
@@ -94,6 +100,7 @@ nav.menu-nav ul{
 nav.menu-nav ul li{
     float: left;
     border-left: 1px solid #f1f1f1;
+    position: relative;
 }
 nav.menu-nav ul li a{
     padding: 25px;
@@ -107,14 +114,73 @@ nav.menu-nav ul li a:hover{
     color: #fff;
 }
 
+.clearfix{
+    clear: both;
+    overflow: auto;
+}
+
+.container .col-left header h2{
+    font-size: 2.5em;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.widgets .widget-title h2{
+    border-bottom: 1px solid #f1f1f1;
+}
+
 @media (max-width: 767px) {
+    nav.menu-nav .showMenu .titleMenu{
+        display: block;
+        padding: 20px;
+        font-size: 2em;
+    }
+
+    nav.menu-nav ul.menu-list{
+        display: none;
+    }
+
+    nav.menu-nav ul li {
+        float: none; 
+        border-left: none;
+        padding-left: 10px;
+    }
+
+    nav.menu-nav .showMenu:hover ul.menu-list{
+        display: block;
+    }
+    
+    .container{
+        padding: 0 10px
+    }
 }
 @media (min-width: 768px) and (max-width: 991px) {
-    .container {width: 750px;}
+    .container {
+        width: 750px;
+    }
 }
 @media (min-width: 992px) and (max-width: 1199px) {
-    .container {width: 970px;}
+    .container {
+        width: 970px;
+    }
+    .col-left{
+        width: 700px;
+        float: left;
+    }
+    .col-right{
+        width: 250px;
+        float: right;
+    }
 }
 @media (min-width: 1200px) {
-    .container {width: 1170px;}
+    .container {
+        width: 1170px;
+    }
+    .col-left{
+        width: 800px;
+        float: left;
+    }
+    .col-right{
+        width: 300px;
+        float: right;
+    }
 }

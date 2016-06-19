@@ -9,14 +9,15 @@ SN_Users::checkRol('admin', true);
  * Recoge los datos de las opciones principal de la aplicación. 
  * Para mostrar los datos en sus campos correspontiendes del modelo vista.
  */
-$option = array(
+$option = [
     'optionTitle' => '',
     'optionDescription' => '',
     'optionEmailAdmin' => '',
     'optionPaged' => '',
     'optionSiteUrl' => '',
     'optionTheme' => '',
-);
+    'optionMenu' => 0,
+];
 
 /*
  * Guarda los datos de las configuraciones guardas en la base de datos.
@@ -45,6 +46,7 @@ if (filter_input(INPUT_POST, 'update')) {
     $option['optionPaged'] = filter_input(INPUT_POST, 'optionPaged');
     $option['optionSiteUrl'] = filter_input(INPUT_POST, 'optionSiteUrl');
     $option['optionTheme'] = filter_input(INPUT_POST, 'optionTheme');
+    $option['optionMenu'] = filter_input(INPUT_POST, 'optionMenu');
 
     $keys = array_keys($option);
 
@@ -84,5 +86,13 @@ if (filter_input(INPUT_POST, 'update')) {
 }
 
 $option['optionTheme'] = getThemes($dataTable['option']['theme']);
+
+$menuParents = SN_Menus::dataList('fechaAll', true);
+$optionMenu = '';
+foreach ($menuParents as $menu) {
+    $selected = $dataTable['option']['menu'] == $menu['ID'] ? 'selected' : '';
+    $optionMenu .= "<option value='$menu[ID]' $selected>$menu[menu_title]</option>";
+}
+$option['optionMenu'] = $optionMenu;
 
 require ABSPATH . ADM_CONT . 'options.php';

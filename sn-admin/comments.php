@@ -46,9 +46,9 @@ function reloadData() {
 
         $str .= "<tr><td class='options'>";
         if (SN_Users::checkRol()) {
-            $str .= "<a class='label label-primary' href='comment-edit.php?action=edit&id=$comment[ID]' title='Editar'>";
+            $str .= "<a class='btnAction-sm btn btn-primary' href='comment-edit.php?action=edit&id=$comment[ID]' title='Editar'>";
             $str .= "<span class='glyphicon glyphicon-edit'></span></a> ";
-            $str .= "<span class='spanAction label label-danger' data-action='action=delete&id=$comment[ID]' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></span>";
+            $str .= "<button class='btnAction btnAction-sm btn btn-danger' data-action='action=delete&id=$comment[ID]' title='Borrar'><span class='glyphicon glyphicon-remove-sign'></span></button>";
         }
         $str .= "</td><td>$comment[comment_autor]</td>";
         $str .= "<td>$contents</td>";
