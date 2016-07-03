@@ -106,7 +106,7 @@ class SN_Posts_Categories {
 
         return $sndb->query([
                     'table' => 'categories',
-                    'where' => "ID IN (SELECT relationships_category_ID FROM sn_posts_categories WHERE relationships_post_ID = :relationships_post_ID)",
+                    'where' => 'ID IN (SELECT relationships_category_ID FROM ' . DB_PREFIX . 'posts_categories WHERE relationships_post_ID = :relationships_post_ID)',
                     'prepare' => [[':relationships_post_ID', $postID]],
                     'orderBy' => 'category_name'
         ]);

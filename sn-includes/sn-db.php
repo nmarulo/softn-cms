@@ -31,6 +31,7 @@ class SN_DB {
             $strConexion = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
             //Conexión con la base de datos. PDO Object.
             $this->connection = new PDO($strConexion, DB_USER, DB_PASSWORD);
+            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $ex) {
             die('ERROR FATAL: ' . $ex->getMessage());
         }
