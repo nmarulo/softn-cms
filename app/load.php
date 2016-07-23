@@ -5,7 +5,11 @@
  * o hacia la plantilla y carga los ficheros necesarios.
  */
 
+require $config;
 require \ABSPATH . 'define.php';
-require ABSPATH . 'vendor/autoload.php';
+require \ABSPATH . 'vendor/autoload.php';
 
-new \SoftnCMS\controllers\Router();
+if(\APP_DEBUG === \TRUE){
+    \ini_set('display_errors', \TRUE);
+}
+\SoftnCMS\controllers\Router::load();

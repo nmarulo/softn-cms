@@ -1,6 +1,6 @@
 $(document).ready(function () {
     checkInit();
-    eventsOn();
+//    eventsOn();
 });
 
 /**

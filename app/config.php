@@ -28,6 +28,9 @@ define('DB_PREFIX', 'sn_');
 /** Tipo de base de datos. */
 define('DB_TYPE', 'mysql');
 
+/** Determina si los errores deberían ser impresos en pantalla. */
+define('APP_DEBUG', \TRUE);
+
 // Claves de autentificacion
 define('LOGGED_KEY', '5GLhueRQNTmlo8nY6XusgNN1JDSnQWRKsGiQTkjU0QuD9IVf9SdtmPrwDxc6irBs');
 define('COOKIE_KEY', 'bydiGj9QAG0Nh9RpzGjmPKtTTiUI6PI3iivDP9nEyoTQMtaqnmN7GxR8xXYci5dw');

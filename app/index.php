@@ -6,11 +6,11 @@
  * a la pagina de instalación.
  */
 /** Ruta absotula del proyecto. */
-define('ABSPATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . '');
-$config = ABSPATH . 'config.php';
+define('ABSPATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
+$config = \ABSPATH . 'config.php';
 
 //if (!is_readable($config)) {
 //    require ABSPATH . 'install/index.php';
 //    exit();
 //}
-require ABSPATH . 'load.php';
+require \ABSPATH . 'load.php';
