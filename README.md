@@ -5,6 +5,10 @@ SoftN CMS es un sistema de gestión de contenido con el que puedes crear sitios 
 
 > **Versión 0.3 Beta - Fenix** Este proyecto está todavía en fase de desarrollo.
 
+> **Versión 0.2.1 Beta** https://github.com/nmarulo/softn-cms/tree/v0.2.1-Final
+
+> **branch:develop** Ultimos cambios realizados. https://github.com/nmarulo/softn-cms/tree/develop
+
 Steaming https://www.livecoding.tv/marulo/
 
 ----------
@@ -16,7 +20,7 @@ Recursos utilizados
 - Bootstrap: http://getbootstrap.com/
 - TinyMCE: https://www.tinymce.com/
 - XAMPP: https://www.apachefriends.org/
-- ...
+- nuevos recursos pendientes de agregar...
 
 ----------
 
@@ -53,7 +57,7 @@ Funcionalidades
 Instalación
 -------------------
 
-- ...
+- pendiente...
 
 ----------
 
@@ -73,14 +77,14 @@ SoftN CMS fue probado en XAMP v3.2.2 (PHP v5.6.21, Apache v2.4.12, MySQL v5.6.25
 Ficheros
 --------------------
 
-- ...
+- pendiente...
 
 ----------
 
 Imagenes
 --------------------
 
-- ...
+- pendiente...
 
 ----------
 
