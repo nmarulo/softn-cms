@@ -28,4 +28,4 @@
 \define('VIEWS', \ABSPATH . 'views' . \DIRECTORY_SEPARATOR);
 
 /** Direccion temprar de la aplicación. */
-\define('LOCALHOST', 'http://localhost/ProyectosWeb/htdocsxampp/SoftN-CMS' . \DIRECTORY_SEPARATOR);
+\define('LOCALHOST', 'http://localhost/ProyectosWeb/htdocsxampp/SoftN-CMS/');

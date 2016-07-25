@@ -68,9 +68,13 @@ class Posts {
      * Metodo que realiza una consulta a la base de datos y obtiene todos los post.
      */
     private function select() {
-        $db = new \SoftnCMS\models\MySql();
-        $db = $db->getConnection();
-        $this->addPosts($db->query('SELECT * FROM sn_posts limit 5')->fetchAll());
+        $db = \SoftnCMS\controllers\DBController::getConnection();
+        $table = Post::getTableName();
+        $fetch = 'fetchAll';
+        $orderBy = 'ID DESC';
+        $columns = '*';
+        $select = $db->select($table, $fetch, '', [], $columns, $orderBy, '');
+        $this->addPosts($select);
     }
 
 }

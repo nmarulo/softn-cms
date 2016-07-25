@@ -15,6 +15,8 @@ use SoftnCMS\models\Users;
  * @author Nicolás Marulanda P.
  */
 class Post {
+    
+    private static $TABLE = \DB_PREFIX . 'posts';
 
     /** Identificador de la entrada. */
     const ID = 'ID';
@@ -41,7 +43,7 @@ class Post {
     const COMMENT_COUNT = 'comment_count';
 
     /** Identificador del autor. */
-    const USER_ID = 'users_ID';
+    const USER_ID = 'user_ID';
 
     /**
      * Datos del post.
@@ -55,6 +57,25 @@ class Post {
      */
     public function __construct($data) {
         $this->post = $data;
+    }
+    
+    public static function getTableName(){
+        return self::$TABLE;
+    }
+    
+    public static function defaultInstance(){
+        $data = [
+          Post::ID => 0,
+          Post::POST_TITLE => '',
+          Post::POST_STATUS => 1,
+          Post::POST_CONTENTS => '',
+          Post::POST_DATE => '0000-00-00 00:00:00',
+          Post::POST_UPDATE => '0000-00-00 00:00:00',
+          Post::COMMENT_COUNT => 0,
+          Post::COMMENT_STATUS => 1,
+          Post::USER_ID => 0,
+        ];
+        return new Post($data);
     }
 
     /**
@@ -134,9 +155,29 @@ class Post {
      * @return User
      */
     public function getUser() {
-        $userID = $this->post[Post::USER_ID];
+        $userID = $this->getUserID();
         $users = new Users();
         return $users->getUser($userID);
+    }
+    
+    public function setPostTitle($title){
+        $this->post[Post::POST_TITLE] = $title;
+    }
+    
+    public function setPostContents($contents){
+        $this->post[Post::POST_CONTENTS] = $contents;
+    }
+    
+    public function setCommentStatus($status){
+        $this->post[Post::POST_STATUS] = $status;
+    }
+    
+    public function setPostStatus($status){
+        $this->post[Post::POST_STATUS] = $status;
+    }
+    
+    public function setPostUpdate($date){
+        $this->post[Post::POST_DATE] = $date;
     }
 
 }
