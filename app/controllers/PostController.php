@@ -38,6 +38,7 @@ class PostController {
 
     private function dataIndex() {
         $posts = new Posts();
+        $posts->selectAll();
         $output = $posts->getPosts();
 
         foreach ($output as $post) {

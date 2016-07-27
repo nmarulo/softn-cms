@@ -22,6 +22,9 @@ class MySql {
     /** @var \PDOStatement  */
     private $prepareObject;
 
+    /**
+     * Constructor.
+     */
     public function __construct() {
         //Establecer conexión con la base de datos
         try {
@@ -34,13 +37,22 @@ class MySql {
         }
     }
 
+    /**
+     * Metodo que ejecuta una consulta "SELECT".
+     * @param string $table Nombre de la tabla.
+     * @param string $fetch [Opcional] Tipo de datos a retornar. 
+     * Si esta vacia retorna la declaración de la consulta preparada.
+     * Si es "fetchAll", retorna un array con todos los elementos.
+     * Si es "fetchObject", retorna un objeto \PDOStatement.
+     * @param string $where [Opcional] Condiciones de la consulta.
+     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta. 
+     * EJ: [[':usuario', 'Carlos', \PDO::PARAM_STR], [':apellido', 'James', \PDO::PARAM_STR]]
+     * @param string $columns [Opcional] Columnas a obtener.
+     * @param string $orderBy [Opcional] Ordenar la consulta por.
+     * @param string $limit [Opcional] Limitar los datos a retornar de la consulta.
+     * @return array|\PDOStatement|bool Retorna \FALSE en caso de error.
+     */
     public function select($table, $fetch = '', $where = '', $prepare = [], $columns = '*', $orderBy = '', $limit = '') {
-        //EJ
-//        $prepare = [[
-//            'parameter' => '',
-//            'value' => '',
-//            'dataType' => ''
-//        ]];
         $output = \FALSE;
         $sql = "SELECT $columns FROM $table";
         $sql .= empty($where) ? '' : " WHERE $where";
@@ -49,6 +61,7 @@ class MySql {
         $this->query = $sql;
 
         if ($this->execute($sql, $prepare)) {
+            
             switch ($fetch) {
                 case 'fetchAll':
                     $output = $this->prepareObject->fetchAll();
@@ -64,22 +77,77 @@ class MySql {
         return $output;
     }
 
-    public function insert($table, $columns, $prepare) {
-        $output = \FALSE;
-        $sql = 'INSERT INTO sn_posts (colums) VALUES (values)';
-        return $output;
+    /**
+     * Metodo que ejecuta una consulta "INSERT".
+     * @param string $table Nombre de la tabla.
+     * @param string $columns Nombre de las columnas.
+     * @param string $values Valores.
+     * @param array $prepare Lista de indices a reemplazar en la consulta. 
+     * EJ: [
+     * ['parameter' => ':usuario', 
+     * 'value' => 'Carlos', 
+     * 'dataType' => \PDO::PARAM_STR], 
+     * ['parameter' => ':apellido', 
+     * 'value' => 'James', 
+     * 'dataType' => \PDO::PARAM_STR]
+     * ]
+     * @return bool Si es \TRUE la consulta se ejecuto correctamente.
+     */
+    public function insert($table, $columns, $values, $prepare) {
+        $sql = "INSERT INTO $table ($columns) VALUES ($values)";
+        $this->query = $sql;
+        return $this->execute($sql, $prepare);
     }
 
-    public function update() {
-        $output = \FALSE;
-        $sql = 'UPDATE sn_posts SET columns WHERE ID = 1';
-        return $output;
+    /**
+     * Metodo que ejecuta una consulta "UPDATE".
+     * @param string $table Nombre de la tabla.
+     * @param string $columns Asignación de valores a la columna.
+     * @param string $where Condiciones de la consulta.
+     * @param array $prepare Lista de indices a reemplazar en la consulta. 
+     * EJ: [
+     * ['parameter' => ':usuario', 
+     * 'value' => 'Carlos', 
+     * 'dataType' => \PDO::PARAM_STR], 
+     * ['parameter' => ':apellido', 
+     * 'value' => 'James', 
+     * 'dataType' => \PDO::PARAM_STR]
+     * ]
+     * @return bool Si es \TRUE la consulta se ejecuto correctamente.
+     */
+    public function update($table, $columns, $where, $prepare) {
+        $sql = "UPDATE $table SET $columns WHERE $where";
+        $this->query = $sql;
+        return $this->execute($sql, $prepare);
     }
 
-    public function delete() {
-        $output = \FALSE;
-        $sql = 'DELETE FROM sn_posts WHERE ID = 1';
-        return $output;
+    /**
+     * Metodo que ejecuta una consulta "DELETE".
+     * @param string $table Nombre de la tabla.
+     * @param string $where Condiciones de la consulta.
+     * @param array $prepare Lista de indices a reemplazar en la consulta. 
+     * EJ: [
+     * ['parameter' => ':usuario', 
+     * 'value' => 'Carlos', 
+     * 'dataType' => \PDO::PARAM_STR], 
+     * ['parameter' => ':apellido', 
+     * 'value' => 'James', 
+     * 'dataType' => \PDO::PARAM_STR]
+     * ]
+     * @return bool Si es \TRUE la consulta se ejecuto correctamente.
+     */
+    public function delete($table, $where, $prepare) {
+        $sql = "DELETE FROM $table WHERE $where";
+        $this->query = $sql;
+        return $this->execute($sql, $prepare);
+    }
+    
+    /**
+     * Metodo que obtiene el ID de los nuevos datos insertados.
+     * @return int
+     */
+    public function lastInsertId(){
+        return $this->connection->lastInsertId();
     }
 
     /**
@@ -123,7 +191,7 @@ class MySql {
     /**
      * 
      * @param array $data
-     * @return bool 
+     * @return bool Si es \TRUE la operación se realizado correctamente.
      */
     private function bindValue($data) {
         $count = \count($data);
@@ -131,10 +199,18 @@ class MySql {
 
         for ($i = 0; $i < $count && !$error; ++$i) {
             $value = $data[$i];
+            $parameter = $value['parameter'];
+            $parameterValue = $value['value'];
 
-            if (!$this->prepareObject->bindValue($value['parameter'], $value['value'], $value['dataType'])) {
+            if (!$this->prepareObject->bindValue($parameter, $parameterValue, $value['dataType'])) {
                 $error = \TRUE;
             }
+            
+            if (!\is_numeric($parameterValue)) {
+                $parameterValue = "'$parameterValue'";
+            }
+            //Reemplaza los parametros con sus valores correspondientes.
+            $this->query = \str_replace($parameter, $parameterValue, $this->query);
         }
         return !$error;
     }

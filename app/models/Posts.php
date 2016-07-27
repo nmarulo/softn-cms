@@ -26,7 +26,7 @@ class Posts {
      * Constructor.
      */
     public function __construct() {
-        $this->select();
+        $this->posts = [];
     }
 
     /**
@@ -64,17 +64,42 @@ class Posts {
         }
     }
 
+    public function lastPosts($limit = '') {
+        $output = [];
+        
+        if (!empty($this->posts) && !empty($limit)) {
+            return \array_slice($this->getPosts(), 0, $limit, \TRUE);
+        }
+        
+        if (empty($this->posts)) {
+            $select = $this->select('', [], '*', $limit);
+            $this->addPosts($select);
+            $output = $this->getPosts();
+        }
+        return $output;
+    }
+    
+    public function count(){
+        $select = $this->select('', [], 'COUNT(*) AS count');
+        return $select[0]['count'];
+    }
+
+    public function selectAll() {
+        if(!empty($this->posts)){
+            $this->posts = [];
+        }
+        $select = $this->select();
+        $this->addPosts($select);
+    }
+
     /**
      * Metodo que realiza una consulta a la base de datos y obtiene todos los post.
      */
-    private function select() {
+    private function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
         $db = \SoftnCMS\controllers\DBController::getConnection();
         $table = Post::getTableName();
         $fetch = 'fetchAll';
-        $orderBy = 'ID DESC';
-        $columns = '*';
-        $select = $db->select($table, $fetch, '', [], $columns, $orderBy, '');
-        $this->addPosts($select);
+        return $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
     }
 
 }

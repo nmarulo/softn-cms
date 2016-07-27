@@ -27,5 +27,5 @@
 /** Ruta de los modulos de vista. */
 \define('VIEWS', \ABSPATH . 'views' . \DIRECTORY_SEPARATOR);
 
-/** Direccion temprar de la aplicación. */
+/** Direccion temporal de la aplicación. */
 \define('LOCALHOST', 'http://localhost/ProyectosWeb/htdocsxampp/SoftN-CMS/');
