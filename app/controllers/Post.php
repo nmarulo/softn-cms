@@ -16,6 +16,7 @@ use SoftnCMS\models\Users;
  */
 class Post {
     
+    /** @var string Nombre de la table. */
     private static $TABLE = \DB_PREFIX . 'posts';
 
     /** Identificador de la entrada. */
@@ -59,6 +60,10 @@ class Post {
         $this->post = $data;
     }
     
+    /**
+     * Metodo que obtiene el nombre de la tabla.
+     * @return string
+     */
     public static function getTableName(){
         return self::$TABLE;
     }

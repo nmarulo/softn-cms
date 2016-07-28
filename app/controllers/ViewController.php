@@ -15,13 +15,25 @@ use SoftnCMS\controllers\Request;
  */
 class ViewController {
 
+    /**
+     *
+     * @var Request 
+     */
     private $request;
-    private $vars;
+    /**
+     *
+     * @var array Datos enviados al modulo.
+     */
+    private $data;
+    /**
+     *
+     * @var string Ruta del modulo vista.
+     */
     private $view;
 
-    public function __construct(Request $request, $vars) {
+    public function __construct(Request $request, $data) {
         $this->request = $request;
-        $this->vars = $vars;
+        $this->data = $data;
         $this->selectView();
     }
 
@@ -33,8 +45,8 @@ class ViewController {
             $view = \VIEWS . $this->view . '.php';
         }
         
-        if (\is_array($this->vars)) {
-            \extract($this->vars, EXTR_PREFIX_INVALID, 'softn');
+        if (\is_array($this->data)) {
+            \extract($this->data, EXTR_PREFIX_INVALID, 'softn');
         }
         require \VIEWS . 'header.php';
         require \VIEWS . 'topbar.php';

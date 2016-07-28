@@ -5,12 +5,8 @@
                         <p class="pull-right">versión 0.3</p>
                     </div>      
                 </footer>
-
             </div><!-- .row.clearfix -->
         </div><!-- .container-fluid -->
-
-
-
         <script src="<?php echo \LOCALHOST; ?>app/views/js/jquery-1.12.0.js" type="text/javascript"></script>
         <script src="<?php echo \LOCALHOST; ?>app/vendor/twbs/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
         <script src="<?php echo \LOCALHOST; ?>app/vendor/tinymce/tinymce/tinymce.js" type="text/javascript"></script>

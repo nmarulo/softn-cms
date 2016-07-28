@@ -60,7 +60,7 @@ class Posts {
      */
     public function addPosts($post) {
         foreach ($post as $value) {
-            $this->posts[$value['ID']] = new Post($value);
+            $this->addPost(new Post($value));
         }
     }
 

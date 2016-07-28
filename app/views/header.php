@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>SoftN CMS</title>
+        <link href="<?php echo \LOCALHOST; ?>app/views/css/normalize.css" rel="stylesheet" type="text/css"/>
         <link href="<?php echo \LOCALHOST; ?>app/vendor/twbs/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
         <link href="<?php echo \LOCALHOST; ?>app/views/css/style.css" rel="stylesheet" type="text/css"/>
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -37,10 +38,10 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="post-new.php">Entrada</a></li>
-                                    <li><a href="page-new.php">Pagina</a></li>
-                                    <li><a href="categories.php">Categoría</a></li>
-                                    <li><a href="terms.php">Etiqueta</a></li>
+                                    <li><a href="<?php echo \LOCALHOST; ?>admin/post/insert">Entrada</a></li>
+                                    <li><a href="<?php echo \LOCALHOST; ?>admin/page/insert">Pagina</a></li>
+                                    <li><a href="<?php echo \LOCALHOST; ?>admin/category">Categoría</a></li>
+                                    <li><a href="<?php echo \LOCALHOST; ?>admin/term">Etiqueta</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -52,9 +53,9 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#">Perfil</a></li>
+                                    <li><a href="<?php echo \LOCALHOST; ?>admin/">Perfil</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="?action=logout" role="link">Cerrar sesión</a></li>
+                                    <li><a href="<?php echo \LOCALHOST; ?>admin/" role="link">Cerrar sesión</a></li>
                                 </ul>
                             </li>
                         </ul>
