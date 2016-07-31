@@ -8,7 +8,7 @@
 
 namespace SoftnCMS\models;
 
-use SoftnCMS\controllers\Post;
+use SoftnCMS\models\Post;
 
 /**
  * Description of PostInsert

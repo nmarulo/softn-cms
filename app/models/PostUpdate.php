@@ -8,7 +8,7 @@
 
 namespace SoftnCMS\models;
 
-use SoftnCMS\controllers\Post;
+use SoftnCMS\models\Post;
 
 /**
  * Description of PostUpdate
@@ -74,10 +74,10 @@ class PostUpdate {
         $this->addPrepareStatement($parameter, $postUpdate, \PDO::PARAM_STR);
     }
     
-    private function checkFields($oldData, $newData, $column, $dataType){
+    private function checkFields($oldData, $newData, $column, $dataType, $separator = \TRUE){
         if ($oldData != $newData) {
             $parameter = ':' . $column;
-            $this->addSetDataSQL($column, $parameter);
+            $this->addSetDataSQL($column, $parameter, $separator);
             $this->addPrepareStatement($parameter, $newData, $dataType);
         }
     }

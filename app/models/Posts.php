@@ -7,7 +7,7 @@
 
 namespace SoftnCMS\models;
 
-use SoftnCMS\controllers\Post;
+use SoftnCMS\models\Post;
 
 /**
  * Clase que gestiona la lista con todos los posts de la base de datos.
@@ -64,28 +64,31 @@ class Posts {
         }
     }
 
-    public function lastPosts($limit = '') {
+    /**
+     * Metodo que obtiene los ultimos post.
+     * @param int $limit Numero de post.
+     * @return array
+     */
+    public function lastPosts($limit) {
         $output = [];
-        
-        if (!empty($this->posts) && !empty($limit)) {
-            return \array_slice($this->getPosts(), 0, $limit, \TRUE);
-        }
-        
+
         if (empty($this->posts)) {
             $select = $this->select('', [], '*', $limit);
             $this->addPosts($select);
             $output = $this->getPosts();
+        } else {
+            $output = \array_slice($this->getPosts(), 0, $limit, \TRUE);
         }
         return $output;
     }
-    
-    public function count(){
+
+    public function count() {
         $select = $this->select('', [], 'COUNT(*) AS count');
         return $select[0]['count'];
     }
 
     public function selectAll() {
-        if(!empty($this->posts)){
+        if (!empty($this->posts)) {
             $this->posts = [];
         }
         $select = $this->select();

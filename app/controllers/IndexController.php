@@ -33,6 +33,7 @@ class IndexController {
 
     private function dataIndex() {
         $posts = new \SoftnCMS\models\Posts();
+        $users = new \SoftnCMS\models\Users();
 
         return [
             'github' => $this->lastUpdateGitHub(),
@@ -43,7 +44,7 @@ class IndexController {
                 'page' => 0,
                 'category' => 0,
                 'comment' => 0,
-                'user' => 0,
+                'user' => $users->count(),
             ],
         ];
     }

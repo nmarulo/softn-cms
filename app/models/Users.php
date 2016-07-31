@@ -7,7 +7,7 @@
 
 namespace SoftnCMS\models;
 
-use SoftnCMS\controllers\User;
+use SoftnCMS\models\User;
 
 /**
  * Clase que gestiona la lista con todos los usuarios de la base de datos.
@@ -26,7 +26,7 @@ class Users {
      * Constructor.
      */
     public function __construct() {
-        $this->select();
+        $this->users = [];
     }
 
     /**
@@ -60,18 +60,31 @@ class Users {
      */
     public function addUsers($user) {
         foreach ($user as $value) {
-            $this->users[$value['ID']] = new User($value);
+            $this->addUser(new User($value));
         }
+    }
+    
+    public function count(){
+        $select = $this->select('', [], 'COUNT(*) AS count');
+        return $select[0]['count'];
+    }
+    
+    public function selectAll(){
+        if(!empty($this->users)){
+            $this->users = [];
+        }
+        $select = $this->select();
+        $this->addUsers($select);
     }
 
     /**
      * Metodo que realiza una consulta a la base de datos y obtiene todos los usuarios.
      */
-    private function select() {
-        $db = new \SoftnCMS\models\MySql();
-        $db = $db->getConnection();
-
-        $this->addUsers($db->query('SELECT * FROM sn_users')->fetchAll());
+    private function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
+        $db = \SoftnCMS\controllers\DBController::getConnection();
+        $table = User::getTableName();
+        $fetch = 'fetchAll';
+        return $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
     }
 
 }

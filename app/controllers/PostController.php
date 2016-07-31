@@ -8,6 +8,7 @@
 
 namespace SoftnCMS\controllers;
 
+use SoftnCMS\models\Post;
 use SoftnCMS\models\Posts;
 use SoftnCMS\models\PostUpdate;
 use SoftnCMS\models\PostInsert;
@@ -74,6 +75,7 @@ class PostController {
         }
 
         $posts = new Posts();
+        $posts->selectAll();
         $post = $posts->getPost($id);
 
         if (filter_input(\INPUT_POST, 'update')) {
@@ -104,5 +106,5 @@ class PostController {
 //            'relationshipsTermID' => \filter_input(\INPUT_POST, 'relationshipsTermID', \FILTER_DEFAULT, \FILTER_REQUIRE_ARRAYRAY),
         ];
     }
-
+    
 }

@@ -8,15 +8,15 @@
 
 namespace SoftnCMS\models;
 
-use SoftnCMS\models\Post;
+use SoftnCMS\models\User;
 
 /**
- * Description of PostDelete
+ * Description of UserDelete
  *
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
-class PostDelete {
-
+class UserDelete {
+    
     private $id;
     private $prepareStatement;
 
@@ -27,7 +27,7 @@ class PostDelete {
 
     public function delete() {
         $db = \SoftnCMS\controllers\DBController::getConnection();
-        $table = Post::getTableName();
+        $table = User::getTableName();
         $where = 'ID = :id';
         
         $this->addPrepareStatement(':id', $this->id, \PDO::PARAM_INT);
@@ -41,5 +41,5 @@ class PostDelete {
             'dataType' => $dataType,
         ];
     }
-
+    
 }
