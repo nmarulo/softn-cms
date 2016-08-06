@@ -1,39 +1,39 @@
 $(document).ready(function () {
     checkInit();
-//    eventsOn();
+    eventsOn();
 });
 
 /**
  * Metodo con todos los eventos ON.
  */
 function eventsOn() {
-    $(document).on('click', 'ul.pagination a', function (e) {
-        var li = $(this).closest('li');
-        if (!li.hasClass('disabled') &&
-                !li.hasClass('active')) {
-            //#dataSearch Si existe estoy en la pagina de busqueda.
-            if ($(this).closest('#dataSearch').length) {
-                reloadDataSearch($(this).data('paged'));
-            } else {
-                reloadData($(this), $(this).data('paged'));
-            }
-        }
-        e.preventDefault();
-    });
-
-    $(document).on('click', 'button.btnAction', function () {
-        if (!$(this).hasClass('disabled')) {
-            var paged = $(document).find('#goToPage');
-            var formData = getFormData($('#formGroup'));
-            if (paged.length) {
-                var paged = 'paged=' + paged.val();
-            } else {
-                paged = '';
-            }
-            formData = '&' + formData;
-            reloadData($(this), $(this).data('action') + formData + paged);
-        }
-    });
+//    $(document).on('click', 'ul.pagination a', function (e) {
+//        var li = $(this).closest('li');
+//        if (!li.hasClass('disabled') &&
+//                !li.hasClass('active')) {
+//            //#dataSearch Si existe estoy en la pagina de busqueda.
+//            if ($(this).closest('#dataSearch').length) {
+//                reloadDataSearch($(this).data('paged'));
+//            } else {
+//                reloadData($(this), $(this).data('paged'));
+//            }
+//        }
+//        e.preventDefault();
+//    });
+//
+//    $(document).on('click', 'button.btnAction', function () {
+//        if (!$(this).hasClass('disabled')) {
+//            var paged = $(document).find('#goToPage');
+//            var formData = getFormData($('#formGroup'));
+//            if (paged.length) {
+//                var paged = 'paged=' + paged.val();
+//            } else {
+//                paged = '';
+//            }
+//            formData = '&' + formData;
+//            reloadData($(this), $(this).data('action') + formData + paged);
+//        }
+//    });
 
     $('.sn-menu').on('hide.bs.collapse', function (e) {
         changeGlyphicon(e.target, 'down', 'up');
@@ -44,26 +44,26 @@ function eventsOn() {
     });
 
     //#goToPage Es el identificador del campo input de paginación.
-    $(document).on('keyup', '#goToPage', function (e) {
-        if (e.keyCode == 13) {
-            var dataSearch = $(this).closest('#dataSearch');
-            //Compruenba si estoy en la pagina de busqueda.
-            if (dataSearch.length) {
-                var data = 'paged=' + $(this).val() + '&search=';
-                data = data + dataSearch.find('input[name="search"]').val();
-                reloadDataSearch(data);
-            } else {
-                reloadData($(this), 'paged=' + $(this).val());
-            }
-        }
-    });
-
-    //#search_admin Es el identificador del campo input de busqueda.
-    $('#search_admin').on('keyup', 'input', function (e) {
-        if (e.keyCode == 13) {
-            reloadDataSearch('search=' + $(this).val());
-        }
-    });
+//    $(document).on('keyup', '#goToPage', function (e) {
+//        if (e.keyCode == 13) {
+//            var dataSearch = $(this).closest('#dataSearch');
+//            //Compruenba si estoy en la pagina de busqueda.
+//            if (dataSearch.length) {
+//                var data = 'paged=' + $(this).val() + '&search=';
+//                data = data + dataSearch.find('input[name="search"]').val();
+//                reloadDataSearch(data);
+//            } else {
+//                reloadData($(this), 'paged=' + $(this).val());
+//            }
+//        }
+//    });
+//
+//    //#search_admin Es el identificador del campo input de busqueda.
+//    $('#search_admin').on('keyup', 'input', function (e) {
+//        if (e.keyCode == 13) {
+//            reloadDataSearch('search=' + $(this).val());
+//        }
+//    });
 }
 
 /**
