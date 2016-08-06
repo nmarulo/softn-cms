@@ -12,4 +12,5 @@ require \ABSPATH . 'vendor/autoload.php';
 if(\APP_DEBUG === \TRUE){
     \ini_set('display_errors', \TRUE);
 }
+\session_start();
 \SoftnCMS\controllers\Router::load();
