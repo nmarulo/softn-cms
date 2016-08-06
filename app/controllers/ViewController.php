@@ -20,52 +20,91 @@ class ViewController {
      * @var Request 
      */
     private $request;
+
     /**
      *
      * @var array Datos enviados al modulo.
      */
     private $data;
+
     /**
      *
      * @var string Ruta del modulo vista.
      */
-    private $view;
+    private $nameView;
+    private $nameMethodViews;
 
     public function __construct(Request $request, $data) {
         $this->request = $request;
         $this->data = $data;
-        $this->selectView();
+        $this->methodViews();
+        $this->getNameView();
     }
 
     public function render() {
-        $view = \VIEWS . $this->view . '.php';
+        $view = \VIEWS . $this->nameView . '.php';
 
         if (!\is_readable($view)) {
-            $this->view = 'index';
-            $view = \VIEWS . $this->view . '.php';
+            $this->nameView = 'index';
+            $view = \VIEWS . $this->nameView . '.php';
         }
-        
+
         if (\is_array($this->data)) {
             \extract($this->data, EXTR_PREFIX_INVALID, 'softn');
         }
-        require \VIEWS . 'header.php';
-        require \VIEWS . 'topbar.php';
-        require \VIEWS . 'leftbar.php';
-        require $view;
-        require \VIEWS . 'footer.php';
+        $viewsRequire = \call_user_func([$this, $this->nameMethodViews], $view);
+
+        foreach ($viewsRequire as $value) {
+            require $value;
+        }
     }
 
-    public function selectView() {
+    private function methodViews() {
+        $this->nameMethodViews = 'theme';
+
+        if ($this->request->isAdminPanel()) {
+            $this->nameMethodViews = 'admin';
+        } elseif ($this->request->isLoginForm() || $this->request->isRegisterForm()) {
+            $this->nameMethodViews = 'login';
+        }
+    }
+
+    private function getNameView() {
         switch ($this->request->getMethod()) {
             case 'delete':
             case 'index':
-                $this->view = $this->request->getController();
+                $this->nameView = $this->request->getController();
                 break;
             case 'insert':
             case 'update':
-                $this->view = $this->request->getController() . 'insert';
+            case 'register':
+                $this->nameView = $this->request->getController() . 'insert';
                 break;
         }
+    }
+
+    private function login($view) {
+        return [
+            \VIEWS . 'headerlogin.php',
+            $view,
+            \VIEWS . 'footerlogin.php',
+        ];
+    }
+
+    private function theme($view) {
+        return [
+            \THEMES . 'default' . \DIRECTORY_SEPARATOR . 'index.php',
+        ];
+    }
+
+    private function admin($view) {
+        return [
+            \VIEWS . 'header.php',
+            \VIEWS . 'topbar.php',
+            \VIEWS . 'leftbar.php',
+            $view,
+            \VIEWS . 'footer.php',
+        ];
     }
 
 }

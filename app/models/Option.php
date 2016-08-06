@@ -8,6 +8,8 @@
 
 namespace SoftnCMS\models;
 
+use SoftnCMS\controllers\DBController;
+
 /**
  * Description of Option
  *
@@ -39,6 +41,26 @@ class Option {
      */
     public function __construct($data) {
         $this->option = $data;
+    }
+    
+    public static function selectByName($value){
+        $parameter = ':' . self::OPTION_NAME;
+        $where = self::OPTION_NAME . ' = ' . $parameter;
+        $dataType = \PDO::PARAM_STR;
+        $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
+        return self::select($where, $prepare);
+    }
+
+    private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
+        $db = DBController::getConnection();
+        $table = self::$TABLE;
+        $fetch = 'fetchAll';
+        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
+        
+        if(empty($select)){
+            return \FALSE;
+        }
+        return new Option($select[0]);
     }
     
     /**

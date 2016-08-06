@@ -8,6 +8,7 @@
 namespace SoftnCMS\models;
 
 use SoftnCMS\models\User;
+use SoftnCMS\controllers\DBController;
 
 /**
  * Clase que gestiona la lista con todos los usuarios de la base de datos.
@@ -27,6 +28,39 @@ class Users {
      */
     public function __construct() {
         $this->users = [];
+    }
+
+    public static function selectAll() {
+        return self::select();
+    }
+
+    public static function selectByName($value) {
+        return self::selectBy($value, User::USER_NAME);
+    }
+
+    public static function selectByRegistred($value) {
+        return self::selectBy($value, User::USER_REGISTRED);
+    }
+
+    public static function selectByRol($value) {
+        return self::selectBy($value, User::USER_ROL, \PDO::PARAM_INT);
+    }
+    
+    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR){
+        $parameter = ":$column";
+        $where = "$column = $parameter";
+        $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
+        return self::select($where, $prepare);
+    }
+
+    private static function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
+        $db = DBController::getConnection();
+        $table = User::getTableName();
+        $fetch = 'fetchAll';
+        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
+        $users = new Users();
+        $users->addUsers($select);
+        return $users;
     }
 
     /**
@@ -63,28 +97,14 @@ class Users {
             $this->addUser(new User($value));
         }
     }
-    
-    public function count(){
-        $select = $this->select('', [], 'COUNT(*) AS count');
-        return $select[0]['count'];
-    }
-    
-    public function selectAll(){
-        if(!empty($this->users)){
-            $this->users = [];
-        }
-        $select = $this->select();
-        $this->addUsers($select);
-    }
 
-    /**
-     * Metodo que realiza una consulta a la base de datos y obtiene todos los usuarios.
-     */
-    private function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
-        $db = \SoftnCMS\controllers\DBController::getConnection();
+    public function count() {
+        $db = DBController::getConnection();
         $table = User::getTableName();
         $fetch = 'fetchAll';
-        return $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
+        $columns = 'COUNT(*) AS count';
+        $select = $db->select($table, $fetch, '', [], $columns);
+        return $select[0]['count'];
     }
 
 }

@@ -8,6 +8,9 @@ namespace SoftnCMS\controllers;
 
 use SoftnCMS\controllers\Request;
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\Login;
+use SoftnCMS\models\User;
+use SoftnCMS\models\Option;
 
 /**
  * Clase que ejecuta la acción enviada por url.
@@ -21,6 +24,7 @@ class Router {
 
     /** @var object Instancia del controlador. */
     private $objectCtr;
+    private $data;
 
     /**
      * Contructor.
@@ -37,23 +41,28 @@ class Router {
     public static function load() {
         $router = new Router();
         $router->instanceController();
-        $data = $router->callMethod();
-        $router->view($data);
+        $router->callMethod();
+        $router->view();
     }
 
     /**
      * Metodo que crea la instacion del controlador.
      */
     public function instanceController() {
-        $requesCtr = $this->request->getController() . 'Controller';
-        $controller = \CONTROLLERS . $requesCtr . '.php';
-
-        if (!\is_readable($controller)) {
-            $requesCtr = 'IndexController';
+        if ($this->request->isAdminPanel() && !Login::isLogin()) {
+            header('Location: ' . \LOCALHOST . 'login');
+            exit();
         }
 
-        $object = \NAMESPACE_CONTROLLERS . $requesCtr;
-        $this->objectCtr = new $object;
+        if ($this->request->isLoginForm() && Login::isLogin()) {
+            header('Location: ' . \LOCALHOST . 'admin');
+            exit();
+        }
+
+        $requesCtr = $this->request->getController() . 'Controller';
+        $this->checkReadableController($requesCtr);
+        $namespaceController = $this->getNamespaceController() . $requesCtr;
+        $this->objectCtr = new $namespaceController;
     }
 
     /**
@@ -66,16 +75,63 @@ class Router {
         if (!\method_exists($this->objectCtr, $method)) {
             $method = 'index';
         }
-        return call_user_func_array([$this->objectCtr, $method], $this->request->getArgs());
+        $this->data = call_user_func_array([$this->objectCtr, $method], $this->request->getArgs());
     }
 
     /**
      * Metodo que muestra los modulos vista.
-     * @param type $data
      */
-    public function view($data) {
-        $view = new ViewController($this->request, $data);
+    public function view() {
+        $this->addMoreData();
+        $view = new ViewController($this->request, $this->data);
         $view->render();
+    }
+
+    private function addMoreData() {
+        if ($this->request->isAdminPanel()) {
+            $menu = require \CONTROLLERS . 'config' . \DIRECTORY_SEPARATOR . 'LeftbarController.php';
+            $this->data['data']['menu'] = $menu;
+        }
+        
+        if (Login::isLogin()) {
+            $this->data['data']['userSession'] = User::selectByID($_SESSION['usernameID']);
+        }
+        $this->data['data']['siteTitle'] = Option::selectByName('optionTitle')->getOptionValue();
+        $this->data['data']['siteUrl'] = Option::selectByName('optionSiteUrl')->getOptionValue();
+    }
+
+    private function checkReadableController($requesCtr) {
+        $controller = $this->getPathController() . "$requesCtr.php";
+
+        if (!\is_readable($controller) && $this->request->isAdminPanel()) {
+            header('Location: ' . \LOCALHOST . 'admin');
+            exit();
+        } elseif (!\is_readable($controller)) {
+            header('Location: ' . \LOCALHOST);
+            exit();
+        }
+    }
+
+    private function getPathController() {
+        $controller = \CONTROLLERS;
+
+        if ($this->request->isAdminPanel()) {
+            $controller = \CONTROLLERS_ADMIN;
+        } elseif (!$this->request->isLoginForm() && !$this->request->isRegisterForm() && !$this->request->isLogout()) {
+            $controller = \CONTROLLERS_THEMES;
+        }
+        return $controller;
+    }
+
+    private function getNamespaceController() {
+        $namespace = \NAMESPACE_CONTROLLERS;
+
+        if ($this->request->isAdminPanel()) {
+            $namespace = \NAMESPACE_CONTROLLERS_ADMIN;
+        } elseif (!$this->request->isLoginForm() && !$this->request->isRegisterForm() && !$this->request->isLogout()) {
+            $namespace = \NAMESPACE_CONTROLLERS_THEMES;
+        }
+        return $namespace;
     }
 
 }

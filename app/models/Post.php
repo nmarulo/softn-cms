@@ -7,7 +7,7 @@
 
 namespace SoftnCMS\models;
 
-use SoftnCMS\models\Users;
+use SoftnCMS\models\User;
 
 /**
  * Clase que gestiona la información de cada uno de los posts.
@@ -161,9 +161,7 @@ class Post {
      */
     public function getUser() {
         $userID = $this->getUserID();
-        $users = new Users();
-        $users->selectAll();
-        return $users->getUser($userID);
+        return User::selectByID($userID);
     }
     
     public function setPostTitle($title){

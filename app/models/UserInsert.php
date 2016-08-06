@@ -9,6 +9,7 @@
 namespace SoftnCMS\models;
 
 use SoftnCMS\models\User;
+use SoftnCMS\controllers\DBController;
 
 /**
  * Description of UserInsert
@@ -16,7 +17,7 @@ use SoftnCMS\models\User;
  * @author Nicolás Marulanda P.
  */
 class UserInsert {
-    
+
     private $userLogin;
     private $userName;
     private $userEmail;
@@ -38,10 +39,10 @@ class UserInsert {
     }
 
     public function insert() {
-        $db = \SoftnCMS\controllers\DBController::getConnection();
+        $db = DBController::getConnection();
         $table = User::getTableName();
         $this->prepare();
-        
+
         if (!$db->insert($table, self::$COLUMNS, self::$VALUES, $this->prepareStatement)) {
             return \FALSE;
         }
@@ -60,13 +61,9 @@ class UserInsert {
     }
 
     private function addPrepareStatement($parameter, $value, $dataType) {
-        $this->prepareStatement[] = [
-            'parameter' => $parameter,
-            'value' => $value,
-            'dataType' => $dataType,
-        ];
+        $this->prepareStatement[] = DBController::prepareStatement($parameter, $value, $dataType);
     }
-    
+
     /**
      * Metodo que realiza el HASH al valor pasado por parametro.
      * @param string $pass
@@ -75,4 +72,5 @@ class UserInsert {
     public function encrypt($pass) {
         return hash('sha256', $pass . \LOGGED_KEY);
     }
+
 }

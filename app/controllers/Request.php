@@ -23,13 +23,20 @@ class Request {
     private $args;
 
     /** @var bool Comprueba si esta accediendo al panel de administración. */
-    private $isAdmin;
+    private $adminPanel;
+    
+    private $loginForm;
+    private $registerForm;
+    private $logout;
 
     /**
      * Constructor.
      */
     public function __construct() {
-        $this->isAdmin = false;
+        $this->adminPanel = false;
+        $this->loginForm = false;
+        $this->registerForm = false;
+        $this->logout = false;
         $this->method = 'index';
         $this->controller = 'index';
         $this->args = [0];
@@ -40,8 +47,19 @@ class Request {
      * Metodo que indica si esta en el panel de administración.
      * @return bool
      */
-    public function isAdmin() {
-        return $this->isAdmin;
+    public function isAdminPanel() {
+        return $this->adminPanel;
+    }
+    
+    public function isLoginForm(){
+        return $this->loginForm;
+    }
+    
+    public function isRegisterForm(){
+        return $this->registerForm;
+    }
+    public function isLogout(){
+        return $this->logout;
     }
 
     /**
@@ -83,7 +101,7 @@ class Request {
              * [>= 2] = argumentos
              */
             $url = \explode('/', $url);
-            $url = $this->checkAdmin($url);
+            $url = $this->checkUrl($url);
             $this->selectController(\array_shift($url));
             $this->selectMethod(\array_shift($url));
             $this->selectArgs($url);
@@ -95,10 +113,14 @@ class Request {
      * @param array $url
      * @return array
      */
-    private function checkAdmin($url) {
+    private function checkUrl($url) {
         $aux = $url;
-        $this->isAdmin = \ADMIN == \array_shift($aux);
-        return $this->isAdmin ? $aux : $url;
+        $value = \array_shift($aux);
+        $this->adminPanel = \ADMIN == $value;
+        $this->loginForm = 'login' == $value;
+        $this->registerForm = 'register' == $value;
+        $this->logout = 'logout' == $value;
+        return $this->adminPanel ? $aux : $url;
     }
 
     /**

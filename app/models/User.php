@@ -7,6 +7,7 @@
 
 namespace SoftnCMS\models;
 
+use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\Post;
 
 /**
@@ -64,19 +65,50 @@ class User {
     public static function getTableName() {
         return self::$TABLE;
     }
-    
-    public static function defaultInstance(){
+
+    public static function defaultInstance() {
         $data = [
-          User::ID => 0,
-          User::USER_EMAIL => '',
-          User::USER_LOGIN => '',
-          User::USER_NAME => '',
-          User::USER_PASS => '',
-          User::USER_REGISTRED => '0000-00-00 00:00:00',
-          User::USER_ROL => 0,
-          User::USER_URL => '',
+            User::ID => 0,
+            User::USER_EMAIL => '',
+            User::USER_LOGIN => '',
+            User::USER_NAME => '',
+            User::USER_PASS => '',
+            User::USER_REGISTRED => '0000-00-00 00:00:00',
+            User::USER_ROL => 0,
+            User::USER_URL => '',
         ];
         return new User($data);
+    }
+
+    public static function selectByID($value) {
+        return self::selectBy($value, User::ID, \PDO::PARAM_INT);
+    }
+    
+    public static function selectByLogin($value) {
+        return self::selectBy($value, User::USER_LOGIN);
+    }
+
+    public static function selectByEmail($value) {
+        return self::selectBy($value, User::USER_EMAIL);
+    }
+    
+    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR){
+        $parameter = ":$column";
+        $where = "$column = $parameter";
+        $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
+        return self::select($where, $prepare);
+    }
+
+    private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
+        $db = DBController::getConnection();
+        $table = self::$TABLE;
+        $fetch = 'fetchAll';
+        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
+
+        if (empty($select)) {
+            return \FALSE;
+        }
+        return new User($select[0]);
     }
 
     /**
@@ -144,7 +176,7 @@ class User {
     }
 
     public function getCountPosts() {
-        $db = \SoftnCMS\controllers\DBController::getConnection();
+        $db = DBController::getConnection();
         $table = Post::getTableName();
         $fetch = 'fetchAll';
         $userIDPost = Post::USER_ID;

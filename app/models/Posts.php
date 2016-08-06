@@ -8,6 +8,7 @@
 namespace SoftnCMS\models;
 
 use SoftnCMS\models\Post;
+use SoftnCMS\controllers\DBController;
 
 /**
  * Clase que gestiona la lista con todos los posts de la base de datos.
@@ -99,7 +100,7 @@ class Posts {
      * Metodo que realiza una consulta a la base de datos y obtiene todos los post.
      */
     private function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
-        $db = \SoftnCMS\controllers\DBController::getConnection();
+        $db = DBController::getConnection();
         $table = Post::getTableName();
         $fetch = 'fetchAll';
         return $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
