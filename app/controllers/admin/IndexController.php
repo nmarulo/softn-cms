@@ -4,7 +4,7 @@
  * 
  */
 
-namespace SoftnCMS\controllers;
+namespace SoftnCMS\controllers\admin;
 
 /**
  * Description of SoftN

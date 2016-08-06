@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\controllers;
+namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\models\User;
 use SoftnCMS\models\Users;
@@ -38,21 +38,18 @@ class UserController {
     }
 
     private function dataIndex() {
-        $users = new Users();
-        $users->selectAll();
+        $users = Users::selectAll();
         $output = $users->getUsers();
         return ['users' => $output];
     }
 
     private function dataUpdate($id) {
-        if (empty($id)) {
+        $user = User::selectByID($id);
+        
+        if (empty($user)) {
             header('Location: ' . \LOCALHOST . 'admin/user');
             exit();
         }
-
-        $users = new Users();
-        $users->selectAll();
-        $user = $users->getUser($id);
 
         if (filter_input(\INPUT_POST, 'update')) {
             $dataInput = $this->getDataInput();

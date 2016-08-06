@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\controllers;
+namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\models\Post;
 use SoftnCMS\models\Posts;
@@ -57,7 +57,7 @@ class PostController {
     private function dataInsert() {
         if (filter_input(\INPUT_POST, 'publish')) {
             $dataInput = $this->getDataInput();
-            $insert = new PostInsert($dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus'], 1);
+            $insert = new PostInsert($dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus'], $_SESSION['usernameID']);
             header('Location: ' . \LOCALHOST . 'admin/post/update/' . $insert->insert());
             exit();
         }

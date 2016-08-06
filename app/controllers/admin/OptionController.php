@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\controllers;
+namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\models\Options;
 use SoftnCMS\models\OptionUpdate;
