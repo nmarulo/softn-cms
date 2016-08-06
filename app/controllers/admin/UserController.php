@@ -8,11 +8,11 @@
 
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\models\User;
-use SoftnCMS\models\Users;
-use SoftnCMS\models\UserInsert;
-use SoftnCMS\models\UserDelete;
-use SoftnCMS\models\UserUpdate;
+use SoftnCMS\models\admin\User;
+use SoftnCMS\models\admin\Users;
+use SoftnCMS\models\admin\UserInsert;
+use SoftnCMS\models\admin\UserDelete;
+use SoftnCMS\models\admin\UserUpdate;
 
 /**
  * Description of UserController

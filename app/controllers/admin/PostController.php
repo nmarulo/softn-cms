@@ -8,11 +8,11 @@
 
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\models\Post;
-use SoftnCMS\models\Posts;
-use SoftnCMS\models\PostUpdate;
-use SoftnCMS\models\PostInsert;
-use SoftnCMS\models\PostDelete;
+use SoftnCMS\models\admin\Post;
+use SoftnCMS\models\admin\Posts;
+use SoftnCMS\models\admin\PostUpdate;
+use SoftnCMS\models\admin\PostInsert;
+use SoftnCMS\models\admin\PostDelete;
 
 /**
  * Description of PostController

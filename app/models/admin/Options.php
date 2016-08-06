@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\models;
+namespace SoftnCMS\models\admin;
 
-use SoftnCMS\models\Option;
+use SoftnCMS\models\admin\Option;
 
 /**
  * Description of Options

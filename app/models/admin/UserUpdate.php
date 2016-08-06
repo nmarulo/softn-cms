@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\models;
+namespace SoftnCMS\models\admin;
 
-use SoftnCMS\models\User;
+use SoftnCMS\models\admin\User;
 
 /**
  * Description of UserUpdate

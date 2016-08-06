@@ -5,9 +5,9 @@
  * Gestiona la lista de Posts.
  */
 
-namespace SoftnCMS\models;
+namespace SoftnCMS\models\admin;
 
-use SoftnCMS\models\Post;
+use SoftnCMS\models\admin\Post;
 use SoftnCMS\controllers\DBController;
 
 /**

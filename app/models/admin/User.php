@@ -5,10 +5,10 @@
  * Gestiona la información del usuario.
  */
 
-namespace SoftnCMS\models;
+namespace SoftnCMS\models\admin;
 
 use SoftnCMS\controllers\DBController;
-use SoftnCMS\models\Post;
+use SoftnCMS\models\admin\Post;
 
 /**
  * Clase que gestiona la información de cada uno de los usuarios.

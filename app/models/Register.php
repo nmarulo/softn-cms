@@ -8,8 +8,8 @@
 
 namespace SoftnCMS\models;
 
-use SoftnCMS\models\User;
-use SoftnCMS\models\UserInsert;
+use SoftnCMS\models\admin\User;
+use SoftnCMS\models\admin\UserInsert;
 
 /**
  * Description of Register

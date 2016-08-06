@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\models;
+namespace SoftnCMS\models\admin;
 
 /**
  * Description of OptionUpdate

@@ -5,9 +5,9 @@
  * Gestiona la información del post.
  */
 
-namespace SoftnCMS\models;
+namespace SoftnCMS\models\admin;
 
-use SoftnCMS\models\User;
+use SoftnCMS\models\admin\User;
 
 /**
  * Clase que gestiona la información de cada uno de los posts.

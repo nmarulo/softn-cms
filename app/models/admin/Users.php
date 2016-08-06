@@ -5,9 +5,9 @@
  * Gestiona la lista de Usuarios.
  */
 
-namespace SoftnCMS\models;
+namespace SoftnCMS\models\admin;
 
-use SoftnCMS\models\User;
+use SoftnCMS\models\admin\User;
 use SoftnCMS\controllers\DBController;
 
 /**

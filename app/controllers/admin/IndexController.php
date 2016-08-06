@@ -6,6 +6,9 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\models\admin\Posts;
+use SoftnCMS\models\admin\Users;
+
 /**
  * Description of SoftN
  *
@@ -32,8 +35,8 @@ class IndexController {
     }
 
     private function dataIndex() {
-        $posts = new \SoftnCMS\models\Posts();
-        $users = new \SoftnCMS\models\Users();
+        $posts = new Posts();
+        $users = new Users();
 
         return [
             'github' => $this->lastUpdateGitHub(),
@@ -51,9 +54,9 @@ class IndexController {
 
     private function lastUpdateGitHub() {
         $lengTitle = 20;
-        $github = \simplexml_load_file('https://github.com/nmarulo/softn-cms/commits/master.atom');
+        $github = \simplexml_load_file('https://github.com/nmarulo/softn-cms/commits/develop.atom');
         $github = \get_object_vars($github);
-        $leng = count($github['entry']);
+        $leng = \count($github['entry']);
         $forEnd = $leng > 5 ? 5 : $leng;
         $dataGitHub = [
             'lastUpdate' => $github['updated'],
@@ -66,19 +69,14 @@ class IndexController {
          */
         for ($i = 0; $i < $forEnd; ++$i) {
             $element = \get_object_vars($github['entry'][$i]);
-            $title = $element['title'];
             $element['link'] = \get_object_vars($element['link']);
             $element['author'] = \get_object_vars($element['author']);
-
-            if (isset($title{$lengTitle})) {
-                $title = \substr($title, 0, $lengTitle) . ' [...]';
-            }
 
             $dataGitHub['entry'][] = [
                 'authorName' => $element['author']['name'],
                 'authorUri' => $element['author']['uri'],
                 'linkHref' => $element['link']['@attributes']['href'],
-                'title' => $title,
+                'title' => $element['title'],
             ];
         }
         return $dataGitHub;

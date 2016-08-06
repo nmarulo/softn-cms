@@ -9,8 +9,8 @@ namespace SoftnCMS\controllers;
 use SoftnCMS\controllers\Request;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\Login;
-use SoftnCMS\models\User;
-use SoftnCMS\models\Option;
+use SoftnCMS\models\admin\User;
+use SoftnCMS\models\admin\Option;
 
 /**
  * Clase que ejecuta la acción enviada por url.

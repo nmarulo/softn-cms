@@ -8,7 +8,7 @@
 
 namespace SoftnCMS\models;
 
-use SoftnCMS\models\User;
+use SoftnCMS\models\admin\User;
 
 /**
  * Description of Login

@@ -8,8 +8,8 @@
 
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\models\Options;
-use SoftnCMS\models\OptionUpdate;
+use SoftnCMS\models\admin\Options;
+use SoftnCMS\models\admin\OptionUpdate;
 
 /**
  * Description of OptionController
