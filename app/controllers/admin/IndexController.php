@@ -71,7 +71,6 @@ class IndexController {
             $element = \get_object_vars($github['entry'][$i]);
             $element['link'] = \get_object_vars($element['link']);
             $element['author'] = \get_object_vars($element['author']);
-
             $dataGitHub['entry'][] = [
                 'authorName' => $element['author']['name'],
                 'authorUri' => $element['author']['uri'],

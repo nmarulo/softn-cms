@@ -24,7 +24,6 @@ class Request {
 
     /** @var bool Comprueba si esta accediendo al panel de administración. */
     private $adminPanel;
-    
     private $loginForm;
     private $registerForm;
     private $logout;
@@ -50,15 +49,16 @@ class Request {
     public function isAdminPanel() {
         return $this->adminPanel;
     }
-    
-    public function isLoginForm(){
+
+    public function isLoginForm() {
         return $this->loginForm;
     }
-    
-    public function isRegisterForm(){
+
+    public function isRegisterForm() {
         return $this->registerForm;
     }
-    public function isLogout(){
+
+    public function isLogout() {
         return $this->logout;
     }
 

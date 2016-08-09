@@ -13,7 +13,7 @@ use SoftnCMS\models\Register;
 /**
  * Description of RegisterController
  *
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
 class RegisterController {
 
@@ -24,18 +24,17 @@ class RegisterController {
     private function dataIndex() {
         if (\filter_input(\INPUT_POST, 'register')) {
             $dataInput = $this->getDataInput();
-            
-            if($this->checkPasswords($dataInput)){
+
+            if ($this->checkPasswords($dataInput)) {
                 $register = new Register($dataInput['userLogin'], $dataInput['userEmail'], $dataInput['userPass']);
                 $register->register();
             }
         }
-
         return [];
     }
-    
-    private function checkPasswords($dataInput){
-        if($dataInput['userPass'] && $dataInput['userPassR'] && $dataInput['userPass'] == $dataInput['userPassR']){
+
+    private function checkPasswords($dataInput) {
+        if ($dataInput['userPass'] && $dataInput['userPassR'] && $dataInput['userPass'] == $dataInput['userPassR']) {
             return \TRUE;
         }
         return \FALSE;

@@ -32,6 +32,11 @@ class ViewController {
      * @var string Ruta del modulo vista.
      */
     private $nameView;
+
+    /**
+     *
+     * @var string 
+     */
     private $nameMethodViews;
 
     public function __construct(Request $request, $data) {
@@ -93,7 +98,9 @@ class ViewController {
 
     private function theme($view) {
         return [
+            \THEMES . 'default' . \DIRECTORY_SEPARATOR . 'header.php',
             \THEMES . 'default' . \DIRECTORY_SEPARATOR . 'index.php',
+            \THEMES . 'default' . \DIRECTORY_SEPARATOR . 'footer.php',
         ];
     }
 

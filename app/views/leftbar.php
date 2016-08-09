@@ -2,6 +2,7 @@
     <ul class="sn-menu">
         <?php
         $str = '';
+        
         foreach ($data['menu'] as $menu) {
 
             if (is_array($menu['sub'])) {

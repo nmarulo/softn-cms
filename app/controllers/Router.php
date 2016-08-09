@@ -24,6 +24,8 @@ class Router {
 
     /** @var object Instancia del controlador. */
     private $objectCtr;
+
+    /** @var array Lista de datos enviados al modulo vista. */
     private $data;
 
     /**
@@ -32,6 +34,8 @@ class Router {
      */
     public function __construct() {
         $this->request = new Request();
+        $this->data = [];
+        $this->initData();
     }
 
     /**
@@ -50,12 +54,12 @@ class Router {
      */
     public function instanceController() {
         if ($this->request->isAdminPanel() && !Login::isLogin()) {
-            header('Location: ' . \LOCALHOST . 'login');
+            header('Location: ' . $this->data['data']['siteUrl'] . 'login');
             exit();
         }
 
         if ($this->request->isLoginForm() && Login::isLogin()) {
-            header('Location: ' . \LOCALHOST . 'admin');
+            header('Location: ' . $this->data['data']['siteUrl'] . 'admin');
             exit();
         }
 
@@ -75,24 +79,24 @@ class Router {
         if (!\method_exists($this->objectCtr, $method)) {
             $method = 'index';
         }
-        $this->data = call_user_func_array([$this->objectCtr, $method], $this->request->getArgs());
+        $newData = \call_user_func_array([$this->objectCtr, $method], $this->request->getArgs());
+        $this->data = \array_merge_recursive($this->data, $newData);
     }
 
     /**
      * Metodo que muestra los modulos vista.
      */
     public function view() {
-        $this->addMoreData();
         $view = new ViewController($this->request, $this->data);
         $view->render();
     }
 
-    private function addMoreData() {
+    private function initData() {
         if ($this->request->isAdminPanel()) {
-            $menu = require \CONTROLLERS . 'config' . \DIRECTORY_SEPARATOR . 'LeftbarController.php';
+            $menu = require \CONTROLLERS_CONFIG . 'LeftbarController.php';
             $this->data['data']['menu'] = $menu;
         }
-        
+
         if (Login::isLogin()) {
             $this->data['data']['userSession'] = User::selectByID($_SESSION['usernameID']);
         }
@@ -104,10 +108,10 @@ class Router {
         $controller = $this->getPathController() . "$requesCtr.php";
 
         if (!\is_readable($controller) && $this->request->isAdminPanel()) {
-            header('Location: ' . \LOCALHOST . 'admin');
+            header('Location: ' . $this->data['data']['siteUrl'] . 'admin');
             exit();
         } elseif (!\is_readable($controller)) {
-            header('Location: ' . \LOCALHOST);
+            header('Location: ' . $this->data['data']['siteUrl']);
             exit();
         }
     }

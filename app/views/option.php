@@ -1,4 +1,4 @@
-<div id="options" class="sn-content col-sm-9 col-md-10"><!-- Contenido -->
+<div id="option" class="sn-content col-sm-9 col-md-10"><!-- Contenido -->
     <div id="snwrap"><!-- #snwarp -->
         <div id="header" class="clearfix">
             <br/>
@@ -39,19 +39,19 @@
                 <div class="form-group">
                     <label for="optionTheme" class="col-sm-2 control-label">Seleccionar plantilla</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="optionTheme" value="<?php echo $data['optionTheme']->getOptionValue();?>" disabled>
+                        <input type="text" class="form-control" name="optionTheme" value="<?php echo $data['optionTheme']->getOptionValue(); ?>" disabled>
 <!--                        <select class="form-control" name="optionTheme">
-                            <?php // echo $data['optionTheme']; ?>
+                        <?php // echo $data['optionTheme']; ?>
                         </select>-->
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="optionMenu" class="col-sm-2 control-label">Seleccionar menu</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="optionMenu" value="<?php echo $data['optionMenu']->getOptionValue();?>" disabled>
+                        <input type="text" class="form-control" name="optionMenu" value="<?php echo $data['optionMenu']->getOptionValue(); ?>" disabled>
 <!--                        <select class="form-control" name="optionMenu">
                             <option value="0">--ninguno--</option>
-                            <?php // echo $data['optionMenu']; ?>
+                        <?php // echo $data['optionMenu']; ?>
                         </select>-->
                     </div>
                 </div>

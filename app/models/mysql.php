@@ -61,7 +61,7 @@ class MySql {
         $this->query = $sql;
 
         if ($this->execute($sql, $prepare)) {
-            
+
             switch ($fetch) {
                 case 'fetchAll':
                     $output = $this->prepareObject->fetchAll();
@@ -141,12 +141,12 @@ class MySql {
         $this->query = $sql;
         return $this->execute($sql, $prepare);
     }
-    
+
     /**
      * Metodo que obtiene el ID de los nuevos datos insertados.
      * @return int
      */
-    public function lastInsertId(){
+    public function lastInsertId() {
         return $this->connection->lastInsertId();
     }
 
@@ -205,7 +205,7 @@ class MySql {
             if (!$this->prepareObject->bindValue($parameter, $parameterValue, $value['dataType'])) {
                 $error = \TRUE;
             }
-            
+
             if (!\is_numeric($parameterValue)) {
                 $parameterValue = "'$parameterValue'";
             }

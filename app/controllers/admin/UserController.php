@@ -45,7 +45,7 @@ class UserController {
 
     private function dataUpdate($id) {
         $user = User::selectByID($id);
-        
+
         if (empty($user)) {
             header('Location: ' . \LOCALHOST . 'admin/user');
             exit();

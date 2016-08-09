@@ -17,38 +17,38 @@ use SoftnCMS\models\admin\UserInsert;
  * @author MaruloPC-Desk
  */
 class Register {
-    
+
     private $username;
     private $userEmail;
     private $userpass;
-    
+
     public function __construct($username, $userEmail, $userpass) {
         $this->username = $username;
         $this->userEmail = $userEmail;
         $this->userpass = $userpass;
     }
-    
-    public function register(){
-        if(!$this->isExistsUsername() && !$this->isExistsUserEmail()){
+
+    public function register() {
+        if (!$this->isExistsUsername() && !$this->isExistsUserEmail()) {
             $user = User::defaultInstance();
             $register = new UserInsert($this->username, $this->username, $this->userEmail, $this->userpass, $user->getUserRol(), $user->getUserUrl());
-            
-            if($register->insert() !== \FALSE){
+
+            if ($register->insert() !== \FALSE) {
                 \header('Location: ' . \LOCALHOST . 'login');
                 exit();
             }
         }
         return \FALSE;
     }
-    
-    private function isExistsUsername(){
+
+    private function isExistsUsername() {
         $user = User::selectByLogin($this->username);
-        return $user !== \FALSE;        
+        return $user !== \FALSE;
     }
-    
-    private function isExistsUserEmail(){
+
+    private function isExistsUserEmail() {
         $user = User::selectByEmail($this->userEmail);
         return $user !== \FALSE;
     }
-    
+
 }

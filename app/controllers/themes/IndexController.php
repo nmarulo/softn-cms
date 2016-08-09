@@ -5,20 +5,27 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 namespace SoftnCMS\controllers\themes;
+
+use SoftnCMS\models\admin\Posts;
+
 /**
  * Description of IndexController
  *
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
 class IndexController {
-    
-    
-    public function index(){
+
+    public function index() {
         return ['data' => $this->dataIndex()];
     }
-    
-    private function dataIndex(){
-        return ['index' => 'theme index'];
+
+    private function dataIndex() {
+        $posts = Posts::selectAll();
+        return [
+            'posts' => $posts->getPosts()
+        ];
     }
+
 }

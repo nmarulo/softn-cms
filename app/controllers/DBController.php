@@ -7,6 +7,7 @@
  */
 
 namespace SoftnCMS\controllers;
+
 use SoftnCMS\models\MySql;
 
 /**
@@ -26,7 +27,7 @@ class DBController {
         }
         return $connection;
     }
-    
+
     public static function prepareStatement($parameter, $value, $dataType) {
         return [
             'parameter' => $parameter,
