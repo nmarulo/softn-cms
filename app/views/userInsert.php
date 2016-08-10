@@ -1,4 +1,4 @@
-<div id="user-new" data-collapse="#users" class="sn-content col-sm-9 col-md-10"><!-- Contenido -->
+<div id="user" data-collapse="#user" class="sn-content col-sm-9 col-md-10"><!-- Contenido -->
     <div id="snwrap"><!-- #snwarp -->
         <div id="header" class="clearfix">
             <br/>
@@ -36,12 +36,12 @@
                         <input type="password" class="form-control" name="userPassR">
                     </div>
                 </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Tipo de usuario</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" name="userRol" value="<?php echo $data['user']->getUserRol(); ?>" disabled>
-                            <!--<select class="form-control" name="user_rol">-->
-                                <?php
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Tipo de usuario</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" name="userRol" value="<?php echo $data['user']->getUserRol(); ?>" disabled>
+                        <!--<select class="form-control" name="user_rol">-->
+                        <?php
 //                                foreach ($dataTable['option']['rol'] as $rol) {
 //                                    if ($rol['rol'] == $user['user_rol']) {
 //                                        echo "<option value='$rol[rol]' selected>$rol[title]</option>";
@@ -49,10 +49,10 @@
 //                                        echo "<option value='$rol[rol]'>$rol[title]</option>";
 //                                    }
 //                                }
-                                ?>
-                            <!--</select>-->
-                        </div>
+                        ?>
+                        <!--</select>-->
                     </div>
+                </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Sitio web</label>
                     <div class="col-sm-10">

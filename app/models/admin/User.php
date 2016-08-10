@@ -66,6 +66,10 @@ class User {
         return self::$TABLE;
     }
 
+    /**
+     * 
+     * @return User
+     */
     public static function defaultInstance() {
         $data = [
             User::ID => 0,
@@ -80,25 +84,56 @@ class User {
         return new User($data);
     }
 
+    /**
+     * 
+     * @param type $value
+     * @return User
+     */
     public static function selectByID($value) {
         return self::selectBy($value, User::ID, \PDO::PARAM_INT);
     }
-    
+
+    /**
+     * 
+     * @param type $value
+     * @return User
+     */
     public static function selectByLogin($value) {
         return self::selectBy($value, User::USER_LOGIN);
     }
 
+    /**
+     * 
+     * @param type $value
+     * @return User
+     */
     public static function selectByEmail($value) {
         return self::selectBy($value, User::USER_EMAIL);
     }
-    
-    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR){
+
+    /**
+     * 
+     * @param type $value
+     * @param type $column
+     * @param type $dataType
+     * @return User
+     */
+    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
         $parameter = ":$column";
         $where = "$column = $parameter";
         $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
         return self::select($where, $prepare);
     }
 
+    /**
+     * 
+     * @param type $where
+     * @param type $prepare
+     * @param type $columns
+     * @param type $limit
+     * @param type $orderBy
+     * @return User
+     */
     private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
         $db = DBController::getConnection();
         $table = self::$TABLE;
@@ -182,11 +217,7 @@ class User {
         $userIDPost = Post::USER_ID;
         $where = "$userIDPost = :$userIDPost";
         $prepare = [
-            [
-                'parameter' => ":$userIDPost",
-                'value' => $this->getID(),
-                'dataType' => \PDO::PARAM_INT
-            ]
+            DBController::prepareStatement(":$userIDPost", $this->getID(), \PDO::PARAM_INT)
         ];
         $columns = 'COUNT(*) AS count';
         $select = $db->select($table, $fetch, $where, $prepare, $columns);

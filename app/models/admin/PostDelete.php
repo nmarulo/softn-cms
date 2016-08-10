@@ -9,6 +9,7 @@
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\models\admin\Post;
+use SoftnCMS\controllers\DBController;
 
 /**
  * Description of PostDelete
@@ -18,28 +19,22 @@ use SoftnCMS\models\admin\Post;
 class PostDelete {
 
     private $id;
-    private $prepareStatement;
 
     public function __construct($id) {
         $this->id = $id;
-        $this->prepareStatement = [];
     }
 
     public function delete() {
-        $db = \SoftnCMS\controllers\DBController::getConnection();
+        $db = DBController::getConnection();
         $table = Post::getTableName();
-        $where = 'ID = :id';
-        
-        $this->addPrepareStatement(':id', $this->id, \PDO::PARAM_INT);
-        return $db->delete($table, $where, $this->prepareStatement);
-    }
-    
-    private function addPrepareStatement($parameter, $value, $dataType) {
-        $this->prepareStatement[] = [
-            'parameter' => $parameter,
-            'value' => $value,
-            'dataType' => $dataType,
+        $parameter = ':id';
+        $where = "ID = $parameter";
+        $newData = $this->id;
+        $dataType = \PDO::PARAM_INT;
+        $prepare = [
+            DBController::prepareStatement($parameter, $newData, $dataType)
         ];
+        return $db->delete($table, $where, $prepare);
     }
 
 }

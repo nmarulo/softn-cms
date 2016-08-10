@@ -30,29 +30,68 @@ class Users {
         $this->users = [];
     }
 
+    /**
+     * 
+     * @return Users
+     */
     public static function selectAll() {
         return self::select();
     }
 
-    public static function selectByName($value) {
-        return self::selectBy($value, User::USER_NAME);
+    /**
+     * 
+     * @param type $val
+     * @return Users
+     */
+    public static function selectByName($val) {
+        $value = "%$val%";
+        $parameter = ':' . User::USER_NAME;
+        $where = User::USER_NAME . " LIKE $parameter";
+        $prepare[] = DBController::prepareStatement($parameter, $value, \PDO::PARAM_STR);
+        return self::select($where, $prepare);
     }
 
+    /**
+     * 
+     * @param type $value
+     * @return Users
+     */
     public static function selectByRegistred($value) {
         return self::selectBy($value, User::USER_REGISTRED);
     }
 
+    /**
+     * 
+     * @param type $value
+     * @return Users
+     */
     public static function selectByRol($value) {
         return self::selectBy($value, User::USER_ROL, \PDO::PARAM_INT);
     }
-    
-    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR){
+
+    /**
+     * 
+     * @param type $value
+     * @param type $column
+     * @param type $dataType
+     * @return Users
+     */
+    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
         $parameter = ":$column";
         $where = "$column = $parameter";
         $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
         return self::select($where, $prepare);
     }
 
+    /**
+     * 
+     * @param type $where
+     * @param type $prepare
+     * @param type $columns
+     * @param type $limit
+     * @param type $orderBy
+     * @return Users
+     */
     private static function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
         $db = DBController::getConnection();
         $table = User::getTableName();
@@ -98,6 +137,10 @@ class Users {
         }
     }
 
+    /**
+     * 
+     * @return int
+     */
     public function count() {
         $db = DBController::getConnection();
         $table = User::getTableName();

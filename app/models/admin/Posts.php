@@ -31,6 +31,114 @@ class Posts {
     }
 
     /**
+     * 
+     * @return Posts
+     */
+    public static function selectAll() {
+        return self::select();
+    }
+
+    /**
+     * 
+     * @param type $value
+     * @return Posts
+     */
+    public static function selectByUserID($value) {
+        return self::selectBy($value, Post::USER_ID, \PDO::PARAM_INT);
+    }
+
+    /**
+     * 
+     * @param type $val
+     * @return Posts
+     */
+    public static function selectByTitle($val) {
+        $value = "%$val%";
+        $parameter = ':' . Post::POST_TITLE;
+        $where = Post::POST_TITLE . " LIKE $parameter";
+        $prepare[] = DBController::prepareStatement($parameter, $value, \PDO::PARAM_STR);
+        return self::select($where, $prepare);
+    }
+
+    /**
+     * 
+     * @param type $value
+     * @return Posts
+     */
+    public static function selectByStatus($value) {
+        return self::selectBy($value, Post::POST_STATUS, \PDO::PARAM_INT);
+    }
+
+    /**
+     * 
+     * @param type $value
+     * @return Posts
+     */
+    public static function selectByCommentStatus($value) {
+        return self::selectBy($value, Post::COMMENT_STATUS, \PDO::PARAM_INT);
+    }
+
+    /**
+     * 
+     * @param type $value
+     * @return Posts
+     */
+    public static function selectByComments($value) {
+        return self::selectBy($value, Post::COMMENT_COUNT, \PDO::PARAM_INT);
+    }
+
+    /**
+     * 
+     * @param type $value
+     * @return Posts
+     */
+    public static function selectByDate($value) {
+        return self::selectBy($value, Post::POST_DATE);
+    }
+
+    /**
+     * 
+     * @param type $value
+     * @return Posts
+     */
+    public static function selectByUpdate($value) {
+        return self::selectBy($value, Post::POST_UPDATE);
+    }
+
+    /**
+     * 
+     * @param type $value
+     * @param type $column
+     * @param type $dataType
+     * @return Posts
+     */
+    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
+        $parameter = ":$column";
+        $where = "$column = $parameter";
+        $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
+        return self::select($where, $prepare);
+    }
+
+    /**
+     * 
+     * @param type $where
+     * @param type $prepare
+     * @param type $columns
+     * @param type $limit
+     * @param type $orderBy
+     * @return Posts
+     */
+    private static function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
+        $db = DBController::getConnection();
+        $table = Post::getTableName();
+        $fetch = 'fetchAll';
+        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
+        $posts = new Posts();
+        $posts->addPosts($select);
+        return $posts;
+    }
+
+    /**
      * Metodo que obtiene todos los posts.
      * @return array
      */
@@ -74,36 +182,25 @@ class Posts {
         $output = [];
 
         if (empty($this->posts)) {
-            $select = $this->select('', [], '*', $limit);
-            $this->addPosts($select);
-            $output = $this->getPosts();
+            $select = self::select('', [], '*', $limit);
+            $output = $select->getPosts();
         } else {
             $output = \array_slice($this->getPosts(), 0, $limit, \TRUE);
         }
         return $output;
     }
 
-    public function count() {
-        $select = $this->select('', [], 'COUNT(*) AS count');
-        return $select[0]['count'];
-    }
-
-    public function selectAll() {
-        if (!empty($this->posts)) {
-            $this->posts = [];
-        }
-        $select = $this->select();
-        $this->addPosts($select);
-    }
-
     /**
-     * Metodo que realiza una consulta a la base de datos y obtiene todos los post.
+     * 
+     * @return int
      */
-    private function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
+    public function count() {
         $db = DBController::getConnection();
         $table = Post::getTableName();
         $fetch = 'fetchAll';
-        return $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
+        $columns = 'COUNT(*) AS count';
+        $select = $db->select($table, $fetch, '', [], $columns);
+        return $select[0]['count'];
     }
 
 }

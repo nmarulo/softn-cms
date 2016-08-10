@@ -8,12 +8,15 @@
 
 namespace SoftnCMS\models\admin;
 
+use SoftnCMS\controllers\DBController;
+
 /**
  * Description of OptionUpdate
  *
  * @author Nicolás Marulanda P.
  */
 class OptionUpdate {
+
     /**
      *
      * @var Option 
@@ -31,46 +34,42 @@ class OptionUpdate {
     }
 
     public function update() {
-        $db = \SoftnCMS\controllers\DBController::getConnection();
+        $db = DBController::getConnection();
         $table = Option::getTableName();
         $where = 'ID = :id';
-        
+
         $this->prepare();
         //Si no hay datos, no se ejecuta la consulta.
-        if(empty($this->dataColumns)){
+        if (empty($this->dataColumns)) {
             return \TRUE;
         }
-        $this->addPrepareStatement(':id', $this->option->getID(), \PDO::PARAM_INT);
-        
-        if(!$db->update($table, $this->dataColumns, $where, $this->prepareStatement)){
+
+        $parameter = ':id';
+        $newData = $this->option->getID();
+        $dataType = \PDO::PARAM_INT;
+        $this->prepareStatement[] = DBController::prepareStatement($parameter, $newData, $dataType);
+
+        if (!$db->update($table, $this->dataColumns, $where, $this->prepareStatement)) {
             return \FALSE;
         }
-        
         return \TRUE;
     }
 
     private function prepare() {
-        $this->checkFields($this->option->getOptionValue(), $this->optionValue, Option::OPTION_VALUE, \PDO::PARAM_STR, \FALSE);
+        $this->checkFields($this->option->getOptionValue(), $this->optionValue, Option::OPTION_VALUE, \PDO::PARAM_STR);
     }
-    
-    private function checkFields($oldData, $newData, $column, $dataType, $separator = \TRUE){
+
+    private function checkFields($oldData, $newData, $column, $dataType) {
         if ($oldData != $newData) {
             $parameter = ':' . $column;
-            $this->addSetDataSQL($column, $parameter, $separator);
-            $this->addPrepareStatement($parameter, $newData, $dataType);
+            $this->addSetDataSQL($column, $parameter);
+            $this->prepareStatement[] = DBController::prepareStatement($parameter, $newData, $dataType);
         }
     }
 
-    private function addSetDataSQL($key, $data, $separator = \TRUE) {
+    private function addSetDataSQL($key, $data) {
+        $this->dataColumns .= empty($this->dataColumns) ? '' : ', ';
         $this->dataColumns .= "$key = $data";
-        $this->dataColumns .= $separator ? ', ' : '';
     }
 
-    private function addPrepareStatement($parameter, $value, $dataType) {
-        $this->prepareStatement[] = [
-            'parameter' => $parameter,
-            'value' => $value,
-            'dataType' => $dataType,
-        ];
-    }
 }

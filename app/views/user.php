@@ -1,4 +1,4 @@
-<div id="users" data-collapse="#users" class="sn-content col-sm-9 col-md-10"><!-- Informacion - Contenido -->
+<div id="user" data-collapse="#user" class="sn-content col-sm-9 col-md-10"><!-- Informacion - Contenido -->
     <div id="snwrap"><!-- #snwarp -->
         <div id="header" class="clearfix">
             <br/>

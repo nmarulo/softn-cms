@@ -1,4 +1,4 @@
-<div id="post-new" data-collapse="#posts" class="sn-content col-sm-9 col-md-10"><!-- Contenido -->
+<div id="post" data-collapse="#post" class="sn-content col-sm-9 col-md-10"><!-- Contenido -->
     <div id="snwrap"><!-- #snwarp -->
         <div id="header" class="clearfix">
             <br/>

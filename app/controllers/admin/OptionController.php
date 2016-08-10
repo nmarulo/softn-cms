@@ -24,20 +24,18 @@ class OptionController {
 
     private function dataIndex() {
         $this->dataUpdate();
-        $options = new Options();
-        $options->selectAll();
-        $output = $options->getOptions();
-        return $output;
+        $options = Options::selectAll();
+        return $options->getOptions();
     }
 
     private function dataUpdate() {
         if (\filter_input(\INPUT_POST, 'update')) {
-            $options = new Options();
-            $options->selectAll();
+            $options = Options::selectAll();
             $dataInput = $this->getDataInput();
             $keys = \array_keys($dataInput);
             $count = \count($keys);
             $error = \FALSE;
+
             for ($i = 0; $i < $count && !$error; ++$i) {
                 $optionName = $keys[$i];
                 $optionValue = $dataInput[$optionName];

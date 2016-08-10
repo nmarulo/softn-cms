@@ -9,6 +9,7 @@
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\models\admin\Post;
+use SoftnCMS\controllers\DBController;
 
 /**
  * Description of PostUpdate
@@ -40,19 +41,23 @@ class PostUpdate {
     }
 
     public function update() {
-        $db = \SoftnCMS\controllers\DBController::getConnection();
+        $db = DBController::getConnection();
         $table = Post::getTableName();
         $columns = '*';
         $where = 'ID = :id';
         $fetch = 'fetchAll';
-        
+
         $this->prepare();
-        $this->addPrepareStatement(':id', $this->post->getID(), \PDO::PARAM_INT);
-        
-        if(!$db->update($table, $this->dataColumns, $where, $this->prepareStatement)){
+
+        $parameter = ':id';
+        $newData = $this->post->getID();
+        $dataType = \PDO::PARAM_INT;
+        $this->prepareStatement[] = DBController::prepareStatement($parameter, $newData, $dataType);
+
+        if (!$db->update($table, $this->dataColumns, $where, $this->prepareStatement)) {
             return \FALSE;
         }
-        
+
         $count = \count($this->prepareStatement) - 1;
         $prepare = [$this->prepareStatement[$count]];
         $select = $db->select($table, $fetch, $where, $prepare, $columns);
@@ -70,29 +75,21 @@ class PostUpdate {
         $this->checkFields($this->post->getPostStatus(), $this->postStatus, Post::POST_STATUS, \PDO::PARAM_INT);
 
         $parameter = ':' . Post::POST_UPDATE;
-        $this->addSetDataSQL(Post::POST_UPDATE, $parameter, \FALSE);
-        $this->addPrepareStatement($parameter, $postUpdate, \PDO::PARAM_STR);
+        $this->addSetDataSQL(Post::POST_UPDATE, $parameter);
+        $this->prepareStatement[] = DBController::prepareStatement($parameter, $postUpdate, \PDO::PARAM_STR);
     }
-    
-    private function checkFields($oldData, $newData, $column, $dataType, $separator = \TRUE){
+
+    private function checkFields($oldData, $newData, $column, $dataType) {
         if ($oldData != $newData) {
             $parameter = ':' . $column;
-            $this->addSetDataSQL($column, $parameter, $separator);
-            $this->addPrepareStatement($parameter, $newData, $dataType);
+            $this->addSetDataSQL($column, $parameter);
+            $this->prepareStatement[] = DBController::prepareStatement($parameter, $newData, $dataType);
         }
     }
 
-    private function addSetDataSQL($key, $data, $separator = \TRUE) {
+    private function addSetDataSQL($key, $data) {
+        $this->dataColumns .= empty($this->dataColumns) ? '' : ', ';
         $this->dataColumns .= "$key = $data";
-        $this->dataColumns .= $separator ? ', ' : '';
-    }
-
-    private function addPrepareStatement($parameter, $value, $dataType) {
-        $this->prepareStatement[] = [
-            'parameter' => $parameter,
-            'value' => $value,
-            'dataType' => $dataType,
-        ];
     }
 
 }

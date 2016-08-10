@@ -9,6 +9,7 @@
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\models\admin\Option;
+use SoftnCMS\controllers\DBController;
 
 /**
  * Description of Options
@@ -16,18 +17,45 @@ use SoftnCMS\models\admin\Option;
  * @author Nicolás Marulanda P.
  */
 class Options {
-    
+
     /**
      * Lista, donde el indice o clave corresponde al ID.
      * @var array 
      */
     private $options;
-    
+
     /**
      * Constructor.
      */
     public function __construct() {
         $this->options = [];
+    }
+
+    /**
+     * 
+     * @return Options
+     */
+    public static function selectAll() {
+        return self::select();
+    }
+
+    /**
+     * 
+     * @param type $where
+     * @param type $prepare
+     * @param type $columns
+     * @param type $limit
+     * @param type $orderBy
+     * @return Options
+     */
+    private static function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
+        $db = DBController::getConnection();
+        $table = Option::getTableName();
+        $fetch = 'fetchAll';
+        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
+        $options = new Options();
+        $options->addOptions($select);
+        return $options;
     }
 
     /**
@@ -64,23 +92,5 @@ class Options {
             $this->addOption(new Option($value));
         }
     }
-    
-    public function selectAll() {
-        if(!empty($this->options)){
-            $this->options = [];
-        }
-        $select = $this->select();
-        $this->addOptions($select);
-    }
-    
-    /**
-     * Metodo que realiza una consulta a la base de datos y obtiene todos los post.
-     */
-    private function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
-        $db = \SoftnCMS\controllers\DBController::getConnection();
-        $table = Option::getTableName();
-        $fetch = 'fetchAll';
-        return $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
-    }
-    
+
 }

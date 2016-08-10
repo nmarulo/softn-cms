@@ -8,6 +8,7 @@
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\models\admin\User;
+use SoftnCMS\controllers\DBController;
 
 /**
  * Clase que gestiona la información de cada uno de los posts.
@@ -15,7 +16,7 @@ use SoftnCMS\models\admin\User;
  * @author Nicolás Marulanda P.
  */
 class Post {
-    
+
     /** @var string Nombre de la table. */
     private static $TABLE = \DB_PREFIX . 'posts';
 
@@ -59,28 +60,72 @@ class Post {
     public function __construct($data) {
         $this->post = $data;
     }
-    
+
     /**
      * Metodo que obtiene el nombre de la tabla.
      * @return string
      */
-    public static function getTableName(){
+    public static function getTableName() {
         return self::$TABLE;
     }
-    
-    public static function defaultInstance(){
+
+    public static function defaultInstance() {
         $data = [
-          Post::ID => 0,
-          Post::POST_TITLE => '',
-          Post::POST_STATUS => 1,
-          Post::POST_CONTENTS => '',
-          Post::POST_DATE => '0000-00-00 00:00:00',
-          Post::POST_UPDATE => '0000-00-00 00:00:00',
-          Post::COMMENT_COUNT => 0,
-          Post::COMMENT_STATUS => 1,
-          Post::USER_ID => 0,
+            Post::ID => 0,
+            Post::POST_TITLE => '',
+            Post::POST_STATUS => 1,
+            Post::POST_CONTENTS => '',
+            Post::POST_DATE => '0000-00-00 00:00:00',
+            Post::POST_UPDATE => '0000-00-00 00:00:00',
+            Post::COMMENT_COUNT => 0,
+            Post::COMMENT_STATUS => 1,
+            Post::USER_ID => 0,
         ];
         return new Post($data);
+    }
+
+    /**
+     * 
+     * @param type $value
+     * @return Post
+     */
+    public static function selectByID($value) {
+        return self::selectBy($value, Post::ID, \PDO::PARAM_INT);
+    }
+
+    /**
+     * 
+     * @param type $value
+     * @param type $column
+     * @param type $dataType
+     * @return Post
+     */
+    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
+        $parameter = ":$column";
+        $where = "$column = $parameter";
+        $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
+        return self::select($where, $prepare);
+    }
+
+    /**
+     * 
+     * @param type $where
+     * @param type $prepare
+     * @param type $columns
+     * @param type $limit
+     * @param type $orderBy
+     * @return Post
+     */
+    private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
+        $db = DBController::getConnection();
+        $table = self::$TABLE;
+        $fetch = 'fetchAll';
+        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
+
+        if (empty($select)) {
+            return \FALSE;
+        }
+        return new Post($select[0]);
     }
 
     /**
@@ -163,24 +208,24 @@ class Post {
         $userID = $this->getUserID();
         return User::selectByID($userID);
     }
-    
-    public function setPostTitle($title){
+
+    public function setPostTitle($title) {
         $this->post[Post::POST_TITLE] = $title;
     }
-    
-    public function setPostContents($contents){
+
+    public function setPostContents($contents) {
         $this->post[Post::POST_CONTENTS] = $contents;
     }
-    
-    public function setCommentStatus($status){
+
+    public function setCommentStatus($status) {
         $this->post[Post::POST_STATUS] = $status;
     }
-    
-    public function setPostStatus($status){
+
+    public function setPostStatus($status) {
         $this->post[Post::POST_STATUS] = $status;
     }
-    
-    public function setPostUpdate($date){
+
+    public function setPostUpdate($date) {
         $this->post[Post::POST_DATE] = $date;
     }
 

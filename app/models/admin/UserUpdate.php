@@ -9,6 +9,7 @@
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\models\admin\User;
+use SoftnCMS\controllers\DBController;
 
 /**
  * Description of UserUpdate
@@ -16,7 +17,7 @@ use SoftnCMS\models\admin\User;
  * @author Nicolás Marulanda P.
  */
 class UserUpdate {
-    
+
     /**
      *
      * @var User 
@@ -30,7 +31,7 @@ class UserUpdate {
     private $userUrl;
     private $dataColumns;
     private $prepareStatement;
-    
+
     public function __construct(User $user, $userLogin, $userName, $userEmail, $userPass, $userRol, $userUrl) {
         $this->user = $user;
         $this->userLogin = $userLogin;
@@ -42,29 +43,32 @@ class UserUpdate {
         $this->prepareStatement = [];
         $this->dataColumns = "";
     }
-    
-    public function update(){
-        $db = \SoftnCMS\controllers\DBController::getConnection();
+
+    public function update() {
+        $db = DBController::getConnection();
         $table = User::getTableName();
         $columns = '*';
         $where = 'ID = :id';
         $fetch = 'fetchAll';
-        
+
         $this->prepare();
-        $this->addPrepareStatement(':id', $this->user->getID(), \PDO::PARAM_INT);
-        
-        if(!$db->update($table, $this->dataColumns, $where, $this->prepareStatement)){
+
+        $parameter = ':id';
+        $newData = $this->user->getID();
+        $dataType = \PDO::PARAM_INT;
+        $this->prepareStatement[] = DBController::prepareStatement($parameter, $newData, $dataType);
+
+        if (!$db->update($table, $this->dataColumns, $where, $this->prepareStatement)) {
             return \FALSE;
         }
-        
         $count = \count($this->prepareStatement) - 1;
         $prepare = [$this->prepareStatement[$count]];
         $select = $db->select($table, $fetch, $where, $prepare, $columns);
         $user = new User($select[0]);
         return $user;
     }
-    
-    private function prepare(){
+
+    private function prepare() {
         $this->checkFields($this->user->getUserLogin(), $this->userLogin, User::USER_LOGIN, \PDO::PARAM_STR);
         $this->checkFields($this->user->getUserName(), $this->userName, User::USER_NAME, \PDO::PARAM_STR);
         $this->checkFields($this->user->getUserEmail(), $this->userEmail, User::USER_EMAIL, \PDO::PARAM_STR);
@@ -72,12 +76,12 @@ class UserUpdate {
         $this->checkFields($this->user->getUserRol(), $this->userRol, User::USER_ROL, \PDO::PARAM_INT);
         $this->checkFields($this->user->getUserUrl(), $this->userUrl, User::USER_URL, \PDO::PARAM_STR);
     }
-    
-    private function checkFields($oldData, $newData, $column, $dataType){
+
+    private function checkFields($oldData, $newData, $column, $dataType) {
         if ($oldData != $newData) {
             $parameter = ':' . $column;
             $this->addSetDataSQL($column, $parameter);
-            $this->addPrepareStatement($parameter, $newData, $dataType);
+            $this->prepareStatement[] = DBController::prepareStatement($parameter, $newData, $dataType);
         }
     }
 
@@ -86,14 +90,6 @@ class UserUpdate {
         $this->dataColumns .= "$key = $data";
     }
 
-    private function addPrepareStatement($parameter, $value, $dataType) {
-        $this->prepareStatement[] = [
-            'parameter' => $parameter,
-            'value' => $value,
-            'dataType' => $dataType,
-        ];
-    }
-    
     /**
      * Metodo que realiza el HASH al valor pasado por parametro.
      * @param string $pass
@@ -102,4 +98,5 @@ class UserUpdate {
     public function encrypt($pass) {
         return hash('sha256', $pass . \LOGGED_KEY);
     }
+
 }

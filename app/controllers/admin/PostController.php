@@ -38,8 +38,7 @@ class PostController {
     }
 
     private function dataIndex() {
-        $posts = new Posts();
-        $posts->selectAll();
+        $posts = Posts::selectAll();
         $output = $posts->getPosts();
 
         foreach ($output as $post) {
@@ -74,16 +73,13 @@ class PostController {
             exit();
         }
 
-        $posts = new Posts();
-        $posts->selectAll();
-        $post = $posts->getPost($id);
+        $post = Post::selectByID($id);
 
         if (filter_input(\INPUT_POST, 'update')) {
             $dataInput = $this->getDataInput();
             $update = new PostUpdate($post, $dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus']);
             $post = $update->update();
         }
-
         return [
             'post' => $post,
             'actionUpdate' => \TRUE
@@ -106,5 +102,5 @@ class PostController {
 //            'relationshipsTermID' => \filter_input(\INPUT_POST, 'relationshipsTermID', \FILTER_DEFAULT, \FILTER_REQUIRE_ARRAYRAY),
         ];
     }
-    
+
 }

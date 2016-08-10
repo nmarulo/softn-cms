@@ -51,16 +51,16 @@ class UserInsert {
 
     private function prepare() {
         $date = \date('Y-m-d H:i:s', \time());
-        $this->addPrepareStatement(':' . User::USER_LOGIN, $this->userLogin, \PDO::PARAM_STR);
-        $this->addPrepareStatement(':' . User::USER_EMAIL, $this->userEmail, \PDO::PARAM_STR);
-        $this->addPrepareStatement(':' . User::USER_NAME, $this->userName, \PDO::PARAM_STR);
-        $this->addPrepareStatement(':' . User::USER_PASS, $this->userPass, \PDO::PARAM_STR);
-        $this->addPrepareStatement(':' . User::USER_REGISTRED, $date, \PDO::PARAM_STR);
-        $this->addPrepareStatement(':' . User::USER_ROL, $this->userRol, \PDO::PARAM_INT);
-        $this->addPrepareStatement(':' . User::USER_URL, $this->userUrl, \PDO::PARAM_STR);
+        $this->addPrepare(':' . User::USER_LOGIN, $this->userLogin, \PDO::PARAM_STR);
+        $this->addPrepare(':' . User::USER_EMAIL, $this->userEmail, \PDO::PARAM_STR);
+        $this->addPrepare(':' . User::USER_NAME, $this->userName, \PDO::PARAM_STR);
+        $this->addPrepare(':' . User::USER_PASS, $this->userPass, \PDO::PARAM_STR);
+        $this->addPrepare(':' . User::USER_REGISTRED, $date, \PDO::PARAM_STR);
+        $this->addPrepare(':' . User::USER_ROL, $this->userRol, \PDO::PARAM_INT);
+        $this->addPrepare(':' . User::USER_URL, $this->userUrl, \PDO::PARAM_STR);
     }
 
-    private function addPrepareStatement($parameter, $value, $dataType) {
+    private function addPrepare($parameter, $value, $dataType) {
         $this->prepareStatement[] = DBController::prepareStatement($parameter, $value, $dataType);
     }
 

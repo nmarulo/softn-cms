@@ -9,6 +9,7 @@
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\models\admin\Post;
+use SoftnCMS\controllers\DBController;
 
 /**
  * Description of PostInsert
@@ -36,9 +37,10 @@ class PostInsert {
     }
 
     public function insert() {
-        $db = \SoftnCMS\controllers\DBController::getConnection();
+        $db = DBController::getConnection();
         $table = Post::getTableName();
         $this->prepare();
+
         if (!$db->insert($table, self::$COLUMNS, self::$VALUES, $this->prepareStatement)) {
             return \FALSE;
         }
@@ -47,21 +49,17 @@ class PostInsert {
 
     private function prepare() {
         $date = \date('Y-m-d H:i:s', \time());
-        $this->addPrepareStatement(':' . Post::POST_TITLE, $this->postTitle, \PDO::PARAM_STR);
-        $this->addPrepareStatement(':' . Post::POST_STATUS, $this->postStatus, \PDO::PARAM_INT);
-        $this->addPrepareStatement(':' . Post::POST_DATE, $date, \PDO::PARAM_STR);
-        $this->addPrepareStatement(':' . Post::POST_UPDATE, $date, \PDO::PARAM_STR);
-        $this->addPrepareStatement(':' . Post::POST_CONTENTS, $this->postContents, \PDO::PARAM_STR);
-        $this->addPrepareStatement(':' . Post::COMMENT_STATUS, $this->commentStatus, \PDO::PARAM_INT);
-        $this->addPrepareStatement(':' . Post::USER_ID, $this->userID, \PDO::PARAM_INT);
+        $this->addPrepare(':' . Post::POST_TITLE, $this->postTitle, \PDO::PARAM_STR);
+        $this->addPrepare(':' . Post::POST_STATUS, $this->postStatus, \PDO::PARAM_INT);
+        $this->addPrepare(':' . Post::POST_DATE, $date, \PDO::PARAM_STR);
+        $this->addPrepare(':' . Post::POST_UPDATE, $date, \PDO::PARAM_STR);
+        $this->addPrepare(':' . Post::POST_CONTENTS, $this->postContents, \PDO::PARAM_STR);
+        $this->addPrepare(':' . Post::COMMENT_STATUS, $this->commentStatus, \PDO::PARAM_INT);
+        $this->addPrepare(':' . Post::USER_ID, $this->userID, \PDO::PARAM_INT);
     }
 
-    private function addPrepareStatement($parameter, $value, $dataType) {
-        $this->prepareStatement[] = [
-            'parameter' => $parameter,
-            'value' => $value,
-            'dataType' => $dataType,
-        ];
+    private function addPrepare($parameter, $value, $dataType) {
+        $this->prepareStatement[] = DBController::prepareStatement($parameter, $value, $dataType);
     }
 
 }
