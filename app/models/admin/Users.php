@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Modulo del modelo user.
- * Gestiona la lista de Usuarios.
+ * Modulo del modelo usuario.
+ * Gestiona grupos de usuarios.
  */
 
 namespace SoftnCMS\models\admin;
@@ -11,14 +11,14 @@ use SoftnCMS\models\admin\User;
 use SoftnCMS\controllers\DBController;
 
 /**
- * Clase que gestiona la lista con todos los usuarios de la base de datos.
+ * Clase que gestiona grupos de usuarios.
  *
  * @author Nicolás Marulanda P.
  */
 class Users {
 
     /**
-     * Lista de usuarios, donde el indice o clave corresponde al ID.
+     * Lista, donde el indice o clave corresponde al ID.
      * @var array 
      */
     private $users;
@@ -31,7 +31,7 @@ class Users {
     }
 
     /**
-     * 
+     * Metodo que obtiene todos los usuarios de la base de datos.
      * @return Users
      */
     public static function selectAll() {
@@ -39,8 +39,8 @@ class Users {
     }
 
     /**
-     * 
-     * @param type $val
+     * Metodo que obtiene todos los usuarios que coinciden con su nombre real.
+     * @param string $val
      * @return Users
      */
     public static function selectByName($val) {
@@ -52,8 +52,8 @@ class Users {
     }
 
     /**
-     * 
-     * @param type $value
+     * Metodo que obtiene todos los usuarios segun su fecha de registro.
+     * @param string $value
      * @return Users
      */
     public static function selectByRegistred($value) {
@@ -61,8 +61,8 @@ class Users {
     }
 
     /**
-     * 
-     * @param type $value
+     * Metodo que obtiene todos los usuarios segun su rol asignado.
+     * @param int $value
      * @return Users
      */
     public static function selectByRol($value) {
@@ -70,10 +70,10 @@ class Users {
     }
 
     /**
-     * 
-     * @param type $value
-     * @param type $column
-     * @param type $dataType
+     * Metodo que obtiene los usuarios segun las especificaciones dadas.
+     * @param int|string $value Valor a buscar.
+     * @param string $column Nombre de la columna en la tabla.
+     * @param int $dataType [Opcional] Por defecto \PDO::PARAM_STR. Tipo de dato.
      * @return Users
      */
     private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
@@ -84,12 +84,12 @@ class Users {
     }
 
     /**
-     * 
-     * @param type $where
-     * @param type $prepare
-     * @param type $columns
-     * @param type $limit
-     * @param type $orderBy
+     * Metodo que realiza una consulta a la base de datos.
+     * @param string $where [Opcional] Condiciones.
+     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
+     * @param string $columns [Opcional] Por defecto "*". Columnas.
+     * @param int $limit [Opcional] Numero de datos a retornar.
+     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
      * @return Users
      */
     private static function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
@@ -99,6 +99,7 @@ class Users {
         $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
         $users = new Users();
         $users->addUsers($select);
+        
         return $users;
     }
 
@@ -138,7 +139,7 @@ class Users {
     }
 
     /**
-     * 
+     * Metodo que obtiene el número total de USERS.
      * @return int
      */
     public function count() {
@@ -147,6 +148,7 @@ class Users {
         $fetch = 'fetchAll';
         $columns = 'COUNT(*) AS count';
         $select = $db->select($table, $fetch, '', [], $columns);
+        
         return $select[0]['count'];
     }
 

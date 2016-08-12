@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Opciones de la barra lateral del panel de administración.
+ */
 return [
     ['title' => '<i class="fa fa-tachometer" aria-hidden="true"></i> Información',
         'id' => 'admin',

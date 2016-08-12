@@ -31,7 +31,7 @@
     <hr/>
     <div class="form-group">
         <div class="col-sm-12">
-            <a href="<?php echo \LOCALHOST ?>login" class="btn btn-success btn-block">Conectar</a>
+            <a href="<?php echo $data['siteUrl']; ?>login" class="btn btn-success btn-block">Conectar</a>
         </div>
     </div>
 </form>

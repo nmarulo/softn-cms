@@ -71,7 +71,6 @@ class Router {
 
     /**
      * Metodo que ejecuta el metodo del controlador.
-     * @return type
      */
     public function callMethod() {
         $method = $this->request->getMethod();
@@ -81,6 +80,10 @@ class Router {
         }
         $newData = \call_user_func_array([$this->objectCtr, $method], $this->request->getArgs());
         $this->data = \array_merge_recursive($this->data, $newData);
+        
+        if($this->request->getController() == 'option'){
+            $this->optionData();
+        }
     }
 
     /**
@@ -91,6 +94,9 @@ class Router {
         $view->render();
     }
 
+    /**
+     * Metodo que obtiene los datos de uso general.
+     */
     private function initData() {
         if ($this->request->isAdminPanel()) {
             $menu = require \CONTROLLERS_CONFIG . 'LeftbarController.php';
@@ -100,10 +106,24 @@ class Router {
         if (Login::isLogin()) {
             $this->data['data']['userSession'] = User::selectByID($_SESSION['usernameID']);
         }
+        $this->optionData();
+    }
+    
+    /**
+     * Metodo que obtiene los datos configurables de la aplicación.
+     * @global string $urlSite
+     */
+    private function optionData(){
+        global $urlSite;
         $this->data['data']['siteTitle'] = Option::selectByName('optionTitle')->getOptionValue();
         $this->data['data']['siteUrl'] = Option::selectByName('optionSiteUrl')->getOptionValue();
+        $urlSite = $this->data['data']['siteUrl'];
     }
 
+    /**
+     * Metodo que comprueba si el nombre del fichero del controlador es correcto.
+     * @param string $requesCtr Nombre del controlador.
+     */
     private function checkReadableController($requesCtr) {
         $controller = $this->getPathController() . "$requesCtr.php";
 
@@ -116,6 +136,10 @@ class Router {
         }
     }
 
+    /**
+     * Metodo que obtiene la ubicación donde se buscara el controlador.
+     * @return string
+     */
     private function getPathController() {
         $controller = \CONTROLLERS;
 
@@ -127,6 +151,10 @@ class Router {
         return $controller;
     }
 
+    /**
+     * Metodo que obtiene el nombre de espacio del controlador.
+     * @return string
+     */
     private function getNamespaceController() {
         $namespace = \NAMESPACE_CONTROLLERS;
 

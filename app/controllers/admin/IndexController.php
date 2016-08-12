@@ -1,40 +1,27 @@
 <?php
 
 /**
- * 
+ * Modulo del controlador de la pagina de inicio del panel de administración.
  */
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\controllers\Controller;
 use SoftnCMS\models\admin\Posts;
 use SoftnCMS\models\admin\Users;
 
 /**
- * Description of SoftN
+ * Clase del controlador de la pagina de inicio del panel de administración.
  *
  * @author Nicolás Marulanda P.
  */
-class IndexController {
+class IndexController extends Controller {
 
-    public function __construct() {
-        /*
-         * --- count
-         * post
-         * page
-         * comment
-         * category
-         * user
-         * --- ultimas actulizaciones github
-         * --- ultimos post
-         * -- comentarios recientes
-         */
-    }
-
-    public function index() {
-        return ['data' => $this->dataIndex()];
-    }
-
-    private function dataIndex() {
+    /**
+     * Metodo llamado por la funcion index.
+     * @return array
+     */
+    protected function dataIndex() {
         $posts = new Posts();
         $users = new Users();
 
@@ -52,8 +39,11 @@ class IndexController {
         ];
     }
 
+    /**
+     * Metod que obtiene las actualizaciones del GitHub.
+     * @return array
+     */
     private function lastUpdateGitHub() {
-        $lengTitle = 20;
         $github = \simplexml_load_file('https://github.com/nmarulo/softn-cms/commits/develop.atom');
         $github = \get_object_vars($github);
         $leng = \count($github['entry']);
@@ -78,6 +68,7 @@ class IndexController {
                 'title' => $element['title'],
             ];
         }
+        
         return $dataGitHub;
     }
 

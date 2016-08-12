@@ -1,9 +1,8 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del modelo de las opciones configurables de la aplicación..
+ * Gestiona grupos de opciones.
  */
 
 namespace SoftnCMS\models\admin;
@@ -12,14 +11,14 @@ use SoftnCMS\models\admin\Option;
 use SoftnCMS\controllers\DBController;
 
 /**
- * Description of Options
+ * Clase que gestiona grupos de opciones.
  *
  * @author Nicolás Marulanda P.
  */
 class Options {
 
     /**
-     * Lista, donde el indice o clave corresponde al ID.
+     * Lista, donde el indice o clave corresponde al nombre asignado.
      * @var array 
      */
     private $options;
@@ -32,7 +31,7 @@ class Options {
     }
 
     /**
-     * 
+     * Metodo que obtiene todos las opciones de la base de datos.
      * @return Options
      */
     public static function selectAll() {
@@ -40,12 +39,12 @@ class Options {
     }
 
     /**
-     * 
-     * @param type $where
-     * @param type $prepare
-     * @param type $columns
-     * @param type $limit
-     * @param type $orderBy
+     * Metodo que realiza una consulta a la base de datos.
+     * @param string $where [Opcional] Condiciones.
+     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
+     * @param string $columns [Opcional] Por defecto "*". Columnas.
+     * @param int $limit [Opcional] Numero de datos a retornar.
+     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
      * @return Options
      */
     private static function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
@@ -55,11 +54,12 @@ class Options {
         $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
         $options = new Options();
         $options->addOptions($select);
+        
         return $options;
     }
 
     /**
-     * Metodo que obtiene todos los options.
+     * Metodo que obtiene todos las opciones.
      * @return array
      */
     public function getOptions() {
@@ -67,7 +67,7 @@ class Options {
     }
 
     /**
-     * Metodo que obtiene, segun su ID, un post.
+     * Metodo que obtiene, segun su nombre asignado, una opción.
      * @param string $optionName
      * @return Option
      */
@@ -76,7 +76,7 @@ class Options {
     }
 
     /**
-     * Metodo que agrega un post a la lista.
+     * Metodo que agrega una opción a la lista.
      * @param Option $option
      */
     public function addOption(Option $option) {
@@ -84,7 +84,7 @@ class Options {
     }
 
     /**
-     * Metodo que obtiene un array con los datos de los post y los agrega a la lista.
+     * Metodo que obtiene un array con los datos de las opciones y los agrega a la lista.
      * @param array $option
      */
     public function addOptions($option) {

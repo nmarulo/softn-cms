@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Modelo de acceso a MySQL
+ * Modulo del modelo de acceso a MySQL
  */
 
 namespace SoftnCMS\models;
@@ -19,7 +19,7 @@ class MySql {
     /** @var string Guarda la sentencia SQL. */
     private $query;
 
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement Declaración de la consulta preparada. */
     private $prepareObject;
 
     /**
@@ -46,7 +46,7 @@ class MySql {
      * Si es "fetchObject", retorna un objeto \PDOStatement.
      * @param string $where [Opcional] Condiciones de la consulta.
      * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta. 
-     * EJ: [[':usuario', 'Carlos', \PDO::PARAM_STR], [':apellido', 'James', \PDO::PARAM_STR]]
+     * Usar DBController::prepareStatement().
      * @param string $columns [Opcional] Columnas a obtener.
      * @param string $orderBy [Opcional] Ordenar la consulta por.
      * @param string $limit [Opcional] Limitar los datos a retornar de la consulta.
@@ -74,6 +74,7 @@ class MySql {
                     break;
             }
         }
+
         return $output;
     }
 
@@ -83,19 +84,13 @@ class MySql {
      * @param string $columns Nombre de las columnas.
      * @param string $values Valores.
      * @param array $prepare Lista de indices a reemplazar en la consulta. 
-     * EJ: [
-     * ['parameter' => ':usuario', 
-     * 'value' => 'Carlos', 
-     * 'dataType' => \PDO::PARAM_STR], 
-     * ['parameter' => ':apellido', 
-     * 'value' => 'James', 
-     * 'dataType' => \PDO::PARAM_STR]
-     * ]
+     * Usar DBController::prepareStatement().
      * @return bool Si es \TRUE la consulta se ejecuto correctamente.
      */
     public function insert($table, $columns, $values, $prepare) {
         $sql = "INSERT INTO $table ($columns) VALUES ($values)";
         $this->query = $sql;
+
         return $this->execute($sql, $prepare);
     }
 
@@ -105,19 +100,13 @@ class MySql {
      * @param string $columns Asignación de valores a la columna.
      * @param string $where Condiciones de la consulta.
      * @param array $prepare Lista de indices a reemplazar en la consulta. 
-     * EJ: [
-     * ['parameter' => ':usuario', 
-     * 'value' => 'Carlos', 
-     * 'dataType' => \PDO::PARAM_STR], 
-     * ['parameter' => ':apellido', 
-     * 'value' => 'James', 
-     * 'dataType' => \PDO::PARAM_STR]
-     * ]
+     * Usar DBController::prepareStatement().
      * @return bool Si es \TRUE la consulta se ejecuto correctamente.
      */
     public function update($table, $columns, $where, $prepare) {
         $sql = "UPDATE $table SET $columns WHERE $where";
         $this->query = $sql;
+
         return $this->execute($sql, $prepare);
     }
 
@@ -126,24 +115,18 @@ class MySql {
      * @param string $table Nombre de la tabla.
      * @param string $where Condiciones de la consulta.
      * @param array $prepare Lista de indices a reemplazar en la consulta. 
-     * EJ: [
-     * ['parameter' => ':usuario', 
-     * 'value' => 'Carlos', 
-     * 'dataType' => \PDO::PARAM_STR], 
-     * ['parameter' => ':apellido', 
-     * 'value' => 'James', 
-     * 'dataType' => \PDO::PARAM_STR]
-     * ]
+     * Usar DBController::prepareStatement().
      * @return bool Si es \TRUE la consulta se ejecuto correctamente.
      */
     public function delete($table, $where, $prepare) {
         $sql = "DELETE FROM $table WHERE $where";
         $this->query = $sql;
+
         return $this->execute($sql, $prepare);
     }
 
     /**
-     * Metodo que obtiene el ID de los nuevos datos insertados.
+     * Metodo que obtiene el ID del ultimo dato en la consulta INSERT.
      * @return int
      */
     public function lastInsertId() {
@@ -174,10 +157,10 @@ class MySql {
     }
 
     /**
-     * 
-     * @param string $sql
-     * @param array $prepare
-     * @return bool
+     * Metodo que ejecuta la consulta.
+     * @param string $sql Consulta.
+     * @param array $prepare Lista de indices a reemplazar en la consulta.
+     * @return bool Si es TRUE, la consulta se ejecuto correctamente.
      */
     private function execute($sql, $prepare) {
         $this->prepareObject = $this->connection->prepare($sql);
@@ -185,12 +168,13 @@ class MySql {
         if (!$this->bindValue($prepare)) {
             return \FALSE;
         }
+
         return $this->prepareObject->execute();
     }
 
     /**
-     * 
-     * @param array $data
+     * Metodo que comprueba los tipos de datos de los valores vinculados a un parametro.
+     * @param array $data Lista de indices a reemplazar en la consulta.
      * @return bool Si es \TRUE la operación se realizado correctamente.
      */
     private function bindValue($data) {
@@ -212,6 +196,7 @@ class MySql {
             //Reemplaza los parametros con sus valores correspondientes.
             $this->query = \str_replace($parameter, $parameterValue, $this->query);
         }
+
         return !$error;
     }
 

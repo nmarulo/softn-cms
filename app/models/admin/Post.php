@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Modulo del controlador post.
- * Gestiona la información del post.
+ * Modulo del modelo POST.
+ * Gestiona los datos de cada POST.
  */
 
 namespace SoftnCMS\models\admin;
@@ -11,7 +11,7 @@ use SoftnCMS\models\admin\User;
 use SoftnCMS\controllers\DBController;
 
 /**
- * Clase que gestiona la información de cada uno de los posts.
+ * Clase que gestiona los datos de cada POST.
  *
  * @author Nicolás Marulanda P.
  */
@@ -47,14 +47,11 @@ class Post {
     /** Identificador del autor. */
     const USER_ID = 'user_ID';
 
-    /**
-     * Datos del post.
-     * @var array
-     */
+    /** @var array Datos del post. */
     private $post;
 
     /**
-     * Constructor
+     * Constructor.
      * @param array $data
      */
     public function __construct($data) {
@@ -69,6 +66,10 @@ class Post {
         return self::$TABLE;
     }
 
+    /**
+     *  Metodo que retorna una instancia por defecto.
+     * @return Post
+     */
     public static function defaultInstance() {
         $data = [
             Post::ID => 0,
@@ -81,40 +82,42 @@ class Post {
             Post::COMMENT_STATUS => 1,
             Post::USER_ID => 0,
         ];
+
         return new Post($data);
     }
 
     /**
-     * 
-     * @param type $value
-     * @return Post
+     * Metodo que obtiene un post segun su "ID".
+     * @param int $value
+     * @return Post|bool
      */
     public static function selectByID($value) {
         return self::selectBy($value, Post::ID, \PDO::PARAM_INT);
     }
 
     /**
-     * 
-     * @param type $value
-     * @param type $column
-     * @param type $dataType
-     * @return Post
+     * Metodo que obtiene un post segun las especificaciones dadas.
+     * @param int|string $value Valor a buscar.
+     * @param string $column Nombre de la columna en la tabla.
+     * @param int $dataType Tipo de dato.
+     * @return Post|bool
      */
     private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
         $parameter = ":$column";
         $where = "$column = $parameter";
         $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
+
         return self::select($where, $prepare);
     }
 
     /**
-     * 
-     * @param type $where
-     * @param type $prepare
-     * @param type $columns
-     * @param type $limit
-     * @param type $orderBy
-     * @return Post
+     * Metodo que realiza una consulta a la base de datos.
+     * @param string $where [Opcional] Condiciones.
+     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
+     * @param string $columns [Opcional] Por defecto "*". Columnas.
+     * @param int $limit [Opcional] Por defecto 1. Numero de datos a retornar.
+     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
+     * @return Post|bool En caso de no obtener datos retorna FALSE.
      */
     private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
         $db = DBController::getConnection();
@@ -125,6 +128,7 @@ class Post {
         if (empty($select)) {
             return \FALSE;
         }
+
         return new Post($select[0]);
     }
 
@@ -209,24 +213,12 @@ class Post {
         return User::selectByID($userID);
     }
 
+    /**
+     * Metodo que establece el titulo del post.
+     * @param string $title
+     */
     public function setPostTitle($title) {
         $this->post[Post::POST_TITLE] = $title;
-    }
-
-    public function setPostContents($contents) {
-        $this->post[Post::POST_CONTENTS] = $contents;
-    }
-
-    public function setCommentStatus($status) {
-        $this->post[Post::POST_STATUS] = $status;
-    }
-
-    public function setPostStatus($status) {
-        $this->post[Post::POST_STATUS] = $status;
-    }
-
-    public function setPostUpdate($date) {
-        $this->post[Post::POST_DATE] = $date;
     }
 
 }

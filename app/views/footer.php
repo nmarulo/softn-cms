@@ -2,7 +2,7 @@
                     <div id="footer" class="clearfix">
                         <hr class=""/>
                         <p class="pull-left">SoftN CMS</p>
-                        <p class="pull-right">versión 0.3</p>
+                        <p class="pull-right">versión <?php echo \VERSION; ?></p>
                     </div>      
                 </footer>
             </div><!-- .row.clearfix -->

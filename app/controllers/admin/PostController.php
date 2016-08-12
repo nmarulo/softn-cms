@@ -1,13 +1,12 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del controlador de la pagina de entradas.
  */
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\controllers\BaseController;
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\Posts;
 use SoftnCMS\models\admin\PostUpdate;
@@ -15,29 +14,17 @@ use SoftnCMS\models\admin\PostInsert;
 use SoftnCMS\models\admin\PostDelete;
 
 /**
- * Description of PostController
+ * Clase del controlador de la pagina de entradas.
  *
  * @author Nicolás Marulanda P.
  */
-class PostController {
+class PostController extends BaseController {
 
-    public function index() {
-        return ['data' => $this->dataIndex()];
-    }
-
-    public function update($id) {
-        return ['data' => $this->dataUpdate($id)];
-    }
-
-    public function delete($id) {
-        return ['data' => $this->dataDelete($id)];
-    }
-
-    public function insert() {
-        return ['data' => $this->dataInsert()];
-    }
-
-    private function dataIndex() {
+    /**
+     * Metodo llamado por la función INDEX.
+     * @return array
+     */
+    protected function dataIndex() {
         $posts = Posts::selectAll();
         $output = $posts->getPosts();
 
@@ -53,46 +40,97 @@ class PostController {
         return ['posts' => $output];
     }
 
-    private function dataInsert() {
+    /**
+     * Metodo llamado por la función INSERT.
+     * @return array
+     */
+    protected function dataInsert() {
         if (filter_input(\INPUT_POST, 'publish')) {
+            global $urlSite;
+
             $dataInput = $this->getDataInput();
             $insert = new PostInsert($dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus'], $_SESSION['usernameID']);
-            header('Location: ' . \LOCALHOST . 'admin/post/update/' . $insert->insert());
-            exit();
+
+            if ($insert->insert()) {
+                //Si todo es correcto se muestra el POST en la pagina de edición.
+                header("Location: $urlSite" . 'admin/post/update/' . $insert->getLastInsertId());
+                exit();
+            }
         }
 
         return [
+            //Datos por defecto a mostrar en el formulario.
             'post' => Post::defaultInstance(),
+            /*
+             * Booleano que indica si muestra el encabezado
+             * "Publicar nueva entrada" si es FALSE 
+             * o "Actualizar entrada" si es TRUE
+             */
             'actionUpdate' => \FALSE
         ];
     }
 
-    private function dataUpdate($id) {
-        if (empty($id)) {
-            header('Location: ' . \LOCALHOST . 'admin/post');
-            exit();
-        }
+    /**
+     * Metodo llamado por la función UPDATE.
+     * @param int $id
+     * @return array
+     */
+    protected function dataUpdate($id) {
+        global $urlSite;
 
         $post = Post::selectByID($id);
+
+        //En caso de que no exista.
+        if (empty($post)) {
+            header("Location: $urlSite" . 'admin/post');
+            exit();
+        }
 
         if (filter_input(\INPUT_POST, 'update')) {
             $dataInput = $this->getDataInput();
             $update = new PostUpdate($post, $dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus']);
-            $post = $update->update();
+
+            //Si ocurre un error la función "$update->update()" retorna FALSE.
+            if ($update->update()) {
+                $post = $update->getPost();
+            }
         }
+
         return [
+            //Instancia POST
             'post' => $post,
+            /*
+             * Booleano que indica si muestra el encabezado
+             * "Publicar nueva entrada" si es FALSE 
+             * o "Actualizar entrada" si es TRUE
+             */
             'actionUpdate' => \TRUE
         ];
     }
 
-    private function dataDelete($id) {
+    /**
+     * Metodo llamado por la función DELETE.
+     * @param int $id
+     * @return array
+     */
+    protected function dataDelete($id) {
+        /*
+         * Ya que este metodo no tiene modulo vista propio
+         * se carga el modulo vista INDEX, asi que se retornan los datos
+         * para esta vista.
+         */
+
         $delete = new PostDelete($id);
         $delete->delete();
+
         return $this->dataIndex();
     }
 
-    private function getDataInput() {
+    /**
+     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * @return array
+     */
+    protected function getDataInput() {
         return [
             'postTitle' => \filter_input(\INPUT_POST, 'postTitle'),
             'postContents' => \filter_input(\INPUT_POST, 'postContents'),

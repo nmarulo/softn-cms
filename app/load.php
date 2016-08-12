@@ -13,4 +13,8 @@ if (\APP_DEBUG === \TRUE) {
     \ini_set('display_errors', \TRUE);
 }
 \session_start();
+/**
+ * Guarda la direción del sitio web, para ser usada en los controladores.
+ */
+$urlSite = '';
 \SoftnCMS\controllers\Router::load();

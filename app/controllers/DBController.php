@@ -1,9 +1,7 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del controlador de la base de datos.
  */
 
 namespace SoftnCMS\controllers;
@@ -11,12 +9,16 @@ namespace SoftnCMS\controllers;
 use SoftnCMS\models\MySql;
 
 /**
- * Description of DBController
+ * Clase controlador de la base de datos.
  *
  * @author Nicolás Marulanda P.
  */
 class DBController {
 
+    /**
+     * Metodo que obtine la instacia de la conexión a la base de datos.
+     * @return object
+     */
     public static function getConnection() {
         $connection = null;
 
@@ -25,9 +27,17 @@ class DBController {
                 $connection = new MySql();
                 break;
         }
+        
         return $connection;
     }
 
+    /**
+     * Metodo que obtiene los indices a reemplazar en la consulta.
+     * @param string $parameter Indice a buscar. EJ: ":ID"
+     * @param string $value Valor del indice.
+     * @param int $dataType Tipo de dato. EJ: \PDO::PARAM_*
+     * @return array
+     */
     public static function prepareStatement($parameter, $value, $dataType) {
         return [
             'parameter' => $parameter,

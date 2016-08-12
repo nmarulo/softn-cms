@@ -1,9 +1,8 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del modelo de las opciones configurables de la aplicación.
+ * Gestiona los datos de cada opción.
  */
 
 namespace SoftnCMS\models\admin;
@@ -11,7 +10,7 @@ namespace SoftnCMS\models\admin;
 use SoftnCMS\controllers\DBController;
 
 /**
- * Description of Option
+ * Clase que gestiona los datos de cada opción.
  *
  * @author Nicolás Marulanda P.
  */
@@ -44,8 +43,8 @@ class Option {
     }
 
     /**
-     * 
-     * @param type $value
+     * Metodo que obtiene una opción segun su nombre asignado.
+     * @param string $value
      * @return Option
      */
     public static function selectByName($value) {
@@ -53,11 +52,11 @@ class Option {
     }
 
     /**
-     * 
-     * @param type $value
-     * @param type $column
-     * @param type $dataType
-     * @return Option
+     * Metodo que obtiene una opción segun las especificaciones dadas.
+     * @param int|string $value Valor a buscar.
+     * @param string $column Nombre de la columna en la tabla.
+     * @param int $dataType Tipo de dato.
+     * @return Option|bool
      */
     private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
         $parameter = ":$column";
@@ -67,13 +66,13 @@ class Option {
     }
 
     /**
-     * 
-     * @param type $where
-     * @param type $prepare
-     * @param type $columns
-     * @param type $limit
-     * @param type $orderBy
-     * @return Option
+     * Metodo que realiza una consulta a la base de datos.
+     * @param string $where [Opcional] Condiciones.
+     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
+     * @param string $columns [Opcional] Por defecto "*". Columnas.
+     * @param int $limit [Opcional] Por defecto 1. Numero de datos a retornar.
+     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
+     * @return Option|bool En caso de no obtener datos retorna FALSE.
      */
     private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
         $db = DBController::getConnection();
@@ -84,6 +83,7 @@ class Option {
         if (empty($select)) {
             return \FALSE;
         }
+
         return new Option($select[0]);
     }
 

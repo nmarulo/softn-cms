@@ -1,28 +1,28 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del controlador de los temas de la aplicación.
  */
 
 namespace SoftnCMS\controllers\themes;
 
+use SoftnCMS\controllers\Controller;
 use SoftnCMS\models\admin\Posts;
 
 /**
- * Description of IndexController
+ * Clase controlador de los temas.
  *
  * @author Nicolás Marulanda P.
  */
-class IndexController {
+class IndexController extends Controller {
 
-    public function index() {
-        return ['data' => $this->dataIndex()];
-    }
-
-    private function dataIndex() {
+    /**
+     * Metodo llamado por la función INDEX.
+     * @return array
+     */
+    protected function dataIndex() {
         $posts = Posts::selectAll();
+
         return [
             'posts' => $posts->getPosts()
         ];

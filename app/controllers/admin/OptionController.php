@@ -1,37 +1,46 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del controlador de la pagina de configuración.
  */
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\controllers\Controller;
 use SoftnCMS\models\admin\Options;
 use SoftnCMS\models\admin\OptionUpdate;
 
 /**
- * Description of OptionController
+ * Clase del controlador de la pagina de configuración.
  *
  * @author Nicolás Marulanda P.
  */
-class OptionController {
+class OptionController extends Controller {
 
-    public function index() {
-        return ['data' => $this->dataIndex()];
-    }
-
-    private function dataIndex() {
+    /**
+     * Metodo llamado por la funcion index.
+     * @return array
+     */
+    protected function dataIndex() {
+        //comprueba si hay datos para actualizar.
         $this->dataUpdate();
         $options = Options::selectAll();
+        
         return $options->getOptions();
     }
 
+    /**
+     * Metodo que actualiza los datos configurables del sitio.
+     */
     private function dataUpdate() {
         if (\filter_input(\INPUT_POST, 'update')) {
             $options = Options::selectAll();
             $dataInput = $this->getDataInput();
+            /*
+             * Usando el indices de $DATAINPUT, se obtiene
+             * de $OPTIONS cada instancia OPTION con sus datos,
+             * luego en OPTIONUPDATE se comprueba que datos seran actualizados.
+             */
             $keys = \array_keys($dataInput);
             $count = \count($keys);
             $error = \FALSE;
@@ -46,6 +55,10 @@ class OptionController {
         }
     }
 
+    /**
+     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * @return array
+     */
     private function getDataInput() {
         return [
             'optionTitle' => \filter_input(\INPUT_POST, 'optionTitle'),

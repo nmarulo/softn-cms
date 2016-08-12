@@ -12,23 +12,23 @@
                             <ul class="list-group">
                                 <li class="list-group-item">
                                     <span class="badge"><?php echo $data['count']['post']; ?></span>
-                                    <a href="<?php echo \LOCALHOST ?>admin/post">Publicaciones</a>
+                                    <a href="<?php echo $data['siteUrl']; ?>admin/post">Publicaciones</a>
                                 </li>
                                 <li class="list-group-item">
                                     <span class="badge"><?php echo $data['count']['page']; ?></span>
-                                    <a href="<?php echo \LOCALHOST ?>admin/page">Paginas</a>
+                                    <a href="<?php echo $data['siteUrl']; ?>admin/page">Paginas</a>
                                 </li>
                                 <li class="list-group-item">
                                     <span class="badge"><?php echo $data['count']['comment']; ?></span>
-                                    <a href="<?php echo \LOCALHOST ?>admin/comment">Comentarios</a>
+                                    <a href="<?php echo $data['siteUrl']; ?>admin/comment">Comentarios</a>
                                 </li>
                                 <li class="list-group-item">
                                     <span class="badge"><?php echo $data['count']['category']; ?></span>
-                                    <a href="<?php echo \LOCALHOST ?>admin/category">Categorias</a>
+                                    <a href="<?php echo $data['siteUrl']; ?>admin/category">Categorias</a>
                                 </li>
                                 <li class="list-group-item">
                                     <span class="badge"><?php echo $data['count']['user']; ?></span>
-                                    <a href="<?php echo \LOCALHOST ?>admin/user">Usuarios</a>
+                                    <a href="<?php echo $data['siteUrl']; ?>admin/user">Usuarios</a>
                                 </li>
                             </ul>
                         </div>

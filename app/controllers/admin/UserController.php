@@ -1,13 +1,12 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del controlador de la pagina de usuarios.
  */
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\controllers\BaseController;
 use SoftnCMS\models\admin\User;
 use SoftnCMS\models\admin\Users;
 use SoftnCMS\models\admin\UserInsert;
@@ -15,39 +14,36 @@ use SoftnCMS\models\admin\UserDelete;
 use SoftnCMS\models\admin\UserUpdate;
 
 /**
- * Description of UserController
+ * Clase del controlador de la pagina de usuarios.
  *
  * @author Nicolás Marulanda P.
  */
-class UserController {
+class UserController extends BaseController {
 
-    public function index() {
-        return ['data' => $this->dataIndex()];
-    }
-
-    public function update($id) {
-        return ['data' => $this->dataUpdate($id)];
-    }
-
-    public function delete($id) {
-        return ['data' => $this->dataDelete($id)];
-    }
-
-    public function insert() {
-        return ['data' => $this->dataInsert()];
-    }
-
-    private function dataIndex() {
+    /**
+     * Metodo llamado por la funcion INDEX.
+     * @return array
+     */
+    protected function dataIndex() {
         $users = Users::selectAll();
         $output = $users->getUsers();
+
         return ['users' => $output];
     }
 
-    private function dataUpdate($id) {
+    /**
+     * Metodo llamado por la función UPDATE.
+     * @param int $id
+     * @return array
+     */
+    protected function dataUpdate($id) {
+        global $urlSite;
+
         $user = User::selectByID($id);
 
+        //En caso de que no exista.
         if (empty($user)) {
-            header('Location: ' . \LOCALHOST . 'admin/user');
+            header("Location: $urlSite" . 'admin/user');
             exit();
         }
 
@@ -56,38 +52,81 @@ class UserController {
 
             if ($dataInput['userPass'] == $dataInput['userPassR']) {
                 $update = new UserUpdate($user, $dataInput['userLogin'], $dataInput['userName'], $dataInput['userEmail'], $dataInput['userPass'], $dataInput['userRol'], $dataInput['userUrl']);
-                $user = $update->update();
+
+                //Si ocurre un error la función "$update->update()" retorna FALSE.
+                if ($update->update()) {
+                    $user = $update->getUser();
+                }
             }
         }
+
         return [
+            //Instancia USER
             'user' => $user,
-            'actionUpdate' => \TRUE
+            /*
+             * Booleano que indica si muestra el encabezado
+             * "Agregar nuevo usuario" si es FALSE 
+             * o "Actualizar usuario" si es TRUE
+             */
+            'actionUpdate' => \TRUE,
         ];
     }
 
-    private function dataDelete($id) {
+    /**
+     * Metodo llamado por la función DELETE.
+     * @param int $id
+     * @return array
+     */
+    protected function dataDelete($id) {
+        /*
+         * Ya que este metodo no tiene modulo vista propio
+         * se carga el modulo vista INDEX, asi que se retornan los datos
+         * para esta vista.
+         */
+
         $delete = new UserDelete($id);
         $delete->delete();
+
         return $this->dataIndex();
     }
 
-    private function dataInsert() {
+    /**
+     * Metodo llamado por la función INSERT.
+     * @return array
+     */
+    protected function dataInsert() {
         if (filter_input(\INPUT_POST, 'publish')) {
+            global $urlSite;
+
             $dataInput = $this->getDataInput();
             if ($dataInput['userPass'] == $dataInput['userPassR']) {
                 $insert = new UserInsert($dataInput['userLogin'], $dataInput['userName'], $dataInput['userEmail'], $dataInput['userPass'], $dataInput['userRol'], $dataInput['userUrl']);
-                header('Location: ' . \LOCALHOST . 'admin/user/update/' . $insert->insert());
-                exit();
+
+                if ($insert->insert()) {
+                    //Si todo es correcto se muestra el USER en la pagina de edición.
+                    header("Location: $urlSite" . 'admin/user/update/' . $insert->getLastInsertId());
+                    exit();
+                }
             }
         }
 
         return [
+            //Datos por defecto a mostrar en el formulario.
             'user' => User::defaultInstance(),
-            'actionUpdate' => \FALSE
+            /*
+             * Booleano que indica si muestra el encabezado
+             * "Agregar nuevo usuario" si es FALSE 
+             * o "Actualizar usuario" si es TRUE
+             */
+            'actionUpdate' => \FALSE,
         ];
     }
 
-    private function getDataInput() {
+    /**
+     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * @return array
+     */
+    protected function getDataInput() {
         return [
             'userLogin' => \filter_input(\INPUT_POST, 'userLogin'),
             'userName' => \filter_input(\INPUT_POST, 'userName'),

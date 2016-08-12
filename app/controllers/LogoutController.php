@@ -1,27 +1,28 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del controlador del cierre de sesión.
  */
 
 namespace SoftnCMS\controllers;
 
+use SoftnCMS\controllers\Controller;
 use SoftnCMS\models\Login;
 
 /**
- * Description of LogoutController
+ * Clase controlador del cierre de sesión.
  *
  * @author Nicolás Marulanda P.
  */
-class LogoutController {
+class LogoutController extends Controller {
 
-    public function index() {
-        return ['data' => $this->dataIndex()];
-    }
-
-    private function dataIndex() {
+    /**
+     * Metodo llamado por la función INDEX.
+     * @return array
+     */
+    protected function dataIndex() {
+        global $urlSite;
+        
         if (Login::isLogin()) {
             unset($_SESSION['usernameID']);
 
@@ -31,7 +32,7 @@ class LogoutController {
                 usleep(2000);
             }
         }
-        header('Location: ' . \LOCALHOST . 'login');
+        header("Location: $urlSite" . 'login');
         exit();
     }
 

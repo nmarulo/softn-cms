@@ -2,7 +2,7 @@
 
 /**
  * Modulo del modelo post.
- * Gestiona la lista de Posts.
+ * Gestiona grupos de Posts.
  */
 
 namespace SoftnCMS\models\admin;
@@ -11,14 +11,14 @@ use SoftnCMS\models\admin\Post;
 use SoftnCMS\controllers\DBController;
 
 /**
- * Clase que gestiona la lista con todos los posts de la base de datos.
+ * Clase que gestiona grupos de posts.
  *
  * @author Nicolás Marulanda P.
  */
 class Posts {
 
     /**
-     * Lista de posts, donde el indice o clave corresponde al ID.
+     * Lista, donde el indice o clave corresponde al ID.
      * @var array 
      */
     private $posts;
@@ -31,7 +31,7 @@ class Posts {
     }
 
     /**
-     * 
+     * Metodo que obtiene todos los posts de la base de datos.
      * @return Posts
      */
     public static function selectAll() {
@@ -39,8 +39,8 @@ class Posts {
     }
 
     /**
-     * 
-     * @param type $value
+     * Metodo que obtiene todos los post segun el "ID" del un usuario.
+     * @param int $value
      * @return Posts
      */
     public static function selectByUserID($value) {
@@ -48,8 +48,8 @@ class Posts {
     }
 
     /**
-     * 
-     * @param type $val
+     * Metodo que obtiene todos los post que coinciden su titulo.
+     * @param string $val
      * @return Posts
      */
     public static function selectByTitle($val) {
@@ -61,8 +61,8 @@ class Posts {
     }
 
     /**
-     * 
-     * @param type $value
+     * Metodo que obtiene todos los post segun su estatus.
+     * @param int $value
      * @return Posts
      */
     public static function selectByStatus($value) {
@@ -70,8 +70,8 @@ class Posts {
     }
 
     /**
-     * 
-     * @param type $value
+     * Metodo que obtiene todos los post segun el estado de sus comentarios.
+     * @param int $value
      * @return Posts
      */
     public static function selectByCommentStatus($value) {
@@ -79,8 +79,8 @@ class Posts {
     }
 
     /**
-     * 
-     * @param type $value
+     * Metodo que obtiene todos los post segun su número de comentarios.
+     * @param int $value
      * @return Posts
      */
     public static function selectByComments($value) {
@@ -88,8 +88,8 @@ class Posts {
     }
 
     /**
-     * 
-     * @param type $value
+     * Metodo que obtiene todos los post segun su fecha de publicación.
+     * @param string $value
      * @return Posts
      */
     public static function selectByDate($value) {
@@ -97,8 +97,8 @@ class Posts {
     }
 
     /**
-     * 
-     * @param type $value
+     * Metodo que obtiene todos los post segun su fecha de actualización.
+     * @param string $value
      * @return Posts
      */
     public static function selectByUpdate($value) {
@@ -106,26 +106,27 @@ class Posts {
     }
 
     /**
-     * 
-     * @param type $value
-     * @param type $column
-     * @param type $dataType
+     * Metodo que obtiene los posts segun las especificaciones dadas.
+     * @param int|string $value Valor a buscar.
+     * @param string $column Nombre de la columna en la tabla.
+     * @param int $dataType [Opcional] Por defecto \PDO::PARAM_STR. Tipo de dato.
      * @return Posts
      */
     private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
         $parameter = ":$column";
         $where = "$column = $parameter";
         $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
+        
         return self::select($where, $prepare);
     }
 
     /**
-     * 
-     * @param type $where
-     * @param type $prepare
-     * @param type $columns
-     * @param type $limit
-     * @param type $orderBy
+     * Metodo que realiza una consulta a la base de datos.
+     * @param string $where [Opcional] Condiciones.
+     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
+     * @param string $columns [Opcional] Por defecto "*". Columnas.
+     * @param int $limit [Opcional] Numero de datos a retornar.
+     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
      * @return Posts
      */
     private static function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
@@ -135,6 +136,7 @@ class Posts {
         $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
         $posts = new Posts();
         $posts->addPosts($select);
+        
         return $posts;
     }
 
@@ -187,11 +189,12 @@ class Posts {
         } else {
             $output = \array_slice($this->getPosts(), 0, $limit, \TRUE);
         }
+        
         return $output;
     }
 
     /**
-     * 
+     * Metodo que obtiene el número total de POSTS.
      * @return int
      */
     public function count() {
@@ -200,6 +203,7 @@ class Posts {
         $fetch = 'fetchAll';
         $columns = 'COUNT(*) AS count';
         $select = $db->select($table, $fetch, '', [], $columns);
+        
         return $select[0]['count'];
     }
 

@@ -1,27 +1,26 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del controlador del formulario de inicio de sesión.
  */
 
 namespace SoftnCMS\controllers;
 
+use SoftnCMS\controllers\Controller;
 use SoftnCMS\models\Login;
 
 /**
- * Description of LoginController
+ * Clase controlador del inicio de sesión.
  *
  * @author Nicolás Marulanda P.
  */
-class LoginController {
+class LoginController extends Controller {
 
-    public function index() {
-        return ['data' => $this->dataIndex()];
-    }
-
-    private function dataIndex() {
+    /**
+     * Metodo llamado por la función INDEX.
+     * @return array
+     */
+    protected function dataIndex() {
         if (\filter_input(\INPUT_POST, 'login')) {
             $dataInput = $this->getDataInput();
 
@@ -30,9 +29,14 @@ class LoginController {
                 $login->login();
             }
         }
+        
         return [];
     }
 
+    /**
+     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * @return array
+     */
     private function getDataInput() {
         return [
             'userLogin' => \filter_input(\INPUT_POST, 'userLogin'),

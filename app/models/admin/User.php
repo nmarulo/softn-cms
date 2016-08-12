@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Modulo del controlador usuario.
- * Gestiona la información del usuario.
+ * Modulo del modelo usuario.
+ * Gestiona los datos de cada usuario.
  */
 
 namespace SoftnCMS\models\admin;
@@ -11,7 +11,7 @@ use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\Post;
 
 /**
- * Clase que gestiona la información de cada uno de los usuarios.
+ * Clase que gestiona los datos de cada usuarios.
  *
  * @author Nicolás Marulanda P.
  */
@@ -44,10 +44,7 @@ class User {
     /** Pagina web del usuario. */
     const USER_URL = 'user_url';
 
-    /**
-     * Datos del usuario.
-     * @var array 
-     */
+    /** @var array Datos del usuario. */
     private $user;
 
     /**
@@ -67,7 +64,7 @@ class User {
     }
 
     /**
-     * 
+     * Metodo que retorna una instancia por defecto.
      * @return User
      */
     public static function defaultInstance() {
@@ -81,42 +78,52 @@ class User {
             User::USER_ROL => 0,
             User::USER_URL => '',
         ];
+
         return new User($data);
     }
 
     /**
-     * 
-     * @param type $value
-     * @return User
+     * Metodo que realiza el HASH al valor pasado por parametro.
+     * @param string $pass
+     * @return string
+     */
+    public static function encrypt($pass) {
+        return hash('sha256', $pass . \LOGGED_KEY);
+    }
+
+    /**
+     * Metodo que obtiene un usuario segun su "ID".
+     * @param int $value
+     * @return User|bool
      */
     public static function selectByID($value) {
         return self::selectBy($value, User::ID, \PDO::PARAM_INT);
     }
 
     /**
-     * 
-     * @param type $value
-     * @return User
+     * Metodo que obtiene un usuario segun su "Login".
+     * @param string $value
+     * @return User|bool
      */
     public static function selectByLogin($value) {
         return self::selectBy($value, User::USER_LOGIN);
     }
 
     /**
-     * 
-     * @param type $value
-     * @return User
+     * Metodo que obtiene un usuario segun su "Email".
+     * @param string $value
+     * @return User|bool
      */
     public static function selectByEmail($value) {
         return self::selectBy($value, User::USER_EMAIL);
     }
 
     /**
-     * 
-     * @param type $value
-     * @param type $column
-     * @param type $dataType
-     * @return User
+     * Metodo que obtiene un usuario segun las especificaciones dadas.
+     * @param int|string $value Valor a buscar.
+     * @param string $column Nombre de la columna en la tabla.
+     * @param int $dataType [Opcional] Por defecto \PDO::PARAM_STR. Tipo de dato.
+     * @return User|bool
      */
     private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
         $parameter = ":$column";
@@ -126,13 +133,13 @@ class User {
     }
 
     /**
-     * 
-     * @param type $where
-     * @param type $prepare
-     * @param type $columns
-     * @param type $limit
-     * @param type $orderBy
-     * @return User
+     * Metodo que realiza una consulta a la base de datos.
+     * @param string $where [Opcional] Condiciones.
+     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
+     * @param string $columns [Opcional] Por defecto "*". Columnas.
+     * @param int $limit [Opcional] Por defecto 1. Numero de datos a retornar.
+     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
+     * @return User|bool En caso de no obtener datos retorna FALSE.
      */
     private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
         $db = DBController::getConnection();
@@ -143,6 +150,7 @@ class User {
         if (empty($select)) {
             return \FALSE;
         }
+
         return new User($select[0]);
     }
 
@@ -210,6 +218,10 @@ class User {
         return $this->user[User::USER_URL];
     }
 
+    /**
+     * Metodo que obtiene el número de POST realializados.
+     * @return int
+     */
     public function getCountPosts() {
         $db = DBController::getConnection();
         $table = Post::getTableName();
@@ -221,6 +233,7 @@ class User {
         ];
         $columns = 'COUNT(*) AS count';
         $select = $db->select($table, $fetch, $where, $prepare, $columns);
+
         return $select[0]['count'];
     }
 

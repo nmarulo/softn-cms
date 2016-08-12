@@ -18,17 +18,22 @@
 /** Espacio de nombre de los controladores. */
 \define('NAMESPACE_CONTROLLERS', \APP_NAMESPACE . 'controllers' . \DIRECTORY_SEPARATOR);
 
+/** Espacio de nombre de los controladores del panel de administración. */
 \define('NAMESPACE_CONTROLLERS_ADMIN', \NAMESPACE_CONTROLLERS . 'admin' . \DIRECTORY_SEPARATOR);
 
+/** Espacio de nombre de los controladores del tema de la aplicación. */
 \define('NAMESPACE_CONTROLLERS_THEMES', \NAMESPACE_CONTROLLERS . 'themes' . \DIRECTORY_SEPARATOR);
 
 /** Ruta de los modulos de controladores. */
 \define('CONTROLLERS', \ABSPATH . 'controllers' . \DIRECTORY_SEPARATOR);
 
+/** Ruta de los modulos de controladores de configuración. */
 \define('CONTROLLERS_CONFIG', \CONTROLLERS . 'config' . \DIRECTORY_SEPARATOR);
 
+/** Ruta de los modulos de controladores del panel de administración. */
 \define('CONTROLLERS_ADMIN', \CONTROLLERS . 'admin' . \DIRECTORY_SEPARATOR);
 
+/** Ruta de los modulos de controladores del tema de la aplicación. */
 \define('CONTROLLERS_THEMES', \CONTROLLERS . 'themes' . \DIRECTORY_SEPARATOR);
 
 /** Ruta de los modulos de modelos. */
@@ -37,7 +42,5 @@
 /** Ruta de los modulos de vista. */
 \define('VIEWS', \ABSPATH . 'views' . \DIRECTORY_SEPARATOR);
 
+/** Ruta de los temas de la aplicación. */
 \define('THEMES', \ABSPATH . 'themes' . \DIRECTORY_SEPARATOR);
-
-/** Direccion temporal de la aplicación. */
-\define('LOCALHOST', 'http://localhost/ProyectosWeb/htdocsxampp/SoftN-CMS/');

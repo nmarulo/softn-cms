@@ -1,9 +1,8 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del modelo usuario.
+ * Gestiona el borrado de usuarios.
  */
 
 namespace SoftnCMS\models\admin;
@@ -12,18 +11,27 @@ use SoftnCMS\models\admin\User;
 use SoftnCMS\controllers\DBController;
 
 /**
- * Description of UserDelete
+ * Clase que gestiona el borrado de usuarios.
  *
  * @author Nicolás Marulanda P.
  */
 class UserDelete {
 
+    /** @var int Identificador. */
     private $id;
 
+    /**
+     * Constructor.
+     * @param int $id Identificador.
+     */
     public function __construct($id) {
         $this->id = $id;
     }
 
+    /**
+     * Metodo que borra el usuario de la base de datos.
+     * @return bool Si es TRUE, todo se realizo correctamente.
+     */
     public function delete() {
         $db = DBController::getConnection();
         $table = User::getTableName();
@@ -34,6 +42,7 @@ class UserDelete {
         $prepare = [
             DBController::prepareStatement($parameter, $newData, $dataType)
         ];
+        
         return $db->delete($table, $where, $prepare);
     }
 

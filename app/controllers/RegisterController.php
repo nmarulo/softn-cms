@@ -1,27 +1,26 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo del controlador del formulario de registro de usuario.
  */
 
 namespace SoftnCMS\controllers;
 
+use SoftnCMS\controllers\Controller;
 use SoftnCMS\models\Register;
 
 /**
- * Description of RegisterController
+ * Clase controlador de registro de usuarios.
  *
  * @author Nicolás Marulanda P.
  */
-class RegisterController {
+class RegisterController extends Controller {
 
-    public function index() {
-        return ['data' => $this->dataIndex()];
-    }
-
-    private function dataIndex() {
+    /**
+     * Metodo llamado por la función INDEX.
+     * @return array
+     */
+    protected function dataIndex() {
         if (\filter_input(\INPUT_POST, 'register')) {
             $dataInput = $this->getDataInput();
 
@@ -30,16 +29,27 @@ class RegisterController {
                 $register->register();
             }
         }
+
         return [];
     }
 
+    /**
+     * Metodo que comprueba los datos de las contraseñas.
+     * @param arrat $dataInput
+     * @return bool
+     */
     private function checkPasswords($dataInput) {
         if ($dataInput['userPass'] && $dataInput['userPassR'] && $dataInput['userPass'] == $dataInput['userPassR']) {
             return \TRUE;
         }
+
         return \FALSE;
     }
 
+    /**
+     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * @return array
+     */
     private function getDataInput() {
         return [
             'userLogin' => \filter_input(\INPUT_POST, 'userLogin'),

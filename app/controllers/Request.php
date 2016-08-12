@@ -22,10 +22,16 @@ class Request {
     /** @var array Lista de argumentos. */
     private $args;
 
-    /** @var bool Comprueba si esta accediendo al panel de administración. */
+    /** @var bool Si es TRUE, el usuario esta en el panel de administración. */
     private $adminPanel;
+
+    /** @var bool Si es TRUE, el usuario esta en el formulario de inicio de sesión. */
     private $loginForm;
+
+    /** @var bool Si es TRUE, el usuario esta en el formulario de registro. */
     private $registerForm;
+
+    /** @var bool Si es TRUE, el usuario solicito el cierre de sesión. */
     private $logout;
 
     /**
@@ -43,21 +49,33 @@ class Request {
     }
 
     /**
-     * Metodo que indica si esta en el panel de administración.
+     * Metodo que indica si el usuario esta en el panel de administración.
      * @return bool
      */
     public function isAdminPanel() {
         return $this->adminPanel;
     }
 
+    /**
+     * Metodo que indica si el usuario esta en el formulario de inicio de sesión.
+     * @return bool
+     */
     public function isLoginForm() {
         return $this->loginForm;
     }
 
+    /**
+     * Metodo que indica si el usuario esta en el formulario de registro.
+     * @return bool
+     */
     public function isRegisterForm() {
         return $this->registerForm;
     }
 
+    /**
+     * Metodo que indica si el usuario solicito el cierre de sesión.
+     * @return bool
+     */
     public function isLogout() {
         return $this->logout;
     }
@@ -90,15 +108,17 @@ class Request {
      * Metodo que comprueba la url y obtiene sus datos.
      */
     private function parseUrl() {
-        $get = filter_input(INPUT_GET, \URL_GET);
+        $get = \filter_input(\INPUT_GET, \URL_GET);
 
         if ($get) {
             $url = \rtrim($get, '/');
             $url = \filter_var($url, \FILTER_SANITIZE_URL);
             /*
-             * [0] = carpeta
-             * [1] = controlador
-             * [>= 2] = argumentos
+             * La URL contiene:
+             * [] = carpeta - en caso de estar en el panel de administración.
+             * [] = controlador
+             * [] = metodo
+             * [>= ] = argumentos
              */
             $url = \explode('/', $url);
             $url = $this->checkUrl($url);
@@ -109,9 +129,13 @@ class Request {
     }
 
     /**
-     * Metodo que comprueba si esta en el panel de administración.
-     * @param array $url
-     * @return array
+     * Metodo que establece a TRUE o FALSE las variables booleanas 
+     * que establecen la ubicación del usuario.
+     * @param array $url Lista con los datos de la URL.
+     * @return array Si el usuario esta en el panel de administración 
+     * retornara la lista con los datos de la URL sin el primer dato 
+     * ya que este solo sirve para identificar que el usuario 
+     * esta en el panel de administración.
      */
     private function checkUrl($url) {
         $aux = $url;
@@ -125,7 +149,7 @@ class Request {
 
     /**
      * Metodo que establece el metodo a ejecutar.
-     * @param array $url
+     * @param string $url
      */
     private function selectMethod($url) {
         if (!empty($url)) {
@@ -135,7 +159,7 @@ class Request {
 
     /**
      * Metodo que establece el nombre del controlador.
-     * @param array $url
+     * @param string $url
      */
     private function selectController($url) {
         if (!empty($url)) {

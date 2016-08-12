@@ -28,7 +28,7 @@
     <hr/>
     <div class="form-group">
         <div class="col-sm-12">
-            <a href="<?php echo \LOCALHOST ?>register" class="btn btn-success btn-block">Registro</a>
+            <a href="<?php echo $data['siteUrl']; ?>register" class="btn btn-success btn-block">Registro</a>
         </div>
     </div>
 </form>
