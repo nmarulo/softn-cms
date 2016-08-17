@@ -45,15 +45,10 @@ class Register {
      */
     public function register() {
         if (!$this->isExistsUsername() && !$this->isExistsUserEmail()) {
-            global $urlSite;
-
             $user = User::defaultInstance();
             $register = new UserInsert($this->username, $this->username, $this->userEmail, $this->userpass, $user->getUserRol(), $user->getUserUrl());
 
-            if ($register->insert()) {
-                \header("Location: $urlSite" . 'login');
-                exit();
-            }
+            return $register->insert();
         }
 
         return \FALSE;

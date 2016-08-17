@@ -42,5 +42,8 @@
 /** Ruta de los modulos de vista. */
 \define('VIEWS', \ABSPATH . 'views' . \DIRECTORY_SEPARATOR);
 
+/** Ruta de los modulos de vista. */
+\define('VIEWS_ADMIN', \VIEWS . 'admin' . \DIRECTORY_SEPARATOR);
+
 /** Ruta de los temas de la aplicación. */
 \define('THEMES', \ABSPATH . 'themes' . \DIRECTORY_SEPARATOR);

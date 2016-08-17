@@ -7,6 +7,7 @@
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\Controller;
+use SoftnCMS\controllers\Messages;
 use SoftnCMS\models\admin\Options;
 use SoftnCMS\models\admin\OptionUpdate;
 
@@ -44,6 +45,7 @@ class OptionController extends Controller {
             $keys = \array_keys($dataInput);
             $count = \count($keys);
             $error = \FALSE;
+            $optionName = '';//En caso de error, contiene el nombre de la opción
 
             for ($i = 0; $i < $count && !$error; ++$i) {
                 $optionName = $keys[$i];
@@ -51,6 +53,12 @@ class OptionController extends Controller {
                 $option = $options->getOption($optionName);
                 $update = new OptionUpdate($option, $optionValue);
                 $error = !$update->update();
+            }
+
+            if ($error) {
+                Messages::addError("Error al actualizar '$optionName'");
+            } else {
+                Messages::addSuccess('Actualizado correctamente.');
             }
         }
     }

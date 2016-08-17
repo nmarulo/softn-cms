@@ -7,6 +7,7 @@
 namespace SoftnCMS\controllers;
 
 use SoftnCMS\controllers\Controller;
+use SoftnCMS\controllers\Messages;
 use SoftnCMS\models\Login;
 
 /**
@@ -21,15 +22,26 @@ class LoginController extends Controller {
      * @return array
      */
     protected function dataIndex() {
+        global $urlSite;
+
         if (\filter_input(\INPUT_POST, 'login')) {
             $dataInput = $this->getDataInput();
 
             if ($dataInput['userLogin'] && $dataInput['userPass']) {
                 $login = new Login($dataInput['userLogin'], $dataInput['userPass'], $dataInput['userRememberMe']);
-                $login->login();
+
+                if ($login->login()) {
+                    Messages::addSuccess('Inicio de sesión correcto.');
+                    \header("Location: $urlSite" . 'admin');
+                    exit();
+                } else {
+                    Messages::addError('Error. El usuario o la contraseña es incorrecta.');
+                }
+            } else {
+                Messages::addWarning('Completa todos los campos para continuar.');
             }
         }
-        
+
         return [];
     }
 

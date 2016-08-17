@@ -64,15 +64,13 @@ class Login {
 
         //Se comprueba si el nombre de usuario existe y si su contraseña es correcta.
         if ($user !== \FALSE && $user->getUserPass() == $this->password) {
-            global $urlSite;
-
             $_SESSION['usernameID'] = $user->getID();
 
             if ($this->userRememberMe) {
                 setcookie('userRememberMe', $user->getID(), \COOKIE_EXPIRE);
             }
-            \header("Location: $urlSite" . 'admin');
-            exit();
+            
+            return \TRUE;
         }
 
         return \FALSE;

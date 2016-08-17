@@ -7,6 +7,7 @@
 namespace SoftnCMS\controllers;
 
 use SoftnCMS\controllers\Controller;
+use SoftnCMS\controllers\Messages;
 use SoftnCMS\models\Login;
 
 /**
@@ -22,7 +23,7 @@ class LogoutController extends Controller {
      */
     protected function dataIndex() {
         global $urlSite;
-        
+
         if (Login::isLogin()) {
             unset($_SESSION['usernameID']);
 
@@ -31,6 +32,7 @@ class LogoutController extends Controller {
                 /** Tiempo de espera para que las cookies se eliminen. */
                 usleep(2000);
             }
+            Messages::addSuccess('Cierre de sesión correcto.');
         }
         header("Location: $urlSite" . 'login');
         exit();

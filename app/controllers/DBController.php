@@ -26,8 +26,11 @@ class DBController {
             case 'mysql':
                 $connection = new MySql();
                 break;
+            default :
+                die('Tipo de conexión no disponible.');
+                break;
         }
-        
+
         return $connection;
     }
 

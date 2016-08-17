@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers;
 
 use SoftnCMS\controllers\Request;
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\controllers\Messages;
 use SoftnCMS\models\Login;
 use SoftnCMS\models\admin\User;
 use SoftnCMS\models\admin\Option;
@@ -84,6 +85,8 @@ class Router {
         if($this->request->getController() == 'option'){
             $this->optionData();
         }
+        
+        $this->messages();
     }
 
     /**
@@ -106,7 +109,12 @@ class Router {
         if (Login::isLogin()) {
             $this->data['data']['userSession'] = User::selectByID($_SESSION['usernameID']);
         }
+        
         $this->optionData();
+    }
+    
+    private function messages(){
+        $this->data['data']['messages'] = Messages::getMessages();
     }
     
     /**
@@ -115,6 +123,7 @@ class Router {
      */
     private function optionData(){
         global $urlSite;
+        
         $this->data['data']['siteTitle'] = Option::selectByName('optionTitle')->getOptionValue();
         $this->data['data']['siteUrl'] = Option::selectByName('optionSiteUrl')->getOptionValue();
         $urlSite = $this->data['data']['siteUrl'];
@@ -148,6 +157,7 @@ class Router {
         } elseif (!$this->request->isLoginForm() && !$this->request->isRegisterForm() && !$this->request->isLogout()) {
             $controller = \CONTROLLERS_THEMES;
         }
+        
         return $controller;
     }
 
@@ -163,6 +173,7 @@ class Router {
         } elseif (!$this->request->isLoginForm() && !$this->request->isRegisterForm() && !$this->request->isLogout()) {
             $namespace = \NAMESPACE_CONTROLLERS_THEMES;
         }
+        
         return $namespace;
     }
 

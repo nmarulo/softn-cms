@@ -7,6 +7,7 @@
 namespace SoftnCMS\controllers;
 
 use SoftnCMS\controllers\Controller;
+use SoftnCMS\controllers\Messages;
 use SoftnCMS\models\Register;
 
 /**
@@ -21,13 +22,21 @@ class RegisterController extends Controller {
      * @return array
      */
     protected function dataIndex() {
+        global $urlSite;
+
         if (\filter_input(\INPUT_POST, 'register')) {
             $dataInput = $this->getDataInput();
 
             if ($this->checkPasswords($dataInput)) {
                 $register = new Register($dataInput['userLogin'], $dataInput['userEmail'], $dataInput['userPass']);
-                $register->register();
+                
+                if ($register->register()) {
+                    Messages::addSuccess('Usuario registrado correctamente.');
+                    \header("Location: $urlSite" . 'login');
+                    exit();
+                }
             }
+            Messages::addError('Error al registrar el usuario.');
         }
 
         return [];

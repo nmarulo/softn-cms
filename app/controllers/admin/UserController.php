@@ -7,6 +7,7 @@
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\BaseController;
+use SoftnCMS\controllers\Messages;
 use SoftnCMS\models\admin\User;
 use SoftnCMS\models\admin\Users;
 use SoftnCMS\models\admin\UserInsert;
@@ -43,6 +44,7 @@ class UserController extends BaseController {
 
         //En caso de que no exista.
         if (empty($user)) {
+            Messages::addError('Error. El usuario no existe.');
             header("Location: $urlSite" . 'admin/user');
             exit();
         }
@@ -55,7 +57,10 @@ class UserController extends BaseController {
 
                 //Si ocurre un error la función "$update->update()" retorna FALSE.
                 if ($update->update()) {
+                    Messages::addSuccess('Usuario actualizado correctamente.');
                     $user = $update->getUser();
+                } else {
+                    Messages::addError('Error al actualizar el usuario.');
                 }
             }
         }
@@ -85,7 +90,12 @@ class UserController extends BaseController {
          */
 
         $delete = new UserDelete($id);
-        $delete->delete();
+
+        if ($delete->delete()) {
+            Messages::addSuccess('Usuario borrado correctamente.');
+        } else {
+            Messages::addError('Error al borrar el usuario.');
+        }
 
         return $this->dataIndex();
     }
@@ -95,18 +105,22 @@ class UserController extends BaseController {
      * @return array
      */
     protected function dataInsert() {
+        global $urlSite;
+
         if (filter_input(\INPUT_POST, 'publish')) {
-            global $urlSite;
 
             $dataInput = $this->getDataInput();
             if ($dataInput['userPass'] == $dataInput['userPassR']) {
                 $insert = new UserInsert($dataInput['userLogin'], $dataInput['userName'], $dataInput['userEmail'], $dataInput['userPass'], $dataInput['userRol'], $dataInput['userUrl']);
 
                 if ($insert->insert()) {
+                    Messages::addSuccess('Usuario registrado correctamente.');
                     //Si todo es correcto se muestra el USER en la pagina de edición.
                     header("Location: $urlSite" . 'admin/user/update/' . $insert->getLastInsertId());
                     exit();
                 }
+
+                Messages::addError('Error al registrar el usuario.');
             }
         }
 

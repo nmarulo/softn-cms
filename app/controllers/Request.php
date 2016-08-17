@@ -49,6 +49,14 @@ class Request {
     }
 
     /**
+     * Metod que indica si el usuario esta en el tema.
+     * @return bool
+     */
+    public function isTheme() {
+        return !$this->adminPanel && !$this->loginForm && !$this->registerForm && !$this->logout;
+    }
+
+    /**
      * Metodo que indica si el usuario esta en el panel de administración.
      * @return bool
      */
@@ -144,6 +152,7 @@ class Request {
         $this->loginForm = 'login' == $value;
         $this->registerForm = 'register' == $value;
         $this->logout = 'logout' == $value;
+        
         return $this->adminPanel ? $aux : $url;
     }
 

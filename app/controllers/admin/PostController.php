@@ -7,6 +7,7 @@
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\BaseController;
+use SoftnCMS\controllers\Messages;
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\Posts;
 use SoftnCMS\models\admin\PostUpdate;
@@ -45,17 +46,20 @@ class PostController extends BaseController {
      * @return array
      */
     protected function dataInsert() {
+        global $urlSite;
+
         if (filter_input(\INPUT_POST, 'publish')) {
-            global $urlSite;
 
             $dataInput = $this->getDataInput();
             $insert = new PostInsert($dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus'], $_SESSION['usernameID']);
 
             if ($insert->insert()) {
+                Messages::addSuccess('Entrada publicada correctamente.');
                 //Si todo es correcto se muestra el POST en la pagina de edición.
                 header("Location: $urlSite" . 'admin/post/update/' . $insert->getLastInsertId());
                 exit();
             }
+            Messages::addError('Error al publicar la entrada');
         }
 
         return [
@@ -82,6 +86,7 @@ class PostController extends BaseController {
 
         //En caso de que no exista.
         if (empty($post)) {
+            Messages::addError('Error. La entrada no existe.');
             header("Location: $urlSite" . 'admin/post');
             exit();
         }
@@ -92,7 +97,10 @@ class PostController extends BaseController {
 
             //Si ocurre un error la función "$update->update()" retorna FALSE.
             if ($update->update()) {
+                Messages::addSuccess('Entrada actualizada correctamente.');
                 $post = $update->getPost();
+            } else {
+                Messages::addError('Error al actualizar la entrada.');
             }
         }
 
@@ -121,7 +129,12 @@ class PostController extends BaseController {
          */
 
         $delete = new PostDelete($id);
-        $delete->delete();
+
+        if ($delete->delete()) {
+            Messages::addSuccess('Entrada borrada correctamente.');
+        } else {
+            Messages::addError('Error al borrar la entrada.');
+        }
 
         return $this->dataIndex();
     }

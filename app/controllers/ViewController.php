@@ -7,6 +7,7 @@
 namespace SoftnCMS\controllers;
 
 use SoftnCMS\controllers\Request;
+use SoftnCMS\models\admin\Option;
 
 /**
  * Clase responsable de presentar el modulo vista al usuario.
@@ -31,6 +32,9 @@ class ViewController {
      * @var string Guarda el nombre de la zona a mostrar.
      */
     private $nameMethodViews;
+    
+    /** @var string Nombre del tema actual */
+    private $nameTheme;
 
     /**
      * Constructor.
@@ -48,19 +52,30 @@ class ViewController {
      * Metodo que muestra los modulos vista al usuario.
      */
     public function render() {
-        $view = \VIEWS . $this->nameView . '.php';
+        global $urlSite;
 
-        //En caso de error se muestra la vista index.
+        $view = \VIEWS;
+
+        if ($this->request->isAdminPanel()) {
+            $view = \VIEWS_ADMIN;
+        } elseif ($this->request->isTheme()) {
+            $this->nameTheme = Option::selectByName('optionTheme')->getOptionValue();
+            $view = \THEMES . $this->nameTheme . \DIRECTORY_SEPARATOR;
+        }
+
+        $view .= $this->nameView . '.php';
+
+        //En caso de error.
         if (!\is_readable($view)) {
-            $this->nameView = 'index';
-            $view = \VIEWS . $this->nameView . '.php';
+            \header("Location: $urlSite");
+            exit();
         }
 
         //Se obtiene los datos enviados a la vista.
         if (\is_array($this->data)) {
             \extract($this->data, EXTR_PREFIX_INVALID, 'softn');
         }
-        
+
         //Array con la ruta de los modulos vista a incluir.
         $viewsRequire = \call_user_func([$this, $this->nameMethodViews], $view);
 
@@ -108,6 +123,7 @@ class ViewController {
     private function login($view) {
         return [
             \VIEWS . 'headerlogin.php',
+            \VIEWS . 'messages.php',
             $view,
             \VIEWS . 'footerlogin.php',
         ];
@@ -119,10 +135,12 @@ class ViewController {
      * @return array
      */
     private function theme($view) {
+        $path = \THEMES . $this->nameTheme . \DIRECTORY_SEPARATOR;
+
         return [
-            \THEMES . 'default' . \DIRECTORY_SEPARATOR . 'header.php',
-            \THEMES . 'default' . \DIRECTORY_SEPARATOR . 'index.php',
-            \THEMES . 'default' . \DIRECTORY_SEPARATOR . 'footer.php',
+            $path . 'header.php',
+            $view,
+            $path . 'footer.php',
         ];
     }
 
@@ -133,11 +151,12 @@ class ViewController {
      */
     private function admin($view) {
         return [
-            \VIEWS . 'header.php',
-            \VIEWS . 'topbar.php',
-            \VIEWS . 'leftbar.php',
+            \VIEWS_ADMIN . 'header.php',
+            \VIEWS . 'messages.php',
+            \VIEWS_ADMIN . 'topbar.php',
+            \VIEWS_ADMIN . 'leftbar.php',
             $view,
-            \VIEWS . 'footer.php',
+            \VIEWS_ADMIN . 'footer.php',
         ];
     }
 
