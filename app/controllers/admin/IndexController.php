@@ -9,6 +9,7 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\controllers\Controller;
 use SoftnCMS\models\admin\Posts;
 use SoftnCMS\models\admin\Users;
+use SoftnCMS\models\admin\Comments;
 
 /**
  * Clase del controlador de la pagina de inicio del panel de administración.
@@ -24,6 +25,7 @@ class IndexController extends Controller {
     protected function dataIndex() {
         $posts = new Posts();
         $users = new Users();
+        $comments = new Comments();
 
         return [
             'github' => $this->lastUpdateGitHub(),
@@ -33,19 +35,34 @@ class IndexController extends Controller {
                 'post' => $posts->count(),
                 'page' => 0,
                 'category' => 0,
-                'comment' => 0,
+                'comment' => $comments->count(),
                 'user' => $users->count(),
             ],
         ];
     }
 
     /**
-     * Metod que obtiene las actualizaciones del GitHub.
+     * Metodo que obtiene las ultimas 5 actualizaciones de las rama Master y la 
+     * rama Develop de GitHub.
      * @return array
      */
     private function lastUpdateGitHub() {
-        $github = \simplexml_load_file('https://github.com/nmarulo/softn-cms/commits/develop.atom');
-        $github = \get_object_vars($github);
+        $xmlUrlDevelop = 'https://github.com/nmarulo/softn-cms/commits/develop.atom';
+        $xmlUrlMaster = 'https://github.com/nmarulo/softn-cms/commits/master.atom';
+
+        return [
+            'master' => $this->xmlGitHub($xmlUrlMaster),
+            'develop' => $this->xmlGitHub($xmlUrlDevelop),
+        ];
+    }
+
+    /**
+     * Metod que obtiene las actualizaciones de la url de GitHub.
+     * @param string $xmlUrl
+     * @return array
+     */
+    private function xmlGitHub($xmlUrl) {
+        $github = \get_object_vars(\simplexml_load_file($xmlUrl));
         $leng = \count($github['entry']);
         $forEnd = $leng > 5 ? 5 : $leng;
         $dataGitHub = [
@@ -68,7 +85,7 @@ class IndexController extends Controller {
                 'title' => $element['title'],
             ];
         }
-        
+
         return $dataGitHub;
     }
 

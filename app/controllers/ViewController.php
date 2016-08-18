@@ -109,8 +109,7 @@ class ViewController {
                 break;
             case 'insert':
             case 'update':
-            case 'register':
-                $this->nameView = $this->request->getController() . 'insert';
+                $this->nameView = $this->request->getController() . 'form';
                 break;
         }
     }

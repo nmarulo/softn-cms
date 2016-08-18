@@ -17,6 +17,18 @@ use SoftnCMS\controllers\DBController;
  */
 class PostInsert {
 
+    /** @var string Nombre de las columnas. */
+    private static $COLUMNS = Post::POST_TITLE . ', ' . Post::POST_STATUS . ', ' . Post::POST_DATE . ', ' . Post::POST_UPDATE . ', ' . Post::POST_CONTENTS . ', ' . Post::COMMENT_STATUS . ', ' . Post::USER_ID;
+
+    /** @var string Nombre de los indices para preparar la consulta. */
+    private static $VALUES = ':' . Post::POST_TITLE . ', ' . ':' . Post::POST_STATUS . ', ' . ':' . Post::POST_DATE . ', ' . ':' . Post::POST_UPDATE . ', ' . ':' . Post::POST_CONTENTS . ', ' . ':' . Post::COMMENT_STATUS . ', ' . ':' . Post::USER_ID;
+
+    /** @var array Lista con los indices, valores y tipos de datos para la consulta. */
+    private $prepareStatement;
+
+    /** @var int Identificador del INSERT realizado. */
+    private $lastInsertId;
+
     /** @var string Titulo. */
     private $postTitle;
 
@@ -31,18 +43,6 @@ class PostInsert {
 
     /** @var int Identificador del autor. */
     private $userID;
-
-    /** @var string Nombre de las columnas. */
-    private static $COLUMNS = Post::POST_TITLE . ', ' . Post::POST_STATUS . ', ' . Post::POST_DATE . ', ' . Post::POST_UPDATE . ', ' . Post::POST_CONTENTS . ', ' . Post::COMMENT_STATUS . ', ' . Post::USER_ID;
-
-    /** @var string Nombre de los indices para preparar la consulta. */
-    private static $VALUES = ':' . Post::POST_TITLE . ', ' . ':' . Post::POST_STATUS . ', ' . ':' . Post::POST_DATE . ', ' . ':' . Post::POST_UPDATE . ', ' . ':' . Post::POST_CONTENTS . ', ' . ':' . Post::COMMENT_STATUS . ', ' . ':' . Post::USER_ID;
-
-    /** @var array Lista con los indices, valores y tipos de datos para la consulta. */
-    private $prepareStatement;
-
-    /** @var int Identificador del INSERT realizado. */
-    private $lastInsertId;
 
     /**
      * Constructor.

@@ -36,15 +36,36 @@
                     <div class="panel panel-primary"><!-- Categorias -->
                         <div class="panel-heading">Noticias de SoftN CMS</div>
                         <div class="panel-body">
-                            <p>Ultima actualización: <?php echo $data['github']['lastUpdate']; ?> <a href="https://github.com/nmarulo/softn-cms" target="_blank">GitHub</a></p>
-                            <ul class="list-group">
-                                <?php foreach ($data['github']['entry'] as $value) { ?>
-                                    <li class="list-group-item">
-                                        <a href="<?php echo $value['authorUri']; ?>" target="_blank"><span class="label label-success"><?php echo $value['authorName']; ?></span></a> 
-                                        <a href="<?php echo $value['linkHref']; ?>" target="_blank"><?php echo $value['title']; ?></a>
-                                    </li>
-                                <?php } ?>
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation"><a href="#master" aria-controls="master" role="tab" data-toggle="tab">Master</a></li>
+                                <li role="presentation" class="active"><a href="#develop" aria-controls="develop" role="tab" data-toggle="tab">Develop</a></li>
                             </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane" id="master">
+                                    <p>Ultima actualización: <?php echo $data['github']['master']['lastUpdate']; ?> <a href="https://github.com/nmarulo/softn-cms" target="_blank">GitHub</a></p>
+                                    <ul class="list-group">
+                                        <?php foreach ($data['github']['master']['entry'] as $value) { ?>
+                                            <li class="list-group-item">
+                                                <a href="<?php echo $value['authorUri']; ?>" target="_blank"><span class="label label-success"><?php echo $value['authorName']; ?></span></a> 
+                                                <a href="<?php echo $value['linkHref']; ?>" target="_blank"><?php echo $value['title']; ?></a>
+                                            </li>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
+                                <div role="tabpanel" class="tab-pane active" id="develop">
+                                    <p>Ultima actualización: <?php echo $data['github']['develop']['lastUpdate']; ?> <a href="https://github.com/nmarulo/softn-cms" target="_blank">GitHub</a></p>
+                                    <ul class="list-group">
+                                        <?php foreach ($data['github']['develop']['entry'] as $value) { ?>
+                                            <li class="list-group-item">
+                                                <a href="<?php echo $value['authorUri']; ?>" target="_blank"><span class="label label-success"><?php echo $value['authorName']; ?></span></a> 
+                                                <a href="<?php echo $value['linkHref']; ?>" target="_blank"><?php echo $value['title']; ?></a>
+                                            </li>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div><!-- Fin - Categorias -->
                 </div>

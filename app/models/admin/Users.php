@@ -48,6 +48,7 @@ class Users {
         $parameter = ':' . User::USER_NAME;
         $where = User::USER_NAME . " LIKE $parameter";
         $prepare[] = DBController::prepareStatement($parameter, $value, \PDO::PARAM_STR);
+
         return self::select($where, $prepare);
     }
 
@@ -80,6 +81,7 @@ class Users {
         $parameter = ":$column";
         $where = "$column = $parameter";
         $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
+
         return self::select($where, $prepare);
     }
 
@@ -99,7 +101,7 @@ class Users {
         $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
         $users = new Users();
         $users->addUsers($select);
-        
+
         return $users;
     }
 
@@ -148,7 +150,7 @@ class Users {
         $fetch = 'fetchAll';
         $columns = 'COUNT(*) AS count';
         $select = $db->select($table, $fetch, '', [], $columns);
-        
+
         return $select[0]['count'];
     }
 

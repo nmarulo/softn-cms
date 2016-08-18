@@ -129,6 +129,7 @@ class User {
         $parameter = ":$column";
         $where = "$column = $parameter";
         $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
+        
         return self::select($where, $prepare);
     }
 

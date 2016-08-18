@@ -17,9 +17,6 @@ use SoftnCMS\controllers\DBController;
  */
 class Post {
 
-    /** @var string Nombre de la table. */
-    private static $TABLE = \DB_PREFIX . 'posts';
-
     /** Identificador de la entrada. */
     const ID = 'ID';
 
@@ -47,6 +44,9 @@ class Post {
     /** Identificador del autor. */
     const USER_ID = 'user_ID';
 
+    /** @var string Nombre de la table. */
+    private static $TABLE = \DB_PREFIX . 'posts';
+    
     /** @var array Datos del post. */
     private $post;
 
@@ -210,6 +210,7 @@ class Post {
      */
     public function getUser() {
         $userID = $this->getUserID();
+        
         return User::selectByID($userID);
     }
 

@@ -39,7 +39,7 @@
                 <div class="form-group">
                     <label for="optionTheme" class="col-sm-2 control-label">Seleccionar plantilla</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="optionTheme" value="<?php echo $data['optionTheme']->getOptionValue(); ?>" disabled>
+                        <input type="text" class="form-control" name="optionTheme" value="<?php echo $data['optionTheme']->getOptionValue(); ?>">
 <!--                        <select class="form-control" name="optionTheme">
                         <?php // echo $data['optionTheme']; ?>
                         </select>-->

@@ -57,6 +57,7 @@ class Posts {
         $parameter = ':' . Post::POST_TITLE;
         $where = Post::POST_TITLE . " LIKE $parameter";
         $prepare[] = DBController::prepareStatement($parameter, $value, \PDO::PARAM_STR);
+        
         return self::select($where, $prepare);
     }
 
