@@ -10,6 +10,7 @@ use SoftnCMS\controllers\Controller;
 use SoftnCMS\models\admin\Posts;
 use SoftnCMS\models\admin\Users;
 use SoftnCMS\models\admin\Comments;
+use SoftnCMS\models\admin\Categories;
 
 /**
  * Clase del controlador de la pagina de inicio del panel de administración.
@@ -26,6 +27,7 @@ class IndexController extends Controller {
         $posts = new Posts();
         $users = new Users();
         $comments = new Comments();
+        $categories = new Categories();
 
         return [
             'github' => $this->lastUpdateGitHub(),
@@ -34,7 +36,7 @@ class IndexController extends Controller {
             'count' => [
                 'post' => $posts->count(),
                 'page' => 0,
-                'category' => 0,
+                'category' => $categories->count(),
                 'comment' => $comments->count(),
                 'user' => $users->count(),
             ],
