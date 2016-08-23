@@ -34,9 +34,11 @@
                         foreach ($data['users'] as $user) {
                             $output = '<tr>';
                             $output .= '<td class="options">';
-                            $output .= '<a class="btnAction-sm btn btn-primary" href="' . $data['siteUrl'] . 'admin/user/update/' . $user->getID() . '" title="Editar"><span class="glyphicon glyphicon-edit"></span></a> ';
-                            $output .= '<a class="btnAction-sm btn btn-danger" href="' . $data['siteUrl'] . 'admin/user/delete/' . $user->getID() . '" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a> ';
+                            if ($_SESSION['usernameID'] != $user->getID()) {
+                                $output .= '<a class="btnAction-sm btn btn-primary" href="' . $data['siteUrl'] . 'admin/user/update/' . $user->getID() . '" title="Editar"><span class="glyphicon glyphicon-edit"></span></a> ';
+                                $output .= '<a class="btnAction-sm btn btn-danger" href="' . $data['siteUrl'] . 'admin/user/delete/' . $user->getID() . '" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a> ';
 //                            $output .= '<button class="btnAction btnAction-sm btn btn-danger" data-action="" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button></td>';
+                            }
                             $output .= '</td>';
                             $output .= '<td>' . $user->getUserLogin() . '</td>';
                             $output .= '<td>' . $user->getUserName() . '</td>';

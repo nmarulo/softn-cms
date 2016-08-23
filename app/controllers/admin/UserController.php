@@ -33,6 +33,42 @@ class UserController extends BaseController {
     }
 
     /**
+     * Metodo llamado por la función INSERT.
+     * @return array
+     */
+    protected function dataInsert() {
+        global $urlSite;
+
+        if (filter_input(\INPUT_POST, 'publish')) {
+
+            $dataInput = $this->getDataInput();
+            if ($dataInput['userPass'] == $dataInput['userPassR']) {
+                $insert = new UserInsert($dataInput['userLogin'], $dataInput['userName'], $dataInput['userEmail'], $dataInput['userPass'], $dataInput['userRol'], $dataInput['userUrl']);
+
+                if ($insert->insert()) {
+                    Messages::addSuccess('Usuario registrado correctamente.');
+                    //Si todo es correcto se muestra el USER en la pagina de edición.
+                    header("Location: $urlSite" . 'admin/user/update/' . $insert->getLastInsertId());
+                    exit();
+                }
+
+                Messages::addError('Error al registrar el usuario.');
+            }
+        }
+
+        return [
+            //Datos por defecto a mostrar en el formulario.
+            'user' => User::defaultInstance(),
+            /*
+             * Booleano que indica si muestra el encabezado
+             * "Agregar nuevo usuario" si es FALSE 
+             * o "Actualizar usuario" si es TRUE
+             */
+            'actionUpdate' => \FALSE,
+        ];
+    }
+
+    /**
      * Metodo llamado por la función UPDATE.
      * @param int $id
      * @return array
@@ -90,50 +126,17 @@ class UserController extends BaseController {
          */
 
         $delete = new UserDelete($id);
+        $output = $delete->delete();
 
-        if ($delete->delete()) {
+        if ($output) {
             Messages::addSuccess('Usuario borrado correctamente.');
+        } elseif ($output === 0) {
+            Messages::addWarning('El usuario no existe.');
         } else {
             Messages::addError('Error al borrar el usuario.');
         }
 
         return $this->dataIndex();
-    }
-
-    /**
-     * Metodo llamado por la función INSERT.
-     * @return array
-     */
-    protected function dataInsert() {
-        global $urlSite;
-
-        if (filter_input(\INPUT_POST, 'publish')) {
-
-            $dataInput = $this->getDataInput();
-            if ($dataInput['userPass'] == $dataInput['userPassR']) {
-                $insert = new UserInsert($dataInput['userLogin'], $dataInput['userName'], $dataInput['userEmail'], $dataInput['userPass'], $dataInput['userRol'], $dataInput['userUrl']);
-
-                if ($insert->insert()) {
-                    Messages::addSuccess('Usuario registrado correctamente.');
-                    //Si todo es correcto se muestra el USER en la pagina de edición.
-                    header("Location: $urlSite" . 'admin/user/update/' . $insert->getLastInsertId());
-                    exit();
-                }
-
-                Messages::addError('Error al registrar el usuario.');
-            }
-        }
-
-        return [
-            //Datos por defecto a mostrar en el formulario.
-            'user' => User::defaultInstance(),
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Agregar nuevo usuario" si es FALSE 
-             * o "Actualizar usuario" si es TRUE
-             */
-            'actionUpdate' => \FALSE,
-        ];
     }
 
     /**

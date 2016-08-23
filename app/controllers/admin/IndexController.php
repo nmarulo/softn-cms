@@ -28,11 +28,32 @@ class IndexController extends Controller {
         $users = new Users();
         $comments = new Comments();
         $categories = new Categories();
+        $lastPosts = $posts->lastPosts(5);
+        $lastComments = $comments->lastComments(5);
+
+        foreach ($lastPosts as $value) {
+            $title = $value->getPostTitle();
+
+            if (isset($title{30})) {
+                $title = substr($title, 0, 30) . ' [...]';
+            }
+            $value->setPostTitle($title);
+        }
+        
+        foreach ($lastComments as $value) {
+            //Borra las etiquetas html
+            $contents = strip_tags($value->getCommentContents());
+            
+            if (isset($contents{30})) {
+                $contents = substr($contents, 0, 30) . ' [...]';
+            }
+            $value->setCommentContents($contents);
+        }
 
         return [
             'github' => $this->lastUpdateGitHub(),
-            'lastPosts' => $posts->lastPosts(5),
-            'lastComments' => [],
+            'lastPosts' => $lastPosts,
+            'lastComments' => $lastComments,
             'count' => [
                 'post' => $posts->count(),
                 'page' => 0,
@@ -49,6 +70,7 @@ class IndexController extends Controller {
      * @return array
      */
     private function lastUpdateGitHub() {
+        //api https://api.github.com/repos/nmarulo/softn-cms/branches/develop
         $xmlUrlDevelop = 'https://github.com/nmarulo/softn-cms/commits/develop.atom';
         $xmlUrlMaster = 'https://github.com/nmarulo/softn-cms/commits/master.atom';
 

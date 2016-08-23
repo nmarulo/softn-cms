@@ -59,7 +59,7 @@ class CategoryInsert {
     }
 
     /**
-     * Metodo que obtiene el identificador del nuevo comentario.
+     * Metodo que obtiene el identificador del nuevo dato.
      * @return int
      */
     public function getLastInsertId() {
@@ -71,7 +71,7 @@ class CategoryInsert {
      */
     private function prepare() {
         $this->addPrepare(':' . Category::CATEGORY_NAME, $this->categoryName, \PDO::PARAM_STR);
-        $this->addPrepare(':' . Category::CATEGORY_DESCRIPTION, $this->categoryName, \PDO::PARAM_STR);
+        $this->addPrepare(':' . Category::CATEGORY_DESCRIPTION, $this->categoryDescription, \PDO::PARAM_STR);
         $this->addPrepare(':' . Category::CATEGORY_COUNT, 0, \PDO::PARAM_INT);
     }
 

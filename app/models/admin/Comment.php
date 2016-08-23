@@ -82,12 +82,12 @@ class Comment {
     /**
      * Metodo que obtiene un comentario segun su "ID".
      * @param int $value
-     * @return Post|bool
+     * @return Comment|bool
      */
     public static function selectByID($value) {
         return self::selectBy($value, self::ID, \PDO::PARAM_INT);
     }
-
+    
     /**
      * Metodo que obtiene un comentario segun las especificaciones dadas.
      * @param int|string $value Valor a buscar.
@@ -187,6 +187,14 @@ class Comment {
      */
     public function getPostID() {
         return $this->comment[self::POST_ID];
+    }
+    
+    /**
+     * Metodo que establece el contenido del comentario.
+     * @param string $value
+     */
+    public function setCommentContents($value) {
+        $this->comment[self::COMMENT_CONTENTS] = $value;
     }
 
 }

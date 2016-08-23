@@ -28,10 +28,10 @@ class CategoryController extends BaseController {
     protected function dataIndex() {
         $categories = Categories::selectAll();
         $output = $categories->getCategories();
-        
+
         return ['categories' => $output];
     }
-    
+
     /**
      * Metodo llamado por la función INSERT.
      * @return array
@@ -63,7 +63,7 @@ class CategoryController extends BaseController {
             'actionUpdate' => \FALSE
         ];
     }
-    
+
     /**
      * Metodo llamado por la función UPDATE.
      * @param int $id
@@ -105,7 +105,7 @@ class CategoryController extends BaseController {
             'actionUpdate' => \TRUE
         ];
     }
-    
+
     /**
      * Metodo llamado por la función DELETE.
      * @param int $id
@@ -119,9 +119,12 @@ class CategoryController extends BaseController {
          */
 
         $delete = new CategoryDelete($id);
+        $output = $delete->delete();
 
-        if ($delete->delete()) {
+        if ($output) {
             Messages::addSuccess('Categoría borrada correctamente.');
+        } elseif ($output === 0) {
+            Messages::addWarning('La Categoría no existe.');
         } else {
             Messages::addError('Error al borrar la categoría.');
         }

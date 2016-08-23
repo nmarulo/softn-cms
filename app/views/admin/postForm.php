@@ -52,16 +52,36 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">Categorías</div>
                             <div class="panel-body">
-                                <select name="relationshipsCategoryID[]" multiple class="form-control">
-                                    <option value=''>category</option>
+                                <select name="relationshipsCategoriesID[]" multiple class="form-control">
+                                    <?php
+                                    foreach ($data['categories'] as $category) {
+                                        $categoryID = $category->getID();
+                                        $selected = '';
+                                        
+                                        if(\in_array($categoryID, $data['relationshipsCategoriesID'])){
+                                            $selected = 'selected';
+                                        }
+                                        echo "<option value='$categoryID' $selected>" . $category->getCategoryName() . '</option>';
+                                    }
+                                    ?>
                                 </select>
                             </div>
                         </div>
                         <div class="panel panel-default">
                             <div class="panel-heading">Etiquetas</div>
                             <div class="panel-body">
-                                <select name="relationshipsTermID[]" multiple class="form-control">
-                                    <option value=''>term</option>
+                                <select name="relationshipsTermsID[]" multiple class="form-control">
+                                    <?php
+                                    foreach ($data['terms'] as $term) {
+                                        $termID = $term->getID();
+                                        $selected = '';
+                                        
+                                        if(\in_array($termID, $data['relationshipsTermsID'])){
+                                            $selected = 'selected';
+                                        }
+                                        echo "<option value='$termID' $selected>" . $term->getTermName() . '</option>';
+                                    }
+                                    ?>
                                 </select>
                             </div>
                         </div>

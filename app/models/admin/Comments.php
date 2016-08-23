@@ -29,15 +29,60 @@ class Comments {
     public function __construct() {
         $this->comments = [];
     }
-    
+
     /**
-     * Metodo que obtiene todos los comments de la base de datos.
+     * Metodo que obtiene todos los comentarios de la base de datos.
      * @return Comments
      */
     public static function selectAll() {
         return self::select();
     }
-    
+
+    /**
+     * Metodo que obtiene todos los comentarios segun el nombre del autor.
+     * @param string $value
+     * @return Comments
+     */
+    public static function selectByAuthor($value) {
+        return self::selectBy($value, Comment::COMMENT_AUTHOR);
+    }
+
+    /**
+     * Metodo que obtiene todos los comentarios segun el email del autor.
+     * @param string $value
+     * @return Comments
+     */
+    public static function selectByAuthorEmail($value) {
+        return self::selectBy($value, Comment::COMMENT_AUTHOR_EMAIL);
+    }
+
+    /**
+     * Metodo que obtiene todos los comentarios segun su estado.
+     * @param int $value
+     * @return Comments
+     */
+    public static function selectByStatus($value) {
+        return self::selectBy($value, Comment::COMMENT_STATUS, \PDO::PARAM_INT);
+    }
+
+    /**
+     * Metodo que obtiene todos los comentarios segun su fecha.
+     * @param string $value
+     * @return Comments
+     */
+    public static function selectByDate($value) {
+        return self::selectBy($value, Comment::COMMENT_DATE);
+    }
+
+    /**
+     * Metodo que obtiene todos los comentarios segun el identificador del post.
+     * @param int $value
+     * @return Comments
+     */
+    public static function selectByPostID($value) {
+        return self::selectBy($value, Comment::POST_ID, \PDO::PARAM_INT);
+    }
+
     /**
      * Metodo que obtiene los comentarios segun las especificaciones dadas.
      * @param int|string $value Valor a buscar.
@@ -49,7 +94,7 @@ class Comments {
         $parameter = ":$column";
         $where = "$column = $parameter";
         $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
-        
+
         return self::select($where, $prepare);
     }
 
@@ -69,10 +114,10 @@ class Comments {
         $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
         $comments = new Comments();
         $comments->addComments($select);
-        
+
         return $comments;
     }
-    
+
     /**
      * Metodo que obtiene todos los comentarios.
      * @return array
@@ -107,7 +152,7 @@ class Comments {
             $this->addComment(new Comment($value));
         }
     }
-    
+
     /**
      * Metodo que obtiene los ultimos comentarios.
      * @param int $limit Numero de comentarios.
@@ -122,10 +167,10 @@ class Comments {
         } else {
             $output = \array_slice($this->getComments(), 0, $limit, \TRUE);
         }
-        
+
         return $output;
     }
-    
+
     /**
      * Metodo que obtiene el número total de comentarios.
      * @return int
@@ -136,7 +181,7 @@ class Comments {
         $fetch = 'fetchAll';
         $columns = 'COUNT(*) AS count';
         $select = $db->select($table, $fetch, '', [], $columns);
-        
+
         return $select[0]['count'];
     }
 

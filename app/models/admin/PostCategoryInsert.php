@@ -44,7 +44,7 @@ class PostCategoryInsert {
     }
     
     /**
-     * Metodo que realiza el proceso de insertar el post en la base de datos.
+     * Metodo que inserta los datos.
      * @return bool Si es TRUE, todo se realizo correctamente.
      */
     public function insert() {

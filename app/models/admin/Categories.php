@@ -74,7 +74,7 @@ class Categories {
     }
     
     /**
-     * Metodo que obtiene todos los comentarios.
+     * Metodo que obtiene todas las categorías.
      * @return array
      */
     public function getCategories() {

@@ -9,7 +9,6 @@ namespace SoftnCMS\models\admin;
 
 use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\PostCategory;
-use SoftnCMS\models\admin\Categories;
 
 /**
  * Clase que gestiona grupos de relaciones post-categoría.
@@ -19,23 +18,24 @@ use SoftnCMS\models\admin\Categories;
 class PostsCategories {
 
     /**
-     * Lista, donde el indice o clave corresponde al ID de la categoría.
+     * Lista de categorías, donde el indice o clave corresponde al ID 
+     * del post.
      * @var array 
      */
-    private $categories;
+    private $categoriesID;
 
     /**
-     * Lista, donde el indice o clave corresponde al ID del post.
+     * Lista de posts, donde el indice o clave corresponde al ID de la categoría.
      * @var array 
      */
-    private $posts;
+    private $postsID;
 
     /**
      * Constructor.
      */
     public function __construct() {
-        $this->categories = [];
-        $this->posts = [];
+        $this->categoriesID = [];
+        $this->postsID = [];
     }
 
     /**
@@ -47,30 +47,30 @@ class PostsCategories {
     }
 
     /**
-     * Metodo que obtiene todas las relaciones post-categoría, segun su ID, de un post.
-     * @param int $value
+     * Metodo que obtiene todas las categorías vinculadas a un post.
+     * @param int $value Identificador del post.
      * @return array Lista con las categorías vinculadas.
      */
     public static function selectByPostID($value) {
         $select = self::selectBy($value, PostCategory::RELATIONSHIPS_POST_ID, \PDO::PARAM_INT);
 
         if ($select->hasCategories($value)) {
-            return $select->getPost($value);
+            return $select->getCategories($value);
         }
 
         return [];
     }
 
     /**
-     * Metodo que obtiene todas las relaciones post-categoría, segun su ID, de un post.
-     * @param int $value
-     * @return array Lista con los post vinculados.
+     * Metodo que obtiene todos los posts vinculados a un categoría.
+     * @param int $value Identificador de la categoría.
+     * @return array Lista con los posts vinculados.
      */
     public static function selectByCategoryID($value) {
         $select = self::selectBy($value, PostCategory::RELATIONSHIPS_CATEGORY_ID, \PDO::PARAM_INT);
 
         if ($select->hasPosts($value)) {
-            return $select->getCategory($value);
+            return $select->getPosts($value);
         }
 
         return [];
@@ -116,7 +116,7 @@ class PostsCategories {
      * @return bool 
      */
     public function hasCategories($postID) {
-        return \array_key_exists($postID, $this->posts);
+        return \array_key_exists($postID, $this->categoriesID);
     }
 
     /**
@@ -125,25 +125,25 @@ class PostsCategories {
      * @return bool 
      */
     public function hasPosts($categoryID) {
-        return \array_key_exists($categoryID, $this->categories);
+        return \array_key_exists($categoryID, $this->postsID);
     }
 
     /**
-     * Metodo que obtiene todas las relaciones post-categoría, segun su ID, de un post.
+     * Metodo que obtiene todos los post (ID) vinculados a una categoría.
      * @param int $id
      * @return array
      */
-    public function getPost($id) {
-        return $this->posts[$id];
+    public function getPosts($id) {
+        return $this->postsID[$id];
     }
 
     /**
-     * Metodo que obtiene todas las relaciones post-categoría, segun su ID, de una categoría.
+     * Metodo que obtiene todas las categorías (ID) vinculadas a un post.
      * @param int $id
      * @return array
      */
-    public function getCategory($id) {
-        return $this->categories[$id];
+    public function getCategories($id) {
+        return $this->categoriesID[$id];
     }
 
     /**
@@ -151,8 +151,8 @@ class PostsCategories {
      * @param PostCategory $postCategory
      */
     public function addPostCategory(PostCategory $postCategory) {
-        $this->posts[$postCategory->getPostID()][] = $postCategory->getCategoryID();
-        $this->categories[$postCategory->getCategoryID()][] = $postCategory->getPostID();
+        $this->postsID[$postCategory->getCategoryID()][] = $postCategory->getPostID();
+        $this->categoriesID[$postCategory->getPostID()][] = $postCategory->getCategoryID();
     }
 
     /**

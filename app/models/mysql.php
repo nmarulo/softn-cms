@@ -121,8 +121,12 @@ class MySql {
     public function delete($table, $where, $prepare) {
         $sql = "DELETE FROM $table WHERE $where";
         $this->query = $sql;
+        
+        if($this->execute($sql, $prepare)){
+            return $this->prepareObject->rowCount();
+        }
 
-        return $this->execute($sql, $prepare);
+        return \FALSE;
     }
 
     /**

@@ -67,7 +67,7 @@ class Post {
     }
 
     /**
-     *  Metodo que retorna una instancia por defecto.
+     * Metodo que retorna una instancia por defecto.
      * @return Post
      */
     public static function defaultInstance() {

@@ -51,7 +51,7 @@ class Category {
     }
 
     /**
-     *  Metodo que retorna una instancia por defecto.
+     * Metodo que retorna una instancia por defecto.
      * @return Category
      */
     public static function defaultInstance() {

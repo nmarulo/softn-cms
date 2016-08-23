@@ -17,14 +17,14 @@ use SoftnCMS\models\admin\PostCategory;
  */
 class PostCategoryDelete {
 
+    /** @var array Lista con los indices, valores y tipos de datos para la consulta. */
+    private $prepareStatement;
+
     /** @var array Identificador de las categorías. */
     private $categoriesID;
 
     /** @var int Identificador del post. */
     private $postID;
-
-    /** @var array Lista con los indices, valores y tipos de datos para la consulta. */
-    private $prepareStatement;
 
     /**
      * Constructor.

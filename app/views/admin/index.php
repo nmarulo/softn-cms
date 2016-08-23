@@ -86,9 +86,11 @@
                         <div class="panel-heading">Comentarios</div>
                         <div class="panel-body">
                             <ul class="list-group">
-                                <li class="list-group-item clearfix">
-                                    <span class="pull-left">fecha</span><a href='#'>titulo</a>
-                                </li>
+                                <?php foreach ($data['lastComments'] as $value) { ?>
+                                    <li class="list-group-item clearfix">
+                                        <span class="pull-left"><?php echo $value->getCommentDate(); ?></span><a href='#'><?php echo $value->getCommentContents(); ?></a>
+                                    </li>
+                                <?php } ?>
                             </ul>
                         </div>
                     </div><!-- Fin - comentarios -->

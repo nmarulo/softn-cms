@@ -41,10 +41,10 @@ class CommentUpdate {
     /**
      * Constructor.
      * @param Comment $comment Instancia con los datos sin modificar.
-     * @param type $commentAutor Nombre del autor.
-     * @param type $commentAuthorEmail mail del autor.
-     * @param type $commentStatus Estado del comentario. 0 = Sin aprobar, 1 = Aprobado
-     * @param type $commentContents Contenido del comentario.
+     * @param string $commentAutor Nombre del autor.
+     * @param string $commentAuthorEmail Email del autor.
+     * @param int $commentStatus Estado del comentario. 0 = Sin aprobar, 1 = Aprobado
+     * @param string $commentContents Contenido del comentario.
      */
     public function __construct(Comment $comment, $commentAutor, $commentAuthorEmail, $commentStatus, $commentContents) {
         $this->comment = $comment;

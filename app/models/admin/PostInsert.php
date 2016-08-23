@@ -53,12 +53,12 @@ class PostInsert {
      * @param int $userID Identificador del autor.
      */
     public function __construct($postTitle, $postContents, $commentStatus, $postStatus, $userID) {
+        $this->prepareStatement = [];
         $this->postTitle = $postTitle;
         $this->postContents = $postContents;
         $this->commentStatus = $commentStatus;
         $this->postStatus = $postStatus;
         $this->userID = $userID;
-        $this->prepareStatement = [];
     }
 
     /**

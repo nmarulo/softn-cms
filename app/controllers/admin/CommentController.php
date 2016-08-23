@@ -29,6 +29,15 @@ class CommentController extends BaseController {
         $comments = Comments::selectAll();
         $output = $comments->getComments();
 
+        foreach ($output as $value) {
+            $contents = strip_tags($value->getCommentContents());
+
+            if (isset($contents{30})) {
+                $contents = substr($contents, 0, 30) . ' [...]';
+            }
+            $value->setCommentContents($contents);
+        }
+
         return ['comments' => $output];
     }
 
@@ -119,9 +128,12 @@ class CommentController extends BaseController {
          */
 
         $delete = new CommentDelete($id);
+        $output = $delete->delete();
 
-        if ($delete->delete()) {
+        if ($output) {
             Messages::addSuccess('Comentario borrado correctamente.');
+        } elseif ($output === 0) {
+            Messages::addWarning('El comentario no existe.');
         } else {
             Messages::addError('Error al borrar el comentario.');
         }

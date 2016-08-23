@@ -11,7 +11,7 @@ use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\Category;
 
 /**
- * Clase que gestiona la actualización comentarios.
+ * Clase que gestiona la actualización de las categorías.
  *
  * @author Nicolás Marulanda P.
  */
@@ -35,8 +35,8 @@ class CategoryUpdate {
     /**
      * Constructor.
      * @param Category $category Instancia con los datos sin modificar.
-     * @param type $categoryName Nombre de la categoría.
-     * @param type $categoryDescription Descripción de la categoría.
+     * @param string $categoryName Nombre de la categoría.
+     * @param string $categoryDescription Descripción de la categoría.
      */
     public function __construct($category, $categoryName, $categoryDescription) {
         $this->category = $category;
@@ -46,7 +46,7 @@ class CategoryUpdate {
     }
 
     /**
-     * Metodo que actualiza los datos del comentario en la base de datos.
+     * Metodo que actualiza los datos en la base de datos.
      * @return bool Si es TRUE, todo se realizo correctamente.
      */
     public function update() {
@@ -82,9 +82,9 @@ class CategoryUpdate {
         //Obtiene el primer dato el cual corresponde al id.
         $prepare = [$this->prepareStatement[0]];
         $select = $db->select($table, $fetch, $where, $prepare, $columns);
-        $post = new Category($select[0]);
+        $category = new Category($select[0]);
 
-        return $post;
+        return $category;
     }
 
     /**
