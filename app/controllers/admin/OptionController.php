@@ -27,7 +27,7 @@ class OptionController extends Controller {
         $this->dataUpdate();
         $options = Options::selectAll();
         
-        return $options->getOptions();
+        return $options->getAll();
     }
 
     /**
@@ -50,7 +50,7 @@ class OptionController extends Controller {
             for ($i = 0; $i < $count && !$error; ++$i) {
                 $optionName = $keys[$i];
                 $optionValue = $dataInput[$optionName];
-                $option = $options->getOption($optionName);
+                $option = $options->getByID($optionName);
                 $update = new OptionUpdate($option, $optionValue);
                 $error = !$update->update();
             }

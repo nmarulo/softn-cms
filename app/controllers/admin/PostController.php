@@ -35,7 +35,7 @@ class PostController extends BaseController {
      */
     protected function dataIndex() {
         $posts = Posts::selectAll();
-        $output = $posts->getPosts();
+        $output = $posts->getAll();
 
         foreach ($output as $post) {
             $title = $post->getPostTitle();
@@ -78,8 +78,8 @@ class PostController extends BaseController {
         }
 
         return [
-            'terms' => $terms->getTerms(),
-            'categories' => $categories->getCategories(),
+            'terms' => $terms->getAll(),
+            'categories' => $categories->getAll(),
             //Datos por defecto a mostrar en el formulario.
             'post' => Post::defaultInstance(),
             /*
@@ -119,7 +119,7 @@ class PostController extends BaseController {
             //Si ocurre un error la función "$update->update()" retorna FALSE.
             if ($update->update()) {
                 Messages::addSuccess('Entrada actualizada correctamente.');
-                $post = $update->getPost();
+                $post = $update->getDataUpdate();
 
                 $this->updateRelationshipsCategories($dataInput['relationshipsCategoriesID'], $postID);
                 $this->updateRelationshipsTerms($dataInput['relationshipsTermsID'], $postID);
@@ -131,8 +131,8 @@ class PostController extends BaseController {
         return [
             'relationshipsCategoriesID' => PostsCategories::selectByPostID($postID),
             'relationshipsTermsID' => PostsTerms::selectByPostID($postID),
-            'terms' => $terms->getTerms(),
-            'categories' => $categories->getCategories(),
+            'terms' => $terms->getAll(),
+            'categories' => $categories->getAll(),
             //Instancia POST
             'post' => $post,
             /*

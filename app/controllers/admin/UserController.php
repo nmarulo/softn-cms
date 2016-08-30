@@ -27,7 +27,7 @@ class UserController extends BaseController {
      */
     protected function dataIndex() {
         $users = Users::selectAll();
-        $output = $users->getUsers();
+        $output = $users->getAll();
 
         return ['users' => $output];
     }
@@ -94,7 +94,7 @@ class UserController extends BaseController {
                 //Si ocurre un error la función "$update->update()" retorna FALSE.
                 if ($update->update()) {
                     Messages::addSuccess('Usuario actualizado correctamente.');
-                    $user = $update->getUser();
+                    $user = $update->getDataUpdate();
                 } else {
                     Messages::addError('Error al actualizar el usuario.');
                 }

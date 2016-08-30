@@ -27,7 +27,7 @@ class TermController extends BaseController {
      */
     protected function dataIndex() {
         $terms = Terms::selectAll();
-        $output = $terms->getTerms();
+        $output = $terms->getAll();
 
         return ['terms' => $output];
     }
@@ -88,7 +88,7 @@ class TermController extends BaseController {
             //Si ocurre un error la función "$update->update()" retorna FALSE.
             if ($update->update()) {
                 Messages::addSuccess('Etiqueta actualizada correctamente.');
-                $term = $update->getTerm();
+                $term = $update->getDataUpdate();
             } else {
                 Messages::addError('Error al actualizar la etiqueta.');
             }

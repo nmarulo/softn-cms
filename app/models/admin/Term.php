@@ -7,17 +7,14 @@
 
 namespace SoftnCMS\models\admin;
 
-use SoftnCMS\controllers\DBController;
+use SoftnCMS\models\admin\base\Model;
 
 /**
  * Clase que gestiona los datos de cada etiqueta.
  *
  * @author Nicolás Marulanda P.
  */
-class Term {
-
-    /** Identificador de la etiqueta. */
-    const ID = 'ID';
+class Term extends Model {
 
     /** Nombre de la etiqueta. */
     const TERM_NAME = 'term_name';
@@ -56,6 +53,7 @@ class Term {
      */
     public static function defaultInstance() {
         $data = [
+            self::ID => 0,
             self::TERM_NAME => '',
             self::TERM_DESCRIPTION => '',
             self::TERM_COUNT => 0,
@@ -70,44 +68,18 @@ class Term {
      * @return Term|bool
      */
     public static function selectByID($value) {
-        return self::selectBy($value, self::ID, \PDO::PARAM_INT);
+        $select = self::selectBy(self::$TABLE, $value, self::ID, \PDO::PARAM_INT);
+        
+        return self::getInstanceData($select);
     }
 
     /**
-     * Metodo que obtiene una etiqueta segun las especificaciones dadas.
-     * @param int|string $value Valor a buscar.
-     * @param string $column Nombre de la columna en la tabla.
-     * @param int $dataType Tipo de dato.
-     * @return Term|bool
+     * Metodo que recibe un lista de datos y retorna un instancia.
+     * @param array $data Lista de datos.
+     * @return Term|bool Si es FALSE, no hay datos.
      */
-    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
-        $parameter = ":$column";
-        $where = "$column = $parameter";
-        $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
-
-        return self::select($where, $prepare);
-    }
-
-    /**
-     * Metodo que realiza una consulta a la base de datos.
-     * @param string $where [Opcional] Condiciones.
-     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
-     * @param string $columns [Opcional] Por defecto "*". Columnas.
-     * @param int $limit [Opcional] Por defecto 1. Numero de datos a retornar.
-     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
-     * @return Term|bool En caso de no obtener datos retorna FALSE.
-     */
-    private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
-        $db = DBController::getConnection();
-        $table = self::$TABLE;
-        $fetch = 'fetchAll';
-        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
-
-        if (empty($select)) {
-            return \FALSE;
-        }
-
-        return new Term($select[0]);
+    public static function getInstanceData($data) {
+        return parent::getInstance($data, __CLASS__);
     }
 
     /**

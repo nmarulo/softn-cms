@@ -27,7 +27,7 @@ class CategoryController extends BaseController {
      */
     protected function dataIndex() {
         $categories = Categories::selectAll();
-        $output = $categories->getCategories();
+        $output = $categories->getAll();
 
         return ['categories' => $output];
     }
@@ -88,7 +88,7 @@ class CategoryController extends BaseController {
             //Si ocurre un error la función "$update->update()" retorna FALSE.
             if ($update->update()) {
                 Messages::addSuccess('Categoría actualizada correctamente.');
-                $category = $update->getCategory();
+                $category = $update->getDataUpdate();
             } else {
                 Messages::addError('Error al actualizar la categoría.');
             }

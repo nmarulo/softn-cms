@@ -24,7 +24,7 @@ class IndexController extends Controller {
         $posts = Posts::selectAll();
 
         return [
-            'posts' => $posts->getPosts()
+            'posts' => $posts->getAll()
         ];
     }
 

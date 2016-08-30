@@ -9,19 +9,14 @@ namespace SoftnCMS\models\admin;
 
 use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\Post;
+use SoftnCMS\models\admin\base\Model;
 
 /**
  * Clase que gestiona los datos de cada usuarios.
  *
  * @author Nicolás Marulanda P.
  */
-class User {
-
-    /** @var string Nombre de la table. */
-    private static $TABLE = \DB_PREFIX . 'users';
-
-    /** Identificador del usuarios. */
-    const ID = 'ID';
+class User extends Model {
 
     /** Nombre de usuario. */
     const USER_LOGIN = 'user_login';
@@ -43,6 +38,9 @@ class User {
 
     /** Pagina web del usuario. */
     const USER_URL = 'user_url';
+
+    /** @var string Nombre de la table. */
+    private static $TABLE = \DB_PREFIX . 'users';
 
     /** @var array Datos del usuario. */
     private $user;
@@ -97,7 +95,9 @@ class User {
      * @return User|bool
      */
     public static function selectByID($value) {
-        return self::selectBy($value, User::ID, \PDO::PARAM_INT);
+        $select = self::selectBy(self::$TABLE, $value, User::ID, \PDO::PARAM_INT);
+        
+        return self::getInstanceData($select);
     }
 
     /**
@@ -106,7 +106,9 @@ class User {
      * @return User|bool
      */
     public static function selectByLogin($value) {
-        return self::selectBy($value, User::USER_LOGIN);
+        $select = self::selectBy(self::$TABLE, $value, User::USER_LOGIN);
+        
+        return self::getInstanceData($select);
     }
 
     /**
@@ -115,44 +117,18 @@ class User {
      * @return User|bool
      */
     public static function selectByEmail($value) {
-        return self::selectBy($value, User::USER_EMAIL);
-    }
-
-    /**
-     * Metodo que obtiene un usuario segun las especificaciones dadas.
-     * @param int|string $value Valor a buscar.
-     * @param string $column Nombre de la columna en la tabla.
-     * @param int $dataType [Opcional] Por defecto \PDO::PARAM_STR. Tipo de dato.
-     * @return User|bool
-     */
-    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
-        $parameter = ":$column";
-        $where = "$column = $parameter";
-        $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
+        $select = self::selectBy(self::$TABLE, $value, User::USER_EMAIL);
         
-        return self::select($where, $prepare);
+        return self::getInstanceData($select);
     }
 
     /**
-     * Metodo que realiza una consulta a la base de datos.
-     * @param string $where [Opcional] Condiciones.
-     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
-     * @param string $columns [Opcional] Por defecto "*". Columnas.
-     * @param int $limit [Opcional] Por defecto 1. Numero de datos a retornar.
-     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
-     * @return User|bool En caso de no obtener datos retorna FALSE.
+     * Metodo que recibe un lista de datos y retorna un instancia POSTS.
+     * @param array $data Lista de datos.
+     * @return User|bool Si es FALSE, no hay datos.
      */
-    private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
-        $db = DBController::getConnection();
-        $table = self::$TABLE;
-        $fetch = 'fetchAll';
-        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
-
-        if (empty($select)) {
-            return \FALSE;
-        }
-
-        return new User($select[0]);
+    public static function getInstanceData($data) {
+        return parent::getInstance($data, __CLASS__);
     }
 
     /**

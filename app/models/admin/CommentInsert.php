@@ -7,27 +7,21 @@
 
 namespace SoftnCMS\models\admin;
 
-use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\Comment;
+use SoftnCMS\models\admin\base\ModelInsert;
 
 /**
  * Clase que gestiona el proceso de insertar comentarios.
  *
  * @author Nicolás Marulanda P.
  */
-class CommentInsert {
+class CommentInsert extends ModelInsert {
 
     /** @var string Nombre de las columnas. */
     private static $COLUMNS = Comment::COMMENT_AUTHOR . ', ' . Comment::COMMENT_AUTHOR_EMAIL . ', ' . Comment::COMMENT_DATE . ', ' . Comment::COMMENT_CONTENTS . ', ' . Comment::COMMENT_STATUS . ', ' . Comment::COMMENT_USER_ID . ', ' . Comment::POST_ID;
 
     /** @var string Nombre de los indices para preparar la consulta. */
     private static $VALUES = ':' . Comment::COMMENT_AUTHOR . ', :' . Comment::COMMENT_AUTHOR_EMAIL . ', :' . Comment::COMMENT_DATE . ', :' . Comment::COMMENT_CONTENTS . ', :' . Comment::COMMENT_STATUS . ', :' . Comment::COMMENT_USER_ID . ', :' . Comment::POST_ID;
-
-    /** @var array Lista con los indices, valores y tipos de datos para la consulta. */
-    private $prepareStatement;
-
-    /** @var int Identificador del INSERT realizado. */
-    private $lastInsertId;
 
     /** @var string Nombre del autor. */
     private $commentAutor;
@@ -57,7 +51,7 @@ class CommentInsert {
      * @param int $commentUserID Identificador del autor.
      */
     public function __construct($commentAutor, $commentAuthorEmail, $commentStatus, $commentContents, $postID, $commentUserID) {
-        $this->prepareStatement = [];
+        parent::__construct(Term::getTableName(), self::$COLUMNS, self::$VALUES);
         $this->commentAutor = $commentAutor;
         $this->commentAuthorEmail = $commentAuthorEmail;
         $this->commentStatus = $commentStatus;
@@ -67,34 +61,9 @@ class CommentInsert {
     }
 
     /**
-     * Metodo que realiza el proceso de insertar el comentario en la base de datos.
-     * @return bool Si es TRUE, todo se realizo correctamente.
-     */
-    public function insert() {
-        $db = DBController::getConnection();
-        $table = Comment::getTableName();
-        $this->prepare();
-
-        if ($db->insert($table, self::$COLUMNS, self::$VALUES, $this->prepareStatement)) {
-            $this->lastInsertId = $db->lastInsertId();
-            return \TRUE;
-        }
-
-        return \FALSE;
-    }
-
-    /**
-     * Metodo que obtiene el identificador del nuevo comentario.
-     * @return int
-     */
-    public function getLastInsertId() {
-        return $this->lastInsertId;
-    }
-
-    /**
      * Metodo que establece los datos a preparar.
      */
-    private function prepare() {
+    protected function prepare() {
         $date = \date('Y-m-d H:i:s', \time());
         $this->addPrepare(':' . Comment::COMMENT_AUTHOR, $this->commentAutor, \PDO::PARAM_STR);
         $this->addPrepare(':' . Comment::COMMENT_AUTHOR_EMAIL, $this->commentAuthorEmail, \PDO::PARAM_STR);
@@ -103,16 +72,6 @@ class CommentInsert {
         $this->addPrepare(':' . Comment::COMMENT_STATUS, $this->commentStatus, \PDO::PARAM_INT);
         $this->addPrepare(':' . Comment::COMMENT_USER_ID, $this->commentUserID, \PDO::PARAM_INT);
         $this->addPrepare(':' . Comment::POST_ID, $this->postID, \PDO::PARAM_INT);
-    }
-
-    /**
-     * Metodo que guarda los datos establecidos.
-     * @param string $parameter Indice a buscar. EJ: ":ID"
-     * @param string $value Valor del indice.
-     * @param int $dataType Tipo de dato. EJ: \PDO::PARAM_*
-     */
-    private function addPrepare($parameter, $value, $dataType) {
-        $this->prepareStatement[] = DBController::prepareStatement($parameter, $value, $dataType);
     }
 
 }

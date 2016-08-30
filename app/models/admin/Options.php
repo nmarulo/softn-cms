@@ -8,26 +8,20 @@
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\models\admin\Option;
-use SoftnCMS\controllers\DBController;
+use SoftnCMS\models\admin\base\Models;
 
 /**
  * Clase que gestiona grupos de opciones.
  *
  * @author Nicolás Marulanda P.
  */
-class Options {
-
-    /**
-     * Lista, donde el indice o clave corresponde al nombre asignado.
-     * @var array 
-     */
-    private $options;
+class Options extends Models {
 
     /**
      * Constructor.
      */
     public function __construct() {
-        $this->options = [];
+        parent::__construct(Option::getTableName(), __CLASS__);
     }
 
     /**
@@ -35,35 +29,18 @@ class Options {
      * @return Options
      */
     public static function selectAll() {
-        return self::select();
+        $select = self::select(Option::getTableName());
+
+        return self::getInstanceData($select);
     }
 
     /**
-     * Metodo que realiza una consulta a la base de datos.
-     * @param string $where [Opcional] Condiciones.
-     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
-     * @param string $columns [Opcional] Por defecto "*". Columnas.
-     * @param int $limit [Opcional] Numero de datos a retornar.
-     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
-     * @return Options
+     * Metodo que recibe un lista de datos y retorna un instancia.
+     * @param array $data Lista de datos.
+     * @return Options|bool Si es FALSE, no hay datos.
      */
-    private static function select($where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
-        $db = DBController::getConnection();
-        $table = Option::getTableName();
-        $fetch = 'fetchAll';
-        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
-        $options = new Options();
-        $options->addOptions($select);
-        
-        return $options;
-    }
-
-    /**
-     * Metodo que obtiene todos las opciones.
-     * @return array
-     */
-    public function getOptions() {
-        return $this->options;
+    public static function getInstanceData($data) {
+        return parent::getInstance($data, __CLASS__);
     }
 
     /**
@@ -71,25 +48,25 @@ class Options {
      * @param string $optionName
      * @return Option
      */
-    public function getOption($optionName) {
-        return $this->options[$optionName];
+    public function getByID($optionName) {
+        return $this->data[$optionName];
     }
 
     /**
      * Metodo que agrega una opción a la lista.
      * @param Option $option
      */
-    public function addOption(Option $option) {
-        $this->options[$option->getOptionName()] = $option;
+    public function add($option) {
+        $this->data[$option->getOptionName()] = $option;
     }
 
     /**
-     * Metodo que obtiene un array con los datos de las opciones y los agrega a la lista.
-     * @param array $option
+     * Metodo que recibe una lista de datos y los agrega a la lista actual.
+     * @param array $data Lista de datos.
      */
-    public function addOptions($option) {
-        foreach ($option as $value) {
-            $this->addOption(new Option($value));
+    public function addData($data) {
+        foreach ($data as $value) {
+            $this->add(new Option($value));
         }
     }
 

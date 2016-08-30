@@ -7,17 +7,14 @@
 
 namespace SoftnCMS\models\admin;
 
-use SoftnCMS\controllers\DBController;
+use SoftnCMS\models\admin\base\Model;
 
 /**
  * Clase que gestiona los datos de cada comentario.
  *
  * @author Nicolás Marulanda P.
  */
-class Comment {
-
-    /** Identificador de la entrada. */
-    const ID = 'ID';
+class Comment extends Model {
 
     /** Estado del comentario. 0 = Sin aprobar, 1 = Aprobado */
     const COMMENT_STATUS = 'comment_status';
@@ -68,6 +65,7 @@ class Comment {
      */
     public static function defaultInstance() {
         $data = [
+            self::ID => 0,
             self::COMMENT_AUTHOR => '',
             self::COMMENT_AUTHOR_EMAIL => '',
             self::COMMENT_CONTENTS => '',
@@ -85,44 +83,18 @@ class Comment {
      * @return Comment|bool
      */
     public static function selectByID($value) {
-        return self::selectBy($value, self::ID, \PDO::PARAM_INT);
+        $select = self::selectBy(self::$TABLE, $value, self::ID, \PDO::PARAM_INT);
+        
+        return self::getInstanceData($select);
     }
     
     /**
-     * Metodo que obtiene un comentario segun las especificaciones dadas.
-     * @param int|string $value Valor a buscar.
-     * @param string $column Nombre de la columna en la tabla.
-     * @param int $dataType Tipo de dato.
-     * @return Comment|bool
+     * Metodo que recibe un lista de datos y retorna un instancia.
+     * @param array $data Lista de datos.
+     * @return Comment|bool Si es FALSE, no hay datos.
      */
-    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
-        $parameter = ":$column";
-        $where = "$column = $parameter";
-        $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
-
-        return self::select($where, $prepare);
-    }
-
-    /**
-     * Metodo que realiza una consulta a la base de datos.
-     * @param string $where [Opcional] Condiciones.
-     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
-     * @param string $columns [Opcional] Por defecto "*". Columnas.
-     * @param int $limit [Opcional] Por defecto 1. Numero de datos a retornar.
-     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
-     * @return Comment|bool En caso de no obtener datos retorna FALSE.
-     */
-    private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
-        $db = DBController::getConnection();
-        $table = self::$TABLE;
-        $fetch = 'fetchAll';
-        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
-
-        if (empty($select)) {
-            return \FALSE;
-        }
-
-        return new Comment($select[0]);
+    public static function getInstanceData($data) {
+        return parent::getInstance($data, __CLASS__);
     }
 
     /**

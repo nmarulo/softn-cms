@@ -28,8 +28,8 @@ class IndexController extends Controller {
         $users = new Users();
         $comments = new Comments();
         $categories = new Categories();
-        $lastPosts = $posts->lastPosts(5);
-        $lastComments = $comments->lastComments(5);
+        $lastPosts = $posts->lastData(5);
+        $lastComments = $comments->lastData(5);
 
         foreach ($lastPosts as $value) {
             $title = $value->getPostTitle();
@@ -39,11 +39,11 @@ class IndexController extends Controller {
             }
             $value->setPostTitle($title);
         }
-        
+
         foreach ($lastComments as $value) {
             //Borra las etiquetas html
             $contents = strip_tags($value->getCommentContents());
-            
+
             if (isset($contents{30})) {
                 $contents = substr($contents, 0, 30) . ' [...]';
             }

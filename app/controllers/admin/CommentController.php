@@ -27,7 +27,7 @@ class CommentController extends BaseController {
      */
     protected function dataIndex() {
         $comments = Comments::selectAll();
-        $output = $comments->getComments();
+        $output = $comments->getAll();
 
         foreach ($output as $value) {
             $contents = strip_tags($value->getCommentContents());
@@ -97,7 +97,7 @@ class CommentController extends BaseController {
             //Si ocurre un error la función "$update->update()" retorna FALSE.
             if ($update->update()) {
                 Messages::addSuccess('Comentario actualizado correctamente.');
-                $comment = $update->getComment();
+                $comment = $update->getDataUpdate();
             } else {
                 Messages::addError('Error al actualizar el comentario.');
             }

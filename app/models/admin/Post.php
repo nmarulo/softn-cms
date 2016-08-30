@@ -8,17 +8,14 @@
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\models\admin\User;
-use SoftnCMS\controllers\DBController;
+use SoftnCMS\models\admin\base\Model;
 
 /**
  * Clase que gestiona los datos de cada POST.
  *
  * @author Nicolás Marulanda P.
  */
-class Post {
-
-    /** Identificador de la entrada. */
-    const ID = 'ID';
+class Post extends Model {
 
     /** Titulo. */
     const POST_TITLE = 'post_title';
@@ -46,7 +43,7 @@ class Post {
 
     /** @var string Nombre de la table. */
     private static $TABLE = \DB_PREFIX . 'posts';
-    
+
     /** @var array Datos del post. */
     private $post;
 
@@ -72,15 +69,15 @@ class Post {
      */
     public static function defaultInstance() {
         $data = [
-            Post::ID => 0,
-            Post::POST_TITLE => '',
-            Post::POST_STATUS => 1,
-            Post::POST_CONTENTS => '',
-            Post::POST_DATE => '0000-00-00 00:00:00',
-            Post::POST_UPDATE => '0000-00-00 00:00:00',
-            Post::COMMENT_COUNT => 0,
-            Post::COMMENT_STATUS => 1,
-            Post::USER_ID => 0,
+            self::ID => 0,
+            self::POST_TITLE => '',
+            self::POST_STATUS => 1,
+            self::POST_CONTENTS => '',
+            self::POST_DATE => '0000-00-00 00:00:00',
+            self::POST_UPDATE => '0000-00-00 00:00:00',
+            self::COMMENT_COUNT => 0,
+            self::COMMENT_STATUS => 1,
+            self::USER_ID => 0,
         ];
 
         return new Post($data);
@@ -88,48 +85,22 @@ class Post {
 
     /**
      * Metodo que obtiene un post segun su "ID".
-     * @param int $value
-     * @return Post|bool
+     * @param int $value Identificador del post.
+     * @return Post|bool Si es FALSE, no hay datos.
      */
     public static function selectByID($value) {
-        return self::selectBy($value, Post::ID, \PDO::PARAM_INT);
+        $select = self::selectBy(self::$TABLE, $value, self::ID, \PDO::PARAM_INT);
+
+        return self::getInstanceData($select);
     }
-
+    
     /**
-     * Metodo que obtiene un post segun las especificaciones dadas.
-     * @param int|string $value Valor a buscar.
-     * @param string $column Nombre de la columna en la tabla.
-     * @param int $dataType Tipo de dato.
-     * @return Post|bool
+     * Metodo que recibe un lista de datos y retorna un instancia.
+     * @param array $data Lista de datos.
+     * @return Post|bool Si es FALSE, no hay datos.
      */
-    private static function selectBy($value, $column, $dataType = \PDO::PARAM_STR) {
-        $parameter = ":$column";
-        $where = "$column = $parameter";
-        $prepare[] = DBController::prepareStatement($parameter, $value, $dataType);
-
-        return self::select($where, $prepare);
-    }
-
-    /**
-     * Metodo que realiza una consulta a la base de datos.
-     * @param string $where [Opcional] Condiciones.
-     * @param array $prepare [Opcional] Lista de indices a reemplazar en la consulta.
-     * @param string $columns [Opcional] Por defecto "*". Columnas.
-     * @param int $limit [Opcional] Por defecto 1. Numero de datos a retornar.
-     * @param string $orderBy [Opcional] Por defecto "ID DESC". Ordenar por.
-     * @return Post|bool En caso de no obtener datos retorna FALSE.
-     */
-    private static function select($where = '', $prepare = [], $columns = '*', $limit = 1, $orderBy = 'ID DESC') {
-        $db = DBController::getConnection();
-        $table = self::$TABLE;
-        $fetch = 'fetchAll';
-        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
-
-        if (empty($select)) {
-            return \FALSE;
-        }
-
-        return new Post($select[0]);
+    public static function getInstanceData($data) {
+        return parent::getInstance($data, __CLASS__);
     }
 
     /**
@@ -210,7 +181,7 @@ class Post {
      */
     public function getUser() {
         $userID = $this->getUserID();
-        
+
         return User::selectByID($userID);
     }
 

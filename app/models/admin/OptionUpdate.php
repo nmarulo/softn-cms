@@ -7,14 +7,14 @@
 
 namespace SoftnCMS\models\admin;
 
-use SoftnCMS\controllers\DBController;
+use SoftnCMS\models\admin\base\ModelUpdate;
 
 /**
  * Clase que gestiona la actualización de las opciones.
  *
  * @author Nicolás Marulanda P.
  */
-class OptionUpdate {
+class OptionUpdate extends ModelUpdate {
 
     /** @var Option Instancia con los datos sin modificar. */
     private $option;
@@ -22,92 +22,37 @@ class OptionUpdate {
     /** @var string Valor. */
     private $optionValue;
 
-    /** @var string Campos que seran actualizados. */
-    private $dataColumns;
-
-    /** @var array Lista con los indices, valores y tipos de datos para la consulta. */
-    private $prepareStatement;
-
     /**
      * Constructor.
      * @param Option $option Instancia con los datos sin modificar.
      * @param string $optionValue Valor.
      */
     public function __construct(Option $option, $optionValue) {
+        parent::__construct(Option::getTableName());
         $this->option = $option;
         $this->optionValue = $optionValue;
-        $this->prepareStatement = [];
-        $this->dataColumns = "";
     }
 
     /**
-     * Metodo que actualiza los datos de la opción en la base de datos.
-     * @return bool Si es TRUE, todo se realizo correctamente.
+     * Metodo que obtiene el objeto con los datos actualizados.
+     * @return Option
      */
-    public function update() {
-        $db = DBController::getConnection();
-        $table = Option::getTableName();
-        $parameter = ':id';
-        $where = "ID = $parameter";
-        $newData = $this->option->getID();
-        $dataType = \PDO::PARAM_INT;
-        $this->addPrepare($parameter, $newData, $dataType);
+    public function getDataUpdate() {
+        //Obtiene el primer dato el cual corresponde al id.
+        $id = $this->prepareStatement[0]['value'];
 
-        /*
-         * Si no hay datos, no se ejecuta la consulta. 
-         * Se retorna true para evitar un error.
-         */
-        if ($this->prepare()) {
-            return \TRUE;
-        }
-
-        return $db->update($table, $this->dataColumns, $where, $this->prepareStatement);
+        return Option::selectByID($id);
     }
 
     /**
      * Metodo que establece los datos a preparar.
      * @return bool Si es TRUE, no hay datos para actualizar.
      */
-    private function prepare() {
+    protected function prepare() {
+        $this->addPrepare(':' . Option::ID, $this->option->getID(), \PDO::PARAM_INT);
         $this->checkFields($this->option->getOptionValue(), $this->optionValue, Option::OPTION_VALUE, \PDO::PARAM_STR);
 
         return empty($this->dataColumns);
-    }
-
-    /**
-     * Metodo que comprueba si el nuevo dato es diferente al de la base de datos, 
-     * de ser asi el campo sera actualizado.
-     * @param string|int $oldData Dato actual.
-     * @param string|int $newData Dato nuevo.
-     * @param string $column Nombre de la columna en la tabla.
-     * @param int $dataType Tipo de dato.
-     */
-    private function checkFields($oldData, $newData, $column, $dataType) {
-        if ($oldData != $newData) {
-            $parameter = ':' . $column;
-            $this->addSetDataSQL($column, $parameter);
-            $this->addPrepare($parameter, $newData, $dataType);
-        }
-    }
-
-    /**
-     * Metodo que agrega los datos que seran actualizados.
-     * @param string $column Nombre de la columna en la tabla.
-     * @param string $data Nuevo valor.
-     */
-    private function addSetDataSQL($column, $data) {
-        $this->dataColumns .= empty($this->dataColumns) ? '' : ', ';
-        $this->dataColumns .= "$column = $data";
-    }
-
-    /**
-     * Metodo que guarda los datos establecidos.
-     * @param string $parameter Indice a buscar. EJ: ":ID"
-     * @param string $value Valor del indice.
-     * @param int $dataType Tipo de dato. EJ: \PDO::PARAM_*
-     */
-    private function addPrepare($parameter, $value, $dataType) {
-        $this->prepareStatement[] = DBController::prepareStatement($parameter, $value, $dataType);
     }
 
 }
