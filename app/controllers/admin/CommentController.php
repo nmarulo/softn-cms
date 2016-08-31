@@ -27,7 +27,11 @@ class CommentController extends BaseController {
      */
     protected function dataIndex() {
         $comments = Comments::selectAll();
-        $output = $comments->getAll();
+        $output = [];
+        
+        if($comments !== \FALSE){
+            $output = $comments->getAll();
+        }
 
         foreach ($output as $value) {
             $contents = strip_tags($value->getCommentContents());

@@ -27,7 +27,11 @@ class CategoryController extends BaseController {
      */
     protected function dataIndex() {
         $categories = Categories::selectAll();
-        $output = $categories->getAll();
+        $output = [];
+        
+        if($categories !== \FALSE){
+            $output = $categories->getAll();
+        }
 
         return ['categories' => $output];
     }

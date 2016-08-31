@@ -27,7 +27,11 @@ class UserController extends BaseController {
      */
     protected function dataIndex() {
         $users = Users::selectAll();
-        $output = $users->getAll();
+        $output = [];
+        
+        if($users !== \FALSE){
+            $output = $users->getAll();
+        }
 
         return ['users' => $output];
     }

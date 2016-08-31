@@ -22,9 +22,14 @@ class IndexController extends Controller {
      */
     protected function dataIndex() {
         $posts = Posts::selectAll();
+        $output = [];
+        
+        if($posts !== \FALSE){
+            $output = $posts->getAll();
+        }
 
         return [
-            'posts' => $posts->getAll()
+            'posts' => $output
         ];
     }
 

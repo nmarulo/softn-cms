@@ -29,7 +29,7 @@ define('DB_PREFIX', 'sn_');
 define('DB_TYPE', 'mysql');
 
 /** Determina si los errores deberían ser impresos en pantalla. */
-define('APP_DEBUG', \TRUE);
+define('APP_DEBUG', \FALSE);
 
 // Claves de autentificacion
 define('LOGGED_KEY', '5GLhueRQNTmlo8nY6XusgNN1JDSnQWRKsGiQTkjU0QuD9IVf9SdtmPrwDxc6irBs');

@@ -35,7 +35,11 @@ class PostController extends BaseController {
      */
     protected function dataIndex() {
         $posts = Posts::selectAll();
-        $output = $posts->getAll();
+        $output = [];
+        
+        if($posts !== \FALSE){
+            $output = $posts->getAll();
+        }
 
         foreach ($output as $post) {
             $title = $post->getPostTitle();
@@ -56,8 +60,18 @@ class PostController extends BaseController {
     protected function dataInsert() {
         global $urlSite;
 
+        $outTerms = [];
+        $outCategories = [];
         $categories = Categories::selectAll();
         $terms = Terms::selectAll();
+        
+        if($terms !== \FALSE){
+            $outTerms = $terms->getAll();
+        }
+        
+        if($categories !== \FALSE){
+            $outCategories = $categories->getAll();
+        }
 
         if (filter_input(\INPUT_POST, 'publish')) {
             $dataInput = $this->getDataInput();
@@ -78,8 +92,8 @@ class PostController extends BaseController {
         }
 
         return [
-            'terms' => $terms->getAll(),
-            'categories' => $categories->getAll(),
+            'terms' => $outTerms,
+            'categories' => $outCategories,
             //Datos por defecto a mostrar en el formulario.
             'post' => Post::defaultInstance(),
             /*
@@ -109,8 +123,18 @@ class PostController extends BaseController {
         }
 
         $postID = $post->getID();
+        $outTerms = [];
+        $outCategories = [];
         $categories = Categories::selectAll();
         $terms = Terms::selectAll();
+        
+        if($terms !== \FALSE){
+            $outTerms = $terms->getAll();
+        }
+        
+        if($categories !== \FALSE){
+            $outCategories = $categories->getAll();
+        }
 
         if (filter_input(\INPUT_POST, 'update')) {
             $dataInput = $this->getDataInput();
@@ -131,8 +155,8 @@ class PostController extends BaseController {
         return [
             'relationshipsCategoriesID' => PostsCategories::selectByPostID($postID),
             'relationshipsTermsID' => PostsTerms::selectByPostID($postID),
-            'terms' => $terms->getAll(),
-            'categories' => $categories->getAll(),
+            'terms' => $outTerms,
+            'categories' => $outCategories,
             //Instancia POST
             'post' => $post,
             /*

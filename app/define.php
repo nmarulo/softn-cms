@@ -4,7 +4,7 @@
  * Declaración de datos constantes.
  */
 /** Versión actual de la aplicación. */
-\define('VERSION', '0.3');
+\define('VERSION', '0.3-alfa');
 
 /** Nombre para identificar el panel de administración. EJ: http://localhost/admin/ */
 \define('ADMIN', 'admin');

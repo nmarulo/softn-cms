@@ -27,7 +27,11 @@ class TermController extends BaseController {
      */
     protected function dataIndex() {
         $terms = Terms::selectAll();
-        $output = $terms->getAll();
+        $output = [];
+        
+        if($terms !== \FALSE){
+            $output = $terms->getAll();
+        }
 
         return ['terms' => $output];
     }

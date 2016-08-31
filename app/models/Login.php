@@ -48,10 +48,10 @@ class Login {
         }
 
         if (!isset($_SESSION['usernameID']) && isset($_COOKIE['userRememberMe'])) {
-            $_SESSION['username'] = $_COOKIE['userRememberMe'];
+            $_SESSION['usernameID'] = $_COOKIE['userRememberMe'];
         }
 
-        return \TRUE;
+        return self::checkSesion();
     }
 
     /**
@@ -73,6 +73,23 @@ class Login {
             return \TRUE;
         }
 
+        return \FALSE;
+    }
+    
+    /**
+     * Metodo que comprueba si el valor de la variable de sesión corresponde 
+     * a un usuario valido.
+     * @return bool
+     */
+    private static function checkSesion(){
+        $user = User::selectByID($_SESSION['usernameID']);
+        
+        if($user !== \FALSE){
+            return \TRUE;
+        }
+        
+        unset($_SESSION['usernameID']);
+        
         return \FALSE;
     }
 
