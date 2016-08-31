@@ -3,14 +3,19 @@ SoftN CMS
 
 SoftN CMS es un sistema de gestión de contenido con el que puedes crear sitios web dinámicos e interactivos, con una interfaces amigable e intuitiva que se adapta a cualquier tipo de resolución. Desarrollado en PHP como lenguaje de programación y MySQL como gestor de base de datos.
 
-> **Versión 0.3 Beta - Fenix** Este proyecto está todavía en fase de desarrollo.
+> **Versión 0.3 Alfa - Fenix** Este proyecto está todavía en fase de desarrollo.
 
 > **Versión 0.2.1 Beta** https://github.com/nmarulo/softn-cms/tree/v0.2.1-Final
 
 > **branch:develop** Ultimos cambios realizados. https://github.com/nmarulo/softn-cms/tree/develop
 
+----------
+
 Steaming https://www.livecoding.tv/marulo/
 
+----------
+
+Más información: http://www.softn.red/softn-cms.html
 ----------
 
 Recursos utilizados
@@ -30,14 +35,13 @@ Funcionalidades
 #### Panel de administración
 
 - Publicar contenido o artículos.
-- Publicar paginas.
+- Publicar paginas. (No disponible)
 - Crear categorías.
 - Crear etiquetas.
-- Crear sidebars o barra lateral.
-- Crear menús.
+- Crear sidebars o barra lateral. (No disponible)
+- Crear menús. (No disponible)
 - Gestionar comentarios.
 - Crear usuarios.
-- Roles de usuarios.
 - Inicio de sesión.
 - Registro de usuario
 - Configuraciones generales.
@@ -46,18 +50,25 @@ Funcionalidades
 #### Tema o plantilla web
 
 - Lista de artículos publicados.
-- Artículos por categoría
-- Artículos por etiqueta.
-- Artículos por autor.
-- Menú de navegación.
-- Publicar comentarios.
+- Publicar comentarios. (No disponible)
 
 ----------
 
 Instalación
 -------------------
 
-- pendiente...
+- Instalación manual: 
+En el fichero **"app/config.php"** configurar los datos de conexión a la base de datos:
+```
+define('DB_USER', 'root');
+define('DB_PASSWORD', 'root');
+```
+
+Abrir el script SQL **"softn_cms.sql"** buscar y reemplazar la siguiente ruta **"http://localhost/ProyectosWeb/htdocsxampp/SoftN-CMS/"** con la ruta tu localhost.
+
+Por ultimo **ejecutar el script "softn_cms.sql"**, por ejemplo, usando PHPMyAdmin.
+
+Acceder usando el usuario **"admin"** y contraseña **"admin"** o crear un usuario.
 
 ----------
 
@@ -66,8 +77,8 @@ Requisitos
 
 SoftN CMS fue probado en XAMP v3.2.2 (PHP v5.6.21, Apache v2.4.12, MySQL v5.6.25)
 
-- PHP 5.6 o superior
-- MySQL 5.6 o superior
+- PHP 5.6.21 o superior
+- MySQL 5.6.25 o superior
 - PDO PHP Extension
 - Apache con mod_rewrite
 - Permisos de escritura en el directorio de la aplicación.
@@ -77,14 +88,25 @@ SoftN CMS fue probado en XAMP v3.2.2 (PHP v5.6.21, Apache v2.4.12, MySQL v5.6.25
 Ficheros
 --------------------
 
-- pendiente...
+- **/** - Composer, tablas SQL, datos demo SQL.
+- **app/** - Configuración, declaración de constantes, autoload.
+- **app/controllers/** - Controladores de la aplicación, Router, Request.
+- **app/defaults/** - Datos base de la aplicación. (Sin implementar)
+- **app/install/** - Pagina de instalación de la aplicación. (No disponible)
+- **app/models/** - Modelos de la aplicación, MySQL, plantilla de modelos.
+- **app/themes/** - Plantillas o temas de la aplicación.
+- **app/vendor/** - Librerias de la aplicación, autoload (composer).
+- **app/views/** - Vistas de la aplicación, script JS, CSS.
 
 ----------
 
 Imagenes
 --------------------
 
-- pendiente...
+#### Panel de administración [img](http://i392.photobucket.com/albums/pp4/nmarulo/2_zpszycfoycl.png "Panel de administración")
+![Panel de administración](http://i392.photobucket.com/albums/pp4/nmarulo/2_zpszycfoycl.png "Panel de administración")
+#### Lista de publicaciones [img](http://i392.photobucket.com/albums/pp4/nmarulo/3_zpspjzjw5y4.png "Lista de publicaciones")
+![Lista de publicaciones](http://i392.photobucket.com/albums/pp4/nmarulo/3_zpspjzjw5y4.png "Lista de publicaciones")
 
 ----------
 
