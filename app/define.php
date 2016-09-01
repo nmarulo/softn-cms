@@ -13,16 +13,16 @@
 \define('URL_GET', 'url');
 
 /** Espacio de nombre de la aplicación. */
-\define('APP_NAMESPACE', 'SoftnCMS' . \DIRECTORY_SEPARATOR);
+\define('APP_NAMESPACE', 'SoftnCMS\\');
 
 /** Espacio de nombre de los controladores. */
-\define('NAMESPACE_CONTROLLERS', \APP_NAMESPACE . 'controllers' . \DIRECTORY_SEPARATOR);
+\define('NAMESPACE_CONTROLLERS', \APP_NAMESPACE . 'controllers\\');
 
 /** Espacio de nombre de los controladores del panel de administración. */
-\define('NAMESPACE_CONTROLLERS_ADMIN', \NAMESPACE_CONTROLLERS . 'admin' . \DIRECTORY_SEPARATOR);
+\define('NAMESPACE_CONTROLLERS_ADMIN', \NAMESPACE_CONTROLLERS . 'admin\\');
 
 /** Espacio de nombre de los controladores del tema de la aplicación. */
-\define('NAMESPACE_CONTROLLERS_THEMES', \NAMESPACE_CONTROLLERS . 'themes' . \DIRECTORY_SEPARATOR);
+\define('NAMESPACE_CONTROLLERS_THEMES', \NAMESPACE_CONTROLLERS . 'themes\\');
 
 /** Ruta de los modulos de controladores. */
 \define('CONTROLLERS', \ABSPATH . 'controllers' . \DIRECTORY_SEPARATOR);
