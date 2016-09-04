@@ -43,7 +43,7 @@ class Request {
         $this->registerForm = false;
         $this->logout = false;
         $this->method = 'index';
-        $this->controller = 'index';
+        $this->controller = 'Index';
         $this->args = [0];
         $this->parseUrl();
     }
@@ -172,6 +172,7 @@ class Request {
      */
     private function selectController($url) {
         if (!empty($url)) {
+            $url = strtoupper(substr($url, 0, 1)) . substr($url, 1);
             $this->controller = $url;
         }
     }

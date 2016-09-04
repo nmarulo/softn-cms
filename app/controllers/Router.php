@@ -82,7 +82,7 @@ class Router {
         $newData = \call_user_func_array([$this->objectCtr, $method], $this->request->getArgs());
         $this->data = \array_merge_recursive($this->data, $newData);
         
-        if($this->request->getController() == 'option'){
+        if($this->request->getController() == 'Option'){
             $this->optionData();
         }
         

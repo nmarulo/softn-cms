@@ -105,11 +105,11 @@ class ViewController {
         switch ($this->request->getMethod()) {
             case 'delete':
             case 'index':
-                $this->nameView = $this->request->getController();
+                $this->nameView = \strtolower($this->request->getController());
                 break;
             case 'insert':
             case 'update':
-                $this->nameView = $this->request->getController() . 'form';
+                $this->nameView = \strtolower($this->request->getController()) . 'form';
                 break;
         }
     }
@@ -121,10 +121,10 @@ class ViewController {
      */
     private function login($view) {
         return [
-            \VIEWS . 'headerlogin.php',
+            \VIEWS . 'headerLogin.php',
             \VIEWS . 'messages.php',
             $view,
-            \VIEWS . 'footerlogin.php',
+            \VIEWS . 'footerLogin.php',
         ];
     }
 
