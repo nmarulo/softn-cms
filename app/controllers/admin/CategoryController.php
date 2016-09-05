@@ -8,12 +8,12 @@ namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\BaseController;
 use SoftnCMS\controllers\Messages;
+use SoftnCMS\controllers\Pagination;
 use SoftnCMS\models\admin\Categories;
 use SoftnCMS\models\admin\Category;
 use SoftnCMS\models\admin\CategoryDelete;
 use SoftnCMS\models\admin\CategoryInsert;
 use SoftnCMS\models\admin\CategoryUpdate;
-
 /**
  * Clase del controlador de la pagina de categorías.
  *
@@ -23,17 +23,26 @@ class CategoryController extends BaseController {
 
     /**
      * Metodo llamado por la función INDEX.
+     * @param int $paged Pagina actual.
      * @return array
      */
-    protected function dataIndex() {
-        $categories = Categories::selectAll();
+    protected function dataIndex($paged) {
         $output = [];
+        $countData = Categories::count();
+        $pagination = new Pagination($paged, $countData);
+        $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
+        $categories = Categories::selectByLimit($limit);
         
-        if($categories !== \FALSE){
+        $pagination->concatUrl('admin/category');
+
+        if ($categories !== \FALSE) {
             $output = $categories->getAll();
         }
 
-        return ['categories' => $output];
+        return [
+            'categories' => $output,
+            'pagination' => $pagination
+        ];
     }
 
     /**
@@ -133,7 +142,7 @@ class CategoryController extends BaseController {
             Messages::addError('Error al borrar la categoría.');
         }
 
-        return $this->dataIndex();
+        $this->namePage = 'category';
     }
 
     /**

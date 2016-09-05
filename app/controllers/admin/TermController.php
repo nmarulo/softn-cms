@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\BaseController;
 use SoftnCMS\controllers\Messages;
+use SoftnCMS\controllers\Pagination;
 use SoftnCMS\models\admin\Terms;
 use SoftnCMS\models\admin\Term;
 use SoftnCMS\models\admin\TermDelete;
@@ -23,17 +24,26 @@ class TermController extends BaseController {
 
     /**
      * Metodo llamado por la función INDEX.
+     * @param int $paged Pagina actual.
      * @return array
      */
-    protected function dataIndex() {
-        $terms = Terms::selectAll();
+    protected function dataIndex($paged) {
         $output = [];
-        
-        if($terms !== \FALSE){
+        $countData = Terms::count();
+        $pagination = new Pagination($paged, $countData);
+        $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
+        $terms = Terms::selectByLimit($limit);
+
+        $pagination->concatUrl('admin/term');
+
+        if ($terms !== \FALSE) {
             $output = $terms->getAll();
         }
 
-        return ['terms' => $output];
+        return [
+            'terms' => $output,
+            'pagination' => $pagination
+        ];
     }
 
     /**
@@ -133,7 +143,7 @@ class TermController extends BaseController {
             Messages::addError('Error al borrar la etiqueta.');
         }
 
-        return $this->dataIndex();
+        $this->namePage = 'term';
     }
 
     /**

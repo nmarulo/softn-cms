@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\BaseController;
 use SoftnCMS\controllers\Messages;
+use SoftnCMS\controllers\Pagination;
 use SoftnCMS\models\admin\User;
 use SoftnCMS\models\admin\Users;
 use SoftnCMS\models\admin\UserInsert;
@@ -23,17 +24,26 @@ class UserController extends BaseController {
 
     /**
      * Metodo llamado por la funcion INDEX.
+     * @param int $paged Pagina actual.
      * @return array
      */
-    protected function dataIndex() {
-        $users = Users::selectAll();
+    protected function dataIndex($paged) {
         $output = [];
-        
-        if($users !== \FALSE){
+        $countData = Users::count();
+        $pagination = new Pagination($paged, $countData);
+        $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
+        $users = Users::selectByLimit($limit);
+
+        $pagination->concatUrl('admin/user');
+
+        if ($users !== \FALSE) {
             $output = $users->getAll();
         }
 
-        return ['users' => $output];
+        return [
+            'users' => $output,
+            'pagination' => $pagination
+        ];
     }
 
     /**
@@ -140,7 +150,7 @@ class UserController extends BaseController {
             Messages::addError('Error al borrar el usuario.');
         }
 
-        return $this->dataIndex();
+        $this->namePage = 'user';
     }
 
     /**

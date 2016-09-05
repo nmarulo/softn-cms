@@ -36,6 +36,17 @@ class Posts extends Models {
     }
 
     /**
+     * Metodo que obtiene un número limitado de datos.
+     * @param string $limit 
+     * @return Posts|bool Si es FALSE, no hay datos.
+     */
+    public static function selectByLimit($limit) {
+        $select = self::select(Post::getTableName(), '', [], '*', $limit);
+
+        return self::getInstanceData($select);
+    }
+
+    /**
      * Metodo que obtiene todos los posts segun el "ID" del un usuario.
      * @param int $value Identificador del usuario.
      * @return Posts|bool Si es FALSE, no hay datos.
@@ -126,6 +137,14 @@ class Posts extends Models {
     }
 
     /**
+     * Metodo que obtiene el número total de datos.
+     * @return int
+     */
+    public static function count() {
+        return parent::countData(Post::getTableName());
+    }
+
+    /**
      * Metodo que recibe una lista de datos y los agrega a la lista actual.
      * @param array $data Lista de datos.
      */
@@ -134,5 +153,5 @@ class Posts extends Models {
             $this->add(new Post($value));
         }
     }
-    
+
 }

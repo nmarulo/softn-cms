@@ -34,6 +34,9 @@ class Request {
     /** @var bool Si es TRUE, el usuario solicito el cierre de sesión. */
     private $logout;
 
+    /** @var int Pagina actual. */
+    private $paged;
+
     /**
      * Constructor.
      */
@@ -43,9 +46,15 @@ class Request {
         $this->registerForm = false;
         $this->logout = false;
         $this->method = 'index';
+        //La primera letra debe estar en mayuscula.
         $this->controller = 'Index';
         $this->args = [0];
+        $this->paged = 0;
         $this->parseUrl();
+    }
+
+    public function getPaged() {
+        return $this->paged;
     }
 
     /**
@@ -132,7 +141,26 @@ class Request {
             $url = $this->checkUrl($url);
             $this->selectController(\array_shift($url));
             $this->selectMethod(\array_shift($url));
-            $this->selectArgs($url);
+            $this->selectArgs(\array_shift($url));
+            $this->checkArg();
+        }
+    }
+
+    /**
+     * Metodo que comprueba si hay más datos para agregar a los argumentos
+     * que se enviaran al metodo del controlador.
+     */
+    private function checkArg() {
+        //Los datos de paginación solo se envian a los metodos INDEX y DELETE.
+        if (($this->method == 'index' || $this->method == 'delete') && !empty($this->paged)) {
+            $this->args[] = $this->paged;
+            /*
+             * La pagina index por el momento solo recibe 
+             * un parametro (el numero de la pagina actual)
+             */
+            if ($this->method == 'index') {
+                $this->args = [$this->paged];
+            }
         }
     }
 
@@ -152,8 +180,37 @@ class Request {
         $this->loginForm = 'login' == $value;
         $this->registerForm = 'register' == $value;
         $this->logout = 'logout' == $value;
-        
-        return $this->adminPanel ? $aux : $url;
+        $aux = $this->adminPanel ? $aux : $url;
+
+        /*
+         * Se obtienes los datos de filtrado y se eliminan de la lista 
+         * para evitar confictos al obtener el controlador, el metodo y los argumentos.
+         */
+        return $this->urlPaged($aux);
+    }
+
+    /**
+     * Metodo que establece el numero de la pagina actual.
+     * @param array $url
+     * @return array
+     */
+    private function urlPaged($url) {
+        $key = \array_search('paged', $url);
+
+        if ($key === \FALSE) {
+            return $url;
+        }
+
+        unset($url[$key]);
+        $nextKey = $key + 1;
+
+        if (\array_key_exists($nextKey, $url)) {
+            $this->paged = \intval($url[$nextKey]);
+            unset($url[$nextKey]);
+        }
+
+        //Luego de eliminar los datos se reinician los valores de los indices.
+        return \array_merge($url);
     }
 
     /**
@@ -172,6 +229,10 @@ class Request {
      */
     private function selectController($url) {
         if (!empty($url)) {
+            /*
+             * Para evitar problemas con el nombre del fichero 
+             * la primera letra debe estar en mayuscula.
+             */
             $url = strtoupper(substr($url, 0, 1)) . substr($url, 1);
             $this->controller = $url;
         }
@@ -183,7 +244,7 @@ class Request {
      */
     private function selectArgs($url) {
         if (!empty($url)) {
-            $this->args = \is_array($url) ? $url : [$url];
+            $this->args = [$url];
         }
     }
 

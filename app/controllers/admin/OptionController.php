@@ -20,13 +20,14 @@ class OptionController extends Controller {
 
     /**
      * Metodo llamado por la funcion index.
+     * @param int $paged Pagina actual.
      * @return array
      */
-    protected function dataIndex() {
+    protected function dataIndex($paged) {
         //comprueba si hay datos para actualizar.
         $this->dataUpdate();
         $options = Options::selectAll();
-        
+
         return $options->getAll();
     }
 
@@ -45,7 +46,7 @@ class OptionController extends Controller {
             $keys = \array_keys($dataInput);
             $count = \count($keys);
             $error = \FALSE;
-            $optionName = '';//En caso de error, contiene el nombre de la opción
+            $optionName = ''; //En caso de error, contiene el nombre de la opción
 
             for ($i = 0; $i < $count && !$error; ++$i) {
                 $optionName = $keys[$i];

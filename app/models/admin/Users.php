@@ -36,6 +36,17 @@ class Users extends Models {
     }
 
     /**
+     * Metodo que obtiene un número limitado de datos.
+     * @param string $limit
+     * @return Users|bool Si es FALSE, no hay datos.
+     */
+    public static function selectByLimit($limit) {
+        $select = self::select(User::getTableName(), '', [], '*', $limit);
+
+        return self::getInstanceData($select);
+    }
+
+    /**
      * Metodo que obtiene todos los usuarios que coinciden con su nombre real.
      * @param string $val
      * @return Users
@@ -78,6 +89,14 @@ class Users extends Models {
      */
     public static function getInstanceData($data) {
         return parent::getInstance($data, __CLASS__);
+    }
+
+    /**
+     * Metodo que obtiene el número total de datos.
+     * @return int
+     */
+    public static function count() {
+        return parent::countData(User::getTableName());
     }
 
     /**

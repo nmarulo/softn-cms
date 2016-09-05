@@ -67,7 +67,7 @@ class Option extends Model {
      * @return Option|bool Si es FALSE, no hay datos.
      */
     public static function selectByID($value) {
-        $select = self::selectBy(self::$TABLE, $value, Model::ID, \PDO::PARAM_INT);
+        $select = self::selectBy(self::$TABLE, $value, self::ID, \PDO::PARAM_INT);
 
         return self::getInstanceData($select);
     }

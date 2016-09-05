@@ -6,6 +6,7 @@
         </div>
         <div id="content"><!-- #content -->
             <div id="reloadData">
+                <?php require \VIEWS_ADMIN . 'pagednav.php'; ?>
                 <div id="contentPost" class="table-responsive"><!-- #contentPost.table-responsive -->
                     <table class="table table-striped">
                         <thead>
@@ -28,7 +29,7 @@
                                 $output = '<tr>';
                                 $output .= '<td class="options">';
                                 $output .= '<a class="btnAction-sm btn btn-primary" href="' . $data['siteUrl'] . 'admin/term/update/' . $term->getID() . '" title="Editar"><span class="glyphicon glyphicon-edit"></span></a> ';
-                                $output .= '<a class="btnAction-sm btn btn-danger" href="' . $data['siteUrl'] . 'admin/term/delete/' . $term->getID() . '" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a> ';
+                                $output .= '<a class="btnAction-sm btn btn-danger" href="' . $data['siteUrl'] . 'admin/term/delete/' . $term->getID() . $paged . '" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a> ';
                                 $output .= '</td>';
                                 $output .= '<td>' . $term->getTermName() . '</td>';
                                 $output .= '<td><span class="badge">' . $term->getTermCount() . '</span></td></tr>';
@@ -38,6 +39,7 @@
                         </tbody>
                     </table>
                 </div><!-- #contentPost.table-responsive -->
+                <?php require \VIEWS_ADMIN . 'pagednav.php'; ?>
             </div>
         </div><!-- #content -->
     </div><!-- #snwarp -->

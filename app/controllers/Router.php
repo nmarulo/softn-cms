@@ -79,13 +79,14 @@ class Router {
         if (!\method_exists($this->objectCtr, $method)) {
             $method = 'index';
         }
+
         $newData = \call_user_func_array([$this->objectCtr, $method], $this->request->getArgs());
         $this->data = \array_merge_recursive($this->data, $newData);
-        
-        if($this->request->getController() == 'Option'){
+
+        if ($this->request->getController() == 'Option') {
             $this->optionData();
         }
-        
+
         $this->messages();
     }
 
@@ -109,21 +110,21 @@ class Router {
         if (Login::isLogin()) {
             $this->data['data']['userSession'] = User::selectByID($_SESSION['usernameID']);
         }
-        
+
         $this->optionData();
     }
-    
-    private function messages(){
+
+    private function messages() {
         $this->data['data']['messages'] = Messages::getMessages();
     }
-    
+
     /**
      * Metodo que obtiene los datos configurables de la aplicación.
      * @global string $urlSite
      */
-    private function optionData(){
+    private function optionData() {
         global $urlSite;
-        
+
         $this->data['data']['siteTitle'] = Option::selectByName('optionTitle')->getOptionValue();
         $this->data['data']['siteUrl'] = Option::selectByName('optionSiteUrl')->getOptionValue();
         $urlSite = $this->data['data']['siteUrl'];
@@ -157,7 +158,7 @@ class Router {
         } elseif (!$this->request->isLoginForm() && !$this->request->isRegisterForm() && !$this->request->isLogout()) {
             $controller = \CONTROLLERS_THEMES;
         }
-        
+
         return $controller;
     }
 
@@ -173,7 +174,7 @@ class Router {
         } elseif (!$this->request->isLoginForm() && !$this->request->isRegisterForm() && !$this->request->isLogout()) {
             $namespace = \NAMESPACE_CONTROLLERS_THEMES;
         }
-        
+
         return $namespace;
     }
 

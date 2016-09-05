@@ -50,14 +50,14 @@ class Pagination {
      * 'dataPaged' Contiene el número de la pagina más los valores a mantener.
      * 'page' Contiene solo el numero de la pagina, si es menor a 10 tendra concatenado el numero 0.
      * 'active' Si es TRUE, es la pagina actual.
-     * @var array
+     * @var array 
      */
     private $dataPaged;
 
     /**
-     * Representa el número de paginas que mostrara, el modulo vista de paginación,
+     * Representa el número de paginas que mostrara, el modulo vista de paginación, 
      * hacia el lado derecho e izquierdo de la pagina "activa".
-     * @var int
+     * @var int 
      */
     private $maxShowPage;
     private $url;
@@ -67,7 +67,7 @@ class Pagination {
      * @param int $pagedNow Pagina actual.
      * @param int $countData Total de filas o datos.
      * @param string $urlData [Opcional] Datos a mantener entre pagina y pagina.
-     * @param int $maxShowPage [Opcional] Por defecto 3. Representa el número de paginas que mostrara,
+     * @param int $maxShowPage [Opcional] Por defecto 3. Representa el número de paginas que mostrara, 
      * el modulo vista de paginación, hacia el lado derecho e izquierdo de la pagina "activa".
      */
     public function __construct($pagedNow, $countData, $urlData = '', $maxShowPage = 3) {
@@ -133,7 +133,7 @@ class Pagination {
         if ($this->countData > 0) {
             /*
              * Compruebo que el número de datos a mostrar por pagina
-             * no sea mayor al total de filas a mostrar para
+             * no sea mayor al total de filas a mostrar para 
              * obtener el número correcto de filas a mostrar.
              */
             $this->rowCount = $this->rowCount > $this->countData ? $this->countData : $this->rowCount;
@@ -144,12 +144,12 @@ class Pagination {
             if ($this->countPages > 1) {
                 $this->showPagination = \TRUE;
                 /*
-                 * Pagina actual, se comprueba que sea valida,
+                 * Pagina actual, se comprueba que sea valida, 
                  * de lo contrario se asigna el valor 1.
                  */
                 $this->pagedNow = empty($this->pagedNow) || intval($this->pagedNow) <= 0 ? 1 : $this->pagedNow;
                 /*
-                 * Se realiza un segunda comprobación, si es mayor al total
+                 * Se realiza un segunda comprobación, si es mayor al total 
                  * de paginas, obtengo la ultima pagina.
                  */
                 $this->pagedNow = $this->pagedNow > $this->countPages ? $this->countPages : $this->pagedNow;
@@ -183,7 +183,7 @@ class Pagination {
 
     private function dataArrow() {
         /*
-         * Si no estoy en la pagina 1, la flecha izquierda se habilita
+         * Si no estoy en la pagina 1, la flecha izquierda se habilita 
          * y le paso sus datos.
          */
         if ($this->pagedNow > 1) {
@@ -192,7 +192,7 @@ class Pagination {
         }
 
         /*
-         * Si no estoy en la ultima pagina, la flecha derecha se habilita
+         * Si no estoy en la ultima pagina, la flecha derecha se habilita 
          * y le paso sus datos.
          */
         if ($this->pagedNow < $this->countPages) {
@@ -217,7 +217,7 @@ class Pagination {
 
         /*
          * Para mostrar siempre el mismo numero de paginas,
-         * si $auxBeginNumPage es menor o igual a 0, obtengo
+         * si $auxBeginNumPage es menor o igual a 0, obtengo 
          * su valor positivo para sumarlo al valor de la posicion
          * de la ultima pagina.
          */
@@ -226,7 +226,7 @@ class Pagination {
         } elseif ($auxEndNumPage >= $this->countPages) {
             /*
              * Para seguir mostrando el mismo numero de paginas
-             * las paginas que sobran (de la operación siguiente) se las
+             * las paginas que sobran (de la operación siguiente) se las 
              * resto a la posición de la pagina de inicio.
              */
             $beginNumPage -= $auxEndNumPage - $this->countPages;

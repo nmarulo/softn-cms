@@ -15,16 +15,18 @@ abstract class Controller {
     /**
      * Metodo que obtiene los datos a mostrar en el modulo vista. 
      * Metodo por defecto de cada controlador.
+     * @param int $paged [Opcional] Pagina actual
      * @return array
      */
-    public function index() {
-        return ['data' => $this->dataIndex()];
+    public function index($paged = 1) {
+        return ['data' => $this->dataIndex($paged)];
     }
     
     /**
      * Metodo llamado por la función INDEX.
+     * @param int $paged Pagina actual
      * @return array
      */
-    abstract protected function dataIndex();
+    abstract protected function dataIndex($paged);
 
 }

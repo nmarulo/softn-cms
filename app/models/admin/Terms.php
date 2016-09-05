@@ -7,7 +7,6 @@
 
 namespace SoftnCMS\models\admin;
 
-use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\Term;
 use SoftnCMS\models\admin\base\Models;
 
@@ -36,12 +35,31 @@ class Terms extends Models {
     }
 
     /**
+     * Metodo que obtiene un número limitado de datos.
+     * @param string $limit
+     * @return Terms|bool Si es FALSE, no hay datos.
+     */
+    public static function selectByLimit($limit) {
+        $select = self::select(Term::getTableName(), '', [], '*', $limit);
+
+        return self::getInstanceData($select);
+    }
+
+    /**
      * Metodo que recibe un lista de datos y retorna un instancia.
      * @param array $data Lista de datos.
      * @return Terms|bool Si es FALSE, no hay datos.
      */
     public static function getInstanceData($data) {
         return parent::getInstance($data, __CLASS__);
+    }
+
+    /**
+     * Metodo que obtiene el número total de datos.
+     * @return int
+     */
+    public static function count() {
+        return parent::countData(Term::getTableName());
     }
 
     /**

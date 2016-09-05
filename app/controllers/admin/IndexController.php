@@ -21,13 +21,12 @@ class IndexController extends Controller {
 
     /**
      * Metodo llamado por la funcion index.
+     * @param int $paged Pagina actual.
      * @return array
      */
-    protected function dataIndex() {
+    protected function dataIndex($paged) {
         $posts = new Posts();
-        $users = new Users();
         $comments = new Comments();
-        $categories = new Categories();
         $lastPosts = $posts->lastData(5);
         $lastComments = $comments->lastData(5);
 
@@ -55,11 +54,11 @@ class IndexController extends Controller {
             'lastPosts' => $lastPosts,
             'lastComments' => $lastComments,
             'count' => [
-                'post' => $posts->count(),
+                'post' => Posts::count(),
                 'page' => 0,
-                'category' => $categories->count(),
-                'comment' => $comments->count(),
-                'user' => $users->count(),
+                'category' => Categories::count(),
+                'comment' => Comments::count(),
+                'user' => Users::count(),
             ],
         ];
     }

@@ -47,7 +47,7 @@ abstract class Models extends BaseModels implements IModels {
      * @param string $class Nombre de la clase incluido su namespace.
      * @return object|bool Si es FALSE, no hay datos.
      */
-    public static function getInstance($data, $class) {
+    protected static function getInstance($data, $class) {
         if (empty($data)) {
             return \FALSE;
         }
@@ -55,6 +55,17 @@ abstract class Models extends BaseModels implements IModels {
         $output->addData($data);
 
         return $output;
+    }
+    
+    /**
+     * Metodo que obtiene el número total de datos.
+     * @return int
+     */
+    protected static function countData($table) {
+        $columns = 'COUNT(*) AS count';
+        $select = self::select($table, '', [], $columns);
+
+        return $select[0]['count'];
     }
     
     /**
@@ -102,17 +113,6 @@ abstract class Models extends BaseModels implements IModels {
         }
 
         return $output;
-    }
-
-    /**
-     * Metodo que obtiene el número total de datos.
-     * @return int
-     */
-    public function count() {
-        $columns = 'COUNT(*) AS count';
-        $select = self::select($this->table, '', [], $columns);
-
-        return $select[0]['count'];
     }
 
 }

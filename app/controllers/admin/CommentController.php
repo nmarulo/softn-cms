@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\BaseController;
 use SoftnCMS\controllers\Messages;
+use SoftnCMS\controllers\Pagination;
 use SoftnCMS\models\admin\Comments;
 use SoftnCMS\models\admin\Comment;
 use SoftnCMS\models\admin\CommentUpdate;
@@ -23,13 +24,19 @@ class CommentController extends BaseController {
 
     /**
      * Metodo llamado por la función INDEX.
+     * @param int $paged Pagina actual.
      * @return array
      */
-    protected function dataIndex() {
-        $comments = Comments::selectAll();
+    protected function dataIndex($paged) {
         $output = [];
-        
-        if($comments !== \FALSE){
+        $countData = Comments::count();
+        $pagination = new Pagination($paged, $countData);
+        $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
+        $comments = Comments::selectByLimit($limit);
+
+        $pagination->concatUrl('admin/comment');
+
+        if ($comments !== \FALSE) {
             $output = $comments->getAll();
         }
 
@@ -42,7 +49,10 @@ class CommentController extends BaseController {
             $value->setCommentContents($contents);
         }
 
-        return ['comments' => $output];
+        return [
+            'comments' => $output,
+            'pagination' => $pagination
+        ];
     }
 
     /**
@@ -142,7 +152,7 @@ class CommentController extends BaseController {
             Messages::addError('Error al borrar el comentario.');
         }
 
-        return $this->dataIndex();
+        $this->namePage = 'comment';
     }
 
     /**

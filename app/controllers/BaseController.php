@@ -13,6 +13,8 @@ use SoftnCMS\controllers\Controller;
  * @author Nicolás Marulanda P.
  */
 abstract class BaseController extends Controller {
+    
+    protected $namePage;
 
     /**
      * Metodo que obtiene los datos y los guarda en la base de datos.
@@ -36,8 +38,13 @@ abstract class BaseController extends Controller {
      * @param int $id
      * @return array
      */
-    public function delete($id) {
-        return ['data' => $this->dataDelete($id)];
+    public function delete($id, $pagedNow = 1) {
+        global $urlSite;
+
+        $this->dataDelete($id);
+
+        \header("Location: $urlSite" . 'admin/' . $this->namePage . '/paged/' . $pagedNow);
+        exit();
     }
 
     /**
@@ -54,7 +61,6 @@ abstract class BaseController extends Controller {
 
     /**
      * Metodo llamado por la función DELETE.
-     * @return array
      */
     abstract protected function dataDelete($id);
 
@@ -63,5 +69,4 @@ abstract class BaseController extends Controller {
      * @return array
      */
     abstract protected function getDataInput();
-    
 }

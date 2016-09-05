@@ -1,5 +1,6 @@
 <?php
 $pagination = $data['pagination'];
+//Guarda la infomación de la pagina actual. EJ: "/paged/5"
 $paged = '';
 
 if ($pagination->isShowPagination()) {

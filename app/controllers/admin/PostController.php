@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\BaseController;
 use SoftnCMS\controllers\Messages;
+use SoftnCMS\controllers\Pagination;
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\Posts;
 use SoftnCMS\models\admin\PostUpdate;
@@ -31,13 +32,19 @@ class PostController extends BaseController {
 
     /**
      * Metodo llamado por la función INDEX.
+     * @param int $paged Pagina actual.
      * @return array
      */
-    protected function dataIndex() {
-        $posts = Posts::selectAll();
+    protected function dataIndex($paged) {
         $output = [];
-        
-        if($posts !== \FALSE){
+        $countData = Posts::count();
+        $pagination = new Pagination($paged, $countData);
+        $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
+        $posts = Posts::selectByLimit($limit);
+
+        $pagination->concatUrl('admin/post');
+
+        if ($posts !== \FALSE) {
             $output = $posts->getAll();
         }
 
@@ -50,7 +57,10 @@ class PostController extends BaseController {
             $post->setPostTitle($title);
         }
 
-        return ['posts' => $output];
+        return [
+            'posts' => $output,
+            'pagination' => $pagination
+        ];
     }
 
     /**
@@ -64,12 +74,12 @@ class PostController extends BaseController {
         $outCategories = [];
         $categories = Categories::selectAll();
         $terms = Terms::selectAll();
-        
-        if($terms !== \FALSE){
+
+        if ($terms !== \FALSE) {
             $outTerms = $terms->getAll();
         }
-        
-        if($categories !== \FALSE){
+
+        if ($categories !== \FALSE) {
             $outCategories = $categories->getAll();
         }
 
@@ -127,19 +137,19 @@ class PostController extends BaseController {
         $outCategories = [];
         $categories = Categories::selectAll();
         $terms = Terms::selectAll();
-        
-        if($terms !== \FALSE){
+
+        if ($terms !== \FALSE) {
             $outTerms = $terms->getAll();
         }
-        
-        if($categories !== \FALSE){
+
+        if ($categories !== \FALSE) {
             $outCategories = $categories->getAll();
         }
 
         if (filter_input(\INPUT_POST, 'update')) {
             $dataInput = $this->getDataInput();
             $update = new PostUpdate($post, $dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus']);
-            
+
             //Si ocurre un error la función "$update->update()" retorna FALSE.
             if ($update->update()) {
                 Messages::addSuccess('Entrada actualizada correctamente.');
@@ -190,8 +200,8 @@ class PostController extends BaseController {
         } else {
             Messages::addError('Error al borrar la entrada.');
         }
-
-        return $this->dataIndex();
+        
+        $this->namePage = 'post';
     }
 
     /**
@@ -266,7 +276,7 @@ class PostController extends BaseController {
             }
         }
     }
-    
+
     /**
      * Metodo que actualiza las etiquetas vinculadas al post. Se comprueba 
      * si se debe agregar o borrar.
@@ -289,7 +299,7 @@ class PostController extends BaseController {
             $delete = \array_merge(\array_diff($merge, $relationshipsTermsID));
             //y las categorías a insertar.
             $insert = \array_merge(\array_diff($merge, $postsTerms));
-            
+
             $this->deleteRelationshipsTerms($delete, $postID);
             $this->insertRelationshipsTerms($insert, $postID);
         }

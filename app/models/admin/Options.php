@@ -42,6 +42,14 @@ class Options extends Models {
     public static function getInstanceData($data) {
         return parent::getInstance($data, __CLASS__);
     }
+    
+    /**
+     * Metodo que obtiene el número total de datos.
+     * @return int
+     */
+    public static function count() {
+        return parent::countData(Option::getTableName());
+    }
 
     /**
      * Metodo que obtiene, segun su nombre asignado, una opción.

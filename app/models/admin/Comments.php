@@ -7,7 +7,6 @@
 
 namespace SoftnCMS\models\admin;
 
-use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\Comment;
 use SoftnCMS\models\admin\base\Models;
 
@@ -31,6 +30,17 @@ class Comments extends Models {
      */
     public static function selectAll() {
         $select = self::select(Comment::getTableName());
+
+        return self::getInstanceData($select);
+    }
+
+    /**
+     * Metodo que obtiene un número limitado de datos.
+     * @param string $limit
+     * @return Comments|bool Si es FALSE, no hay datos.
+     */
+    public static function selectByLimit($limit) {
+        $select = self::select(Comment::getTableName(), '', [], '*', $limit);
 
         return self::getInstanceData($select);
     }
@@ -97,6 +107,14 @@ class Comments extends Models {
      */
     public static function getInstanceData($data) {
         return parent::getInstance($data, __CLASS__);
+    }
+
+    /**
+     * Metodo que obtiene el número total de datos.
+     * @return int
+     */
+    public static function count() {
+        return parent::countData(Comment::getTableName());
     }
 
     /**

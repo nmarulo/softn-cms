@@ -27,6 +27,12 @@ interface IModels{
     public static function getInstanceData($data);
     
     /**
+     * Metodo que obtiene el número total de objetos.
+     * @return int
+     */
+    public static function count();
+    
+    /**
      * Metodo que obtiene toda la lista de datos.
      * @return array
      */
@@ -50,9 +56,4 @@ interface IModels{
      */
     public function addData($data);
 
-    /**
-     * Metodo que obtiene el número total de objetos.
-     * @return int
-     */
-    public function count();
 }
