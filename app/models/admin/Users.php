@@ -27,17 +27,17 @@ class Users extends Models {
 
     /**
      * Metodo que obtiene todos los usuarios de la base de datos.
-     * @return Users
+     * @return Users|bool Si es FALSE, no hay datos.
      */
     public static function selectAll() {
         $select = self::select(User::getTableName());
 
         return self::getInstanceData($select);
     }
-
+    
     /**
      * Metodo que obtiene un número limitado de datos.
-     * @param string $limit
+     * @param string $limit 
      * @return Users|bool Si es FALSE, no hay datos.
      */
     public static function selectByLimit($limit) {
@@ -49,7 +49,7 @@ class Users extends Models {
     /**
      * Metodo que obtiene todos los usuarios que coinciden con su nombre real.
      * @param string $val
-     * @return Users
+     * @return Users|bool Si es FALSE, no hay datos.
      */
     public static function selectByName($val) {
         $value = "%$val%";
@@ -64,7 +64,7 @@ class Users extends Models {
     /**
      * Metodo que obtiene todos los usuarios segun su fecha de registro.
      * @param string $value
-     * @return Users
+     * @return Users|bool Si es FALSE, no hay datos.
      */
     public static function selectByRegistred($value) {
         $select = self::selectBy(User::getTableName(), $value, User::USER_REGISTRED);
@@ -75,7 +75,7 @@ class Users extends Models {
     /**
      * Metodo que obtiene todos los usuarios segun su rol asignado.
      * @param int $value
-     * @return Users
+     * @return Users|bool Si es FALSE, no hay datos.
      */
     public static function selectByRol($value) {
         $select = self::selectBy(User::getTableName(), $value, User::USER_ROL, \PDO::PARAM_INT);

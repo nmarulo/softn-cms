@@ -26,7 +26,7 @@ class Categories extends Models {
 
     /**
      * Metodo que obtiene todas las categorías de la base de datos.
-     * @return Categories
+     * @return Categories|bool Si es FALSE, no hay datos.
      */
     public static function selectAll() {
         $select = self::select(Category::getTableName());
@@ -36,7 +36,7 @@ class Categories extends Models {
 
     /**
      * Metodo que obtiene un número limitado de datos.
-     * @param string $limit
+     * @param string $limit 
      * @return Categories|bool Si es FALSE, no hay datos.
      */
     public static function selectByLimit($limit) {
@@ -48,7 +48,7 @@ class Categories extends Models {
     /**
      * Metodo que recibe un lista de datos y retorna un instancia.
      * @param array $data Lista de datos.
-     * @return Posts|bool Si es FALSE, no hay datos.
+     * @return Categories|bool Si es FALSE, no hay datos.
      */
     public static function getInstanceData($data) {
         return parent::getInstance($data, __CLASS__);

@@ -26,7 +26,7 @@ class Comments extends Models {
 
     /**
      * Metodo que obtiene todos los comentarios de la base de datos.
-     * @return Comments
+     * @return Comments|bool Si es FALSE, no hay datos.
      */
     public static function selectAll() {
         $select = self::select(Comment::getTableName());
@@ -36,7 +36,7 @@ class Comments extends Models {
 
     /**
      * Metodo que obtiene un número limitado de datos.
-     * @param string $limit
+     * @param string $limit 
      * @return Comments|bool Si es FALSE, no hay datos.
      */
     public static function selectByLimit($limit) {
@@ -48,7 +48,7 @@ class Comments extends Models {
     /**
      * Metodo que obtiene todos los comentarios segun el nombre del autor.
      * @param string $value
-     * @return Comments
+     * @return Comments|bool Si es FALSE, no hay datos.
      */
     public static function selectByAuthor($value) {
         $select = self::selectBy(Comment::getTableName(), $value, Comment::COMMENT_AUTHOR);
@@ -59,7 +59,7 @@ class Comments extends Models {
     /**
      * Metodo que obtiene todos los comentarios segun el email del autor.
      * @param string $value
-     * @return Comments
+     * @return Comments|bool Si es FALSE, no hay datos.
      */
     public static function selectByAuthorEmail($value) {
         $select = self::selectBy(Comment::getTableName(), $value, Comment::COMMENT_AUTHOR_EMAIL);
@@ -70,7 +70,7 @@ class Comments extends Models {
     /**
      * Metodo que obtiene todos los comentarios segun su estado.
      * @param int $value
-     * @return Comments
+     * @return Comments|bool Si es FALSE, no hay datos.
      */
     public static function selectByStatus($value) {
         $select = self::selectBy(Comment::getTableName(), $value, Comment::COMMENT_STATUS, \PDO::PARAM_INT);
@@ -81,7 +81,7 @@ class Comments extends Models {
     /**
      * Metodo que obtiene todos los comentarios segun su fecha.
      * @param string $value
-     * @return Comments
+     * @return Comments|bool Si es FALSE, no hay datos.
      */
     public static function selectByDate($value) {
         $select = self::selectBy(Comment::getTableName(), $value, Comment::COMMENT_DATE);
@@ -92,7 +92,7 @@ class Comments extends Models {
     /**
      * Metodo que obtiene todos los comentarios segun el identificador del post.
      * @param int $value
-     * @return Comments
+     * @return Comments|bool Si es FALSE, no hay datos.
      */
     public static function selectByPostID($value) {
         $select = self::selectBy(Comment::getTableName(), $value, Comment::POST_ID, \PDO::PARAM_INT);

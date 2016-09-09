@@ -26,17 +26,17 @@ class Terms extends Models {
 
     /**
      * Metodo que obtiene todas las etiquetas de la base de datos.
-     * @return Terms
+     * @return Terms|bool Si es FALSE, no hay datos.
      */
     public static function selectAll() {
         $select = self::select(Term::getTableName());
 
         return self::getInstanceData($select);
     }
-
+    
     /**
      * Metodo que obtiene un número limitado de datos.
-     * @param string $limit
+     * @param string $limit 
      * @return Terms|bool Si es FALSE, no hay datos.
      */
     public static function selectByLimit($limit) {

@@ -19,9 +19,10 @@ class LoginController extends Controller {
 
     /**
      * Metodo llamado por la función INDEX.
+     * @param int $paged Pagina actual
      * @return array
      */
-    protected function dataIndex() {
+    protected function dataIndex($paged) {
         global $urlSite;
 
         if (\filter_input(\INPUT_POST, 'login')) {

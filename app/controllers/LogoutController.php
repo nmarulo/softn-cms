@@ -19,9 +19,10 @@ class LogoutController extends Controller {
 
     /**
      * Metodo llamado por la función INDEX.
+     * @param int $paged Pagina actual
      * @return array
      */
-    protected function dataIndex() {
+    protected function dataIndex($paged) {
         global $urlSite;
 
         if (Login::isLogin()) {

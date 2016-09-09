@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\themes;
 
 use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Pagination;
+use SoftnCMS\controllers\themes\Template;
 use SoftnCMS\models\admin\Posts;
 
 /**
@@ -24,19 +25,20 @@ class IndexController extends Controller {
      */
     protected function dataIndex($paged) {
         $output = [];
+        $template = new Template();
         $countData = Posts::count();
         $pagination = new Pagination($paged, $countData);
         $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
         $posts = Posts::selectByLimit($limit);
-
-        $pagination->concatUrl('post');
 
         if ($posts !== \FALSE) {
             $output = $posts->getAll();
         }
 
         return [
-            'posts' => $output
+            'posts' => $output,
+            'pagination' => $pagination,
+            'template' => $template
         ];
     }
 

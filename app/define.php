@@ -47,3 +47,6 @@
 
 /** Ruta de los temas de la aplicación. */
 \define('THEMES', \ABSPATH . 'themes' . \DIRECTORY_SEPARATOR);
+
+/** Directorio de los temas de la aplicación. */
+\define('APP_THEMES', 'app/themes/');

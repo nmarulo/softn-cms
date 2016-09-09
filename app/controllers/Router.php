@@ -136,7 +136,7 @@ class Router {
      */
     private function checkReadableController($requesCtr) {
         $controller = $this->getPathController() . "$requesCtr.php";
-
+        
         if (!\is_readable($controller) && $this->request->isAdminPanel()) {
             header('Location: ' . $this->data['data']['siteUrl'] . 'admin');
             exit();
@@ -155,7 +155,7 @@ class Router {
 
         if ($this->request->isAdminPanel()) {
             $controller = \CONTROLLERS_ADMIN;
-        } elseif (!$this->request->isLoginForm() && !$this->request->isRegisterForm() && !$this->request->isLogout()) {
+        } elseif ($this->request->isTheme()) {
             $controller = \CONTROLLERS_THEMES;
         }
 
@@ -171,7 +171,7 @@ class Router {
 
         if ($this->request->isAdminPanel()) {
             $namespace = \NAMESPACE_CONTROLLERS_ADMIN;
-        } elseif (!$this->request->isLoginForm() && !$this->request->isRegisterForm() && !$this->request->isLogout()) {
+        } elseif ($this->request->isTheme()) {
             $namespace = \NAMESPACE_CONTROLLERS_THEMES;
         }
 

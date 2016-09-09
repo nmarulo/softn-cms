@@ -51,7 +51,7 @@ class Login {
             $_SESSION['usernameID'] = $_COOKIE['userRememberMe'];
         }
 
-        return self::checkSesion();
+        return self::checkSession();
     }
 
     /**
@@ -81,7 +81,7 @@ class Login {
      * a un usuario valido.
      * @return bool
      */
-    private static function checkSesion(){
+    public static function checkSession(){
         $user = User::selectByID($_SESSION['usernameID']);
         
         if($user !== \FALSE){
@@ -91,6 +91,10 @@ class Login {
         unset($_SESSION['usernameID']);
         
         return \FALSE;
+    }
+    
+    public static function getSession(){
+        return $_SESSION['usernameID'];
     }
 
 }

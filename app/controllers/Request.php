@@ -140,7 +140,12 @@ class Request {
             $url = \explode('/', $url);
             $url = $this->checkUrl($url);
             $this->selectController(\array_shift($url));
-            $this->selectMethod(\array_shift($url));
+
+            //La plantilla, por ahora, siempre llama al metodo index del controlador.
+            if (!$this->isTheme()) {
+                $this->selectMethod(\array_shift($url));
+            }
+
             $this->selectArgs(\array_shift($url));
             $this->checkArg();
         }
