@@ -10,6 +10,7 @@ namespace SoftnCMS\controllers\themes;
 
 use SoftnCMS\models\admin\Option;
 use SoftnCMS\models\Login;
+use SoftnCMS\models\admin\User;
 
 /**
  * Description of Template
@@ -24,7 +25,10 @@ class Template {
     /** @var string Url de la aplicación */
     private $urlSite;
 
-    /** @var string Titulo de la plagina. */
+    /** @var string Titulo de la aplicación. */
+    private $title;
+
+    /** @var string Titulo de la pagina. */
     private $pageTitle;
 
     /** @var array Lista con los datos a incluir en el HEAD de la plantilla. */
@@ -34,19 +38,40 @@ class Template {
     private $footer;
 
     /**
-     * 
-     * @global type $urlSite
-     * @param type $namePage
+     * Constructor.
+     * @global string $urlSite
      */
-    public function __construct($namePage = '') {
+    public function __construct() {
         global $urlSite;
 
         $this->head = [];
         $this->footer = [];
         $this->nameTheme = Option::selectByName('optionTheme')->getOptionValue();
         $this->urlSite = $urlSite;
-        $this->pageTitle = Option::selectByName('optionTitle')->getOptionValue();
-        $this->pageTitle .= empty($namePage) ? '' : " | $namePage";
+        $this->title = Option::selectByName('optionTitle')->getOptionValue();
+        $this->pageTitle = $this->title;
+    }
+
+    public function getSessionUserName($isEcho = \TRUE) {
+        $user = User::selectByID(Login::getSession());
+
+        if ($user === \FALSE) {
+            return \FALSE;
+        }
+
+        if (!$isEcho) {
+            return $user->getUserName();
+        }
+
+        echo $user->getUserName();
+    }
+
+    public function getSessionUserID($isEcho = \TRUE) {
+        if (!$isEcho) {
+            return Login::getSession();
+        }
+
+        echo Login::getSession();
     }
 
     /**
@@ -92,11 +117,25 @@ class Template {
     }
 
     /**
-     * Metodo que obtiene el titulo de la pagina.
+     * Metodo que obtiene el titulo de la aplicación.
      * @param bool $isEcho [Opcional] Si es TRUE, se imprime el contenido.
      * @return string
      */
     public function getTitle($isEcho = \TRUE) {
+        if (!$isEcho) {
+
+            return $this->title;
+        }
+
+        echo $this->title;
+    }
+
+    /**
+     * Metodo que obtiene el titulo de la pagina.
+     * @param bool $isEcho [Opcional] Si es TRUE, se imprime el contenido.
+     * @return string
+     */
+    public function getPageTitle($isEcho = \TRUE) {
         if (!$isEcho) {
 
             return $this->pageTitle;
@@ -188,6 +227,19 @@ class Template {
         }
 
         echo $this->urlSite . 'logout/';
+    }
+
+    public function getUrlSite($isEcho = \TRUE) {
+        if (!$isEcho) {
+
+            return $this->urlSite;
+        }
+
+        echo $this->urlSite;
+    }
+
+    public function concatTitle($value) {
+        $this->pageTitle .= " | $value";
     }
 
 }

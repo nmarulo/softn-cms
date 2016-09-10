@@ -26,7 +26,7 @@ abstract class Models extends BaseModels implements IModels {
 
     /** @var string Nombre de la tabla. */
     private $table;
-    
+
     /** @var string $class Nombre de la clase incluido su namespace. */
     private $class;
 
@@ -40,7 +40,7 @@ abstract class Models extends BaseModels implements IModels {
         $this->table = $table;
         $this->class = $class;
     }
-    
+
     /**
      * Metodo que recibe un lista de datos y retorna un instancia.
      * @param array $data Lista de datos.
@@ -48,15 +48,16 @@ abstract class Models extends BaseModels implements IModels {
      * @return object|bool Si es FALSE, no hay datos.
      */
     protected static function getInstance($data, $class) {
-        if (empty($data)) {
+        if ($data === \FALSE) {
             return \FALSE;
         }
+
         $output = new $class;
         $output->addData($data);
 
         return $output;
     }
-    
+
     /**
      * Metodo que obtiene el número total de datos.
      * @return int
@@ -67,7 +68,7 @@ abstract class Models extends BaseModels implements IModels {
 
         return $select[0]['count'];
     }
-    
+
     /**
      * Metodo que obtiene toda la lista de datos.
      * @return array

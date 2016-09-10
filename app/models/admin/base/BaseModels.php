@@ -13,7 +13,7 @@ use SoftnCMS\controllers\DBController;
 /**
  * Description of BaseModels
  *
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
 class BaseModels {
 

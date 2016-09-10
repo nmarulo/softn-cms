@@ -9,6 +9,7 @@ namespace SoftnCMS\controllers\themes;
 use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Pagination;
 use SoftnCMS\controllers\themes\Template;
+use SoftnCMS\controllers\themes\PostsTemplate;
 use SoftnCMS\models\admin\Posts;
 
 /**
@@ -32,7 +33,9 @@ class IndexController extends Controller {
         $posts = Posts::selectByLimit($limit);
 
         if ($posts !== \FALSE) {
-            $output = $posts->getAll();
+            $postsTemplate = new PostsTemplate();
+            $postsTemplate->addData($posts->getAll());
+            $output = $postsTemplate->getAll();
         }
 
         return [

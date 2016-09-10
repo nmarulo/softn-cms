@@ -69,31 +69,31 @@ class Login {
             if ($this->userRememberMe) {
                 setcookie('userRememberMe', $user->getID(), \COOKIE_EXPIRE);
             }
-            
+
             return \TRUE;
         }
 
         return \FALSE;
     }
-    
+
     /**
      * Metodo que comprueba si el valor de la variable de sesión corresponde 
      * a un usuario valido.
      * @return bool
      */
-    public static function checkSession(){
-        $user = User::selectByID($_SESSION['usernameID']);
-        
-        if($user !== \FALSE){
-            return \TRUE;
+    public static function checkSession() {
+        $user = User::selectByID(self::getSession());
+
+        if ($user === \FALSE) {
+            unset($_SESSION['usernameID']);
+
+            return \FALSE;
         }
-        
-        unset($_SESSION['usernameID']);
-        
-        return \FALSE;
+
+        return \TRUE;
     }
-    
-    public static function getSession(){
+
+    public static function getSession() {
         return $_SESSION['usernameID'];
     }
 

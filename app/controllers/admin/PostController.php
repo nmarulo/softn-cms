@@ -200,7 +200,7 @@ class PostController extends BaseController {
         } else {
             Messages::addError('Error al borrar la entrada.');
         }
-        
+
         $this->namePage = 'post';
     }
 
@@ -226,8 +226,17 @@ class PostController extends BaseController {
      * @param int $postID Identificador del post.
      */
     private function updateRelationshipsCategories($relationshipsCategoriesID, $postID) {
-        if (!empty($relationshipsCategoriesID)) {
-            $postsCategories = PostsCategories::selectByPostID($postID);
+        $postsCategories = PostsCategories::selectByPostID($postID);
+
+        //Si no se ha seleccionado nada se borra todo los datos vinculados.
+        if (empty($relationshipsCategoriesID)) {
+            $this->deleteRelationshipsCategories($postsCategories, $postID);
+        } else {
+
+            if ($postsCategories === \FALSE) {
+                $postsCategories = [];
+            }
+            
             //Se combina en un unico array las nuevas categorías y las existentes.
             $merge = \array_merge($relationshipsCategoriesID, $postsCategories);
             /*
@@ -284,8 +293,17 @@ class PostController extends BaseController {
      * @param int $postID Identificador del post.
      */
     private function updateRelationshipsTerms($relationshipsTermsID, $postID) {
-        if (!empty($relationshipsTermsID)) {
-            $postsTerms = PostsTerms::selectByPostID($postID);
+        $postsTerms = PostsTerms::selectByPostID($postID);
+
+        //Si no se ha seleccionado nada se borra todo los datos vinculados.
+        if (empty($relationshipsTermsID)) {
+            $this->deleteRelationshipsTerms($postsTerms, $postID);
+        } else {
+
+            if ($postsTerms === \FALSE) {
+                $postsTerms = [];
+            }
+
             //Se combina en un unico array.
             $merge = \array_merge($relationshipsTermsID, $postsTerms);
             /*

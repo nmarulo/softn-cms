@@ -4,11 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title><?php $data['template']->getTitle(); ?></title>
+        <title><?php $data['template']->getPageTitle(); ?></title>
         <link rel="icon" href="<?php $data['template']->getUrlTheme(); ?>img/logo_32x32.png" sizes="32x32">
         <link href="<?php $data['template']->getUrlTheme(); ?>css/normalize.css" rel="stylesheet" type="text/css"/>
         <!-- Bootstrap -->
-        <link href="<?php echo $data['siteUrl']; ?>app/vendor/twbs/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        <link href="<?php $data['template']->getUrlSite(); ?>app/vendor/twbs/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
         <link href="<?php $data['template']->getUrlTheme(); ?>css/style.css" rel="stylesheet" type="text/css"/>
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -31,7 +31,9 @@
                                     <span class="icon-bar"></span>
                                     <span class="icon-bar"></span>
                                 </button>
-                                <a class="navbar-brand" href="#"><?php echo $data['siteTitle']; ?></a>
+                                <a class="navbar-brand" href="<?php $data['template']->getUrlSite(); ?>">
+                                    <?php $data['template']->getTitle(); ?>
+                                </a>
                             </div>
 
                             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -53,11 +55,9 @@
                                     <button type="submit" class="btn btn-default">Buscar</button>
                                 </form>
                                 <ul class="nav navbar-nav navbar-right">
-                                    <?php if (empty($data['userSession'])) { ?>
-                                        <li><a href="<?php echo $data['siteUrl'] . 'login'; ?>">Acceder</a></li>
-                                    <?php } else { ?>
+                                    <?php if ($data['template']->isLogin()) { ?>
                                         <li class="dropdown">
-                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $data['userSession']->getUserName(); ?> <span class="caret"></span></a>
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php $data['template']->getSessionUserName(); ?> <span class="caret"></span></a>
                                             <ul class="dropdown-menu">
                                                 <li><a href="<?php $data['template']->getUrlAdmin(); ?>">Administración</a></li>
                                                 <li><a href="<?php $data['template']->getUrlProfile(); ?>">Perfil</a></li>
@@ -65,6 +65,8 @@
                                                 <li><a href="<?php $data['template']->getUrlLogout(); ?>">Cerrar sesión</a></li>
                                             </ul>
                                         </li>
+                                    <?php } else { ?>
+                                        <li><a href="<?php $data['template']->getUrlLogin(); ?>">Acceder</a></li>
                                     <?php } ?>
                                 </ul>
                             </div><!-- /.navbar-collapse -->
@@ -78,73 +80,91 @@
                                 <header class="clearfix">
                                     <div class="post-title clearfix">
                                         <h2 class="h3">
-                                            <a href="<?php echo $data['siteUrl'] . 'post/' . $post->getID(); ?>"><?php echo $post->getPostTitle(); ?></a>
+                                            <a href="<?php $post->getPostUrl(); ?>"><?php $post->getPostTitle(); ?></a>
                                         </h2>
                                     </div>
                                     <p class="meta">
-                                        <time class="label label-primary" datetime="2015/01/22"><span class="glyphicon glyphicon-time"></span> <?php echo $post->getPostDate(); ?></time>
-                                        <span class="glyphicon glyphicon-user"></span> Publicado por <?php echo $post->getUser()->getUserName(); ?>/
-                                        <span class=" glyphicon glyphicon-folder-open"></span> Archivado en categoria.
+                                        <time class="label label-primary" datetime="2015/01/22"><span class="glyphicon glyphicon-time"></span> <?php $post->getPostDate(); ?></time>
+                                        <span class="glyphicon glyphicon-user"></span> Publicado por 
+                                        <a href="<?php $post->getPostUrlAuthor(); ?>">
+                                            <?php $post->getPostAuthor(); ?>
+                                        </a> 
+                                        <?php if ($post->hasPostCategories()) { ?>
+                                            /
+                                            <span class=" glyphicon glyphicon-folder-open"></span> Archivado en 
+                                            <?php foreach ($post->getPostCategories() as $category) { ?>
+                                                <a class="label label-default" href="<?php $category->getCategoryUrl(); ?>">
+                                                    <?php $category->getCategoryName(); ?>
+                                                </a>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
                                     </p>
                                 </header>
                                 <section><?php echo $post->getPostContents(); ?></section>
                                 <footer>
-                                    <p>Etiquetas: <a class="label label-default" href="#">titulo</a></p>
+                                    <?php if ($post->hasPostTerms()) { ?>
+                                        <p>
+                                            Etiquetas: 
+                                            <?php foreach ($post->getPostTerms() as $terms) { ?>
+                                                <a class="label label-default" href="<?php $terms->getTermUrl(); ?>">
+                                                    <?php $terms->getTermName(); ?>
+                                                </a>
+                                            <?php } ?>
+                                        </p>
+                                    <?php } ?>
                                 </footer>
                             </article>
                             <!-- comentarios -->
-                            <?php if ($post->getCommentCount()) { ?>
+                            <?php if ($post->hasPostComments()) { ?>
                                 <div id="container-comments" class="clearfix">
                                     <h2>
                                         Comentarios 
                                         <small>
                                             <span class="label label-warning">
-                                                <?php echo $post->getCommentCount(); ?>
+                                                <?php echo $post->getPostCommentCount(); ?>
                                             </span>
                                         </small>
                                     </h2>
-                                    <div id="comment-1" class="media">
-                                        <div class="media-left">
-                                            <a href="#">
-                                                <img class="media-object" src="<?php echo $data['siteUrl']; ?>app/themes/default/img/avatar.svg">
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <div class="row clearfix">
-                                                <div class="col-md-6">
-                                                    <a href="#" target="_blank">autor</a>
-                                                </div>
-                                                <div class="col-md-6">fecha</div>
+                                    <?php foreach ($post->getPostComments() as $comment) { ?>
+                                        <div id="<?php $comment->getCommentID(); ?>" class="media">
+                                            <div class="media-left">
+                                                <?php if ($comment->isCommentUrlAuthor()) { ?>
+                                                    <a href="<?php $comment->getCommentUrlAuthor(); ?>">
+                                                        <img class="media-object" src="<?php $comment->getCommentAvatar(); ?>">
+                                                    </a>
+                                                <?php } else { ?>
+                                                    <img class="media-object" src="<?php $comment->getCommentAvatar(); ?>">
+                                                <?php } ?>
                                             </div>
-                                            <p>contenido</p>
-                                        </div>
-                                    </div>
-                                    <div id="comment-2" class="media">
-                                        <div class="media-left">
-                                            <a href="#">
-                                                <img class="media-object" src="<?php echo $data['siteUrl']; ?>app/themes/default/img/avatar.svg">
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <div class="row clearfix">
-                                                <div class="col-md-6">
-                                                    <a href="#" target="_blank">autor</a>
+                                            <div class="media-body">
+                                                <div class="row clearfix">
+                                                    <div class="col-md-6">
+                                                        <strong><?php $comment->getCommentAuthor(); ?></strong>
+                                                    </div>
+                                                    <div class="col-md-6"><?php $comment->getCommentDate(); ?></div>
                                                 </div>
-                                                <div class="col-md-6">fecha</div>
+                                                <p><?php $comment->getCommentContents(); ?></p>
                                             </div>
-                                            <p>contenido</p>
                                         </div>
-                                    </div>
+                                    <?php } ?>
                                 </div>
                                 <?php
                             }
 
-                            if ($post->getCommentStatus()) {
+                            if ($post->getPostCommentStatus()) {
                                 ?>
                                 <div id="container-comments-form" class="clearfix">
                                     <h2>Publicar comentario</h2>
                                     <form method="post">
-                                        <?php if (empty($data['userSession'])) { ?>
+                                        <?php if ($data['template']->isLogin()) { ?>
+                                            <p>
+                                                Conectado como <strong>
+                                                    <?php $data['template']->getSessionUserName(); ?></strong>
+                                            </p>
+                                            <input type="hidden" name="commentUserID" value="<?php $data['template']->getSessionUserID(); ?>"/>
+                                        <?php } else { ?>
                                             <div class="form-group">
                                                 <label class="control-label">Nombre</label>
                                                 <input type="text" class="form-control" name="commentAutor"/>
@@ -153,12 +173,6 @@
                                                 <label class="control-label">Correo electronico</label>
                                                 <input type="email" class="form-control" name="commentAuthorEmail"/>
                                             </div>
-                                        <?php } else { ?>
-                                            <p>
-                                                Conectado como <strong>
-                                                <?php echo $data['userSession']->getUserName(); ?></strong>
-                                            </p>
-                                            <input type="hidden" name="commentAutorID" value="<?php echo $data['userSession']->getID(); ?>"/>
                                         <?php } ?>
                                         <div class="form-group">
                                             <label class="control-label">Comentario</label>

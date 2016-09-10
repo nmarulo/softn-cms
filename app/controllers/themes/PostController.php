@@ -8,13 +8,11 @@
 
 namespace SoftnCMS\controllers\themes;
 
+use SoftnCMS\controllers\themes\PostsTemplate;
 use SoftnCMS\controllers\themes\Template;
 use SoftnCMS\controllers\Messages;
 use SoftnCMS\models\admin\Post;
-use SoftnCMS\models\admin\Comments;
 use SoftnCMS\models\admin\CommentInsert;
-use SoftnCMS\models\admin\PostsCategories;
-use SoftnCMS\models\admin\PostsTerms;
 
 /**
  * Description of PostContoller
@@ -33,27 +31,21 @@ class PostController {
         //Se comprueba si se ha enviado un comentario.
         $this->postComment($id);
         $post = Post::selectByID($id);
-        
+
         //En caso de que el post no exista.
-        if($post === \FALSE){
+        if ($post === \FALSE) {
             \header("Location: $urlSite");
             exit();
         }
-        
-        $template = new Template($post->getPostTitle());
-        $categories = PostsCategories::selectByPostID($id);
-        $terms = PostsTerms::selectByPostID($id);
-        $comments = Comments::selectByPostID($id);
 
-        if ($comments !== \FALSE) {
-            $comments = $comments->getAll();
-        }
+        $template = new Template();
+        $template->concatTitle($post->getPostTitle());
+
+        $posts = new PostsTemplate();
+        $posts->add($post);
 
         return [
-            'post' => $post,
-            'categories' => $categories,
-            'terms' => $terms,
-            'comments' => $comments,
+            'posts' => $posts->getAll(),
             'template' => $template
         ];
     }
