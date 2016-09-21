@@ -8,7 +8,7 @@
 
 namespace SoftnCMS\models\admin\base;
 
-use SoftnCMS\models\admin\base\IModel;
+use SoftnCMS\models\admin\base\ModelInterface;
 use SoftnCMS\models\admin\base\BaseModels;
 
 /**
@@ -16,7 +16,7 @@ use SoftnCMS\models\admin\base\BaseModels;
  *
  * @author MaruloPC-Desk
  */
-abstract class Model extends BaseModels implements IModel {
+abstract class Model extends BaseModels implements ModelInterface {
     
     /**
      * Metodo que recibe un lista de datos y retorna un instancia.
