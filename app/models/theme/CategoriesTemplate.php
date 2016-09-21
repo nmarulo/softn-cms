@@ -6,41 +6,39 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\controllers\themes;
-
-use SoftnCMS\controllers\themes\CommentTemplate;
+namespace SoftnCMS\models\theme;
 
 /**
- * Description of CommentsTemplate
+ * Description of CategoriesTemplate
  *
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
-class CommentsTemplate {
-    
+class CategoriesTemplate {
+
     /** @var array Lista. */
     private $data;
-    
+
     public function __construct() {
         $this->data = [];
     }
-    
-    public function getAll(){
+
+    public function getAll() {
         return $this->data;
     }
 
-    public function getByID($id){
+    public function getByID($id) {
         return $this->data[$id];
     }
 
     public function add($data) {
-        $data = new CommentTemplate($data);
+        $data = new CategoryTemplate($data);
         $this->data[$data->getID()] = $data;
     }
-    
+
     public function addData($data) {
         foreach ($data as $value) {
             $this->add($value);
         }
     }
-    
+
 }

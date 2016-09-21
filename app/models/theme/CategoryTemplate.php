@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\controllers\themes;
+namespace SoftnCMS\models\theme;
 
 use SoftnCMS\models\admin\Category;
 
@@ -59,6 +59,16 @@ class CategoryTemplate {
         }
 
         echo $this->category->getCategoryName();
+    }
+    
+    public function getCategoryDescription($isEcho = \TRUE) {
+        if (!$isEcho) {
+        
+            return $this->category->getCategoryDescription();
+        }
+    
+        echo $this->category->getCategoryDescription();
+        
     }
 
 }

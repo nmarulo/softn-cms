@@ -6,16 +6,14 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\controllers\themes;
-
-use SoftnCMS\controllers\themes\PostTemplate;
+namespace SoftnCMS\models\theme;
 
 /**
- * Description of PostsTemplate
+ * Description of TermsTemplate
  *
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
-class PostsTemplate {
+class TermsTemplate {
 
     /** @var array Lista. */
     private $data;
@@ -33,7 +31,7 @@ class PostsTemplate {
     }
 
     public function add($data) {
-        $data = new PostTemplate($data);
+        $data = new TermTemplate($data);
         $this->data[$data->getID()] = $data;
     }
 

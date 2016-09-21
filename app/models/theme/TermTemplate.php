@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\controllers\themes;
+namespace SoftnCMS\models\theme;
 
 use SoftnCMS\models\admin\Term;
 

@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace SoftnCMS\controllers\themes;
+namespace SoftnCMS\models\theme;
 
 use SoftnCMS\models\admin\Comment;
 
@@ -70,10 +70,10 @@ class CommentTemplate {
 
         if (!$isEcho) {
 
-            return $urlSite . 'author/' . $this->comment->getCommentUserID();
+            return $urlSite . 'user/' . $this->comment->getCommentUserID();
         }
 
-        echo $urlSite . 'author/' . $this->comment->getCommentUserID();
+        echo $urlSite . 'user/' . $this->comment->getCommentUserID();
     }
     
     public function isCommentUrlAuthor(){
