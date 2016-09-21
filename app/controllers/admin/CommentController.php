@@ -24,13 +24,13 @@ class CommentController extends BaseController {
 
     /**
      * Metodo llamado por la función INDEX.
-     * @param int $paged Pagina actual.
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataIndex($paged) {
+    protected function dataIndex($data) {
         $output = [];
         $countData = Comments::count();
-        $pagination = new Pagination($paged, $countData);
+        $pagination = new Pagination($data['paged'], $countData);
         $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
         $comments = Comments::selectByLimit($limit);
 
@@ -89,13 +89,13 @@ class CommentController extends BaseController {
 
     /**
      * Metodo llamado por la función UPDATE.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataUpdate($id) {
+    protected function dataUpdate($data) {
         global $urlSite;
 
-        $comment = Comment::selectByID($id);
+        $comment = Comment::selectByID($data['id']);
 
         //En caso de que no exista.
         if (empty($comment)) {
@@ -131,17 +131,17 @@ class CommentController extends BaseController {
 
     /**
      * Metodo llamado por la función DELETE.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataDelete($id) {
+    protected function dataDelete($data) {
         /*
          * Ya que este metodo no tiene modulo vista propio
          * se carga el modulo vista INDEX, asi que se retornan los datos
          * para esta vista.
          */
 
-        $delete = new CommentDelete($id);
+        $delete = new CommentDelete($data['id']);
         $output = $delete->delete();
 
         if ($output) {

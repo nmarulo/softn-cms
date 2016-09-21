@@ -23,13 +23,13 @@ class CategoryController extends BaseController {
 
     /**
      * Metodo llamado por la función INDEX.
-     * @param int $paged Pagina actual.
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataIndex($paged) {
+    protected function dataIndex($data) {
         $output = [];
         $countData = Categories::count();
-        $pagination = new Pagination($paged, $countData);
+        $pagination = new Pagination($data['paged'], $countData);
         $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
         $categories = Categories::selectByLimit($limit);
         
@@ -79,13 +79,13 @@ class CategoryController extends BaseController {
 
     /**
      * Metodo llamado por la función UPDATE.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataUpdate($id) {
+    protected function dataUpdate($data) {
         global $urlSite;
 
-        $category = Category::selectByID($id);
+        $category = Category::selectByID($data['id']);
 
         //En caso de que no exista.
         if (empty($category)) {
@@ -121,17 +121,17 @@ class CategoryController extends BaseController {
 
     /**
      * Metodo llamado por la función DELETE.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataDelete($id) {
+    protected function dataDelete($data) {
         /*
          * Ya que este metodo no tiene modulo vista propio
          * se carga el modulo vista INDEX, asi que se retornan los datos
          * para esta vista.
          */
 
-        $delete = new CategoryDelete($id);
+        $delete = new CategoryDelete($data['id']);
         $output = $delete->delete();
 
         if ($output) {

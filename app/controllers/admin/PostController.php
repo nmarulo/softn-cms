@@ -32,13 +32,13 @@ class PostController extends BaseController {
 
     /**
      * Metodo llamado por la función INDEX.
-     * @param int $paged Pagina actual.
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataIndex($paged) {
+    protected function dataIndex($data) {
         $output = [];
         $countData = Posts::count();
-        $pagination = new Pagination($paged, $countData);
+        $pagination = new Pagination($data['paged'], $countData);
         $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
         $posts = Posts::selectByLimit($limit);
 
@@ -117,13 +117,13 @@ class PostController extends BaseController {
 
     /**
      * Metodo llamado por la función UPDATE.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataUpdate($id) {
+    protected function dataUpdate($data) {
         global $urlSite;
 
-        $post = Post::selectByID($id);
+        $post = Post::selectByID($data['id']);
 
         //En caso de que no exista.
         if (empty($post)) {
@@ -180,17 +180,17 @@ class PostController extends BaseController {
 
     /**
      * Metodo llamado por la función DELETE.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataDelete($id) {
+    protected function dataDelete($data) {
         /*
          * Ya que este metodo no tiene modulo vista propio
          * se carga el modulo vista INDEX, asi que se retornan los datos
          * para esta vista.
          */
 
-        $delete = new PostDelete($id);
+        $delete = new PostDelete($data['id']);
         $output = $delete->delete();
 
         if ($output) {

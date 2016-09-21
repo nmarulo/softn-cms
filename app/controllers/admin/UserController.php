@@ -24,13 +24,13 @@ class UserController extends BaseController {
 
     /**
      * Metodo llamado por la funcion INDEX.
-     * @param int $paged Pagina actual.
+     * @param array $data Lista de argumentos..
      * @return array
      */
-    protected function dataIndex($paged) {
+    protected function dataIndex($data) {
         $output = [];
         $countData = Users::count();
-        $pagination = new Pagination($paged, $countData);
+        $pagination = new Pagination($data['paged'], $countData);
         $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
         $users = Users::selectByLimit($limit);
 
@@ -84,13 +84,13 @@ class UserController extends BaseController {
 
     /**
      * Metodo llamado por la función UPDATE.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataUpdate($id) {
+    protected function dataUpdate($data) {
         global $urlSite;
 
-        $user = User::selectByID($id);
+        $user = User::selectByID($data['id']);
 
         //En caso de que no exista.
         if (empty($user)) {
@@ -129,17 +129,17 @@ class UserController extends BaseController {
 
     /**
      * Metodo llamado por la función DELETE.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataDelete($id) {
+    protected function dataDelete($data) {
         /*
          * Ya que este metodo no tiene modulo vista propio
          * se carga el modulo vista INDEX, asi que se retornan los datos
          * para esta vista.
          */
 
-        $delete = new UserDelete($id);
+        $delete = new UserDelete($data['id']);
         $output = $delete->delete();
 
         if ($output) {

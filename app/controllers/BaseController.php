@@ -14,6 +14,10 @@ use SoftnCMS\controllers\Controller;
  */
 abstract class BaseController extends Controller {
     
+    /**
+     * @var string Nombre de la pagina actual. Usado para
+     *             redireccionar en el metodo delete.
+     */
     protected $namePage;
 
     /**
@@ -26,24 +30,24 @@ abstract class BaseController extends Controller {
 
     /**
      * Metodo que actualiza los datos segun su identificador.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    public function update($id) {
-        return ['data' => $this->dataUpdate($id)];
+    public function update($data) {
+        return ['data' => $this->dataUpdate($data)];
     }
 
     /**
      * Metodo que borra los datos segun su identificador.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    public function delete($id, $pagedNow = 1) {
+    public function delete($data) {
         global $urlSite;
 
-        $this->dataDelete($id);
+        $this->dataDelete($data);
 
-        \header("Location: $urlSite" . 'admin/' . $this->namePage . '/paged/' . $pagedNow);
+        \header("Location: $urlSite" . 'admin/' . $this->namePage . '/paged/' . $data['paged']);
         exit();
     }
 
@@ -55,14 +59,16 @@ abstract class BaseController extends Controller {
 
     /**
      * Metodo llamado por la función UPDATE.
-     * @return array
+     * @param array $data Lista de argumentos.
+     * @return mixed
      */
-    abstract protected function dataUpdate($id);
+    abstract protected function dataUpdate($data);
 
     /**
      * Metodo llamado por la función DELETE.
+     * @param array $data Lista de argumentos.
      */
-    abstract protected function dataDelete($id);
+    abstract protected function dataDelete($data);
 
     /**
      * Metodo que obtiene los datos de los campos INPUT del formulario.

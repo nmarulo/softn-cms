@@ -20,10 +20,10 @@ class OptionController extends Controller {
 
     /**
      * Metodo llamado por la funcion index.
-     * @param int $paged Pagina actual.
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataIndex($paged) {
+    protected function dataIndex($data) {
         //comprueba si hay datos para actualizar.
         $this->dataUpdate();
         $options = Options::selectAll();

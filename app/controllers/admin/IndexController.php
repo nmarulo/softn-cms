@@ -21,10 +21,10 @@ class IndexController extends Controller {
 
     /**
      * Metodo llamado por la funcion index.
-     * @param int $paged Pagina actual.
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataIndex($paged) {
+    protected function dataIndex($data) {
         $posts = new Posts();
         $comments = new Comments();
         $lastPosts = $posts->lastData(5);

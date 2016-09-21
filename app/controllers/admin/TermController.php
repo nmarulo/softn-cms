@@ -24,13 +24,13 @@ class TermController extends BaseController {
 
     /**
      * Metodo llamado por la función INDEX.
-     * @param int $paged Pagina actual.
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataIndex($paged) {
+    protected function dataIndex($data) {
         $output = [];
         $countData = Terms::count();
-        $pagination = new Pagination($paged, $countData);
+        $pagination = new Pagination($data['paged'], $countData);
         $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
         $terms = Terms::selectByLimit($limit);
 
@@ -80,13 +80,13 @@ class TermController extends BaseController {
 
     /**
      * Metodo llamado por la función UPDATE.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataUpdate($id) {
+    protected function dataUpdate($data) {
         global $urlSite;
 
-        $term = Term::selectByID($id);
+        $term = Term::selectByID($data['id']);
 
         //En caso de que no exista.
         if (empty($term)) {
@@ -122,17 +122,17 @@ class TermController extends BaseController {
 
     /**
      * Metodo llamado por la función DELETE.
-     * @param int $id
+     * @param array $data Lista de argumentos.
      * @return array
      */
-    protected function dataDelete($id) {
+    protected function dataDelete($data) {
         /*
          * Ya que este metodo no tiene modulo vista propio
          * se carga el modulo vista INDEX, asi que se retornan los datos
          * para esta vista.
          */
 
-        $delete = new TermDelete($id);
+        $delete = new TermDelete($data['id']);
         $output = $delete->delete();
 
         if ($output) {
