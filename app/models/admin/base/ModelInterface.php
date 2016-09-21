@@ -10,7 +10,7 @@ namespace SoftnCMS\models\admin\base;
  *
  * @author Nicolás Marulanda P.
  */
-interface IModel {
+interface ModelInterface {
 
     /** Identificador. */
     const ID = 'ID';

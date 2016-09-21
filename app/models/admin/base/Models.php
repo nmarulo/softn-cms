@@ -8,7 +8,7 @@
 
 namespace SoftnCMS\models\admin\base;
 
-use SoftnCMS\models\admin\base\IModels;
+use SoftnCMS\models\admin\base\ModelsInterface;
 use SoftnCMS\models\admin\base\BaseModels;
 
 /**
@@ -16,7 +16,7 @@ use SoftnCMS\models\admin\base\BaseModels;
  *
  * @author MaruloPC-Desk
  */
-abstract class Models extends BaseModels implements IModels {
+abstract class Models extends BaseModels implements ModelsInterface {
 
     /**
      * Lista, donde el indice o clave corresponde al ID.
@@ -60,6 +60,7 @@ abstract class Models extends BaseModels implements IModels {
 
     /**
      * Metodo que obtiene el número total de datos.
+     * @param string $table
      * @return int
      */
     protected static function countData($table) {
