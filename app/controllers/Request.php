@@ -48,7 +48,7 @@ class Request {
         $this->method = 'index';
         //La primera letra debe estar en mayuscula.
         $this->controller = 'Index';
-        $this->args = [0];
+        $this->args = ['data' => []];
         $this->paged = 0;
         $this->parseUrl();
     }
@@ -135,7 +135,7 @@ class Request {
              * [] = carpeta - en caso de estar en el panel de administración.
              * [] = controlador
              * [] = metodo
-             * [>= ] = argumentos
+             * [] = argumentos
              */
             $url = \explode('/', $url);
             $url = $this->checkUrl($url);
@@ -147,35 +147,26 @@ class Request {
             }
 
             $this->selectArgs(\array_shift($url));
-            $this->checkArg();
         }
+        
+        $this->checkArg();
     }
 
     /**
-     * Metodo que comprueba si hay más datos para agregar a los argumentos
+     * Metodo que agrega los datos extra a los argumentos
      * que se enviaran al metodo del controlador.
      */
     private function checkArg() {
-        //Los datos de paginación solo se envian a los metodos INDEX y DELETE.
-        if (($this->method == 'index' || $this->method == 'delete') && !empty($this->paged)) {
-            $this->args[] = $this->paged;
-            /*
-             * La pagina index por el momento solo recibe 
-             * un parametro (el numero de la pagina actual)
-             */
-            if ($this->method == 'index') {
-                $this->args = [$this->paged];
-            }
-        }
+        $this->args['data']['paged'] = $this->paged;
     }
 
     /**
-     * Metodo que establece a TRUE o FALSE las variables booleanas 
+     * Metodo que establece a TRUE o FALSE las variables booleanas
      * que establecen la ubicación del usuario.
      * @param array $url Lista con los datos de la URL.
-     * @return array Si el usuario esta en el panel de administración 
-     * retornara la lista con los datos de la URL sin el primer dato 
-     * ya que este solo sirve para identificar que el usuario 
+     * @return array Si el usuario esta en el panel de administración
+     * retornara la lista con los datos de la URL sin el primer dato
+     * ya que este solo sirve para identificar que el usuario
      * esta en el panel de administración.
      */
     private function checkUrl($url) {
@@ -188,7 +179,7 @@ class Request {
         $aux = $this->adminPanel ? $aux : $url;
 
         /*
-         * Se obtienes los datos de filtrado y se eliminan de la lista 
+         * Se obtienes los datos de filtrado y se eliminan de la lista
          * para evitar confictos al obtener el controlador, el metodo y los argumentos.
          */
         return $this->urlPaged($aux);
@@ -235,7 +226,7 @@ class Request {
     private function selectController($url) {
         if (!empty($url)) {
             /*
-             * Para evitar problemas con el nombre del fichero 
+             * Para evitar problemas con el nombre del fichero
              * la primera letra debe estar en mayuscula.
              */
             $url = strtoupper(substr($url, 0, 1)) . substr($url, 1);
@@ -249,7 +240,7 @@ class Request {
      */
     private function selectArgs($url) {
         if (!empty($url)) {
-            $this->args = [$url];
+            $this->args['data']['id'] = $url;
         }
     }
 
