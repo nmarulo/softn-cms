@@ -8,29 +8,36 @@
 
 namespace SoftnCMS\controllers\themes;
 
-use SoftnCMS\controllers\themes\PostsTemplate;
-use SoftnCMS\controllers\themes\Template;
+use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Messages;
+use SoftnCMS\controllers\Pagination;
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\CommentInsert;
+use SoftnCMS\models\theme\PostCommentsTemplate;
+use SoftnCMS\models\theme\PostsTemplate;
+use SoftnCMS\models\theme\PostTemplate;
+use SoftnCMS\models\theme\Template;
 
 /**
  * Description of PostContoller
  *
  * @author Nicolás Marulanda P.
  */
-class PostController {
-
-    public function index($id) {
-        return ['data' => $this->dataIndex($id)];
-    }
-
-    protected function dataIndex($id) {
+class PostController extends Controller {
+    
+    /**
+     * Metodo llamado por la función INDEX.
+     *
+     * @param array $data Lista de argumentos.
+     *
+     * @return array
+     */
+    protected function dataIndex($data) {
         global $urlSite;
 
         //Se comprueba si se ha enviado un comentario.
-        $this->postComment($id);
-        $post = Post::selectByID($id);
+        $this->postComment($data['id']);
+        $post = Post::selectByID($data['id']);
 
         //En caso de que el post no exista.
         if ($post === \FALSE) {
@@ -40,13 +47,17 @@ class PostController {
 
         $template = new Template();
         $template->concatTitle($post->getPostTitle());
-
-        $posts = new PostsTemplate();
-        $posts->add($post);
+        
+        $countData = PostCommentsTemplate::count($post->getID());
+        $pagination = new Pagination($data['paged'], $countData);
+        $commentLimit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
+        $postTemplate = new PostTemplate($post, $commentLimit);
 
         return [
-            'posts' => $posts->getAll(),
-            'template' => $template
+            //Retorno un array para mantener la misma sintaxis.
+            'posts' => [$postTemplate],
+            'template' => $template,
+            'pagination' => $pagination
         ];
     }
 
