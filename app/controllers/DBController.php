@@ -17,7 +17,7 @@ class DBController {
 
     /**
      * Metodo que obtine la instacia de la conexión a la base de datos.
-     * @return object
+     * @return MySql|null
      */
     public static function getConnection() {
         $connection = null;

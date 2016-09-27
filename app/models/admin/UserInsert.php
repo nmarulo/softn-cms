@@ -8,7 +8,6 @@
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\models\admin\User;
-use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\base\ModelInsert;
 
 /**

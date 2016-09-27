@@ -13,7 +13,7 @@ use SoftnCMS\controllers\DBController;
 /**
  * Description of ModelInsert
  *
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
 abstract class ModelInsert {
 

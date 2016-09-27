@@ -9,13 +9,14 @@ namespace SoftnCMS\models\admin;
 
 use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\PostTerm;
+use SoftnCMS\models\admin\base\ModelDelete;
 
 /**
  * Clase que gestiona el borrado de relaciones post-etiqueta.
  *
  * @author Nicolás Marulanda P.
  */
-class PostTermDelete {
+class PostTermDelete extends ModelDelete {
 
     /** @var array Identificador de las etiquetas. */
     private $termsID;
@@ -23,8 +24,8 @@ class PostTermDelete {
     /** @var int Identificador del post. */
     private $postID;
 
-    /** @var array Lista con los indices, valores y tipos de datos para la consulta. */
-    private $prepareStatement;
+    /** @var int Identificador de la etiqueta. */
+    private $termID;
 
     /**
      * Constructor.
@@ -32,9 +33,10 @@ class PostTermDelete {
      * @param int $postID Identificador del post.
      */
     public function __construct($termsID, $postID) {
-        $this->prepareStatement = [];
+        parent::__construct(0, PostTerm::getTableName());
         $this->termsID = $termsID;
         $this->postID = $postID;
+        $this->termID = 0;
     }
 
     /**
@@ -51,10 +53,10 @@ class PostTermDelete {
         $error = \FALSE;
 
         for ($i = 0; $i < $count && !$error; ++$i) {
-            $termID = $this->termsID[$i];
-            $this->prepareStatement = [];
-            $this->prepare($termID);
+            $this->termID = $this->termsID[$i];
+            $this->prepare();
             $error = !$db->delete($table, $where, $this->prepareStatement);
+            $this->prepareStatement = [];
         }
 
         return !$error;
@@ -62,21 +64,10 @@ class PostTermDelete {
 
     /**
      * Metodo que establece los datos a preparar.
-     * @param int $termID Identificador de la etiqueta.
      */
-    private function prepare($termID) {
-        $this->addPrepare(':' . PostTerm::RELATIONSHIPS_TERM_ID, $termID, \PDO::PARAM_INT);
+    protected function prepare() {
+        $this->addPrepare(':' . PostTerm::RELATIONSHIPS_TERM_ID, $this->termID, \PDO::PARAM_INT);
         $this->addPrepare(':' . PostTerm::RELATIONSHIPS_POST_ID, $this->postID, \PDO::PARAM_INT);
-    }
-
-    /**
-     * Metodo que guarda los datos establecidos.
-     * @param string $parameter Indice a buscar. EJ: ":ID"
-     * @param string $value Valor del indice.
-     * @param int $dataType Tipo de dato. EJ: \PDO::PARAM_*
-     */
-    private function addPrepare($parameter, $value, $dataType) {
-        $this->prepareStatement[] = DBController::prepareStatement($parameter, $value, $dataType);
     }
 
 }

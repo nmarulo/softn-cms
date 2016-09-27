@@ -14,7 +14,7 @@ use SoftnCMS\models\admin\base\Model;
 /**
  * Description of ModelDelete
  *
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
 abstract class ModelDelete {
 

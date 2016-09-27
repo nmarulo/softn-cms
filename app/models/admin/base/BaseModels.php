@@ -45,8 +45,7 @@ class BaseModels {
      */
     protected static function select($table, $where = '', $prepare = [], $columns = '*', $limit = '', $orderBy = 'ID DESC') {
         $db = DBController::getConnection();
-        $fetch = 'fetchAll';
-        $select = $db->select($table, $fetch, $where, $prepare, $columns, $orderBy, $limit);
+        $select = $db->select($table, 'fetchAll', $where, $prepare, $columns, $orderBy, $limit);
 
         if (empty($select)) {
             return \FALSE;

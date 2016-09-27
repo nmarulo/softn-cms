@@ -7,7 +7,6 @@
 
 namespace SoftnCMS\models\admin;
 
-use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\Term;
 use SoftnCMS\models\admin\base\ModelInsert;
 

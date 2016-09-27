@@ -127,7 +127,10 @@ class Pagination {
     public function concatUrl($value) {
         $this->url .= "$value/";
     }
-
+    
+    /**
+     * Metodo que inicia las operaciones para obtener los datos de la paginación.
+     */
     private function init() {
         //Se comprueba que sea mayor que 0 para evitar errores en las operaciones.
         if ($this->countData > 0) {
@@ -160,7 +163,10 @@ class Pagination {
             }
         }
     }
-
+    
+    /**
+     * Metodo que establece los datos de cada pagina.
+     */
     private function pagedNav() {
         $maxShowPage = $this->calculateMaxShowPage();
         $this->dataArrow();
@@ -180,7 +186,11 @@ class Pagination {
             $this->dataPaged[] = $data;
         }
     }
-
+    
+    /**
+     * Metodo que establece los datos de los botones, normalmente
+     * situados en ambos extremos de la lista de paginación.
+     */
     private function dataArrow() {
         /*
          * Si no estoy en la pagina 1, la flecha izquierda se habilita 
@@ -200,7 +210,15 @@ class Pagination {
             $this->dataRightArrow = $page . $this->urlData;
         }
     }
-
+    
+    /**
+     * Metodo que obtiene el número de la primera pagina y el número de la ultima pagina.
+     * @return array Opciones.
+     *               <ul>
+     *               <li>$begin número de la primera pagina</li>
+     *               <li>$end número de la ultima pagina</li>
+     *               </ul>
+     */
     private function calculateMaxShowPage() {
         /*
          * Para evitar los casos donde el total de paginas es demaciado grande
