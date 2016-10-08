@@ -35,4 +35,5 @@ define('APP_DEBUG', \FALSE);
 define('LOGGED_KEY', '5GLhueRQNTmlo8nY6XusgNN1JDSnQWRKsGiQTkjU0QuD9IVf9SdtmPrwDxc6irBs');
 define('COOKIE_KEY', 'bydiGj9QAG0Nh9RpzGjmPKtTTiUI6PI3iivDP9nEyoTQMtaqnmN7GxR8xXYci5dw');
 //define('SALTED_KEY',    '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
+define('TOKEN_KEY', '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
 define('COOKIE_EXPIRE', strtotime('+30 days'));

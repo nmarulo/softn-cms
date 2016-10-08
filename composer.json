@@ -5,7 +5,10 @@
     "require": {
         "twbs/bootstrap": "3.3.*",
         "fortawesome/font-awesome": "4.6.*",
-        "tinymce/tinymce": "4.4.*"
+        "tinymce/tinymce": "4.4.*",
+        "ezyang/htmlpurifier": "4.8.*",
+        "firebase/php-jwt": "v4.0.*",
+        "phpunit/phpunit": "5.5.*"
     },
     "autoload": {
         "psr-4": {

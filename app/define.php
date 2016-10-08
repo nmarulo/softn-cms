@@ -4,10 +4,16 @@
  * Declaración de datos constantes.
  */
 /** Versión actual de la aplicación. */
-\define('VERSION', '0.3-alfa');
+\define('VERSION', '0.4-alfa');
 
 /** Nombre para identificar el panel de administración. EJ: http://localhost/admin/ */
 \define('ADMIN', 'admin');
+
+define('SESSION_USER', 'usernameID');
+
+define('SESSION_TOKEN', 'token');
+
+define('COOKIE_USER_REMEMBER', 'userRememberMe');
 
 /** Nombre de la variable que contiene los datos de la URL. */
 \define('URL_GET', 'url');
@@ -22,7 +28,7 @@
 \define('NAMESPACE_CONTROLLERS_ADMIN', \NAMESPACE_CONTROLLERS . 'admin\\');
 
 /** Espacio de nombre de los controladores del tema de la aplicación. */
-\define('NAMESPACE_CONTROLLERS_THEMES', \NAMESPACE_CONTROLLERS . 'themes\\');
+\define('NAMESPACE_CONTROLLERS_THEME', \NAMESPACE_CONTROLLERS . 'themes\\');
 
 /** Ruta de los modulos de controladores. */
 \define('CONTROLLERS', \ABSPATH . 'controllers' . \DIRECTORY_SEPARATOR);
@@ -34,7 +40,7 @@
 \define('CONTROLLERS_ADMIN', \CONTROLLERS . 'admin' . \DIRECTORY_SEPARATOR);
 
 /** Ruta de los modulos de controladores del tema de la aplicación. */
-\define('CONTROLLERS_THEMES', \CONTROLLERS . 'themes' . \DIRECTORY_SEPARATOR);
+\define('CONTROLLERS_THEME', \CONTROLLERS . 'themes' . \DIRECTORY_SEPARATOR);
 
 /** Ruta de los modulos de modelos. */
 \define('MODELS', \ABSPATH . 'models' . \DIRECTORY_SEPARATOR);
