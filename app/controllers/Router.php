@@ -6,176 +6,227 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\controllers\Request;
-use SoftnCMS\controllers\ViewController;
-use SoftnCMS\controllers\Messages;
-use SoftnCMS\models\Login;
-use SoftnCMS\models\admin\User;
-use SoftnCMS\models\admin\Option;
-
 /**
  * Clase que ejecuta la acción enviada por url.
- *
  * @author Nicolás Marulanda P.
  */
 class Router {
-
-    /** @var Request Instacia de la clase Request. */
-    private $request;
-
-    /** @var object Instancia del controlador. */
-    private $objectCtr;
-
-    /** @var array Lista de datos enviados al modulo vista. */
-    private $data;
-
-    /**
-     * Contructor.
-     * Se crea la instancia Resquest.
-     */
+    
+    private static $ROUTES    = [
+        'default'  => '',
+        'admin'    => 'admin',
+        'login'    => 'login',
+        'register' => 'register',
+        'logout'   => 'logout',
+    ];
+    
+    private static $NAMESPACE = [
+        'default'  => '',
+        'admin'    => '',
+        'login'    => '',
+        'register' => '',
+        'logout'   => '',
+    ];
+    
+    private static $PATH      = [
+        'default'  => '',
+        'admin'    => '',
+        'login'    => '',
+        'register' => '',
+        'logout'   => '',
+        '',
+    ];
+    
+    private static $DEFAULT   = [
+        'default' => [
+            'controller' => 'Index',
+            'method'     => 'index',
+            'arguments'  => ['data' => []],
+            'namespace'  => '',
+            'path'       => '',
+            'theme'      => 'default',
+        ],
+    ];
+    
+    private static $DATA      = [];
+    
+    private static $REQUEST   = NULL;
+    
+    private        $events;
+    
     public function __construct() {
-        $this->request = new Request();
-        $this->data = [];
-        $this->initData();
+        $this->events                  = [];
+        self::$REQUEST                 = new Request();
+        $this->events['afterCallFunc'] = NULL;
+        $this->events['error']         = function() {
+            die('Error');
+        };
     }
-
-    /**
-     * Metodo que ejecuta las acciones enviadas por url y muestra
-     * el modulo vista correspondiente.
-     */
-    public static function load() {
-        $router = new Router();
-        $router->instanceController();
-        $router->callMethod();
-        $router->view();
+    
+    public static function getRequest() {
+        return self::$REQUEST;
     }
-
-    /**
-     * Metodo que crea la instacion del controlador.
-     */
-    public function instanceController() {
-        if ($this->request->isAdminPanel() && !Login::isLogin()) {
-            header('Location: ' . $this->data['data']['siteUrl'] . 'login');
-            exit();
-        }
-
-        if ($this->request->isLoginForm() && Login::isLogin()) {
-            header('Location: ' . $this->data['data']['siteUrl'] . 'admin');
-            exit();
-        }
-
-        $requesCtr = $this->request->getController() . 'Controller';
-        $this->checkReadableController($requesCtr);
-        $namespaceController = $this->getNamespaceController() . $requesCtr;
-        $this->objectCtr = new $namespaceController;
+    
+    public static function getRoutes() {
+        return self::$ROUTES;
     }
-
-    /**
-     * Metodo que ejecuta el metodo del controlador.
-     */
-    public function callMethod() {
-        $method = $this->request->getMethod();
-
-        if (!\method_exists($this->objectCtr, $method)) {
-            $method = 'index';
-        }
-
-        $newData = \call_user_func_array([$this->objectCtr, $method], $this->request->getArgs());
-        $this->data = \array_merge_recursive($this->data, $newData);
-
-        if ($this->request->getController() == 'Option') {
-            $this->optionData();
-        }
-
-        $this->messages();
+    
+    public static function setRoutes($key, $values) {
+        self::$ROUTES[$key] = $values;
     }
-
-    /**
-     * Metodo que muestra los modulos vista.
-     */
-    public function view() {
-        $view = new ViewController($this->request, $this->data);
+    
+    public static function getPath() {
+        return self::$PATH;
+    }
+    
+    public static function setPath($key, $values) {
+        self::$PATH[$key] = $values;
+    }
+    
+    public static function getNamespaces() {
+        return self::$NAMESPACE;
+    }
+    
+    public static function setNamespace($key, $values) {
+        self::$NAMESPACE[$key] = $values;
+    }
+    
+    public static function setDefault($key, $controller = 'Index', $method = 'index', $argument = ['']) {
+        self::$DEFAULT[$key] = [
+            'controller' => $controller,
+            'method'     => $method,
+            'argument'   => $argument,
+        ];
+    }
+    
+    public static function getDATA() {
+        return self::$DATA['data'];
+    }
+    
+    public static function setDATA($key, $value) {
+        self::$DATA['data'][$key] = $value;
+    }
+    
+    public function setEvent($route, $callback) {
+        $this->events[$route] = $callback;
+    }
+    
+    public function load() {
+        $this->event();
+        
+        $instanceController = $this->getInstanceController();
+        $method             = $this->getMethod($instanceController);
+        $argument           = $this->getArguments();
+        
+        $data       = call_user_func_array([
+            $instanceController,
+            $method,
+        ], $argument);
+        self::$DATA = array_merge_recursive(self::$DATA, $data);
+        
+        $this->event('afterCallFunc');
+        
+        $view = new ViewController(self::$REQUEST, self::$DATA);
         $view->render();
     }
-
-    /**
-     * Metodo que obtiene los datos de uso general.
-     */
-    private function initData() {
-        if ($this->request->isAdminPanel()) {
-            $menu = require \CONTROLLERS_CONFIG . 'LeftbarController.php';
-            $this->data['data']['menu'] = $menu;
-        }
-
-        if (Login::isLogin()) {
-            $this->data['data']['userSession'] = User::selectByID($_SESSION['usernameID']);
-        }
-
-        $this->optionData();
-    }
-
-    private function messages() {
-        $this->data['data']['messages'] = Messages::getMessages();
-    }
-
-    /**
-     * Metodo que obtiene los datos configurables de la aplicación.
-     * @global string $urlSite
-     */
-    private function optionData() {
-        global $urlSite;
-
-        $this->data['data']['siteTitle'] = Option::selectByName('optionTitle')->getOptionValue();
-        $this->data['data']['siteUrl'] = Option::selectByName('optionSiteUrl')->getOptionValue();
-        $urlSite = $this->data['data']['siteUrl'];
-    }
-
-    /**
-     * Metodo que comprueba si el nombre del fichero del controlador es correcto.
-     * @param string $requesCtr Nombre del controlador.
-     */
-    private function checkReadableController($requesCtr) {
-        $controller = $this->getPathController() . "$requesCtr.php";
+    
+    private function event($event = NULL) {
+        $keyEvent = $event;
         
-        if (!\is_readable($controller) && $this->request->isAdminPanel()) {
-            header('Location: ' . $this->data['data']['siteUrl'] . 'admin');
-            exit();
-        } elseif (!\is_readable($controller)) {
-            header('Location: ' . $this->data['data']['siteUrl']);
-            exit();
+        if (empty($event)) {
+            if (array_key_exists(self::$REQUEST->getRoute(), $this->events)) {
+                $keyEvent = self::$REQUEST->getRoute();
+            } elseif (array_key_exists(strtolower(self::$REQUEST->getController()), $this->events)) {
+                $keyEvent = strtolower(self::$REQUEST->getController());
+            }
+        }
+        
+        if (!empty($keyEvent)) {
+            $keysEvent = array_keys($this->events);
+            $key       = array_search($keyEvent, $keysEvent);
+            
+            if ($key !== FALSE) {
+                $callback = $this->events[$keysEvent[$key]];
+                is_callable($callback) ? $callback() : FALSE;
+            }
         }
     }
-
-    /**
-     * Metodo que obtiene la ubicación donde se buscara el controlador.
-     * @return string
-     */
-    private function getPathController() {
-        $controller = \CONTROLLERS;
-
-        if ($this->request->isAdminPanel()) {
-            $controller = \CONTROLLERS_ADMIN;
-        } elseif ($this->request->isTheme()) {
-            $controller = \CONTROLLERS_THEMES;
+    
+    private function getInstanceController() {
+        $key        = $this->getKeyRoutes();
+        $controller = self::$REQUEST->getController();
+        
+        $path      = self::$PATH[$key];
+        $namespace = self::$NAMESPACE[$key];
+        
+        if (empty($controller)) {
+            $keyDefault = $key;
+            
+            if (!array_key_exists($keyDefault, self::$DEFAULT)) {
+                $keyDefault = 'default';
+            }
+            
+            $controller = self::$DEFAULT[$keyDefault]['controller'];
         }
-
-        return $controller;
-    }
-
-    /**
-     * Metodo que obtiene el nombre de espacio del controlador.
-     * @return string
-     */
-    private function getNamespaceController() {
-        $namespace = \NAMESPACE_CONTROLLERS;
-
-        if ($this->request->isAdminPanel()) {
-            $namespace = \NAMESPACE_CONTROLLERS_ADMIN;
-        } elseif ($this->request->isTheme()) {
-            $namespace = \NAMESPACE_CONTROLLERS_THEMES;
+        
+        self::$REQUEST->setController($controller);
+        
+        $controller .= 'Controller';
+        
+        $pathController = $path . $controller . '.php';
+        
+        if (!file_exists($pathController)) {
+            $this->event('error');
         }
-
-        return $namespace;
+        
+        $ctrNamespace = $namespace . $controller;
+        
+        return new $ctrNamespace();
     }
-
+    
+    private function getKeyRoutes() {
+        $key = array_search(self::$REQUEST->getRoute(), self::$ROUTES, TRUE);
+        
+        if ($key === FALSE) {
+            $key = 'default';
+        }
+        
+        return $key;
+    }
+    
+    private function getMethod($instanceController) {
+        $method = self::$REQUEST->getMethod();
+        
+        if (!method_exists($instanceController, self::$REQUEST->getMethod())) {
+            
+            $key = $this->getKeyRoutes();
+            
+            if (!array_key_exists($key, self::$DEFAULT)) {
+                $key = 'default';
+            }
+            
+            $method = self::$DEFAULT[$key]['method'];
+            self::$REQUEST->setMethod($method);
+        }
+        
+        return $method;
+    }
+    
+    private function getArguments() {
+        $arguments = self::$REQUEST->getArgs();
+        
+        if (empty($arguments)) {
+            $key = $this->getKeyRoutes();
+            
+            if (!array_key_exists($key, self::$DEFAULT)) {
+                $key = 'default';
+            }
+            
+            $arguments = self::$DEFAULT[$key]['arguments'];
+            self::$REQUEST->setArgs($arguments);
+        }
+        
+        return $arguments;
+    }
+    
 }
