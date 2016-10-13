@@ -6,14 +6,13 @@
 /** Versión actual de la aplicación. */
 \define('VERSION', '0.4-alfa');
 
-/** Nombre para identificar el panel de administración. EJ: http://localhost/admin/ */
-\define('ADMIN', 'admin');
-
 define('SESSION_USER', 'usernameID');
 
 define('SESSION_TOKEN', 'token');
 
 define('COOKIE_USER_REMEMBER', 'userRememberMe');
+
+define('SITE_URL', 'siteUrl');
 
 /** Nombre de la variable que contiene los datos de la URL. */
 \define('URL_GET', 'url');
