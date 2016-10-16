@@ -7,9 +7,7 @@
 
 namespace SoftnCMS\models\admin;
 
-use SoftnCMS\models\admin\Comment;
 use SoftnCMS\models\admin\base\ModelInsert;
-use SoftnCMS\models\admin\User;
 
 /**
  * Clase que gestiona el proceso de insertar comentarios.
@@ -53,10 +51,13 @@ class CommentInsert extends ModelInsert {
      */
     public function __construct($commentAutor, $commentAuthorEmail, $commentStatus, $commentContents, $postID, $commentUserID) {
         parent::__construct(Comment::getTableName(), self::$COLUMNS, self::$VALUES);
-        $this->checkAuthor($commentAutor, $commentAuthorEmail, $commentUserID);
+        $this->commentUserID = $commentUserID;
+        $this->commentAutor = $commentAutor;
+        $this->commentAuthorEmail = $commentAuthorEmail;
         $this->commentStatus = $commentStatus;
         $this->commentContents = $commentContents;
         $this->postID = $postID;
+        $this->checkAuthor();
     }
 
     /**
@@ -74,22 +75,14 @@ class CommentInsert extends ModelInsert {
     }
 
     /**
-     * Metodo que comprueba los datos del autor.
-     * @param string $commentAutor Nombre del autor.
-     * @param string $commentAuthorEmail Email del autor.
-     * @param int $commentUserID Identificador del autor.
+     * Método que comprueba los datos del autor.
      */
-    private function checkAuthor($commentAutor, $commentAuthorEmail, $commentUserID) {
-        if ((empty($commentAuthorEmail) || empty($commentAutor)) && !empty($commentUserID)) {
-            $user = User::selectByID($commentUserID);
-            $commentUserID = $user->getID();
-            $commentAutor = $user->getUserName();
-            $commentAuthorEmail = $user->getUserEmail();
+    private function checkAuthor() {
+        if (!empty($this->commentUserID)) {
+            $user = User::selectByID($this->commentUserID);
+            $this->commentAutor = $user->getUserName();
+            $this->commentAuthorEmail = $user->getUserEmail();
         }
-
-        $this->commentUserID = $commentUserID;
-        $this->commentAutor = $commentAutor;
-        $this->commentAuthorEmail = $commentAuthorEmail;
     }
 
 }

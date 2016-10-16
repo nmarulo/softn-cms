@@ -55,7 +55,16 @@ class UserUpdate extends ModelUpdate {
         $this->userLogin = $userLogin;
         $this->userName = $userName;
         $this->userEmail = $userEmail;
-        $this->userPass = User::encrypt($userPass);
+        /*
+         * Si no se envía una contraseña si asigna la actual,
+         * asi en la función "checkFields" no se agregara la columna
+         * de la contraseña a la sentencia SQL.
+         */
+        if(empty($userPass)) {
+            $this->userPass = $user->getUserPass();
+        }else{
+            $this->userPass = User::encrypt($userPass);
+        }
         $this->userRol = $userRol;
         $this->userUrl = $userUrl;
     }
