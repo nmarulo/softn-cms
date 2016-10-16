@@ -9,12 +9,17 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\controllers\BaseController;
 use SoftnCMS\controllers\Messages;
 use SoftnCMS\controllers\Pagination;
+use SoftnCMS\controllers\Token;
+use SoftnCMS\controllers\Form;
+use SoftnCMS\Helpers\ArrayHelp;
+use SoftnCMS\Helpers\Helps;
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\Posts;
 use SoftnCMS\models\admin\PostUpdate;
 use SoftnCMS\models\admin\PostInsert;
 use SoftnCMS\models\admin\PostDelete;
 use SoftnCMS\models\admin\Categories;
+use SoftnCMS\models\admin\template\Template;
 use SoftnCMS\models\admin\Terms;
 use SoftnCMS\models\admin\PostCategoryInsert;
 use SoftnCMS\models\admin\PostsCategories;
@@ -22,217 +27,232 @@ use SoftnCMS\models\admin\PostCategoryDelete;
 use SoftnCMS\models\admin\PostsTerms;
 use SoftnCMS\models\admin\PostTermInsert;
 use SoftnCMS\models\admin\PostTermDelete;
+use SoftnCMS\models\Login;
 
 /**
  * Clase del controlador de la pagina de entradas.
- *
  * @author Nicolás Marulanda P.
  */
 class PostController extends BaseController {
-
+    
     /**
-     * Metodo llamado por la función INDEX.
+     * Método llamado por la función INDEX.
+     *
      * @param array $data Lista de argumentos.
+     *
      * @return array
      */
     protected function dataIndex($data) {
-        $output = [];
-        $countData = Posts::count();
-        $pagination = new Pagination($data['paged'], $countData);
-        $limit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
-        $posts = Posts::selectByLimit($limit);
-
-        $pagination->concatUrl('admin/post');
-
+        $output     = [];
+        $countData  = Posts::count();
+        $pagination = new Pagination(ArrayHelp::get($data, 'paged'), $countData);
+        $limit      = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
+        $posts      = Posts::selectByLimit($limit);
+        Template::setPagination($pagination);
+        
         if ($posts !== \FALSE) {
             $output = $posts->getAll();
         }
-
+        
         foreach ($output as $post) {
             $title = $post->getPostTitle();
-
+            
             if (isset($title{30})) {
                 $title = substr($title, 0, 30) . ' [...]';
             }
             $post->setPostTitle($title);
         }
-
+        
         return [
             'posts' => $output,
-            'pagination' => $pagination
         ];
     }
-
+    
     /**
-     * Metodo llamado por la función INSERT.
+     * Método llamado por la función INSERT.
      * @return array
      */
     protected function dataInsert() {
-        global $urlSite;
-
-        $outTerms = [];
+        $outTerms      = [];
         $outCategories = [];
-        $categories = Categories::selectAll();
-        $terms = Terms::selectAll();
-
+        $categories    = Categories::selectAll();
+        $terms         = Terms::selectAll();
+        
         if ($terms !== \FALSE) {
             $outTerms = $terms->getAll();
         }
-
+        
         if ($categories !== \FALSE) {
             $outCategories = $categories->getAll();
         }
-
-        if (filter_input(\INPUT_POST, 'publish')) {
+        
+        if (Form::submit('publish')) {
             $dataInput = $this->getDataInput();
-            $insert = new PostInsert($dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus'], $_SESSION['usernameID']);
-
-            if ($insert->insert()) {
-                Messages::addSuccess('Entrada publicada correctamente.');
-                $postID = $insert->getLastInsertId();
-
-                $this->insertRelationshipsCategories($dataInput['relationshipsCategoriesID'], $postID);
-                $this->insertRelationshipsTerms($dataInput['relationshipsTermsID'], $postID);
-
-                //Si todo es correcto se muestra el POST en la pagina de edición.
-                header("Location: $urlSite" . 'admin/post/update/' . $postID);
-                exit();
+            
+            if ($dataInput !== FALSE) {
+                $insert = new PostInsert($dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus'], Login::getSession());
+                
+                if ($insert->insert()) {
+                    Messages::addSuccess('Entrada publicada correctamente.');
+                    $postID = $insert->getLastInsertId();
+                    
+                    $this->insertRelationshipsCategories($dataInput['relationshipsCategoriesID'], $postID);
+                    $this->insertRelationshipsTerms($dataInput['relationshipsTermsID'], $postID);
+                    
+                    //Si es correcto se muestra el POST en la pagina de edición.
+                    Helps::redirectRoute("update/$postID");
+                }
             }
             Messages::addError('Error al publicar la entrada');
         }
-
+        
         return [
-            'terms' => $outTerms,
-            'categories' => $outCategories,
+            'terms'          => $outTerms,
+            'categories'     => $outCategories,
             //Datos por defecto a mostrar en el formulario.
-            'post' => Post::defaultInstance(),
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Publicar nueva entrada" si es FALSE 
-             * o "Actualizar entrada" si es TRUE
-             */
-            'actionUpdate' => \FALSE
+            'post'           => Post::defaultInstance(),
+            'isSelectOption' => $this->isSelectOption(),
         ];
     }
-
+    
     /**
-     * Metodo llamado por la función UPDATE.
+     * Método que obtiene los datos de los campos INPUT del formulario.
+     * @return array|bool
+     */
+    protected function getDataInput() {
+        if (Token::check()) {
+            Form::addInputAlphanumeric('postTitle');
+            Form::addInputHtml('postContents');
+            Form::addInputBoolean('commentStatus', TRUE);
+            Form::addInputBoolean('postStatus', TRUE);
+            Form::addInputArrayList('relationshipsCategoriesID');
+            Form::addInputArrayList('relationshipsTermsID');
+            
+            return Form::postInput();
+        }
+        
+        return FALSE;
+    }
+    
+    /**
+     * Método que vincula las categorías al post
+     *
+     * @param array $categories Identificadores de las categorías.
+     * @param int   $postID     Identificador del post.
+     */
+    private function insertRelationshipsCategories($categories, $postID) {
+        if (!empty($categories)) {
+            $postCategoryInsert = new PostCategoryInsert($categories, $postID);
+            
+            if (!$postCategoryInsert->insert()) {
+                Messages::addError('Error al vincular las categorías.');
+            }
+        }
+    }
+    
+    /**
+     * Método que vincula las etiquetas al post.
+     *
+     * @param array $terms  Identificadores de las etiquetas.
+     * @param int   $postID Identificador del post.
+     */
+    private function insertRelationshipsTerms($terms, $postID) {
+        if (!empty($terms)) {
+            $postTermInsert = new PostTermInsert($terms, $postID);
+            
+            if (!$postTermInsert->insert()) {
+                Messages::addError('Error al vincular las etiquetas.');
+            }
+        }
+    }
+    
+    private function isSelectOption() {
+        return function($value, $array, $key) {
+            if (is_array($array) && array_key_exists($key, $array) && is_array($array[$key]) && in_array($value, $array[$key])) {
+                return TRUE;
+            }
+            
+            return FALSE;
+        };
+    }
+    
+    /**
+     * Método llamado por la función UPDATE.
+     *
      * @param array $data Lista de argumentos.
+     *
      * @return array
      */
     protected function dataUpdate($data) {
-        global $urlSite;
-
-        $post = Post::selectByID($data['id']);
-
+        $id   = ArrayHelp::get($data, 'id');
+        $post = Post::selectByID($id);
+        
         //En caso de que no exista.
         if (empty($post)) {
             Messages::addError('Error. La entrada no existe.');
-            header("Location: $urlSite" . 'admin/post');
-            exit();
+            Helps::redirectRoute();
         }
-
-        $postID = $post->getID();
-        $outTerms = [];
+        
+        $outTerms      = [];
         $outCategories = [];
-        $categories = Categories::selectAll();
-        $terms = Terms::selectAll();
-
+        $categories    = Categories::selectAll();
+        $terms         = Terms::selectAll();
+        
         if ($terms !== \FALSE) {
             $outTerms = $terms->getAll();
         }
-
+        
         if ($categories !== \FALSE) {
             $outCategories = $categories->getAll();
         }
-
-        if (filter_input(\INPUT_POST, 'update')) {
+        
+        if (Form::submit('update')) {
             $dataInput = $this->getDataInput();
-            $update = new PostUpdate($post, $dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus']);
-
-            //Si ocurre un error la función "$update->update()" retorna FALSE.
-            if ($update->update()) {
-                Messages::addSuccess('Entrada actualizada correctamente.');
-                $post = $update->getDataUpdate();
-
-                $this->updateRelationshipsCategories($dataInput['relationshipsCategoriesID'], $postID);
-                $this->updateRelationshipsTerms($dataInput['relationshipsTermsID'], $postID);
-            } else {
+            
+            if ($dataInput === FALSE) {
                 Messages::addError('Error al actualizar la entrada.');
+            } else {
+                $update = new PostUpdate($post, $dataInput['postTitle'], $dataInput['postContents'], $dataInput['commentStatus'], $dataInput['postStatus']);
+                
+                //Si ocurre un error la función "$update->update()" retorna FALSE.
+                if ($update->update()) {
+                    Messages::addSuccess('Entrada actualizada correctamente.');
+                    $post = $update->getDataUpdate();
+                    
+                    $this->updateRelationshipsCategories($dataInput['relationshipsCategoriesID'], $id);
+                    $this->updateRelationshipsTerms($dataInput['relationshipsTermsID'], $id);
+                } else {
+                    Messages::addError('Error al actualizar la entrada.');
+                }
             }
         }
-
+        
         return [
-            'relationshipsCategoriesID' => PostsCategories::selectByPostID($postID),
-            'relationshipsTermsID' => PostsTerms::selectByPostID($postID),
-            'terms' => $outTerms,
-            'categories' => $outCategories,
+            'relationshipsCategoriesID' => PostsCategories::selectByPostID($id),
+            'relationshipsTermsID'      => PostsTerms::selectByPostID($id),
+            'terms'                     => $outTerms,
+            'categories'                => $outCategories,
             //Instancia POST
-            'post' => $post,
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Publicar nueva entrada" si es FALSE 
-             * o "Actualizar entrada" si es TRUE
-             */
-            'actionUpdate' => \TRUE
+            'post'                      => $post,
+            'isSelectOption'            => $this->isSelectOption(),
         ];
     }
-
+    
     /**
-     * Metodo llamado por la función DELETE.
-     * @param array $data Lista de argumentos.
-     * @return array
-     */
-    protected function dataDelete($data) {
-        /*
-         * Ya que este metodo no tiene modulo vista propio
-         * se carga el modulo vista INDEX, asi que se retornan los datos
-         * para esta vista.
-         */
-
-        $delete = new PostDelete($data['id']);
-        $output = $delete->delete();
-
-        if ($output) {
-            Messages::addSuccess('Entrada borrada correctamente.');
-        } elseif ($output === 0) {
-            Messages::addWarning('La entrada no existe.');
-        } else {
-            Messages::addError('Error al borrar la entrada.');
-        }
-
-        $this->namePage = 'post';
-    }
-
-    /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
-     * @return array
-     */
-    protected function getDataInput() {
-        return [
-            'postTitle' => \filter_input(\INPUT_POST, 'postTitle'),
-            'postContents' => \filter_input(\INPUT_POST, 'postContents'),
-            'commentStatus' => \filter_input(\INPUT_POST, 'commentStatus'),
-            'postStatus' => \filter_input(\INPUT_POST, 'postStatus'),
-            'relationshipsCategoriesID' => \filter_input(\INPUT_POST, 'relationshipsCategoriesID', \FILTER_DEFAULT, \FILTER_REQUIRE_ARRAY),
-            'relationshipsTermsID' => \filter_input(\INPUT_POST, 'relationshipsTermsID', \FILTER_DEFAULT, \FILTER_REQUIRE_ARRAY),
-        ];
-    }
-
-    /**
-     * Metodo que actualiza las categorías vinculadas al post. Se comprueba si ha 
+     * Método que actualiza las categorías vinculadas al post. Se comprueba si ha
      * borrado y agregado categorías vinculas al post.
+     *
      * @param array $relationshipsCategoriesID Identificadores de las categorías.
-     * @param int $postID Identificador del post.
+     * @param int   $postID                    Identificador del post.
      */
     private function updateRelationshipsCategories($relationshipsCategoriesID, $postID) {
         $postsCategories = PostsCategories::selectByPostID($postID);
-
-        //Si no se ha seleccionado nada se borra todo los datos vinculados.
+        
+        //Si no se ha seleccionado nada se borra todos los datos vinculados.
         if (empty($relationshipsCategoriesID)) {
             $this->deleteRelationshipsCategories($postsCategories, $postID);
         } else {
-
+            
             if ($postsCategories === \FALSE) {
                 $postsCategories = [];
             }
@@ -241,116 +261,118 @@ class PostController extends BaseController {
             $merge = \array_merge($relationshipsCategoriesID, $postsCategories);
             /*
              * Se comprueba sus diferencias.
-             * 
+             *
              * Al obtener la diferencias se mantienen los indices del array $MERGE
              * con array_merge se reinician los indices, evitando problemas en los modelos.
              */
-
+            
             //se obtiene las categorías a eliminar
             $delete = \array_merge(\array_diff($merge, $relationshipsCategoriesID));
             //y las categorías a insertar.
             $insert = \array_merge(\array_diff($merge, $postsCategories));
-
+            
             $this->deleteRelationshipsCategories($delete, $postID);
             $this->insertRelationshipsCategories($insert, $postID);
         }
     }
-
+    
     /**
-     * Metodo que vincula las categorías al post
+     * Método que elimina las categorías vinculadas al post.
+     *
      * @param array $categories Identificadores de las categorías.
-     * @param int $postID Identificador del post.
-     */
-    private function insertRelationshipsCategories($categories, $postID) {
-        if (!empty($categories)) {
-            $postCategoryInsert = new PostCategoryInsert($categories, $postID);
-
-            if (!$postCategoryInsert->insert()) {
-                Messages::addError('Error al vincular las categorías.');
-            }
-        }
-    }
-
-    /**
-     * Metodo que elimina las categorías vinculadas al post.
-     * @param array $categories Identificadores de las categorías.
-     * @param int $postID Identificador del post.
+     * @param int   $postID     Identificador del post.
      */
     private function deleteRelationshipsCategories($categories, $postID) {
         if (!empty($categories)) {
             $postCategoryDelete = new PostCategoryDelete($categories, $postID);
-
+            
             if (!$postCategoryDelete->delete()) {
                 Messages::addError('Error al eliminar las categorías vinculadas.');
             }
         }
     }
-
+    
     /**
-     * Metodo que actualiza las etiquetas vinculadas al post. Se comprueba 
+     * Método que actualiza las etiquetas vinculadas al post. Se comprueba
      * si se debe agregar o borrar.
+     *
      * @param array $relationshipsTermsID Identificadores de las etiquetas.
-     * @param int $postID Identificador del post.
+     * @param int   $postID               Identificador del post.
      */
     private function updateRelationshipsTerms($relationshipsTermsID, $postID) {
         $postsTerms = PostsTerms::selectByPostID($postID);
-
-        //Si no se ha seleccionado nada se borra todo los datos vinculados.
+        
+        //Si no se ha seleccionado nada se borra todos los datos vinculados.
         if (empty($relationshipsTermsID)) {
             $this->deleteRelationshipsTerms($postsTerms, $postID);
         } else {
-
+            
             if ($postsTerms === \FALSE) {
                 $postsTerms = [];
             }
-
+            
             //Se combina en un unico array.
             $merge = \array_merge($relationshipsTermsID, $postsTerms);
             /*
              * Se comprueba sus diferencias.
-             * 
+             *
              * Al obtener la diferencias se mantienen los indices del array $MERGE
              * con array_merge se reinician los indices, evitando problemas en los modelos.
              */
-
+            
             //se obtiene las categorías a eliminar
             $delete = \array_merge(\array_diff($merge, $relationshipsTermsID));
             //y las categorías a insertar.
             $insert = \array_merge(\array_diff($merge, $postsTerms));
-
+            
             $this->deleteRelationshipsTerms($delete, $postID);
             $this->insertRelationshipsTerms($insert, $postID);
         }
     }
-
+    
     /**
-     * Metodo que vincula las etiquetas al post.
-     * @param array $terms Identificadores de las etiquetas.
-     * @param int $postID Identificador del post.
-     */
-    private function insertRelationshipsTerms($terms, $postID) {
-        if (!empty($terms)) {
-            $postTermInsert = new PostTermInsert($terms, $postID);
-
-            if (!$postTermInsert->insert()) {
-                Messages::addError('Error al vincular las etiquetas.');
-            }
-        }
-    }
-
-    /**
-     * Metodo que elimina las etiquetas vinculadas al post.
-     * @param array $terms Identificadores de las etiquetas.
-     * @param int $postID Identificador del post.
+     * Método que elimina las etiquetas vinculadas al post.
+     *
+     * @param array $terms  Identificadores de las etiquetas.
+     * @param int   $postID Identificador del post.
      */
     private function deleteRelationshipsTerms($terms, $postID) {
         if (!empty($terms)) {
             $postTermDelete = new PostTermDelete($terms, $postID);
-
+            
             if (!$postTermDelete->delete()) {
                 Messages::addError('Error al eliminar las etiquetas vinculadas.');
             }
         }
     }
-
+    
+    /**
+     * Método llamado por la función DELETE.
+     *
+     * @param array $data Lista de argumentos.
+     */
+    protected function dataDelete($data) {
+        /*
+         * Ya que este método no tiene modulo vista propia
+         * se carga el modulo vista INDEX, asi que se retornan los datos
+         * para esta vista.
+         */
+        
+        $output = FALSE;
+        
+        if (Token::check()) {
+            $delete = new PostDelete($data['id']);
+            $output = $delete->delete();
+        }
+        
+        if ($output) {
+            Messages::addSuccess('Entrada borrada correctamente.');
+        } elseif ($output === 0) {
+            Messages::addWarning('La entrada no existe.');
+        } else {
+            Messages::addError('Error al borrar la entrada.');
+        }
+        
+    }
+    
 }
