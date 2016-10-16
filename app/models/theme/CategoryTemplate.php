@@ -12,63 +12,13 @@ use SoftnCMS\models\admin\Category;
 
 /**
  * Description of CategoryTemplate
- *
  * @author Nicolás Marulanda P.
  */
-class CategoryTemplate {
-
-    /** @var Category Instancia. */
-    private $category;
-
-    public function __construct($category) {
-        $this->category = $category;
-    }
-
-    public function getID() {
-        return $this->category->getID();
-    }
-
-    public function getInstance() {
-        return $this->category;
-    }
-
-    public function getCategoryUrl($isEcho = \TRUE) {
-        global $urlSite;
-
-        if (!$isEcho) {
-
-            return $urlSite . 'category/' . $this->getID();
-        }
-
-        echo $urlSite . 'category/' . $this->getID();
-    }
-
-    public function getCategoryID($isEcho = \TRUE, $addID = 'category-') {
-        if (!$isEcho) {
-
-            return $addID . $this->getID();
-        }
-
-        echo $addID . $this->getID();
-    }
-
-    public function getCategoryName($isEcho = \TRUE) {
-        if (!$isEcho) {
-
-            return $this->category->getCategoryName();
-        }
-
-        echo $this->category->getCategoryName();
+class CategoryTemplate extends Category {
+    
+    public function __construct($id) {
+        $select = self::selectBy(self::getTableName(), $id, self::ID, \PDO::PARAM_INT);
+        parent::__construct($select[0]);
     }
     
-    public function getCategoryDescription($isEcho = \TRUE) {
-        if (!$isEcho) {
-        
-            return $this->category->getCategoryDescription();
-        }
-    
-        echo $this->category->getCategoryDescription();
-        
-    }
-
 }

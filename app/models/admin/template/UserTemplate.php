@@ -28,7 +28,7 @@ trait UserTemplate {
     }
     
     public function getUrlUpdate($concat = '', $isEcho = TRUE) {
-        return Template::getUrlUser('update/' . $this->getID() . "/$concat", $isEcho);
+        return Template::getUrlUserUpdate($this->getID() . "/$concat", $isEcho);
     }
     
     public function getID() {

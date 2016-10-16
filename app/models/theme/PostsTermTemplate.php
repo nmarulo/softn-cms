@@ -11,6 +11,10 @@ use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\Posts;
 use SoftnCMS\models\admin\PostTerm;
 
+/**
+ * Class PostsTermTemplate
+ * @author Nicolás Marulanda P.
+ */
 class PostsTermTemplate extends BaseModels {
     
     /**
@@ -19,7 +23,7 @@ class PostsTermTemplate extends BaseModels {
      *
      * @return Posts|bool Si es FALSE, no hay datos.
      */
-    public static function selectByID($termID, $limit = '') {
+    public static function selectByTermIDLimit($termID, $limit = '') {
         $prepare = [];
         $db      = DBController::getConnection();
         
@@ -28,10 +32,9 @@ class PostsTermTemplate extends BaseModels {
         $sqlPostTerm = $db->createSelect(PostTerm::getTableName(), $outPostTerm['where'], $outPostTerm['columns'], $outPostTerm['orderBy']);
         
         $where   = Post::ID . " IN ($sqlPostTerm)";
-        $orderBy = Post::ID . ' DESC';
-        $select  = $db->select(Post::getTableName(), 'fetchAll', $where, $prepare, '*', $orderBy, $limit);
+        $select = self::select(Post::getTableName(), $where, $prepare, '*', $limit);
         
-        return Posts::getInstanceData($select);
+        return PostsTemplate::getInstanceData($select);
     }
     
     private static function selectRelationships($termID) {

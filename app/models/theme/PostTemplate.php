@@ -8,195 +8,114 @@
 
 namespace SoftnCMS\models\theme;
 
+use SoftnCMS\controllers\DBController;
+use SoftnCMS\models\admin\Comment;
+use SoftnCMS\models\admin\Comments;
+use SoftnCMS\models\admin\CommentsPost;
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\PostsCategories;
-use SoftnCMS\models\admin\Category;
 use SoftnCMS\models\admin\Categories;
 use SoftnCMS\models\admin\PostsTerms;
-use SoftnCMS\models\admin\Term;
 use SoftnCMS\models\admin\Terms;
 
 /**
  * Description of PostTemplate
  * @author Nicolás Marulanda P.
  */
-class PostTemplate {
-    
-    /** @var Post Instancia. */
-    private $post;
-    
-    /** @var array Lista de comentarios. */
-    private $comments;
+class PostTemplate extends Post {
     
     /** @var array Lista de categorías. */
     private $categories;
     
+    /** @var array Lista de comentarios. */
+    private $comments;
+    
     /** @var array Lista de etiquetas. */
     private $terms;
     
-    /** @var array Lista de identificadores(ID) de las etiquetas vinculadas. */
-    private $postsTerms;
-    
-    /** @var array Lista de identificadores(ID) de las categorías vinculadas. */
-    private $postsCategories;
-    
     /**
-     * Constuctor.
+     * PostTemplate constructor.
      *
-     * @param Post $post Instancia.
+     * @param int $id
      */
-    public function __construct($post, $commentLimit = '') {
-        $this->post       = $post;
-        $this->comments   = $this->postComments($commentLimit);
+    public function __construct($id) {
+        $select = self::selectBy(self::getTableName(), $id, self::ID, \PDO::PARAM_INT);
+        parent::__construct($select[0]);
         $this->categories = $this->postCategories();
         $this->terms      = $this->postTerms();
-    }
-    
-    private function postComments($commentLimit) {
-        $comments = PostCommentsTemplate::selectByPostID($this->getID(), $commentLimit);
-        
-        if ($comments === \FALSE) {
-            
-            return [];
-        }
-        
-        $commentsTemplate = new CommentsTemplate();
-        $commentsTemplate->addData($comments->getAll());
-        
-        return $commentsTemplate->getAll();
-    }
-    
-    public function getID() {
-        return $this->post->getID();
+        $this->comments   = $this->postComments();
     }
     
     private function postCategories() {
-        $this->postsCategories = PostsCategories::selectByPostID($this->getID());
+        $postsCategories = PostsCategories::selectByPostID($this->getID());
         
-        if ($this->postsCategories === \FALSE) {
+        if ($postsCategories === \FALSE) {
             
             return [];
         }
         
         $categories = new Categories();
         
-        foreach ($this->postsCategories as $value) {
-            $category = Category::selectByID($value);
+        foreach ($postsCategories as $id) {
+            $category = new CategoryTemplate($id);
             $categories->add($category);
         }
         
-        $categoriesTemplate = new CategoriesTemplate();
-        $categoriesTemplate->addData($categories->getAll());
-        
-        return $categoriesTemplate->getAll();
+        return $categories->getAll();
     }
     
     private function postTerms() {
-        $this->postsTerms = PostsTerms::selectByPostID($this->getID());
+        $postsTerms = PostsTerms::selectByPostID($this->getID());
         
-        if ($this->postsTerms === \FALSE) {
+        if ($postsTerms === \FALSE) {
             
             return [];
         }
         
         $terms = new Terms();
         
-        foreach ($this->postsTerms as $value) {
-            $term = Term::selectByID($value);
+        foreach ($postsTerms as $id) {
+            $term = new TermTemplate($id);
             $terms->add($term);
         }
         
-        $termsTemplate = new TermsTemplate();
-        $termsTemplate->addData($terms->getAll());
-        
-        return $termsTemplate->getAll();
+        return $terms->getAll();
     }
     
-    public function getInstance() {
-        return $this->post;
-    }
+    private function postComments() {
+        $column       = Comment::POST_ID;
+        $parameter    = ":$column";
+        $where        = "$column = $parameter AND " . Comment::COMMENT_STATUS . ' = 1';
+        $prepare[]    = DBController::prepareStatement($parameter, $this->getID(), \PDO::PARAM_INT);
+        $select       = CommentsPost::select(Comment::getTableName(), $where, $prepare);
+        $postComments = CommentsPost::getInstanceData($select);
     
-    public function getPostUrl($isEcho = \TRUE) {
-        global $urlSite;
+        if ($postComments === \FALSE) {
         
-        if (!$isEcho) {
-            
-            return $urlSite . 'post/' . $this->getID();
+            return [];
         }
         
-        echo $urlSite . 'post/' . $this->getID();
-    }
-    
-    public function getPostID($isEcho = \TRUE, $addID = 'post-') {
-        if (!$isEcho) {
-            
-            return $addID . $this->getID();
+        $postComments = $postComments->getComments($this->getID());
+        
+        $comments = new Comments();
+        foreach ($postComments as $id) {
+            $comment = new CommentTemplate($id);
+            $comments->add($comment);
         }
         
-        echo $addID . $this->getID();
+        return $comments->getAll();
     }
     
-    public function getPostTitle($isEcho = \TRUE) {
-        if (!$isEcho) {
-            
-            return $this->post->getPostTitle();
-        }
-        
-        echo $this->post->getPostTitle();
-    }
-    
-    public function getPostDate($isEcho = \TRUE) {
-        if (!$isEcho) {
-            
-            return $this->post->getPostDate();
-        }
-        
-        echo $this->post->getPostDate();
-    }
-    
-    public function getPostAuthor($isEcho = \TRUE) {
-        if (!$isEcho) {
-            
-            return $this->post->getUser()
-                              ->getUserName();
-        }
-        
-        echo $this->post->getUser()
-                        ->getUserName();
-    }
-    
-    public function getPostUrlAuthor($isEcho = \TRUE) {
-        global $urlSite;
-        
-        if (!$isEcho) {
-            
-            return $urlSite . 'user/' . $this->post->getUserID();
-        }
-        
-        echo $urlSite . 'user/' . $this->post->getUserID();
-    }
-    
-    public function getPostContents($isEcho = \TRUE) {
-        if (!$isEcho) {
-            
-            return $this->post->getPostContents();
-        }
-        
-        echo $this->post->getPostContents();
-    }
-    
-    public function getPostCommentStatus() {
-        return $this->post->getCommentStatus();
-    }
-    
-    public function getPostCommentCount() {
-        return $this->post->getCommentCount();
-    }
-    
+    /**
+     * @return array
+     */
     public function getPostCategories() {
         return $this->categories;
     }
     
+    /**
+     * @return array
+     */
     public function getPostTerms() {
         return $this->terms;
     }
@@ -206,15 +125,25 @@ class PostTemplate {
     }
     
     public function hasPostComments() {
-        return $this->post->getCommentCount() > 0;
+        return !empty($this->comments);
     }
     
     public function hasPostCategories() {
-        return $this->postsCategories !== \FALSE;
+        return !empty($this->categories);
     }
     
     public function hasPostTerms() {
-        return $this->postsTerms !== \FALSE;
+        return !empty($this->terms);
+    }
+    
+    /**
+     * Método que incluye la pagina de comentarios en la plantilla.
+     */
+    public function getComments() {
+        $post             = $this;
+        $data['template'] = Template::class;
+        
+        return require THEMES . Template::getNameTheme() . DIRECTORY_SEPARATOR . 'comments.php';
     }
     
 }

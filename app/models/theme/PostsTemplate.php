@@ -8,37 +8,39 @@
 
 namespace SoftnCMS\models\theme;
 
+use SoftnCMS\models\admin\Post;
+use SoftnCMS\models\admin\Posts;
+
 /**
- * Description of PostsTemplate
- *
- * @author MaruloPC-Desk
+ * Class PostsTemplate
+ * @author Nicolás Marulanda P.
  */
-class PostsTemplate {
-
-    /** @var array Lista. */
-    private $data;
-
-    public function __construct() {
-        $this->data = [];
+class PostsTemplate extends Posts {
+    
+    /**
+     * Metodo que obtiene un número limitado de datos.
+     * @param string $limit
+     * @return Posts|bool Si es FALSE, no hay datos.
+     */
+    public static function selectByLimit($limit) {
+        $select = self::select(Post::getTableName(), '', [], Post::ID, $limit);
+        
+        return self::getInstanceData($select);
     }
-
-    public function getAll() {
-        return $this->data;
+    
+    /**
+     * Metodo que recibe un lista de datos y retorna un instancia.
+     * @param array $data Lista de datos.
+     * @return Posts|bool Si es FALSE, no hay datos.
+     */
+    public static function getInstanceData($data) {
+        return parent::getInstance($data, __CLASS__);
     }
-
-    public function getByID($id) {
-        return $this->data[$id];
-    }
-
-    public function add($data) {
-        $data = new PostTemplate($data);
-        $this->data[$data->getID()] = $data;
-    }
-
+    
     public function addData($data) {
         foreach ($data as $value) {
-            $this->add($value);
+            $this->add(new PostTemplate($value[Post::ID]));
         }
     }
-
+    
 }

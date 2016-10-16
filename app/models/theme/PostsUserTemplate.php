@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: MaruloPC-Desk
- * Date: 17/09/2016
- * Time: 0:20
+ *
  */
 
 namespace SoftnCMS\models\theme;
@@ -15,7 +12,7 @@ use SoftnCMS\models\admin\Posts;
 
 /**
  * Class PostsUserTemplate
- * @package SoftnCMS\models\theme
+ * @author Nicolás Marulanda P.
  */
 class PostsUserTemplate extends BaseModels {
     
@@ -23,18 +20,16 @@ class PostsUserTemplate extends BaseModels {
      * @param int    $userID
      * @param string $limit
      *
-     * @return Posts|bool Si es FALSE, no hay datos.
+     * @return PostsTemplate|bool Si es FALSE, no hay datos.
      */
-    public static function selectByID($userID, $limit = '') {
-        $prepare = [];
-        $db      = DBController::getConnection();
-        
+    public static function selectByUserIDLimit($userID, $limit = '') {
+        $prepare   = [];
         $sqlOutput = self::selectRelationships($userID);
         $prepare[] = $sqlOutput['prepare'];
         
-        $select = $db->select(Post::getTableName(), 'fetchAll', $sqlOutput['where'], $prepare, '*', $sqlOutput['orderBy'], $limit);
+        $select = self::select(Post::getTableName(), $sqlOutput['where'], $prepare, '*', $limit);
         
-        return Posts::getInstanceData($select);
+        return PostsTemplate::getInstanceData($select);
     }
     
     private static function selectRelationships($userID) {

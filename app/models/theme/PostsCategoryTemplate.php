@@ -16,13 +16,7 @@ use SoftnCMS\models\admin\Posts;
 
 class PostsCategoryTemplate extends BaseModels {
     
-    /**
-     * @param int    $categoryID
-     * @param string $limit
-     *
-     * @return Posts|bool Si es FALSE, no hay datos.
-     */
-    public static function selectByID($categoryID, $limit = '') {
+    public static function selectByCategoryIDLimit($categoryID, $limit = ''){
         $prepare = [];
         $db      = DBController::getConnection();
         
@@ -31,10 +25,9 @@ class PostsCategoryTemplate extends BaseModels {
         $sqlPostCategory = $db->createSelect(PostCategory::getTableName(), $outPostCategory['where'], $outPostCategory['columns'], $outPostCategory['orderBy']);
         
         $where   = Post::ID . " IN ($sqlPostCategory)";
-        $orderBy = Post::ID . ' DESC';
-        $select  = $db->select(Post::getTableName(), 'fetchAll', $where, $prepare, '*', $orderBy, $limit);
+        $select = self::select(Post::getTableName(), $where, $prepare, '*', $limit);
         
-        return Posts::getInstanceData($select);
+        return PostsTemplate::getInstanceData($select);
     }
     
     private static function selectRelationships($categoryID) {

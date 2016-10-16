@@ -12,108 +12,37 @@ use SoftnCMS\models\admin\Comment;
 
 /**
  * Description of CommentTemplate
- *
  * @author Nicolás Marulanda P.
  */
-class CommentTemplate {
-
-    /** @var Comment Instancia. */
-    private $comment;
-
-    public function __construct($comment) {
-        $this->comment = $comment;
-    }
-
-    public function getID() {
-        return $this->comment->getID();
-    }
-
-    public function getInstance() {
-        return $this->comment;
-    }
-
-    public function getCommentID($isEcho = \TRUE, $addID = 'comment-') {
-        if (!$isEcho) {
-
-            return $addID . $this->getID();
-        }
-
-        echo $addID . $this->getID();
-    }
-
-    public function getCommentStatus() {
-        return $this->comment->getCommentStatus();
-    }
-
-    public function getCommentUrl($isEcho = \TRUE) {
-        global $urlSite;
-
-        if (!$isEcho) {
-
-            return $urlSite . 'post/' . $this->comment->getPostID() . '/#' . $this->getID();
-        }
-
-        echo $urlSite . 'post/' . $this->comment->getPostID() . '/#' . $this->getID();
-    }
-
-    public function getCommentAvatar($isEcho = \TRUE) {
-        if (!$isEcho) {
-
-            return "";
-        }
-
-        echo "";
-    }
-
-    public function getCommentUrlAuthor($isEcho = \TRUE) {
-        global $urlSite;
-
-        if (!$isEcho) {
-
-            return $urlSite . 'user/' . $this->comment->getCommentUserID();
-        }
-
-        echo $urlSite . 'user/' . $this->comment->getCommentUserID();
+class CommentTemplate extends Comment {
+    
+    /**
+     * CommentTemplate constructor.
+     *
+     * @param int $id
+     */
+    public function __construct($id) {
+        $select = self::selectBy(self::getTableName(), $id, self::ID, \PDO::PARAM_INT);
+        parent::__construct($select[0]);
     }
     
-    public function isCommentUrlAuthor(){
-        return $this->comment->getCommentUserID() > 0;
+    /**
+     * Método que obtiene el enlace a la pagina de usuario en la plantilla.
+     *
+     * @param bool $isEcho
+     *
+     * @return bool
+     */
+    public function getUrlCommentUser($isEcho = \TRUE) {
+        return Template::getUrlUser($this->getCommentUserID(), $isEcho);
     }
-
-    public function getCommentAuthor($isEcho = \TRUE) {
-        if (!$isEcho) {
-
-            return $this->comment->getCommentAutor();
-        }
-
-        echo $this->comment->getCommentAutor();
+    
+    /**
+     * Método que indica si el comentario fue realizado por un usuario registrado en la aplicación.
+     * @return bool Si es TRUE, es un usuario registrado.
+     */
+    public function isRegisteredUser() {
+        return !empty($this->getCommentUserID());
     }
-
-    public function getCommentAuthorEmail($isEcho = \TRUE) {
-        if (!$isEcho) {
-
-            return $this->comment->getCommentAuthorEmail();
-        }
-
-        echo $this->comment->getCommentAuthorEmail();
-    }
-
-    public function getCommentDate($isEcho = \TRUE) {
-        if (!$isEcho) {
-
-            return $this->comment->getCommentDate();
-        }
-
-        echo $this->comment->getCommentDate();
-    }
-
-    public function getCommentContents($isEcho = \TRUE) {
-        if (!$isEcho) {
-
-            return $this->comment->getCommentContents();
-        }
-
-        echo $this->comment->getCommentContents();
-    }
-
+    
 }

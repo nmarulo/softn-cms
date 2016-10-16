@@ -15,36 +15,6 @@ use SoftnCMS\models\BaseTemplate;
  */
 class Template extends BaseTemplate {
     
-    /**
-     * @var bool|Pagination
-     */
-    private static $PAGINATION = FALSE;
-    
-    public static function getPagedNav() {
-        $pagedNav = self::getPagination();
-        
-        return require \VIEWS_ADMIN . 'pagednav.php';
-    }
-    
-    /**
-     * @return Pagination
-     */
-    public static function getPagination() {
-        if (self::$PAGINATION === FALSE) {
-            self::$PAGINATION = new Pagination(0, 1);
-            Messages::addWarning('La paginación no ha sido establecida.');
-        }
-        
-        return self::$PAGINATION;
-    }
-    
-    /**
-     * @param Pagination $pagination
-     */
-    public static function setPagination($pagination) {
-        self::$PAGINATION = $pagination;
-    }
-    
     public static function getUrlOption($concat = '', $isEcho = TRUE) {
         return self::getUrlAdmin("option/$concat", $isEcho);
     }
@@ -81,6 +51,13 @@ class Template extends BaseTemplate {
         return self::getUrlUser("insert/$concat", $isEcho);
     }
     
+    /**
+     * Método que obtiene la url de la pagina de usuarios del panel de administración.
+     * @param string $concat
+     * @param bool   $isEcho
+     *
+     * @return bool
+     */
     public static function getUrlUser($concat = '', $isEcho = TRUE) {
         return self::getUrlAdmin("user/$concat", $isEcho);
     }

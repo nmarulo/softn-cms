@@ -5,10 +5,13 @@
 
 namespace SoftnCMS\models;
 
+use SoftnCMS\controllers\Messages;
+use SoftnCMS\controllers\Pagination;
 use SoftnCMS\controllers\Router;
 use SoftnCMS\controllers\Token;
 use SoftnCMS\models\admin\Option;
-use SoftnCMS\models\admin\template\Template;
+use SoftnCMS\models\admin\template\Template as AdminTemplate;
+use SoftnCMS\models\theme\Template as ThemeTemplate;
 use SoftnCMS\models\admin\User;
 
 /**
@@ -18,6 +21,51 @@ use SoftnCMS\models\admin\User;
 class BaseTemplate {
     
     private static $TITLE = FALSE;
+    
+    /**
+     * @var bool|Pagination
+     */
+    private static $PAGINATION = FALSE;
+    
+    /**
+     * Método que incluye la pagina de navegación.
+     * @return mixed
+     */
+    public static function getPagedNav() {
+        $pagedNav = self::getPagination();
+        
+        $path = \VIEWS_ADMIN;
+        
+        if (Router::getRequest()
+                  ->getRoute() != Router::getRoutes()['admin']
+        ) {
+            $path = THEMES . DIRECTORY_SEPARATOR . ThemeTemplate::getNameTheme() . DIRECTORY_SEPARATOR;
+        }
+        
+        return require $path . 'pagednav.php';
+    }
+    
+    /**
+     * Método que obtiene la paginación.
+     * @return Pagination
+     */
+    public static function getPagination() {
+        if (self::$PAGINATION === FALSE) {
+            self::$PAGINATION = new Pagination(0, 1);
+            Messages::addWarning('La paginación no ha sido establecida.');
+        }
+        
+        return self::$PAGINATION;
+    }
+    
+    /**
+     * Método que estable la instancia de paginación.
+     *
+     * @param Pagination $pagination
+     */
+    public static function setPagination($pagination) {
+        self::$PAGINATION = $pagination;
+    }
     
     /**
      * Método que obtiene la url del "panel de administración".
@@ -54,7 +102,19 @@ class BaseTemplate {
      * @return bool
      */
     public static function getUrlLogout($concat = '', $isEcho = TRUE) {
-        return self::getUrl(Router::getRoutes()['logout'] . '/' . $concat, $isEcho);
+        return self::getUrl(Router::getRoutes()['logout'] . "/$concat", $isEcho);
+    }
+    
+    /**
+     * Método que obtiene la url de "inicio de sesión".
+     *
+     * @param string $concat
+     * @param bool   $isEcho
+     *
+     * @return bool
+     */
+    public static function getUrlLogin($concat = '', $isEcho = TRUE) {
+        return self::getUrl(Router::getRoutes()['login'] . "/$concat", $isEcho);
     }
     
     /**
@@ -77,16 +137,41 @@ class BaseTemplate {
         self::$TITLE = self::getSiteTitle(FALSE) . $concat;
     }
     
+    /**
+     * Método que obtiene el titulo de la aplicación.
+     *
+     * @param bool $isEcho
+     *
+     * @return bool
+     */
     public static function getSiteTitle($isEcho = TRUE) {
         return self::get(Option::selectByName('optionTitle')
                                ->getOptionValue(), $isEcho);
     }
     
+    /**
+     * Método que obtiene la url para editar el usuario de la sesión actual.
+     *
+     * @param string $concat
+     * @param bool   $isEcho
+     *
+     * @return bool
+     */
     public static function getUrlUserUpdateSession($concat = '', $isEcho = TRUE) {
-        //Nota: cambiar cuando este el Template de user.
-        return Template::getUrlUser('update/' . Login::getSession() . "/$concat", $isEcho);
+        return self::getUrlUserUpdate(Login::getSession() . "/$concat", $isEcho);
     }
     
+    public static function getUrlUserUpdate($concat = '', $isEcho = TRUE) {
+        return AdminTemplate::getUrlUser("update/$concat", $isEcho);
+    }
+    
+    /**
+     * Método que obtiene el nombre de usuario de la sesión.
+     *
+     * @param bool $isEcho
+     *
+     * @return bool|string
+     */
     public static function getUserName($isEcho = TRUE) {
         if (self::isLogin()) {
             return self::get(self::getInstanceUser()
@@ -119,8 +204,16 @@ class BaseTemplate {
         return self::get(Token::urlField(), $isEcho);
     }
     
-    public static function getUserLoginID(){
+    /**
+     * Método que obtiene el ID de usuario de la sesión.
+     * @return int
+     */
+    public static function getUserLoginID() {
         return Login::getSession();
+    }
+    
+    public static function getUrlRegister($concat = '', $isEcho = TRUE) {
+        return self::getUrl(Router::getRoutes()['register'] . "/$concat", $isEcho);
     }
     
 }
