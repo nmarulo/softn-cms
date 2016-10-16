@@ -43,12 +43,12 @@ class Login {
      * ni tiene la opción de recordar sesión
      */
     public static function isLogin() {
-        if (!isset($_SESSION['usernameID']) && !isset($_COOKIE['userRememberMe'])) {
+        if (!isset($_SESSION[SESSION_USER]) && !isset($_COOKIE[COOKIE_USER_REMEMBER])) {
             return \FALSE;
         }
 
-        if (!isset($_SESSION['usernameID']) && isset($_COOKIE['userRememberMe'])) {
-            $_SESSION['usernameID'] = $_COOKIE['userRememberMe'];
+        if (!isset($_SESSION[SESSION_USER]) && isset($_COOKIE[COOKIE_USER_REMEMBER])) {
+            $_SESSION[SESSION_USER] = $_COOKIE[COOKIE_USER_REMEMBER];
         }
 
         return self::checkSession();
@@ -64,10 +64,10 @@ class Login {
 
         //Se comprueba si el nombre de usuario existe y si su contraseña es correcta.
         if ($user !== \FALSE && $user->getUserPass() == $this->password) {
-            $_SESSION['usernameID'] = $user->getID();
+            $_SESSION[SESSION_USER] = $user->getID();
 
             if ($this->userRememberMe) {
-                setcookie('userRememberMe', $user->getID(), \COOKIE_EXPIRE);
+                setcookie(COOKIE_USER_REMEMBER, $user->getID(), \COOKIE_EXPIRE);
             }
 
             return \TRUE;
@@ -85,7 +85,7 @@ class Login {
         $user = User::selectByID(self::getSession());
 
         if ($user === \FALSE) {
-            unset($_SESSION['usernameID']);
+            unset($_SESSION[SESSION_USER]);
 
             return \FALSE;
         }
@@ -94,7 +94,7 @@ class Login {
     }
 
     public static function getSession() {
-        return $_SESSION['usernameID'];
+        return isset($_SESSION[SESSION_USER]) ? $_SESSION[SESSION_USER] : 0;
     }
 
 }

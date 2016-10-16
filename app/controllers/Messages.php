@@ -71,7 +71,7 @@ class Messages {
      * @param string $type
      */
     private static function add($message, $type) {
-        if (isset($_SESSION['messages'])) {
+        if (!isset($_SESSION['messages'])) {
             $_SESSION['messages'] = [];
         }
 

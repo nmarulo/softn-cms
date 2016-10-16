@@ -31,6 +31,7 @@ class MySql {
             $strConexion = 'mysql:host=' . \DB_HOST . ';dbname=' . \DB_NAME . ';charset=' . \DB_CHARSET;
             //Conexión con la base de datos. PDO Object.
             $this->connection = new \PDO($strConexion, \DB_USER, \DB_PASSWORD);
+            $this->connection->setAttribute(\PDO::ATTR_EMULATE_PREPARES, \FALSE);
             $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         } catch (\PDOException $ex) {
             die('Error al intentar establecer la conexión con la base de datos.');
@@ -38,7 +39,7 @@ class MySql {
     }
 
     /**
-     * Metodo que ejecuta una consulta "SELECT".
+     * Metodo que ejecuta una consulta "SELECT" simple.
      * @param string $table Nombre de la tabla.
      * @param string $fetch [Opcional] Tipo de datos a retornar. 
      * Si esta vacia retorna la declaración de la consulta preparada.
@@ -53,13 +54,24 @@ class MySql {
      * @return array|\PDOStatement|bool Retorna \FALSE en caso de error.
      */
     public function select($table, $fetch = '', $where = '', $prepare = [], $columns = '*', $orderBy = '', $limit = '') {
-        $output = \FALSE;
+        $sql = $this->createSelect($table, $where, $columns, $orderBy, $limit);
+
+        return $this->executeSelect($sql, $prepare, $fetch);
+    }
+
+    public function createSelect($table, $where = '', $columns = '*', $orderBy = '', $limit = '') {
         $sql = "SELECT $columns FROM $table";
         $sql .= empty($where) ? '' : " WHERE $where";
         $sql .= empty($orderBy) ? '' : " ORDER BY $orderBy";
         $sql .= empty($limit) ? '' : " LIMIT $limit";
+        
+        return $sql;
+    }
+    
+    public function executeSelect($sql, $prepare, $fetch = '') {
+        $output = \FALSE;
         $this->query = $sql;
-
+        
         if ($this->execute($sql, $prepare)) {
 
             switch ($fetch) {
@@ -121,8 +133,8 @@ class MySql {
     public function delete($table, $where, $prepare) {
         $sql = "DELETE FROM $table WHERE $where";
         $this->query = $sql;
-        
-        if($this->execute($sql, $prepare)){
+
+        if ($this->execute($sql, $prepare)) {
             return $this->prepareObject->rowCount();
         }
 

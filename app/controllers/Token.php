@@ -17,17 +17,18 @@ use SoftnCMS\models\Login;
  */
 class Token {
     
+    private static $TOKEN = FALSE;
+    
+    public static function regenerate() {
+        self::$TOKEN = FALSE;
+        self::generate();
+    }
+    
     public static function check() {
         $token        = filter_input(INPUT_POST, 'token');
         $token        = empty($token) ? filter_input(INPUT_GET, 'token') : $token;
-        $sessionToken = self::getToken();
         
-        if (!empty($sessionToken)) {
-            unset($_SESSION[SESSION_TOKEN]);
-            self::generate();
-        }
-        
-        if (empty($token) || $sessionToken != $token) {
+        if (empty($token)) {
             Messages::addError('Error. Token invalido.');
             
             return FALSE;
@@ -36,12 +37,8 @@ class Token {
         return self::validate($token);
     }
     
-    public static function getToken() {
-        return isset($_SESSION[SESSION_TOKEN]) ? $_SESSION[SESSION_TOKEN] : '';
-    }
-    
     public static function generate() {
-        if (!isset($_SESSION[SESSION_TOKEN])) {
+        if (empty(self::$TOKEN)) {
             $time  = time();
             $token = [
                 //Hora actual en segundos
@@ -54,12 +51,13 @@ class Token {
                 ],
             ];
             
-            $_SESSION[SESSION_TOKEN] = JWT::encode($token, TOKEN_KEY, 'HS256');
+            self::$TOKEN = JWT::encode($token, TOKEN_KEY, 'HS256');
         }
     }
     
     private static function validate($token) {
         $output = TRUE;
+        
         try {
             $tokenDecode = (array)JWT::decode($token, TOKEN_KEY, ['HS256']);
             $data        = (array)$tokenDecode['data'];
@@ -69,30 +67,31 @@ class Token {
                 
                 $output = FALSE;
             }
+            
         } catch (ExpiredException $expiredException) {
             Messages::addError('Error. El Token a caducado.');
             $output = FALSE;
+            
         } catch (SignatureInvalidException $invalidException) {
             Messages::addError('Error. El Token invalido.');
             $output = FALSE;
+            
         } catch (BeforeValidException $beforeValidException) {
             Messages::addError('Error. El Token no se puede usar.');
             $output = FALSE;
         }
         
+        self::regenerate();
+        
         return $output;
     }
     
     public static function formField() {
-        $token = self::getToken();
-        
-        return '<input type="hidden" name="token" value="' . $token . '">';
+        return '<input type="hidden" name="token" value="' . self::$TOKEN . '">';
     }
     
     public static function urlField($concat = '?') {
-        $token = self::getToken();
-        
-        return "${concat}token=$token";
+        return "${concat}token=" . self::$TOKEN;
     }
     
 }

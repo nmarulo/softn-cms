@@ -52,6 +52,8 @@ class Validate {
     }
     
     public static function integer($value, $length, $lenStrict = FALSE) {
+        $value = preg_replace('/[^0-9]/', '', $value);
+        
         if (!ctype_digit($value) || !self::length($value, $length, $lenStrict)) {
             return FALSE;
         }

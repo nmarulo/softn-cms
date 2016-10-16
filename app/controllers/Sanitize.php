@@ -59,7 +59,7 @@ class Sanitize {
     }
     
     public static function url($value) {
-        return filter_var($value, FILTER_SANITIZE_URL);
+        return rtrim(filter_var($value, FILTER_SANITIZE_URL), '/') . '/';
     }
     
     public static function arrayList($value, $type = 'integer', $sign = FALSE) {

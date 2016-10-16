@@ -13,6 +13,8 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue(Validate::integer(1234, 5));
         $this->assertTrue(Validate::integer('1234', 5));
         $this->assertTrue(Validate::integer('12345', 5, TRUE));
+        $this->assertTrue(Validate::integer('-123', 5));
+        $this->assertTrue(Validate::integer('+123', 5));
         $this->assertFalse(Validate::integer(1234.5, 5));
         $this->assertFalse(Validate::integer('a', 5));
         $this->assertFalse(Validate::integer('a', 5, TRUE));
@@ -64,6 +66,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testUrl() {
+        $this->assertTrue(Validate::url('https://softn.red/'));
         $this->assertTrue(Validate::url('http://softn.red/'));
         $this->assertTrue(Validate::url('http://softn-cms.red/'));
         $this->assertTrue(Validate::url('http://softn123.red/'));

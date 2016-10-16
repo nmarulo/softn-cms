@@ -41,7 +41,7 @@ class SanitizeTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testUrl() {
-        $this->assertEquals('$-_.+!*\'(),{}|\\^~[]`<>#%";/?:@&=', Sanitize::url('$-_.+!*\'(),{}|\\^~[]`<>#%";/?:@&='));
+        $this->assertEquals('$-_.+!*\'(),{}|\\^~[]`<>#%";/?:@&=/', Sanitize::url('$-_.+!*\'(),{}|\\^~[]`<>#%";/?:@&='));
         $this->assertEquals('http://www.softn.red/', Sanitize::url('http://www.softn.red/áé'));
     }
     
