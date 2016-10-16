@@ -6,8 +6,6 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\controllers\Controller;
-use SoftnCMS\controllers\Messages;
 use SoftnCMS\models\Login;
 
 /**
@@ -26,10 +24,10 @@ class LogoutController extends Controller {
         global $urlSite;
 
         if (Login::isLogin()) {
-            unset($_SESSION['usernameID']);
+            unset($_SESSION[SESSION_USER]);
 
-            if (isset($_COOKIE['userRememberMe'])) {
-                setcookie('userRememberMe', '', time() - 10);
+            if (isset($_COOKIE[COOKIE_USER_REMEMBER])) {
+                setcookie(COOKIE_USER_REMEMBER, '', time() - 10);
                 /** Tiempo de espera para que las cookies se eliminen. */
                 usleep(2000);
             }

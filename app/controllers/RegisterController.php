@@ -6,66 +6,59 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\controllers\Controller;
-use SoftnCMS\controllers\Messages;
+use SoftnCMS\Helpers\Helps;
 use SoftnCMS\models\Register;
 
 /**
  * Clase controlador de registro de usuarios.
- *
  * @author Nicolás Marulanda P.
  */
 class RegisterController extends Controller {
-
+    
     /**
-     * Metodo llamado por la función INDEX.
+     * Método llamado por la función INDEX.
+     *
+     * @param array $data Lista de argumentos.
+     *
      * @return array
      */
-    protected function dataIndex() {
-        global $urlSite;
-
-        if (\filter_input(\INPUT_POST, 'register')) {
+    protected function dataIndex($data) {
+        if (Form::submit('register')) {
             $dataInput = $this->getDataInput();
-
-            if ($this->checkPasswords($dataInput)) {
-                $register = new Register($dataInput['userLogin'], $dataInput['userEmail'], $dataInput['userPass']);
-                
-                if ($register->register()) {
-                    Messages::addSuccess('Usuario registrado correctamente.');
-                    \header("Location: $urlSite" . 'login');
-                    exit();
+            
+            if ($dataInput === FALSE) {
+                Messages::addError('Error al registrar el usuario.');
+            } else {
+                if ($dataInput['userPass'] == $dataInput['userPassR']) {
+                    $register = new Register($dataInput['userLogin'], $dataInput['userEmail'], $dataInput['userPass']);
+                    
+                    if ($register->register()) {
+                        Messages::addSuccess('Usuario registrado correctamente.');
+                        Helps::redirect(Router::getRoutes()['login']);
+                    }
                 }
+                Messages::addError('Error al registrar el usuario.');
             }
-            Messages::addError('Error al registrar el usuario.');
         }
-
+        
         return [];
     }
-
+    
     /**
-     * Metodo que comprueba los datos de las contraseñas.
-     * @param arrat $dataInput
-     * @return bool
-     */
-    private function checkPasswords($dataInput) {
-        if ($dataInput['userPass'] && $dataInput['userPassR'] && $dataInput['userPass'] == $dataInput['userPassR']) {
-            return \TRUE;
-        }
-
-        return \FALSE;
-    }
-
-    /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
-     * @return array
+     * Método que obtiene los datos de los campos INPUT del formulario.
+     * @return bool|array
      */
     private function getDataInput() {
-        return [
-            'userLogin' => \filter_input(\INPUT_POST, 'userLogin'),
-            'userPass' => \filter_input(\INPUT_POST, 'userPass'),
-            'userPassR' => \filter_input(\INPUT_POST, 'userPassR'),
-            'userEmail' => \filter_input(\INPUT_POST, 'userEmail'),
-        ];
+        if(Token::check()) {
+            Form::addInputAlphanumeric('userLogin');
+            Form::addInputAlphanumeric('userPass');
+            Form::addInputAlphanumeric('userPassR');
+            Form::addInputEmail('userEmail');
+    
+            return Form::postInput();
+        }
+        
+        return FALSE;
     }
-
+    
 }

@@ -1,28 +1,28 @@
 <?php
-
+use SoftnCMS\models\admin\template\Template;
 /**
  * Opciones de la barra lateral del panel de administración.
  */
 return [
     ['title' => '<i class="fa fa-tachometer" aria-hidden="true"></i> Información',
         'id' => 'admin',
-        'href' => 'admin',
+        'href' => Template::getUrlAdmin('', FALSE),
         'sub' => false,
     ],
     ['title' => '<span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> Entradas',
         'id' => 'post',
-        'href' => 'admin/post',
+        'href' => Template::getUrlPost('', FALSE),
         'sub' => [
             ['title' => '<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Nueva entrada',
-                'href' => 'admin/post/insert',
+                'href' => Template::getUrlPostInsert('', FALSE),
                 'sub' => false,
             ],
             ['title' => '<span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span> Categorías',
-                'href' => 'admin/category',
+                'href' => Template::getUrlCategory('', FALSE),
                 'sub' => false,
             ],
             ['title' => '<span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Etiquetas',
-                'href' => 'admin/term',
+                'href' => Template::getUrlTerm('', FALSE),
                 'sub' => false,
             ],
         ],
@@ -49,22 +49,22 @@ return [
 //    ],
     ['title' => '<span class="glyphicon glyphicon-comment" aria-hidden="true"></span> Comentarios',
         'id' => 'comment',
-        'href' => 'admin/comment',
+        'href' => Template::getUrlComment('', FALSE),
         'sub' => false,
     ],
     ['title' => '<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Usuarios',
         'id' => 'user',
-        'href' => 'admin/user',
+        'href' => Template::getUrlUser('', FALSE),
         'sub' => [
             ['title' => '<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Nuevo usuario',
-                'href' => 'admin/user/insert',
+                'href' => Template::getUrlUserInsert('', FALSE),
                 'sub' => false,
             ],
         ],
     ],
     ['title' => '<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Configuración',
         'id' => 'option',
-        'href' => 'admin/option',
+        'href' => Template::getUrlOption('', FALSE),
         'sub' => false,
     ],
 ];
