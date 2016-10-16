@@ -10,7 +10,10 @@ namespace SoftnCMS\controllers\themes;
 
 use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Pagination;
+use SoftnCMS\Helpers\ArrayHelp;
+use SoftnCMS\Helpers\Helps;
 use SoftnCMS\models\admin\Category;
+use SoftnCMS\models\admin\PostsCategories;
 use SoftnCMS\models\theme\CategoryTemplate;
 use SoftnCMS\models\theme\PostsCategoryTemplate;
 use SoftnCMS\models\theme\PostsTemplate;
@@ -23,34 +26,36 @@ use SoftnCMS\models\theme\Template;
 class CategoryController extends Controller {
     
     /**
-     * Metodo llamado por la función INDEX.
+     * Método llamado por la función INDEX.
      *
      * @param array $data Lista de argumentos.
      *
      * @return array
      */
     protected function dataIndex($data) {
+        $id       = ArrayHelp::get($data, 'id');
+        $category = CategoryTemplate::selectByID($id);
+        
+        if ($category === FALSE) {
+            Helps::redirect();
+        }
+        
+        Template::setTitle(' | ' . $category->getCategoryName());
         $output     = [];
-        $template   = new Template();
-        $category   = new CategoryTemplate(Category::selectByID($data['id']));
-        $countData  = PostsCategoryTemplate::count($data['id']);
-        $pagination = new Pagination($data['paged'], $countData);
+        $countData  = PostsCategoryTemplate::count($id);
+        $pagination = new Pagination(ArrayHelp::get($data, 'paged'), $countData);
         $limit      = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
-        $posts      = PostsCategoryTemplate::selectByID($data['id'], $limit);
-    
-        $pagination->concatUrl("category/$data[id]");
+        $posts      = PostsCategoryTemplate::selectByCategoryIDLimit($id, $limit);
+        
+        Template::setPagination($pagination);
         
         if ($posts !== \FALSE) {
-            $postsTemplate = new PostsTemplate();
-            $postsTemplate->addData($posts->getAll());
-            $output = $postsTemplate->getAll();
+            $output = $posts->getAll();
         }
         
         return [
-            'category'   => $category,
-            'posts'      => $output,
-            'pagination' => $pagination,
-            'template'   => $template,
+            'category' => $category,
+            'posts'    => $output,
         ];
     }
     
