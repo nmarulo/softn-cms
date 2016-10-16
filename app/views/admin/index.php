@@ -12,23 +12,23 @@
                             <ul class="list-group">
                                 <li class="list-group-item">
                                     <span class="badge"><?php echo $data['count']['post']; ?></span>
-                                    <a href="<?php echo $data['siteUrl']; ?>admin/post">Publicaciones</a>
+                                    <a href="<?php $data['template']::getUrlPost(); ?>">Publicaciones</a>
                                 </li>
                                 <li class="list-group-item">
                                     <span class="badge"><?php echo $data['count']['page']; ?></span>
-                                    <a href="<?php echo $data['siteUrl']; ?>admin/page">Paginas</a>
+                                    <a href="<?php $data['template']::getUrlAdmin(); ?>">Paginas</a>
                                 </li>
                                 <li class="list-group-item">
                                     <span class="badge"><?php echo $data['count']['comment']; ?></span>
-                                    <a href="<?php echo $data['siteUrl']; ?>admin/comment">Comentarios</a>
+                                    <a href="<?php $data['template']::getUrlComment(); ?>">Comentarios</a>
                                 </li>
                                 <li class="list-group-item">
                                     <span class="badge"><?php echo $data['count']['category']; ?></span>
-                                    <a href="<?php echo $data['siteUrl']; ?>admin/category">Categorias</a>
+                                    <a href="<?php $data['template']::getUrlCategory(); ?>">Categorias</a>
                                 </li>
                                 <li class="list-group-item">
                                     <span class="badge"><?php echo $data['count']['user']; ?></span>
-                                    <a href="<?php echo $data['siteUrl']; ?>admin/user">Usuarios</a>
+                                    <a href="<?php $data['template']::getUrlUser(); ?>">Usuarios</a>
                                 </li>
                             </ul>
                         </div>
@@ -74,9 +74,9 @@
                         <div class="panel-heading">Publicaciones</div>
                         <div class="panel-body">
                             <ul class="list-group">
-                                <?php foreach ($data['lastPosts'] as $value) { ?>
+                                <?php foreach ($data['lastPosts'] as $post) { ?>
                                     <li class="list-group-item clearfix">
-                                        <span class="pull-left"><?php echo $value->getPostDate(); ?></span><a href='#'><?php echo $value->getPostTitle(); ?></a>
+                                        <span class="pull-left"><?php echo $post->getPostDate(); ?></span><a href="<?php $post->getUrl(); ?>"><?php echo $post->getPostTitle(); ?></a>
                                     </li>
                                 <?php } ?>
                             </ul>

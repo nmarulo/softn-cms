@@ -2,11 +2,11 @@
     <div id="snwrap"><!-- #snwarp -->
         <div id="header" class="clearfix">
             <br/>
-            <h1>Usuarios <a href="<?php echo $data['siteUrl']; ?>admin/user/insert/" class="btn btn-default">Nuevo usuario</a></h1>
+            <h1>Usuarios <a href="<?php $data['template']::getUrlUserInsert(); ?>" class="btn btn-default">Nuevo usuario</a></h1>
         </div>
         <div id="content"><!-- #content -->
             <div id="reloadData"><!-- #reloadData -->
-                <?php require \VIEWS_ADMIN . 'pagednav.php'; ?>
+                <?php $data['template']::getPagedNav(); ?>
                 <div id="contentPost" class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -36,14 +36,14 @@
                             foreach ($data['users'] as $user) {
                                 $output = '<tr>';
                                 $output .= '<td class="options">';
-                                if ($_SESSION['usernameID'] != $user->getID()) {
-                                    $output .= '<a class="btnAction-sm btn btn-primary" href="' . $data['siteUrl'] . 'admin/user/update/' . $user->getID() . '" title="Editar"><span class="glyphicon glyphicon-edit"></span></a> ';
-                                    $output .= '<a class="btnAction-sm btn btn-danger" href="' . $data['siteUrl'] . 'admin/user/delete/' . $user->getID() . $paged . '" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a> ';
-//                            $output .= '<button class="btnAction btnAction-sm btn btn-danger" data-action="" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button></td>';
+                                if ($data['template']::getUserLoginID() != $user->getID()) {
+                                    $output .= '<a class="btnAction-sm btn btn-primary" href="' . $user->getUrlUpdate('', FALSE) . '" title="Editar"><span class="glyphicon glyphicon-edit"></span></a> ';
+                                    $output .= '<a class="btnAction-sm btn btn-danger" href="' . $user->getUrlDelete('', FALSE) . '" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a> ';
+                                    //                            $output .= '<button class="btnAction btnAction-sm btn btn-danger" data-action="" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button></td>';
                                 }
                                 $output .= '</td>';
                                 $output .= '<td>' . $user->getUserLogin() . '</td>';
-                                $output .= '<td>' . $user->getUserName() . '</td>';
+                                $output .= '<td><a href="' . $user->getUrl('', FALSE) . '" target="_blank">' . $user->getUserName() . '</a></td>';
                                 $output .= '<td>' . $user->getUserEmail() . '</td>';
                                 $output .= '<td>' . $user->getUserRol() . '</td>';
                                 $output .= '<td>' . $user->getUserRegistred() . '</td>';
@@ -55,7 +55,7 @@
                         </tbody>
                     </table>
                 </div>
-                <?php require \VIEWS_ADMIN . 'pagednav.php'; ?>
+                <?php $data['template']::getPagedNav(); ?>
             </div>
         </div><!-- #content -->
     </div><!-- #snwarp -->

@@ -2,7 +2,7 @@
     <div id="snwrap"><!-- #snwarp -->
         <div id="header" class="clearfix">
             <br/>
-            <h1><?php echo $data['actionUpdate'] ? 'Actualizar' : 'Publicar nueva'; ?> categoría</h1>
+            <h1><?php echo $data['category']->isDefault() ? 'Publicar nueva' : 'Actualizar'; ?> categoría</h1>
         </div>
         <div id="content"><!-- #content -->
             <div class="row clearfix">
@@ -22,15 +22,16 @@
                             <div class="panel-heading">Publicación</div>
                             <div class="panel-body">
                                 <?php
-                                if ($data['actionUpdate']) {
-                                    echo '<button class="btn btn-primary btn-block" type="submit" name="update" value="update">Actualizar</button>';
-                                } else {
+                                if ($data['category']->isDefault()) {
                                     echo '<button class="btn btn-primary btn-block" type="submit" name="publish" value="publish">Publicar</button>';
+                                } else {
+                                    echo '<button class="btn btn-primary btn-block" type="submit" name="update" value="update">Actualizar</button>';
                                 }
                                 ?>
                             </div>
                         </div>
                     </div>
+                    <?php $data['template']::getTokenForm(); ?>
                 </form>
             </div>
         </div><!-- #content -->

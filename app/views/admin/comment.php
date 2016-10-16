@@ -6,7 +6,7 @@
         </div>
         <div id="content"><!-- #content -->
             <div id="reloadData"><!-- #content -->
-                <?php require \VIEWS_ADMIN . 'pagednav.php'; ?>
+                <?php $data['template']::getPagedNav(); ?>
                 <div id="contentPost" class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -34,12 +34,12 @@
                             foreach ($data['comments'] as $comment) {
                                 $output = '<tr>';
                                 $output .= '<td class="options">';
-                                $output .= '<a class="btnAction-sm btn btn-primary" href="' . $data['siteUrl'] . 'admin/comment/update/' . $comment->getID() . '" title="Editar"><span class="glyphicon glyphicon-edit"></span></a> ';
-                                $output .= '<a class="btnAction-sm btn btn-danger" href="' . $data['siteUrl'] . 'admin/comment/delete/' . $comment->getID() . $paged . '" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a> ';
-//                            $output .= '<button class="btnAction btnAction-sm btn btn-danger" data-action="" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button>';
+                                $output .= '<a class="btnAction-sm btn btn-primary" href="' . $comment->getUrlUpdate('', FALSE) . '" title="Editar"><span class="glyphicon glyphicon-edit"></span></a> ';
+                                $output .= '<a class="btnAction-sm btn btn-danger" href="' . $comment->getUrlDelete('', FALSE) . '" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a> ';
+                                //                            $output .= '<button class="btnAction btnAction-sm btn btn-danger" data-action="" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button>';
                                 $output .= '</td>';
-                                $output .= '<td>' . $comment->getCommentAutor() . '</td>';
-                                $output .= '<td>' . $comment->getCommentContents() . '</td>';
+                                $output .= '<td>' . $comment->getCommentAuthor() . '</td>';
+                                $output .= '<td><a href="' . $comment->getUrl('', FALSE) . '" target="_blank">' . $comment->getCommentContents() . '</a></td>';
                                 $output .= '<td>' . $comment->getCommentStatus() . '</td>';
                                 $output .= '<td>' . $comment->getPostID() . '</td>';
                                 $output .= '<td>' . $comment->getCommentDate() . '</td>';
@@ -50,7 +50,7 @@
                         </tbody>
                     </table>
                 </div>
-                <?php require \VIEWS_ADMIN . 'pagednav.php'; ?>
+                <?php $data['template']::getPagedNav(); ?>
             </div>
         </div><!-- #content -->
     </div><!-- #snwarp -->
