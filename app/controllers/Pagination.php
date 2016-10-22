@@ -17,8 +17,6 @@ use SoftnCMS\models\admin\Option;
  */
 class Pagination {
     
-    private static $ROUTE = 'paged';
-    
     /** @var int Pagina actual. */
     private $pagedNow;
     
@@ -40,17 +38,17 @@ class Pagination {
     /** @var string Datos a mantener entre pagina y pagina. */
     private $urlData;
     
-    /** @var string Datos del boton izquierdo. */
+    /** @var string Datos del botón izquierdo. */
     private $dataLeftArrow;
     
-    /** @var string Datos del boton derecho. */
+    /** @var string Datos del botón derecho. */
     private $dataRightArrow;
     
     /**
      * Contiene los datos de cada pagina.
      * Cada posición del array contiene los siguientes indices:
      * 'dataPaged' Contiene el número de la pagina más los valores a mantener.
-     * 'page' Contiene solo el numero de la pagina, si es menor a 10 tendra concatenado el numero 0.
+     * 'page' Contiene solo el numero de la pagina, si es menor a 10 tendrá concatenado el numero 0.
      * 'active' Si es TRUE, es la pagina actual.
      * @var array
      */
@@ -77,7 +75,7 @@ class Pagination {
         $this->rowCount       = Option::selectByName('optionPaged')
                                       ->getOptionValue();
         $this->rowCount       = $this->rowCount == 0 ? 1 : $this->rowCount;
-        $this->pagedNow       = $pagedNow;
+        $this->pagedNow       = Sanitize::integer($pagedNow);
         $this->countData      = $countData;
         $this->urlData        = $urlData;
         $this->beginRow       = 0;
@@ -91,7 +89,7 @@ class Pagination {
     }
     
     /**
-     * Metodo que inicia las operaciones para obtener los datos de la paginación.
+     * Método que inicia las operaciones para obtener los datos de la paginación.
      */
     private function init() {
         //Se comprueba que sea mayor que 0 para evitar errores en las operaciones.
@@ -127,7 +125,7 @@ class Pagination {
     }
     
     /**
-     * Metodo que establece los datos de cada pagina.
+     * Método que establece los datos de cada pagina.
      */
     private function pagedNav() {
         $maxShowPage = $this->calculateMaxShowPage();
@@ -137,11 +135,11 @@ class Pagination {
         for ($i = $maxShowPage['begin']; $i <= $this->countPages && $i <= $maxShowPage['end']; ++$i) {
             $dataPaged = "$i/" . $this->urlData;
             //Si $i es menor o igual a 9 le concateno el 0.
-            $istr = $i <= 9 ? '0' . $i : $i;
+            $iStr = $i <= 9 ? '0' . $i : $i;
             
             $data = [
-                'dataPaged' => self::$ROUTE . "/$dataPaged",
-                'page'      => $istr,
+                'dataPaged' => self::getRoute() . "/$dataPaged",
+                'page'      => $iStr,
                 'active'    => $this->pagedNow == $i,
             ];
             
@@ -150,7 +148,7 @@ class Pagination {
     }
     
     /**
-     * Metodo que obtiene el número de la primera pagina y el número de la ultima pagina.
+     * Método que obtiene el número de la primera pagina y el número de la ultima pagina.
      * @return array Opciones.
      *               <ul>
      *               <li>$begin número de la primera pagina</li>
@@ -197,7 +195,7 @@ class Pagination {
     }
     
     /**
-     * Metodo que establece los datos de los botones, normalmente
+     * Método que establece los datos de los botones, normalmente
      * situados en ambos extremos de la lista de paginación.
      */
     private function dataArrow() {
@@ -207,7 +205,7 @@ class Pagination {
          */
         if ($this->pagedNow > 1) {
             $page                = $this->pagedNow - 1;
-            $this->dataLeftArrow = self::$ROUTE . "/$page/" . $this->urlData;
+            $this->dataLeftArrow = self::getRoute() . "/$page/" . $this->urlData;
         }
         
         /*
@@ -216,8 +214,16 @@ class Pagination {
          */
         if ($this->pagedNow < $this->countPages) {
             $page                 = $this->pagedNow + 1;
-            $this->dataRightArrow = self::$ROUTE . "/$page/" . $this->urlData;
+            $this->dataRightArrow = self::getRoute() . "/$page/" . $this->urlData;
         }
+    }
+    
+    /**
+     * Método que obtiene el nombre de la ruta de paginación.
+     * @return string
+     */
+    public static function getRoute() {
+        return Router::getRoutesARG()['paged'];
     }
     
     public function isShowPagination() {
@@ -258,8 +264,10 @@ class Pagination {
         $route      = $request->getRoute();
         $controller = strtolower($request->getController());
         $route      = empty($route) ? '' : "$route/";
-        $id = ArrayHelp::get($request->getArgs()['data'], 'id');
-        $controller = $controller == 'index' ? '' : "$controller/$id/";
+        $id         = ArrayHelp::get($request->getArgs()['data'], 'id');
+        //comprueba si el id es igual a 0 o false y evitar concatenarlo en la url.
+        $id         = empty($id) ? '' : "$id/";
+        $controller = $controller == 'index' ? '' : "$controller/$id";
         
         return $url . $route . $controller;
     }
@@ -270,14 +278,6 @@ class Pagination {
      */
     public function getRoutePagedNow() {
         return self::getRoute() . '/' . $this->pagedNow;
-    }
-    
-    /**
-     * Método que obtiene el nombre de la ruta de paginación.
-     * @return string
-     */
-    public static function getRoute() {
-        return self::$ROUTE;
     }
     
 }

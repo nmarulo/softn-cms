@@ -12,7 +12,7 @@ namespace SoftnCMS\controllers;
  */
 class Router {
     
-    private static $ROUTES    = [
+    private static $ROUTES     = [
         'default'  => '',
         'admin'    => 'admin',
         'login'    => 'login',
@@ -20,7 +20,12 @@ class Router {
         'logout'   => 'logout',
     ];
     
-    private static $NAMESPACE = [
+    private static $ROUTES_ARG = [
+        'paged' => 'paged',
+//        'token' => 'token',
+    ];
+    
+    private static $NAMESPACE  = [
         'default'  => '',
         'admin'    => '',
         'login'    => '',
@@ -28,7 +33,7 @@ class Router {
         'logout'   => '',
     ];
     
-    private static $PATH      = [
+    private static $PATH       = [
         'default'  => '',
         'admin'    => '',
         'login'    => '',
@@ -37,7 +42,7 @@ class Router {
         '',
     ];
     
-    private static $DEFAULT   = [
+    private static $DEFAULT    = [
         'default' => [
             'controller' => 'Index',
             'method'     => 'index',
@@ -48,9 +53,9 @@ class Router {
         ],
     ];
     
-    private static $DATA      = [];
+    private static $DATA       = [];
     
-    private static $REQUEST   = NULL;
+    private static $REQUEST    = NULL;
     
     private        $events;
     
@@ -62,6 +67,18 @@ class Router {
             die('Error');
         };
     }
+    
+    /**
+     * @return array
+     */
+    public static function getRoutesARG() {
+        return self::$ROUTES_ARG;
+    }
+    
+    public static function setRoutesARG($key, $values) {
+        self::$ROUTES_ARG[$key] = $values;
+    }
+    
     
     public static function getRequest() {
         return self::$REQUEST;

@@ -15,14 +15,11 @@ class Request {
     /** @var string Nombre del controlador. */
     private $controller;
     
-    /** @var string Nombre del metodo a ejecutar. */
+    /** @var string Nombre del método a ejecutar. */
     private $method;
     
     /** @var array Lista de argumentos. */
     private $args;
-    
-    /** @var int Pagina actual. */
-    private $paged;
     
     /** @var string Nombre de la ruta. */
     private $route;
@@ -34,16 +31,15 @@ class Request {
      * Constructor.
      */
     public function __construct() {
-        $this->method       = 'index';
-        //La primera letra debe estar en mayuscula.
+        $this->method = 'index';
+        //La primera letra debe estar en mayúscula.
         $this->controller = 'Index';
         $this->args       = ['data' => []];
-        $this->paged      = 0;
         $this->parseUrl();
     }
     
     /**
-     * Metodo que comprueba la url y obtiene sus datos.
+     * Método que comprueba la url y obtiene sus datos.
      */
     private function parseUrl() {
         $get = isset($_GET[\URL_GET]) ? $_GET[\URL_GET] : NULL;
@@ -59,34 +55,34 @@ class Request {
          * La URL contiene:
          * [] = carpeta - en caso de estar en el panel de administración.
          * [] = controlador
-         * [] = metodo
+         * [] = método
          * [] = argumentos
          */
         $url = \explode('/', $this->url);
         $url = $this->checkUrl($url);
         $this->selectController(\array_shift($url));
         
-        //La plantilla, por ahora, siempre llama al metodo index del controlador.
+        //La plantilla, por ahora, siempre llama al método index del controlador.
         if ($this->route == Router::getRoutes()['admin']) {
             $this->selectMethod(\array_shift($url));
         }
         
         $this->selectArgs(\array_shift($url));
-        
-        $this->checkArg();
     }
     
     /**
-     * Metodo que establece la ruta actual del usuario.
+     * Método que establece la ruta actual del usuario.
      *
      * @param array $url Lista con los datos de la URL.
      *
      * @return array
      */
     private function checkUrl($url) {
-        $aux         = $url;
-        $value       = \array_shift($aux);
-        $key         = array_search($value, Router::getRoutes());
+        $aux   = $url;
+        $value = \array_shift($aux);
+        //Comprueba si la ruta existe
+        $key = array_search($value, Router::getRoutes());
+        //Obtengo la ruta
         $this->route = $key === FALSE ? Router::getRoutes()['default'] : Router::getRoutes()[$key];
         
         /*
@@ -94,39 +90,46 @@ class Request {
          * retornara la lista con los datos de la URL sin el primer dato
          * ya que este identifica si esta o no en el panel de administración.
          */
-        $aux = $this->route == Router::getRoutes()['admin'] ? $aux : $url;
+        $url = $this->route == Router::getRoutes()['admin'] ? $aux : $url;
         
-        return $this->urlPaged($aux);
+        $routeArg = Router::getRoutesARG();
+        foreach ($routeArg as $value) {
+            $url = $this->routeArg($value, $url);
+        }
+        
+        return $url;
     }
     
     /**
-     * Metodo que establece el numero de la pagina actual.
+     * Método que agrega los datos extra a los argumentos
+     * que se enviaran al método del controlador.
      *
      * @param array $url
      *
      * @return array
      */
-    private function urlPaged($url) {
-        $key = \array_search('paged', $url);
+    private function routeArg($route, $url) {
+        $key = \array_search($route, $url);
         
         if ($key === \FALSE) {
             return $url;
         }
         
-        unset($url[$key]);
-        $nextKey = $key + 1;
+        //Incremento la posición para obtener el valor de la ruta
+        ++$key;
         
-        if (\array_key_exists($nextKey, $url)) {
-            $this->paged = Sanitize::integer($url[$nextKey]);
-            unset($url[$nextKey]);
+        if (\array_key_exists($key, $url)) {
+            $this->args['data'][$route] = $url[$key];
+            unset($url[$key]);
         }
+        unset($url[$key - 1]);
         
         //Luego de eliminar los datos se reinician los valores de los indices.
         return \array_merge($url);
     }
     
     /**
-     * Metodo que establece el nombre del controlador.
+     * Método que establece el nombre del controlador.
      *
      * @param string $url
      */
@@ -135,7 +138,7 @@ class Request {
         if (!empty($url)) {
             /*
              * Para evitar problemas con el nombre del fichero
-             * la primera letra debe estar en mayuscula.
+             * la primera letra debe estar en mayúscula.
              */
             $url = strtoupper(substr($url, 0, 1)) . substr($url, 1);
         }
@@ -143,7 +146,7 @@ class Request {
     }
     
     /**
-     * Metodo que establece el metodo a ejecutar.
+     * Método que establece el método a ejecutar.
      *
      * @param string $url
      */
@@ -154,20 +157,12 @@ class Request {
     }
     
     /**
-     * Metodo que establece los argumentos enviados.
+     * Método que establece los argumentos enviados.
      *
      * @param array $url
      */
     private function selectArgs($url) {
         $this->args['data']['id'] = Sanitize::integer($url);
-    }
-    
-    /**
-     * Metodo que agrega los datos extra a los argumentos
-     * que se enviaran al metodo del controlador.
-     */
-    private function checkArg() {
-        $this->args['data']['paged'] = $this->paged;
     }
     
     public function getUrl() {
@@ -182,12 +177,8 @@ class Request {
         $this->route = $route;
     }
     
-    public function getPaged() {
-        return $this->paged;
-    }
-    
     /**
-     * Metodo que obtiene el nombre del controlador.
+     * Método que obtiene el nombre del controlador.
      * @return string
      */
     public function getController() {
@@ -202,7 +193,7 @@ class Request {
     }
     
     /**
-     * Metodo que obtiene el nombre del metodo.
+     * Método que obtiene el nombre del método.
      * @return string
      */
     public function getMethod() {
@@ -214,7 +205,7 @@ class Request {
     }
     
     /**
-     * Metodo que obtiene los argumentos.
+     * Método que obtiene los argumentos.
      * @return array
      */
     public function getArgs() {
