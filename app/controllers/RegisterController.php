@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Modulo del controlador del formulario de registro de usuario.
+ * Modulo controlador: Pagina del formulario de registro de usuario.
  */
 
 namespace SoftnCMS\controllers;
@@ -10,7 +10,7 @@ use SoftnCMS\Helpers\Helps;
 use SoftnCMS\models\Register;
 
 /**
- * Clase controlador de registro de usuarios.
+ * Clase RegisterController de la pagina del formulario de registro de usuario.
  * @author Nicolás Marulanda P.
  */
 class RegisterController extends Controller {
@@ -49,12 +49,12 @@ class RegisterController extends Controller {
      * @return bool|array
      */
     private function getDataInput() {
-        if(Token::check()) {
-            Form::addInputAlphanumeric('userLogin');
-            Form::addInputAlphanumeric('userPass');
-            Form::addInputAlphanumeric('userPassR');
-            Form::addInputEmail('userEmail');
-    
+        if (Token::check()) {
+            Form::addInputAlphanumeric('userLogin', TRUE, FALSE, FALSE);
+            Form::addInputAlphanumeric('userPass', TRUE, FALSE, FALSE);
+            Form::addInputAlphanumeric('userPassR', TRUE, FALSE, FALSE);
+            Form::addInputEmail('userEmail', TRUE);
+            
             return Form::postInput();
         }
         

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Modulo del controlador de la pagina de categorías.
+ * Modulo controlador: Pagina de categorías del panel de administración.
  */
 
 namespace SoftnCMS\controllers\admin;
@@ -21,13 +21,13 @@ use SoftnCMS\models\admin\CategoryUpdate;
 use SoftnCMS\models\admin\template\Template;
 
 /**
- * Clase del controlador de la pagina de categorías.
+ * Clase CategoryController de la pagina de categorías del panel de administración.
  * @author Nicolás Marulanda P.
  */
 class CategoryController extends BaseController {
     
     /**
-     * Metodo llamado por la función INDEX.
+     * Método llamado por la función INDEX.
      *
      * @param array $data Lista de argumentos.
      *
@@ -51,7 +51,7 @@ class CategoryController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función INSERT.
+     * Método llamado por la función INSERT.
      * @return array
      */
     protected function dataInsert() {
@@ -59,7 +59,7 @@ class CategoryController extends BaseController {
             $dataInput = $this->getDataInput();
             
             if ($dataInput !== FALSE) {
-                //Las categorías tienen nombres unicos, si ya existe se le agrega un numero al final
+                //Las categorías tienen nombres únicos, si ya existe se le agrega un numero al final
                 $categoryName = $this->checkName($dataInput['categoryName']);
                 
                 $insert = new CategoryInsert($categoryName, $dataInput['categoryDescription']);
@@ -80,7 +80,7 @@ class CategoryController extends BaseController {
     }
     
     /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * Método que obtiene los datos de los campos INPUT del formulario.
      * @return array|bool
      */
     protected function getDataInput() {
@@ -95,8 +95,11 @@ class CategoryController extends BaseController {
     }
     
     /**
-     * @param  string $categoryName
-     * @param int     $id
+     * Método que comprueba el nombre de la categoría
+     * y si existe retorna el nombre concatenado con un número al final.
+     *
+     * @param string $categoryName
+     * @param int    $id Identificador. Usado en el "Update".
      *
      * @return string
      */
@@ -122,7 +125,7 @@ class CategoryController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función UPDATE.
+     * Método llamado por la función UPDATE.
      *
      * @param array $data Lista de argumentos.
      *
@@ -144,7 +147,7 @@ class CategoryController extends BaseController {
             if ($dataInput === FALSE) {
                 Messages::addError('Error al actualizar la entrada.');
             } else {
-                //Las categorías tienen nombres unicos, si ya existe se le agrega un numero al final
+                //Las categorías tienen nombres únicos, si ya existe se le agrega un numero al final
                 $categoryName = $this->checkName($dataInput['categoryName'], $id);
                 $update       = new CategoryUpdate($category, $categoryName, $dataInput['categoryDescription']);
                 
@@ -165,13 +168,13 @@ class CategoryController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función DELETE.
+     * Método llamado por la función DELETE.
      *
      * @param array $data Lista de argumentos.
      */
     protected function dataDelete($data) {
         /*
-         * Ya que este metodo no tiene modulo vista propio
+         * Ya que este método no tiene modulo vista propio
          * se carga el modulo vista INDEX, asi que se retornan los datos
          * para esta vista.
          */

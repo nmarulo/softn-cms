@@ -1,9 +1,7 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo controlador: Pagina de usuario de la plantilla de la aplicación.
  */
 
 namespace SoftnCMS\controllers\themes;
@@ -12,14 +10,12 @@ use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Pagination;
 use SoftnCMS\Helpers\ArrayHelp;
 use SoftnCMS\Helpers\Helps;
-use SoftnCMS\models\theme\PostsTemplate;
 use SoftnCMS\models\theme\PostsUserTemplate;
-use SoftnCMS\models\admin\User;
 use SoftnCMS\models\theme\Template;
 use SoftnCMS\models\theme\UserTemplate;
 
 /**
- * Description of UserController
+ * Clase UserController de la pagina de entradas de la plantilla de la aplicación.
  * @author Nicolás Marulanda P.
  */
 class UserController extends Controller {
@@ -38,6 +34,7 @@ class UserController extends Controller {
         if ($user === FALSE) {
             Helps::redirect();
         }
+        //Se agrega el nombre al titulo de la pagina
         Template::setTitle(' | ' . $user->getUserName());
         $output     = [];
         $countData  = PostsUserTemplate::count($id);

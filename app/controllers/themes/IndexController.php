@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Modulo del controlador de la pagina "index" de la plantilla.
+ * Modulo controlador: Pagina de inicio de la plantilla de la aplicación.
  */
 
 namespace SoftnCMS\controllers\themes;
@@ -10,18 +10,17 @@ use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Pagination;
 use SoftnCMS\Helpers\ArrayHelp;
 use SoftnCMS\models\admin\Posts;
-use SoftnCMS\models\theme\PostsListTemplate;
 use SoftnCMS\models\theme\PostsTemplate;
 use SoftnCMS\models\theme\Template;
 
 /**
- * Clase del controlador de la pagina "index" de la plantilla.
+ * Clase IndexController de la pagina inicio de la plantilla de la aplicación.
  * @author Nicolás Marulanda P.
  */
 class IndexController extends Controller {
     
     /**
-     * Metodo llamado por la función INDEX.
+     * Método llamado por la función INDEX.
      *
      * @param array $data Lista de argumentos.
      *

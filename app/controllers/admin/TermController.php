@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Modulo del controlador de la pagina de etiquetas.
+ * Modulo controlador: Pagina de etiquetas del panel de administración.
  */
 
 namespace SoftnCMS\controllers\admin;
@@ -10,7 +10,6 @@ use SoftnCMS\controllers\BaseController;
 use SoftnCMS\controllers\Form;
 use SoftnCMS\controllers\Messages;
 use SoftnCMS\controllers\Pagination;
-use SoftnCMS\controllers\Sanitize;
 use SoftnCMS\controllers\Token;
 use SoftnCMS\Helpers\ArrayHelp;
 use SoftnCMS\Helpers\Helps;
@@ -22,13 +21,13 @@ use SoftnCMS\models\admin\TermInsert;
 use SoftnCMS\models\admin\TermUpdate;
 
 /**
- * Clase del controlador de la pagina de etiquetas.
+ * Clase TermController de la pagina de etiquetas del panel de administración.
  * @author Nicolás Marulanda P.
  */
 class TermController extends BaseController {
     
     /**
-     * Metodo llamado por la función INDEX.
+     * Método llamado por la función INDEX.
      *
      * @param array $data Lista de argumentos.
      *
@@ -52,7 +51,7 @@ class TermController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función INSERT.
+     * Método llamado por la función INSERT.
      * @return array
      */
     protected function dataInsert() {
@@ -60,7 +59,7 @@ class TermController extends BaseController {
             $dataInput = $this->getDataInput();
             
             if ($dataInput !== FALSE) {
-                //Las etiquetas tienen nombres unicos, si ya existe se le agrega un numero al final
+                //Las etiquetas tienen nombres únicos, si ya existe se le agrega un numero al final
                 $termName = $this->checkName($dataInput['termName']);
                 $insert   = new TermInsert($termName, $dataInput['termDescription']);
                 
@@ -80,7 +79,7 @@ class TermController extends BaseController {
     }
     
     /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * Método que obtiene los datos de los campos INPUT del formulario.
      * @return array|bool
      */
     protected function getDataInput() {
@@ -95,8 +94,11 @@ class TermController extends BaseController {
     }
     
     /**
-     * @param  string $termName
-     * @param int     $id
+     * Método que comprueba el nombre de la etiqueta
+     * y si existe retorna el nombre concatenado con un número al final.
+     *
+     * @param string $termName
+     * @param int    $id Identificador. Usado en el "Update".
      *
      * @return string
      */
@@ -122,7 +124,7 @@ class TermController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función UPDATE.
+     * Método llamado por la función UPDATE.
      *
      * @param array $data Lista de argumentos.
      *
@@ -144,7 +146,7 @@ class TermController extends BaseController {
             if ($dataInput === FALSE) {
                 Messages::addError('Error al actualizar la etiqueta.');
             } else {
-                //Las etiquetas tienen nombres unicos, si ya existe se le agrega un numero al final
+                //Las etiquetas tienen nombres únicos, si ya existe se le agrega un numero al final
                 $termName = $this->checkName($dataInput['termName'], $id);
                 $update   = new TermUpdate($term, $termName, $dataInput['termDescription']);
                 
@@ -165,13 +167,13 @@ class TermController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función DELETE.
+     * Método llamado por la función DELETE.
      *
      * @param array $data Lista de argumentos.
      */
     protected function dataDelete($data) {
         /*
-         * Ya que este metodo no tiene modulo vista propio
+         * Ya que este método no tiene modulo vista propio
          * se carga el modulo vista INDEX, asi que se retornan los datos
          * para esta vista.
          */

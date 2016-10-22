@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Modulo del controlador de la pagina de entradas.
+ * Modulo controlador: Pagina de entradas del panel de administración.
  */
 
 namespace SoftnCMS\controllers\admin;
@@ -30,7 +30,7 @@ use SoftnCMS\models\admin\PostTermDelete;
 use SoftnCMS\models\Login;
 
 /**
- * Clase del controlador de la pagina de entradas.
+ * Clase PostController de la pagina de entradas del panel de administración.
  * @author Nicolás Marulanda P.
  */
 class PostController extends BaseController {
@@ -135,7 +135,7 @@ class PostController extends BaseController {
     }
     
     /**
-     * Método que vincula las categorías al post
+     * Método que vincula las categorías al post.
      *
      * @param array $categories Identificadores de las categorías.
      * @param int   $postID     Identificador del post.
@@ -166,6 +166,11 @@ class PostController extends BaseController {
         }
     }
     
+    /**
+     * Método obtiene la función usada en la comprobación de las
+     * categorías y etiquetas seleccionadas en la pagina de formulario de las entradas.
+     * @return \Closure
+     */
     private function isSelectOption() {
         return function($value, $array, $key) {
             if (is_array($array) && array_key_exists($key, $array) && is_array($array[$key]) && in_array($value, $array[$key])) {
@@ -239,8 +244,8 @@ class PostController extends BaseController {
     }
     
     /**
-     * Método que actualiza las categorías vinculadas al post. Se comprueba si ha
-     * borrado y agregado categorías vinculas al post.
+     * Método que actualiza las categorías vinculadas al post.
+     * Se comprueba si se debe agregar y/o borrar.
      *
      * @param array $relationshipsCategoriesID Identificadores de las categorías.
      * @param int   $postID                    Identificador del post.
@@ -257,7 +262,7 @@ class PostController extends BaseController {
                 $postsCategories = [];
             }
             
-            //Se combina en un unico array las nuevas categorías y las existentes.
+            //Se combina en un único array las nuevas categorías y las existentes.
             $merge = \array_merge($relationshipsCategoriesID, $postsCategories);
             /*
              * Se comprueba sus diferencias.
@@ -293,8 +298,8 @@ class PostController extends BaseController {
     }
     
     /**
-     * Método que actualiza las etiquetas vinculadas al post. Se comprueba
-     * si se debe agregar o borrar.
+     * Método que actualiza las etiquetas vinculadas al post.
+     * Se comprueba si se debe agregar y/o borrar.
      *
      * @param array $relationshipsTermsID Identificadores de las etiquetas.
      * @param int   $postID               Identificador del post.
@@ -311,7 +316,7 @@ class PostController extends BaseController {
                 $postsTerms = [];
             }
             
-            //Se combina en un unico array.
+            //Se combina en un único array.
             $merge = \array_merge($relationshipsTermsID, $postsTerms);
             /*
              * Se comprueba sus diferencias.

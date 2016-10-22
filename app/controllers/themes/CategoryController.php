@@ -1,9 +1,7 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo controlador: Pagina de categorías de la plantilla de la aplicación.
  */
 
 namespace SoftnCMS\controllers\themes;
@@ -12,15 +10,12 @@ use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Pagination;
 use SoftnCMS\Helpers\ArrayHelp;
 use SoftnCMS\Helpers\Helps;
-use SoftnCMS\models\admin\Category;
-use SoftnCMS\models\admin\PostsCategories;
 use SoftnCMS\models\theme\CategoryTemplate;
 use SoftnCMS\models\theme\PostsCategoryTemplate;
-use SoftnCMS\models\theme\PostsTemplate;
 use SoftnCMS\models\theme\Template;
 
 /**
- * Description of CategoryController
+ * Clase CategoryController de la pagina de categorías de la plantilla de la aplicación.
  * @author Nicolás Marulanda P.
  */
 class CategoryController extends Controller {
@@ -39,7 +34,7 @@ class CategoryController extends Controller {
         if ($category === FALSE) {
             Helps::redirect();
         }
-        
+        //Se agrega el nombre al titulo de la pagina
         Template::setTitle(' | ' . $category->getCategoryName());
         $output     = [];
         $countData  = PostsCategoryTemplate::count($id);

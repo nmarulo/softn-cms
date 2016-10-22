@@ -1,9 +1,7 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo controlador: Pagina de entrada de la plantilla de la aplicación.
  */
 
 namespace SoftnCMS\controllers\themes;
@@ -11,19 +9,17 @@ namespace SoftnCMS\controllers\themes;
 use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Form;
 use SoftnCMS\controllers\Messages;
-use SoftnCMS\controllers\Pagination;
 use SoftnCMS\controllers\Token;
 use SoftnCMS\Helpers\ArrayHelp;
 use SoftnCMS\Helpers\Helps;
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\CommentInsert;
 use SoftnCMS\models\Login;
-use SoftnCMS\models\theme\PostCommentsTemplate;
 use SoftnCMS\models\theme\PostTemplate;
 use SoftnCMS\models\theme\Template;
 
 /**
- * Description of PostContoller
+ * Clase PostController de la pagina de entradas de la plantilla de la aplicación.
  * @author Nicolás Marulanda P.
  */
 class PostController extends Controller {
@@ -46,12 +42,9 @@ class PostController extends Controller {
         
         //Se comprueba si se ha enviado un comentario.
         $this->postComment($id);
-        
+        //Se agrega el nombre al titulo de la pagina
         Template::setTitle(' | ' . $post->getPostTitle());
         
-        //        $countData    = PostCommentsTemplate::count($post->getID());
-        //        $pagination   = new Pagination(ArrayHelp::get($data, 'paged'), $countData);
-        //        $commentLimit = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
         $postTemplate = new PostTemplate($id);
         
         return [
@@ -61,6 +54,8 @@ class PostController extends Controller {
     }
     
     /**
+     * Método que comprueba y publica si se ha enviado un comentario.
+     *
      * @param int $id Identificador del Post.
      */
     private function postComment($id) {
@@ -85,19 +80,22 @@ class PostController extends Controller {
         }
     }
     
+    /**
+     * Método que obtiene los datos de los campos INPUT del formulario.
+     * @return array|bool
+     */
     private function getDataInput() {
         if (Token::check()) {
             /*
-             * Si hay una sesión activa,
-             * no sera obligatorio los campos "commentAuthor"
+             * Si hay una sesión activa, no sera obligatorio los campos "commentAuthor"
              * y "commentAuthorEmail".
              */
-            $login = !Login::isLogin();
+            $isRequire = !Login::isLogin();
             
-            Form::addInputAlphanumeric('commentAuthor', $login);
+            Form::addInputAlphanumeric('commentAuthor', $isRequire);
             //commentUserID Corresponde al ID del usuario de la sesión.
             Form::addInputInteger('commentUserID');
-            Form::addInputEmail('commentAuthorEmail', $login);
+            Form::addInputEmail('commentAuthorEmail', $isRequire);
             Form::addInputAlphanumeric('commentContents', TRUE);
             
             return Form::postInput();

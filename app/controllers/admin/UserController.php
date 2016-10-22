@@ -1,9 +1,8 @@
 <?php
 
 /**
- * Modulo del controlador de la pagina de usuarios.
+ * Modulo controlador: Pagina de usuarios del panel de administración.
  */
-
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\BaseController;
@@ -22,13 +21,13 @@ use SoftnCMS\models\admin\UserDelete;
 use SoftnCMS\models\admin\UserUpdate;
 
 /**
- * Clase del controlador de la pagina de usuarios.
+ * Clase UserController de la pagina de usuarios del panel de administración.
  * @author Nicolás Marulanda P.
  */
 class UserController extends BaseController {
     
     /**
-     * Metodo llamado por la funcion INDEX.
+     * Método llamado por la función INDEX.
      *
      * @param array $data Lista de argumentos.
      *
@@ -52,7 +51,7 @@ class UserController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función INSERT.
+     * Método llamado por la función INSERT.
      * @return array
      */
     protected function dataInsert() {
@@ -78,7 +77,7 @@ class UserController extends BaseController {
     }
     
     /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * Método que obtiene los datos de los campos INPUT del formulario.
      * @return array|bool
      */
     protected function getDataInput() {
@@ -87,13 +86,14 @@ class UserController extends BaseController {
              * Si "GetDataInput" es llamado desde la función "insert"
              * sera obligatorio los campos de las contraseñas.
              */
-            $isInsert = Router::getRequest()->getMethod() == 'insert';
+            $isRequire = Router::getRequest()
+                               ->getMethod() == 'insert';
             
             Form::addInputAlphanumeric('userLogin', TRUE, FALSE, FALSE, FALSE, 1, TRUE, '');
             Form::addInputAlphabetic('userName', TRUE);
             Form::addInputEmail('userEmail', TRUE);
-            Form::addInputAlphanumeric('userPass', $isInsert);
-            Form::addInputAlphanumeric('userPassR', $isInsert);
+            Form::addInputAlphanumeric('userPass', $isRequire, FALSE, FALSE);
+            Form::addInputAlphanumeric('userPassR', $isRequire, FALSE, FALSE);
             Form::addInputInteger('userRol');
             Form::addInputUrl('userUrl');
             
@@ -104,7 +104,7 @@ class UserController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función UPDATE.
+     * Método llamado por la función UPDATE.
      *
      * @param array $data Lista de argumentos.
      *
@@ -144,13 +144,13 @@ class UserController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función DELETE.
+     * Método llamado por la función DELETE.
      *
      * @param array $data Lista de argumentos.
      */
     protected function dataDelete($data) {
         /*
-         * Ya que este metodo no tiene modulo vista propio
+         * Ya que este método no tiene modulo vista propio
          * se carga el modulo vista INDEX, asi que se retornan los datos
          * para esta vista.
          */

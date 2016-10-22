@@ -1,9 +1,7 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo controlador: Pagina de etiquetas de la plantilla de la aplicación.
  */
 
 namespace SoftnCMS\controllers\themes;
@@ -12,14 +10,12 @@ use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Pagination;
 use SoftnCMS\Helpers\ArrayHelp;
 use SoftnCMS\Helpers\Helps;
-use SoftnCMS\models\theme\PostsTemplate;
 use SoftnCMS\models\theme\PostsTermTemplate;
-use SoftnCMS\models\admin\Term;
 use SoftnCMS\models\theme\Template;
 use SoftnCMS\models\theme\TermTemplate;
 
 /**
- * Description of Term
+ * Clase TermController de la pagina de etiquetas de la plantilla de la aplicación.
  * @author Nicolás Marulanda P.
  */
 class TermController extends Controller {
@@ -38,7 +34,7 @@ class TermController extends Controller {
         if ($term === FALSE) {
             Helps::redirect();
         }
-        
+        //Se agrega el nombre al titulo de la pagina
         Template::setTitle(' | ' . $term->getTermName());
         $output     = [];
         $countData  = PostsTermTemplate::count($id);

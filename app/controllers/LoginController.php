@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Modulo del controlador del formulario de inicio de sesión.
+ * Modulo controlador: Pagina del formulario de inicio de sesión.
  */
 
 namespace SoftnCMS\controllers;
@@ -10,13 +10,13 @@ use SoftnCMS\Helpers\Helps;
 use SoftnCMS\models\Login;
 
 /**
- * Clase controlador del inicio de sesión.
+ * Clase LoginController de la pagina del formulario de inicio de sesión.
  * @author Nicolás Marulanda P.
  */
 class LoginController extends Controller {
     
     /**
-     * Metodo llamado por la función INDEX.
+     * Método llamado por la función INDEX.
      *
      * @param int $paged Pagina actual
      *
@@ -26,12 +26,12 @@ class LoginController extends Controller {
         if (Form::submit('login')) {
             $dataInput = $this->getDataInput();
             
-            if($dataInput === FALSE){
+            if ($dataInput === FALSE) {
                 Messages::addWarning('Completa todos los campos para continuar.');
-            }else {
+            } else {
                 if ($dataInput['userLogin'] && $dataInput['userPass']) {
                     $login = new Login($dataInput['userLogin'], $dataInput['userPass'], $dataInput['userRememberMe']);
-        
+                    
                     if ($login->login()) {
                         Messages::addSuccess('Inicio de sesión correcto.');
                         Helps::redirect(Router::getRoutes()['admin']);
@@ -48,15 +48,15 @@ class LoginController extends Controller {
     }
     
     /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * Método que obtiene los datos de los campos INPUT del formulario.
      * @return array|bool
      */
     private function getDataInput() {
-        if(Token::check()) {
+        if (Token::check()) {
             Form::addInputAlphanumeric('userLogin', TRUE, FALSE, FALSE, FALSE, 1, TRUE, '');
             Form::addInputAlphanumeric('userPass', TRUE);
             Form::addInputBoolean('userRememberMe');
-    
+            
             return Form::postInput();
         }
         

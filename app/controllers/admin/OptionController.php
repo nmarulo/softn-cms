@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Modulo del controlador de la pagina de configuración.
+ * Modulo controlador: Pagina de opciones del panel de administración.
  */
 
 namespace SoftnCMS\controllers\admin;
@@ -9,19 +9,18 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Form;
 use SoftnCMS\controllers\Messages;
-use SoftnCMS\controllers\Sanitize;
 use SoftnCMS\controllers\Token;
 use SoftnCMS\models\admin\Options;
 use SoftnCMS\models\admin\OptionUpdate;
 
 /**
- * Clase del controlador de la pagina de configuración.
+ * Clase OptionController de la pagina de opciones del panel de administración.
  * @author Nicolás Marulanda P.
  */
 class OptionController extends Controller {
     
     /**
-     * Metodo llamado por la funcion index.
+     * Método llamado por la función index.
      *
      * @param array $data Lista de argumentos.
      *
@@ -36,7 +35,7 @@ class OptionController extends Controller {
     }
     
     /**
-     * Metodo que actualiza los datos configurables del sitio.
+     * Método que actualiza los datos configurables del sitio.
      */
     private function dataUpdate() {
         if (Form::submit('update')) {
@@ -47,14 +46,14 @@ class OptionController extends Controller {
             } else {
                 $options = Options::selectAll();
                 /*
-                 * Usando el indices de $DATAINPUT, se obtiene
-                 * de $OPTIONS cada instancia OPTION con sus datos,
-                 * luego en OPTIONUPDATE se comprueba que datos seran actualizados.
+                 * Usando el indices de "$dataInput", se obtiene
+                 * de "$options" cada instancia "OPTION" con sus datos,
+                 * luego en "OptionUpdate" se comprueba que datos serán actualizados.
                  */
                 $keys       = \array_keys($dataInput);
                 $count      = \count($keys);
                 $error      = \FALSE;
-                $optionName = ''; //En caso de error, contiene el nombre de la opción
+                $optionName = '';
                 
                 for ($i = 0; $i < $count && !$error; ++$i) {
                     $optionName  = $keys[$i];
@@ -65,6 +64,7 @@ class OptionController extends Controller {
                 }
                 
                 if ($error) {
+                    //En caso de error, se muestra el nombre de la opción.
                     Messages::addError("Error al actualizar '$optionName'");
                 } else {
                     Messages::addSuccess('Actualizado correctamente.');
@@ -74,7 +74,7 @@ class OptionController extends Controller {
     }
     
     /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * Método que obtiene los datos de los campos INPUT del formulario.
      * @return array|bool
      */
     private function getDataInput() {

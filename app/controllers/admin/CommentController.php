@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Modulo del controlador de la pagina de comentarios.
+ * Modulo controlador: Pagina de comentarios del panel de administración.
  */
 
 namespace SoftnCMS\controllers\admin;
@@ -23,13 +23,13 @@ use SoftnCMS\models\admin\template\Template;
 use SoftnCMS\models\Login;
 
 /**
- * Clase del controlador de la pagina de comentarios.
+ * Clase CommentController de la pagina de comentarios del panel de administración.
  * @author Nicolás Marulanda P.
  */
 class CommentController extends BaseController {
     
     /**
-     * Metodo llamado por la función INDEX.
+     * Método llamado por la función INDEX.
      *
      * @param array $data Lista de argumentos.
      *
@@ -62,7 +62,7 @@ class CommentController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función INSERT.
+     * Método llamado por la función INSERT.
      * @return array
      */
     protected function dataInsert() {
@@ -88,7 +88,7 @@ class CommentController extends BaseController {
     }
     
     /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
+     * Método que obtiene los datos de los campos INPUT del formulario.
      * @return array|bool
      */
     protected function getDataInput() {
@@ -106,7 +106,7 @@ class CommentController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función UPDATE.
+     * Método llamado por la función UPDATE.
      *
      * @param array $data Lista de argumentos.
      *
@@ -146,13 +146,13 @@ class CommentController extends BaseController {
     }
     
     /**
-     * Metodo llamado por la función DELETE.
+     * Método llamado por la función DELETE.
      *
      * @param array $data Lista de argumentos.
      */
     protected function dataDelete($data) {
         /*
-         * Ya que este metodo no tiene modulo vista propio
+         * Ya que este método no tiene modulo vista propio
          * se carga el modulo vista INDEX, asi que se retornan los datos
          * para esta vista.
          */
