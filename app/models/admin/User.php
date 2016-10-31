@@ -1,19 +1,16 @@
 <?php
 
 /**
- * Modulo del modelo usuario.
- * Gestiona los datos de cada usuario.
+ * Modulo modelo: Gestiona los datos de cada usuario.
  */
-
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\controllers\DBController;
-use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\base\Model;
 use SoftnCMS\models\admin\template\UserTemplate;
 
 /**
- * Clase que gestiona los datos de cada usuarios.
+ * Clase User para gestionar los datos de cada usuarios.
  * @author Nicolás Marulanda P.
  */
 class User extends Model {
@@ -58,7 +55,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene el nombre de la tabla.
+     * Método que obtiene el nombre de la tabla.
      * @return string
      */
     public static function getTableName() {
@@ -66,7 +63,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que retorna una instancia por defecto.
+     * Método que retorna una instancia por defecto.
      * @return User
      */
     public static function defaultInstance() {
@@ -85,7 +82,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que realiza el HASH al valor pasado por parametro.
+     * Método que realiza el HASH al valor pasado por parámetro.
      *
      * @param string $pass
      *
@@ -96,7 +93,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene un usuario segun su "ID".
+     * Método que obtiene un usuario según su "ID".
      *
      * @param int $value
      *
@@ -109,7 +106,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que recibe un lista de datos y retorna un instancia POSTS.
+     * Método que recibe un lista de datos y retorna un instancia POSTS.
      *
      * @param array $data Lista de datos.
      *
@@ -120,7 +117,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene un usuario segun su "Login".
+     * Método que obtiene un usuario según su "Login".
      *
      * @param string $value
      *
@@ -133,7 +130,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene un usuario segun su "Email".
+     * Método que obtiene un usuario según su "Email".
      *
      * @param string $value
      *
@@ -146,7 +143,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene el nombre para el inicio de sesión.
+     * Método que obtiene el nombre para el inicio de sesión.
      * @return string
      */
     public function getUserLogin() {
@@ -154,7 +151,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene el nombre del usuario.
+     * Método que obtiene el nombre del usuario.
      * @return string
      */
     public function getUserName() {
@@ -162,7 +159,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene el email.
+     * Método que obtiene el email.
      * @return string
      */
     public function getUserEmail() {
@@ -170,7 +167,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene la contraseña.
+     * Método que obtiene la contraseña.
      * @return string
      */
     public function getUserPass() {
@@ -178,7 +175,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene el rol.
+     * Método que obtiene el rol.
      * @return int
      */
     public function getUserRol() {
@@ -186,7 +183,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene la fecha de registro.
+     * Método que obtiene la fecha de registro.
      * @return string
      */
     public function getUserRegistred() {
@@ -194,7 +191,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene la pagina web del usuario.
+     * Método que obtiene la pagina web del usuario.
      * @return string
      */
     public function getUserUrl() {
@@ -202,7 +199,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene el número de POST realializados.
+     * Método que obtiene el número de POST realizados.
      * @return int
      */
     public function getCountPosts() {
@@ -221,7 +218,7 @@ class User extends Model {
     }
     
     /**
-     * Metodo que obtiene el identificador del usuario.
+     * Método que obtiene el identificador del usuario.
      * @return int
      */
     public function getID() {

@@ -1,12 +1,12 @@
 <?php
 /**
- * ArrayHelp.php
+ * Modulo: Operaciones comunes en arrays.
  */
 
 namespace SoftnCMS\Helpers;
 
 /**
- * Class ArrayHelp
+ * Clase ArrayHelp
  * @author Nicolás Marulanda P.
  */
 class ArrayHelp {

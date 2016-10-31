@@ -1,48 +1,73 @@
 <?php
 
 /**
- * Controlador de rutas.
+ * Modulo: Rutas de la aplicación.
  */
 
 namespace SoftnCMS\controllers;
 
 /**
- * Clase que ejecuta la acción enviada por url.
+ * Clase Router que ejecuta las acciones enviadas por url.
+ * Obtiene los controladores y vistas correspondientes.
  * @author Nicolás Marulanda P.
  */
 class Router {
     
-    private static $ROUTES     = [
+    /** @var array Lista de rutas. */
+    private static $ROUTES = [
         'default'  => '',
         'admin'    => 'admin',
         'login'    => 'login',
         'register' => 'register',
         'logout'   => 'logout',
+        'install'  => 'install',
     ];
     
+    /** @var array Lista de vistas. Su valor corresponde al indice en "$VIEW_PATH". */
+    private static $VIEWS = [
+        'default'  => 'theme',
+        'admin'    => 'admin',
+        'login'    => 'default',
+        'register' => 'default',
+        'logout'   => 'default',
+        'install'  => 'default',
+    ];
+    
+    /** @var array Lista de rutas de los directorios de las vistas. */
+    private static $VIEW_PATH = [
+        'default' => '',
+        'theme'   => '',
+        'admin'   => '',
+    ];
+    
+    /** @var array Lista de datos extra ha obtener de la url. */
     private static $ROUTES_ARG = [
         'paged' => 'paged',
-//        'token' => 'token',
+        //        'token' => 'token',
     ];
     
-    private static $NAMESPACE  = [
+    /** @var array Lista de nombres de espacio. */
+    private static $NAMESPACE = [
         'default'  => '',
         'admin'    => '',
         'login'    => '',
         'register' => '',
         'logout'   => '',
+        'install'  => '',
     ];
     
-    private static $PATH       = [
+    /** @var array Lista de ruta de los directorios de las "$ROUTES". */
+    private static $PATH = [
         'default'  => '',
         'admin'    => '',
         'login'    => '',
         'register' => '',
         'logout'   => '',
-        '',
+        'install'  => '',
     ];
     
-    private static $DEFAULT    = [
+    /** @var array Lista de datos por defecto. */
+    private static $DEFAULT = [
         'default' => [
             'controller' => 'Index',
             'method'     => 'index',
@@ -53,12 +78,18 @@ class Router {
         ],
     ];
     
-    private static $DATA       = [];
+    /** @var array Lista de datos a enviar a los controladores. */
+    private static $DATA = [];
     
-    private static $REQUEST    = NULL;
+    /** @var null|Request Instancia Request. */
+    private static $REQUEST = NULL;
     
-    private        $events;
+    /** @var array Lista de eventos. */
+    private $events;
     
+    /**
+     * Constructor.
+     */
     public function __construct() {
         $this->events                  = [];
         self::$REQUEST                 = new Request();
@@ -69,45 +100,129 @@ class Router {
     }
     
     /**
+     * Método que obtiene la lista de vistas.
+     * @return array
+     */
+    public static function getVIEWS() {
+        return self::$VIEWS;
+    }
+    
+    /**
+     * Método que agrega o actualiza una vista.
+     *
+     * @param string $key    Indice.
+     * @param string $values Valor.
+     */
+    public static function setVIEWS($key, $values) {
+        self::$VIEWS[$key] = $values;
+    }
+    
+    /**
+     * Método que obtiene la lista de rutas de los directorios de las vistas.
+     * @return array
+     */
+    public static function getViewPath() {
+        return self::$VIEW_PATH;
+    }
+    
+    /**
+     * Método que agrega o actualiza una ruta de los directorios de las vistas.
+     *
+     * @param string $key    Indice.
+     * @param string $values Valor.
+     */
+    public static function setViewPath($key, $values) {
+        self::$VIEW_PATH[$key] = $values;
+    }
+    
+    /**
+     * Método que obtiene la lista de datos extra a obtener por url.
      * @return array
      */
     public static function getRoutesARG() {
         return self::$ROUTES_ARG;
     }
     
+    /**
+     * Método que agrega o actualiza uno de los datos extra a obtener por url.
+     *
+     * @param string $key    Indice.
+     * @param string $values Valor.
+     */
     public static function setRoutesARG($key, $values) {
         self::$ROUTES_ARG[$key] = $values;
     }
     
-    
+    /**
+     * Método que la instancia Request.
+     * @return null|Request
+     */
     public static function getRequest() {
         return self::$REQUEST;
     }
     
+    /**
+     * Método que obtiene la lista de rutas.
+     * @return array
+     */
     public static function getRoutes() {
         return self::$ROUTES;
     }
     
+    /**
+     * Método que agrega o actualiza una ruta.
+     *
+     * @param string $key    Indice.
+     * @param string $values Valor.
+     */
     public static function setRoutes($key, $values) {
         self::$ROUTES[$key] = $values;
     }
     
+    /**
+     * Método que obtiene la lista de ruta de los directorios de las "$ROUTES".
+     * @return array
+     */
     public static function getPath() {
         return self::$PATH;
     }
     
+    /**
+     * Método que agrega o actualiza una ruta de los directorios de las "$ROUTES".
+     *
+     * @param string $key    Indice.
+     * @param string $values Valor.
+     */
     public static function setPath($key, $values) {
         self::$PATH[$key] = $values;
     }
     
+    /**
+     * Método que obtiene la lista de los nombres de espacio.
+     * @return array
+     */
     public static function getNamespaces() {
         return self::$NAMESPACE;
     }
     
+    /**
+     * Método que agrega o actualiza un nombre de espacio.
+     *
+     * @param string $key    Indice.
+     * @param string $values Valor.
+     */
     public static function setNamespace($key, $values) {
         self::$NAMESPACE[$key] = $values;
     }
     
+    /**
+     * Método que agrega o actualiza la lista de datos por defecto.
+     *
+     * @param string $key Indice.
+     * @param string $controller
+     * @param string $method
+     * @param array  $argument
+     */
     public static function setDefault($key, $controller = 'Index', $method = 'index', $argument = ['']) {
         self::$DEFAULT[$key] = [
             'controller' => $controller,
@@ -116,18 +231,37 @@ class Router {
         ];
     }
     
+    /**
+     * Método que obtiene los datos a enviar a los controladores.
+     * @return mixed
+     */
     public static function getDATA() {
         return self::$DATA['data'];
     }
     
-    public static function setDATA($key, $value) {
-        self::$DATA['data'][$key] = $value;
+    /**
+     * Método que agrega o actualiza los datos a enviar a los controladores.
+     *
+     * @param string $key    Indice.
+     * @param string $values Valor.
+     */
+    public static function setDATA($key, $values) {
+        self::$DATA['data'][$key] = $values;
     }
     
-    public function setEvent($route, $callback) {
-        $this->events[$route] = $callback;
+    /**
+     * Método que agrega o actualiza la lista de eventos.
+     *
+     * @param string   $key      Indice.
+     * @param \Closure $callback Función.
+     */
+    public function setEvent($key, $callback) {
+        $this->events[$key] = $callback;
     }
     
+    /**
+     * Método que llama a los controladores y carga las vistas.
+     */
     public function load() {
         $this->event();
         
@@ -147,15 +281,23 @@ class Router {
         $view->render();
     }
     
+    /**
+     * Método que ejecuta un evento.
+     *
+     * @param null|string $event [Opcional] Nombre del evento. Si es NULL, si comprueba si existe algún evento
+     *                           vinculado a la ruta o al controlador actual.
+     */
     private function event($event = NULL) {
         $keyEvent = $event;
         
         if (empty($event)) {
-            if (array_key_exists(self::$REQUEST->getRoute(), $this->events)) {
-                $keyEvent = self::$REQUEST->getRoute();
-            } elseif (array_key_exists(strtolower(self::$REQUEST->getController()), $this->events)) {
-                $keyEvent = strtolower(self::$REQUEST->getController());
+            $controller = strtolower(self::$REQUEST->getController());
+            $key        = array_search(self::$REQUEST->getRoute(), self::$ROUTES, TRUE);
+            if (empty($key)) {
+                $key = array_search($controller, self::$ROUTES, TRUE);
             }
+            
+            $keyEvent = self::$ROUTES[$key];
         }
         
         if (!empty($keyEvent)) {
@@ -169,6 +311,10 @@ class Router {
         }
     }
     
+    /**
+     * Método que obtiene la instancia del controlador.
+     * @return mixed
+     */
     private function getInstanceController() {
         $key        = $this->getKeyRoutes();
         $controller = self::$REQUEST->getController();
@@ -201,6 +347,11 @@ class Router {
         return new $ctrNamespace();
     }
     
+    /**
+     * Método que obtiene el indice de la lista de ruta ("$ROUTES") según la ruta actual, indicada en
+     * "$REQUEST->getRoute()", si no existe retorna el indice "default".
+     * @return mixed|string
+     */
     private function getKeyRoutes() {
         $key = array_search(self::$REQUEST->getRoute(), self::$ROUTES, TRUE);
         
@@ -211,6 +362,13 @@ class Router {
         return $key;
     }
     
+    /**
+     * Método que obtiene el nombre del método.
+     *
+     * @param $instanceController
+     *
+     * @return string
+     */
     private function getMethod($instanceController) {
         $method = self::$REQUEST->getMethod();
         
@@ -229,6 +387,10 @@ class Router {
         return $method;
     }
     
+    /**
+     * Método que obtiene los argumentos.
+     * @return array
+     */
     private function getArguments() {
         $arguments = self::$REQUEST->getArgs();
         

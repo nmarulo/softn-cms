@@ -1,6 +1,6 @@
 <?php
 /**
- * BaseTemplate.php
+ * Clase común los modelos Template.
  */
 
 namespace SoftnCMS\models;
@@ -15,11 +15,14 @@ use SoftnCMS\models\theme\Template as ThemeTemplate;
 use SoftnCMS\models\admin\User;
 
 /**
- * Class BaseTemplate
+ * Clase BaseTemplate
  * @author Nicolás Marulanda P.
  */
 class BaseTemplate {
     
+    /**
+     * @var bool|string Titulo de la aplicación.
+     */
     private static $TITLE = FALSE;
     
     /**
@@ -46,7 +49,7 @@ class BaseTemplate {
     }
     
     /**
-     * Método que obtiene la paginación.
+     * Método que obtiene una instancia de Pagination. Si no existe una instancia previa, esta sera creada.
      * @return Pagination
      */
     public static function getPagination() {
@@ -73,24 +76,40 @@ class BaseTemplate {
      * @param string $concat
      * @param bool   $isEcho [Opcional] Si es TRUE, se imprime el contenido.
      *
-     * @return bool
+     * @return string
      */
     public static function getUrlAdmin($concat = '', $isEcho = TRUE) {
         return self::getUrl(Router::getRoutes()['admin'] . "/$concat", $isEcho);
     }
     
+    /**
+     * Método que obtiene la url de la aplicación.
+     *
+     * @param string $concat
+     * @param bool   $isEcho
+     *
+     * @return string
+     */
     public static function getUrl($concat = '', $isEcho = TRUE) {
         return self::get(Router::getDATA()[SITE_URL] . $concat, $isEcho);
     }
     
+    /**
+     * Método que retorna o imprime (ECHO) un valor.
+     *
+     * @param string $value
+     * @param bool   $isEcho [Opcional] Si es FALSE, retorna el valor.
+     *
+     * @return string
+     */
     public static function get($value, $isEcho = TRUE) {
-        if (!$isEcho) {
-            return $value;
+        if ($isEcho) {
+            echo $value;
+            
+            return TRUE;
         }
         
-        echo $value;
-        
-        return TRUE;
+        return $value;
     }
     
     /**
@@ -99,7 +118,7 @@ class BaseTemplate {
      * @param string $concat
      * @param bool   $isEcho
      *
-     * @return bool
+     * @return string
      */
     public static function getUrlLogout($concat = '', $isEcho = TRUE) {
         return self::getUrl(Router::getRoutes()['logout'] . "/$concat", $isEcho);
@@ -111,19 +130,20 @@ class BaseTemplate {
      * @param string $concat
      * @param bool   $isEcho
      *
-     * @return bool
+     * @return string
      */
     public static function getUrlLogin($concat = '', $isEcho = TRUE) {
         return self::getUrl(Router::getRoutes()['login'] . "/$concat", $isEcho);
     }
     
     /**
-     * Método que obtiene el titulo de la aplicación.
+     * Método que obtiene el titulo de la aplicación. Si previamente se uso "setTitle" se usara el valor guardado en
+     * "$TITLE".
      *
      * @param string $concat
      * @param bool   $isEcho
      *
-     * @return bool
+     * @return string
      */
     public static function getTitle($concat = '', $isEcho = TRUE) {
         if (self::$TITLE === FALSE) {
@@ -133,6 +153,11 @@ class BaseTemplate {
         return self::get(self::$TITLE . $concat, $isEcho);
     }
     
+    /**
+     * Método que establece el titulo de la aplicación concatenado con un valor.
+     *
+     * @param $concat
+     */
     public static function setTitle($concat) {
         self::$TITLE = self::getSiteTitle(FALSE) . $concat;
     }
@@ -142,7 +167,7 @@ class BaseTemplate {
      *
      * @param bool $isEcho
      *
-     * @return bool
+     * @return string
      */
     public static function getSiteTitle($isEcho = TRUE) {
         return self::get(Option::selectByName('optionTitle')
@@ -155,22 +180,30 @@ class BaseTemplate {
      * @param string $concat
      * @param bool   $isEcho
      *
-     * @return bool
+     * @return string
      */
     public static function getUrlUserUpdateSession($concat = '', $isEcho = TRUE) {
         return self::getUrlUserUpdate(Login::getSession() . "/$concat", $isEcho);
     }
     
-    public static function getUrlUserUpdate($concat = '', $isEcho = TRUE) {
+    /**
+     * Método que obtiene la url para editar el usuario de la sesión actual.
+     *
+     * @param string $concat Identificador y valores a concatenar en la ruta.
+     * @param bool   $isEcho
+     *
+     * @return string
+     */
+    public static function getUrlUserUpdate($concat, $isEcho = TRUE) {
         return AdminTemplate::getUrlUser("update/$concat", $isEcho);
     }
     
     /**
-     * Método que obtiene el nombre de usuario de la sesión.
+     * Método que obtiene el nombre de usuario de la sesión. Si no existe una sesión retorna un mensaje.
      *
      * @param bool $isEcho
      *
-     * @return bool|string
+     * @return string
      */
     public static function getUserName($isEcho = TRUE) {
         if (self::isLogin()) {
@@ -178,28 +211,43 @@ class BaseTemplate {
                                  ->getUserName(), $isEcho);
         }
         
-        return 'sin sesión';
+        return self::get('sin sesión', $isEcho);
     }
     
     /**
      * Método comprueba si existe una sesión activa.
-     * @return bool
+     * @return string
      */
     public static function isLogin() {
         return Login::isLogin();
     }
     
     /**
+     * Método que obtiene una instancia de la sesión actual.
      * @return bool|User Si es False, el usuario no existe.
      */
     public static function getInstanceUser() {
         return User::selectByID(Login::getSession());
     }
     
+    /**
+     * Método que obtiene el campo "input" con el TOKEN para agregar al formulario.
+     *
+     * @param bool $isEcho
+     *
+     * @return string
+     */
     public static function getTokenForm($isEcho = TRUE) {
         return self::get(Token::formField(), $isEcho);
     }
     
+    /**
+     * Método que obtiene el token por url.
+     *
+     * @param bool $isEcho
+     *
+     * @return string
+     */
     public static function getTokenUrl($isEcho = TRUE) {
         return self::get(Token::urlField(), $isEcho);
     }
@@ -212,6 +260,14 @@ class BaseTemplate {
         return Login::getSession();
     }
     
+    /**
+     * Método que obtiene la url de "registro de usuario".
+     *
+     * @param string $concat
+     * @param bool   $isEcho
+     *
+     * @return string
+     */
     public static function getUrlRegister($concat = '', $isEcho = TRUE) {
         return self::getUrl(Router::getRoutes()['register'] . "/$concat", $isEcho);
     }

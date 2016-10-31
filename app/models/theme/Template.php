@@ -1,18 +1,15 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo: Gestiona los datos enviados a la plantilla de la aplicación.
  */
-
 namespace SoftnCMS\models\theme;
 
 use SoftnCMS\models\admin\Option;
 use SoftnCMS\models\BaseTemplate;
 
 /**
- * Clase Template del tema de la aplicación.
+ * Clase Template para gestionar los datos enviados a la plantilla de la aplicación.
  * @author Nicolás Marulanda P.
  */
 class Template extends BaseTemplate {
@@ -23,19 +20,51 @@ class Template extends BaseTemplate {
     /** @var array Lista con los datos a incluir al final de la plantilla. */
     //    private static $footer;
     
-    public static function getUrlPost($concat = '', $isEcho = TRUE) {
+    /**
+     * Método que obtiene la url de la pagina de un post.
+     *
+     * @param string $concat Identificador y valores a concatenar en la ruta.
+     * @param bool   $isEcho
+     *
+     * @return string
+     */
+    public static function getUrlPost($concat, $isEcho = TRUE) {
         return self::getUrl("post/$concat", $isEcho);
     }
     
-    public static function getUrlUser($concat = '', $isEcho = TRUE) {
+    /**
+     * Método que obtiene la url de la pagina de un usuario.
+     *
+     * @param string $concat Identificador y valores a concatenar en la ruta.
+     * @param bool   $isEcho
+     *
+     * @return string
+     */
+    public static function getUrlUser($concat, $isEcho = TRUE) {
         return self::getUrl("user/$concat", $isEcho);
     }
     
-    public static function getUrlCategory($concat = '', $isEcho = TRUE) {
+    /**
+     * Método que obtiene la url de la pagina de una categoría.
+     *
+     * @param string $concat Identificador y valores a concatenar en la ruta.
+     * @param bool   $isEcho
+     *
+     * @return string
+     */
+    public static function getUrlCategory($concat, $isEcho = TRUE) {
         return self::getUrl("category/$concat", $isEcho);
     }
     
-    public static function getUrlTerm($concat = '', $isEcho = TRUE) {
+    /**
+     * Método que obtiene la url de la pagina de una etiqueta.
+     *
+     * @param string $concat Identificador y valores a concatenar en la ruta.
+     * @param bool   $isEcho
+     *
+     * @return string
+     */
+    public static function getUrlTerm($concat, $isEcho = TRUE) {
         return self::getUrl("term/$concat", $isEcho);
     }
     
@@ -106,7 +135,7 @@ class Template extends BaseTemplate {
     }
     
     /**
-     * Metodo que obtiene los elementos del menu.
+     * Método que obtiene los elementos del menu.
      *
      * @param string $name Nombre del menu.
      *

@@ -7,39 +7,42 @@
 namespace SoftnCMS\models\admin\base;
 
 /**
- *
+ * Interfaz ModelInterface
  * @author Nicolás Marulanda P.
  */
 interface ModelInterface {
-
+    
     /** Identificador. */
     const ID = 'ID';
-
+    
     /**
-     * Metodo que obtiene el nombre de la tabla.
+     * Método que obtiene el nombre de la tabla.
      */
     public static function getTableName();
-
+    
     /**
-     * Metodo que retorna una instancia por defecto.
+     * Método que retorna una instancia por defecto.
      */
     public static function defaultInstance();
-
+    
     /**
-     * Metodo que obtiene un objecto segun su "ID".
+     * Método que obtiene un objeto según su "ID".
+     *
      * @param int $value Identificador.
      */
     public static function selectByID($value);
     
     /**
-     * Metodo que recibe un lista de datos y retorna un instancia.
+     * Método que recibe un lista de datos y retorna un instancia.
+     *
      * @param array $data Lista de datos.
-     * @return User|bool Si es FALSE, no hay datos.
+     *
+     * @return Object|bool Si es FALSE, no hay datos.
      */
     public static function getInstanceData($data);
-
+    
     /**
-     * Metodo que obtiene el identificador.
+     * Método que obtiene el identificador.
      */
     public function getID();
 }

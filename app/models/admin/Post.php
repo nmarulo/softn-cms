@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Modulo del modelo POST.
- * Gestiona los datos de cada POST.
+ * Modulo modelo: Gestiona los datos de cada POST.
  */
-
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\controllers\Escape;
@@ -12,7 +10,7 @@ use SoftnCMS\models\admin\base\Model;
 use SoftnCMS\models\admin\template\PostTemplate;
 
 /**
- * Clase que gestiona los datos de cada POST.
+ * Clase Post para gestionar los datos de cada POST.
  * @author Nicolás Marulanda P.
  */
 class Post extends Model {

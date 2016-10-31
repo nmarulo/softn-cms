@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Modulo del modelo de comentarios.
- * Gestiona los datos de cada comentario.
+ * Modulo modelo: Gestiona los datos de cada comentario.
  */
 
 namespace SoftnCMS\models\admin;
@@ -12,7 +11,7 @@ use SoftnCMS\models\admin\base\Model;
 use SoftnCMS\models\admin\template\CommentTemplate;
 
 /**
- * Clase que gestiona los datos de cada comentario.
+ * Clase Comment para gestionar los datos de cada comentario.
  * @author Nicolás Marulanda P.
  */
 class Comment extends Model {
@@ -57,7 +56,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que obtiene el nombre de la tabla.
+     * Método que obtiene el nombre de la tabla.
      * @return string
      */
     public static function getTableName() {
@@ -65,7 +64,7 @@ class Comment extends Model {
     }
     
     /**
-     *  Metodo que retorna una instancia por defecto.
+     *  Método que retorna una instancia por defecto.
      * @return Comment
      */
     public static function defaultInstance() {
@@ -83,7 +82,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que obtiene un comentario segun su "ID".
+     * Método que obtiene un comentario según su "ID".
      *
      * @param int $value
      *
@@ -96,7 +95,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que recibe un lista de datos y retorna un instancia.
+     * Método que recibe un lista de datos y retorna un instancia.
      *
      * @param array $data Lista de datos.
      *
@@ -107,7 +106,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que obtiene el identificador del comentario.
+     * Método que obtiene el identificador del comentario.
      * @return int
      */
     public function getID() {
@@ -115,7 +114,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que obtiene el estado del comentario. 0 = Sin aprobar, 1 = Aprobado
+     * Método que obtiene el estado del comentario. 0 = Sin aprobar, 1 = Aprobado
      * @return int
      */
     public function getCommentStatus() {
@@ -123,7 +122,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que obtiene el nombre del autor.
+     * Método que obtiene el nombre del autor.
      * @return string
      */
     public function getCommentAuthor() {
@@ -131,7 +130,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que obtiene el Email del autor.
+     * Método que obtiene el Email del autor.
      * @return string
      */
     public function getCommentAuthorEmail() {
@@ -139,7 +138,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que obtiene la fecha de publicación del comentario.
+     * Método que obtiene la fecha de publicación del comentario.
      * @return string
      */
     public function getCommentDate() {
@@ -147,7 +146,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que obtiene el contenido del comentario.
+     * Método que obtiene el contenido del comentario.
      * @return string
      */
     public function getCommentContents() {
@@ -155,7 +154,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que obtiene el ID del autor del comentario. 0 = para usuarios no registrados.
+     * Método que obtiene el ID del autor del comentario. 0 = para usuarios no registrados.
      * @return int
      */
     public function getCommentUserID() {
@@ -163,7 +162,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que obtiene el ID de la entrada/post.
+     * Método que obtiene el ID de la entrada/post.
      * @return int
      */
     public function getPostID() {
@@ -171,7 +170,7 @@ class Comment extends Model {
     }
     
     /**
-     * Metodo que establece el contenido del comentario.
+     * Método que establece el contenido del comentario.
      *
      * @param string $value
      */

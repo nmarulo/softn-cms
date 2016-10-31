@@ -1,22 +1,31 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: MaruloPC-Desk
- * Date: 16/09/2016
- * Time: 23:16
- */
 
+/**
+ * Modulo modelo: Gestiona los datos de los post vinculados a una categoría para la plantilla de la aplicación.
+ */
 namespace SoftnCMS\models\theme;
 
 use SoftnCMS\controllers\DBController;
 use SoftnCMS\models\admin\base\BaseModels;
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\PostCategory;
-use SoftnCMS\models\admin\Posts;
 
+/**
+ * Clase PostsCategoryTemplate para gestionar los datos de los post vinculados a una categoría para la plantilla de la
+ * aplicación.
+ * @author Nicolás Marulanda P.
+ */
 class PostsCategoryTemplate extends BaseModels {
     
-    public static function selectByCategoryIDLimit($categoryID, $limit = ''){
+    /**
+     * Método que obtiene los posts vinculados a una categoría.
+     *
+     * @param int    $categoryID Identificador.
+     * @param string $limit
+     *
+     * @return bool|PostsTemplate Si es FALSE, no hay datos.
+     */
+    public static function selectByCategoryIDLimit($categoryID, $limit = '') {
         $prepare = [];
         $db      = DBController::getConnection();
         
@@ -24,12 +33,19 @@ class PostsCategoryTemplate extends BaseModels {
         $prepare[]       = $outPostCategory['prepare'];
         $sqlPostCategory = $db->createSelect(PostCategory::getTableName(), $outPostCategory['where'], $outPostCategory['columns'], $outPostCategory['orderBy']);
         
-        $where   = Post::ID . " IN ($sqlPostCategory)";
+        $where  = Post::ID . " IN ($sqlPostCategory)";
         $select = self::select(Post::getTableName(), $where, $prepare, '*', $limit);
         
         return PostsTemplate::getInstanceData($select);
     }
     
+    /**
+     * Método que obtiene los datos para la consulta sql.
+     *
+     * @param int $categoryID
+     *
+     * @return array
+     */
     private static function selectRelationships($categoryID) {
         $parameter = PostCategory::RELATIONSHIPS_CATEGORY_ID;
         $where     = "$parameter = :$parameter";
@@ -45,6 +61,13 @@ class PostsCategoryTemplate extends BaseModels {
         ];
     }
     
+    /**
+     * Método que obtiene el número de posts vinculados a una categoría.
+     *
+     * @param $categoryID
+     *
+     * @return int
+     */
     public static function count($categoryID) {
         $select  = self::selectRelationships($categoryID);
         $prepare = [$select['prepare']];
@@ -52,6 +75,15 @@ class PostsCategoryTemplate extends BaseModels {
         return self::countData(PostCategory::getTableName(), $select['where'], $prepare);
     }
     
+    /**
+     * Método que obtiene el número total de datos.
+     *
+     * @param $table
+     * @param $where
+     * @param $prepare
+     *
+     * @return int
+     */
     private static function countData($table, $where, $prepare) {
         $columns = 'COUNT(*) AS count';
         $select  = self::select($table, $where, $prepare, $columns, '', '');

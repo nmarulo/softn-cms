@@ -1,23 +1,20 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo modelo: Gestiona los datos de un comentario para la plantilla de la aplicación.
  */
-
 namespace SoftnCMS\models\theme;
 
 use SoftnCMS\models\admin\Comment;
 
 /**
- * Description of CommentTemplate
+ * Clase CommentTemplate para gestionar los datos de una categoría para la plantilla de la aplicación.
  * @author Nicolás Marulanda P.
  */
 class CommentTemplate extends Comment {
     
     /**
-     * CommentTemplate constructor.
+     * Constructor.
      *
      * @param int $id
      */

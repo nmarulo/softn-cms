@@ -1,11 +1,8 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo modelo: Gestiona los datos de un post para la plantilla de la aplicación.
  */
-
 namespace SoftnCMS\models\theme;
 
 use SoftnCMS\controllers\DBController;
@@ -19,7 +16,7 @@ use SoftnCMS\models\admin\PostsTerms;
 use SoftnCMS\models\admin\Terms;
 
 /**
- * Description of PostTemplate
+ * Clase PostTemplate para gestionar los datos de un post para la plantilla de la aplicación.
  * @author Nicolás Marulanda P.
  */
 class PostTemplate extends Post {
@@ -34,7 +31,7 @@ class PostTemplate extends Post {
     private $terms;
     
     /**
-     * PostTemplate constructor.
+     * Constructor.
      *
      * @param int $id
      */
@@ -46,6 +43,10 @@ class PostTemplate extends Post {
         $this->comments   = $this->postComments();
     }
     
+    /**
+     * Método que obtiene las categorías vinculadas al post.
+     * @return array
+     */
     private function postCategories() {
         $postsCategories = PostsCategories::selectByPostID($this->getID());
         
@@ -64,6 +65,10 @@ class PostTemplate extends Post {
         return $categories->getAll();
     }
     
+    /**
+     * Método que obtiene las etiquetas vinculadas al post.
+     * @return array
+     */
     private function postTerms() {
         $postsTerms = PostsTerms::selectByPostID($this->getID());
         
@@ -82,6 +87,10 @@ class PostTemplate extends Post {
         return $terms->getAll();
     }
     
+    /**
+     * Método que obtiene los comentarios del post.
+     * @return array
+     */
     private function postComments() {
         $column       = Comment::POST_ID;
         $parameter    = ":$column";
@@ -89,9 +98,9 @@ class PostTemplate extends Post {
         $prepare[]    = DBController::prepareStatement($parameter, $this->getID(), \PDO::PARAM_INT);
         $select       = CommentsPost::select(Comment::getTableName(), $where, $prepare);
         $postComments = CommentsPost::getInstanceData($select);
-    
-        if ($postComments === \FALSE) {
         
+        if ($postComments === \FALSE) {
+            
             return [];
         }
         
@@ -107,6 +116,7 @@ class PostTemplate extends Post {
     }
     
     /**
+     * Método que obtiene las categorías del post.
      * @return array
      */
     public function getPostCategories() {
@@ -114,24 +124,41 @@ class PostTemplate extends Post {
     }
     
     /**
+     * Método que obtiene las etiquetas del post.
      * @return array
      */
     public function getPostTerms() {
         return $this->terms;
     }
     
+    /**
+     * Método que obtiene los comentarios del post.
+     * @return array
+     */
     public function getPostComments() {
         return $this->comments;
     }
     
+    /**
+     * Método que comprueba si hay comentarios.
+     * @return bool
+     */
     public function hasPostComments() {
         return !empty($this->comments);
     }
     
+    /**
+     * Método que comprueba si hay categorías.
+     * @return bool
+     */
     public function hasPostCategories() {
         return !empty($this->categories);
     }
     
+    /**
+     * Método que comprueba si hay etiquetas.
+     * @return bool
+     */
     public function hasPostTerms() {
         return !empty($this->terms);
     }

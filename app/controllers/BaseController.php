@@ -11,7 +11,7 @@ use SoftnCMS\Helpers\Helps;
 use SoftnCMS\models\admin\template\Template;
 
 /**
- * Clase que contiene los métodos que debe tener cada modulo controlador de la aplicación.
+ * Clase BaseController que contiene los métodos que debe tener cada modulo controlador de la aplicación.
  * @author Nicolás Marulanda P.
  */
 abstract class BaseController extends Controller {

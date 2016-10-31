@@ -1,21 +1,23 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo modelo: Gestiona los datos de una categoría para la plantilla de la aplicación.
  */
-
 namespace SoftnCMS\models\theme;
 
 use SoftnCMS\models\admin\Category;
 
 /**
- * Description of CategoryTemplate
+ * Clase CategoryTemplate para gestionar los datos de una categoría para la plantilla de la aplicación.
  * @author Nicolás Marulanda P.
  */
 class CategoryTemplate extends Category {
     
+    /**
+     * Constructor.
+     *
+     * @param array $id
+     */
     public function __construct($id) {
         $select = self::selectBy(self::getTableName(), $id, self::ID, \PDO::PARAM_INT);
         parent::__construct($select[0]);

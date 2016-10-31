@@ -1,17 +1,18 @@
 <?php
 
 /**
- * Declaración de datos constantes.
+ * Modulo: Constantes de la aplicación.
  */
 /** Versión actual de la aplicación. */
 \define('VERSION', '0.4-alfa');
 
+/** Nombre del indice para el identificador del usuario en $_SESSION */
 define('SESSION_USER', 'usernameID');
 
-define('SESSION_TOKEN', 'token');
-
+/** Nombre del indice para el identificador del usuario en $_COOKIE */
 define('COOKIE_USER_REMEMBER', 'userRememberMe');
 
+/** Nombre del indice usado en "Router::getDATA()"  */
 define('SITE_URL', 'siteUrl');
 
 /** Nombre de la variable que contiene los datos de la URL. */

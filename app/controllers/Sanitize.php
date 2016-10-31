@@ -1,16 +1,26 @@
 <?php
 /**
- * Conjunto de filtros y ayudas para sanear los datos.
+ * Modulo: Filtros y ayudas para sanear los datos.
  */
 
 namespace SoftnCMS\controllers;
 
 /**
- * Class Sanitize
+ * Clase Sanitize con filtros y ayudas para sanear los datos.
  * @author Nicolás Marulanda P.
  */
 class Sanitize {
     
+    /**
+     * Método que filtra valores alfanuméricos.
+     *
+     * @param string $value
+     * @param bool   $accents      [Opcional] Acentos.
+     * @param bool   $withoutSpace [Opcional] Sin espacios
+     * @param string $replaceSpace [Opcional] Carácter por el cual se reemplazaran los espacios.
+     *
+     * @return mixed|string
+     */
     public static function alphanumeric($value, $accents = TRUE, $withoutSpace = FALSE, $replaceSpace = '-') {
         $pattern = 'áéíóúÁÉÍÓÚ';
         
@@ -32,14 +42,38 @@ class Sanitize {
         return $output;
     }
     
+    /**
+     * Método que borra dos o mas espacios seguidos de una cadena de caracteres.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
     public static function clearSpace($value) {
         return trim(preg_replace('/( ){2,}/', ' ', $value));
     }
     
+    /**
+     * Método que retira las etiquetas HTML y PHP de un string.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
     public static function clearTags($value) {
         return strip_tags($value);
     }
     
+    /**
+     * Método que filtra valores alfabéticos.
+     *
+     * @param string $value
+     * @param bool   $accents      [Opcional] Acentos.
+     * @param bool   $withoutSpace [Opcional] Sin espacios
+     * @param string $replaceSpace [Opcional] Carácter por el cual se reemplazaran los espacios.
+     *
+     * @return mixed|string
+     */
     public static function alphabetic($value, $accents = TRUE, $withoutSpace = FALSE, $replaceSpace = '-') {
         $pattern = 'áéíóúÁÉÍÓÚ';
         
@@ -58,10 +92,26 @@ class Sanitize {
         return $output;
     }
     
+    /**
+     * Método que elimina todos los caracteres no permitidos según el filtro de saneamiento "FILTER_SANITIZE_URL".
+     *
+     * @param string $value
+     *
+     * @return string
+     */
     public static function url($value) {
         return rtrim(filter_var($value, FILTER_SANITIZE_URL), '/') . '/';
     }
     
+    /**
+     * Método filtra una lista de datos.
+     *
+     * @param array  $value
+     * @param string $type [Opcional] Tipo de datos.
+     * @param bool   $sign [Opcional] Signos (Para números).
+     *
+     * @return array
+     */
     public static function arrayList($value, $type = 'integer', $sign = FALSE) {
         $output = [];
         
@@ -87,6 +137,14 @@ class Sanitize {
         return $output;
     }
     
+    /**
+     * Método que filtra valores numéricos enteros.
+     *
+     * @param string|int $value
+     * @param bool       $sign [Opcional] Signos.
+     *
+     * @return mixed
+     */
     public static function integer($value, $sign = FALSE) {
         $output = $value;
         
@@ -98,15 +156,37 @@ class Sanitize {
         return filter_var($output, FILTER_SANITIZE_NUMBER_INT);
     }
     
+    /**
+     * Método que filtra valores numéricos decimales.
+     *
+     * @param string|float $value
+     * @param bool         $sign [Opcional] Signos.
+     *
+     * @return mixed
+     */
     public static function float($value, $sign = FALSE) {
         //
         return filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     }
     
+    /**
+     * Método que filtra direcciones de correo electrónico.
+     *
+     * @param string $value
+     *
+     * @return mixed
+     */
     public static function email($value) {
         return filter_var($value, FILTER_SANITIZE_EMAIL);
     }
     
+    /**
+     * Método que filtra texto según el filtro de saneamiento "FILTER_SANITIZE_STRING".
+     *
+     * @param string $value
+     *
+     * @return mixed
+     */
     public static function text($value) {
         return filter_var($value, FILTER_SANITIZE_STRING);
     }

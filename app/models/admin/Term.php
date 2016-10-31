@@ -1,17 +1,15 @@
 <?php
 
 /**
- * Modulo del modelo de etiquetas.
- * Gestiona los datos de cada etiqueta.
+ * Modulo modelo: Gestiona los datos de cada etiqueta.
  */
-
 namespace SoftnCMS\models\admin;
 
 use SoftnCMS\models\admin\base\Model;
 use SoftnCMS\models\admin\template\TermTemplate;
 
 /**
- * Clase que gestiona los datos de cada etiqueta.
+ * Clase Term para gestionar los datos de cada etiqueta.
  * @author Nicolás Marulanda P.
  */
 class Term extends Model {
@@ -44,7 +42,7 @@ class Term extends Model {
     }
     
     /**
-     * Metodo que obtiene el nombre de la tabla.
+     * Método que obtiene el nombre de la tabla.
      * @return string
      */
     public static function getTableName() {
@@ -52,7 +50,7 @@ class Term extends Model {
     }
     
     /**
-     * Metodo que retorna una instancia por defecto.
+     * Método que retorna una instancia por defecto.
      * @return Term
      */
     public static function defaultInstance() {
@@ -67,7 +65,7 @@ class Term extends Model {
     }
     
     /**
-     * Metodo que obtiene una etiqueta segun su "ID".
+     * Método que obtiene una etiqueta según su "ID".
      *
      * @param int $value
      *
@@ -80,7 +78,7 @@ class Term extends Model {
     }
     
     /**
-     * Metodo que recibe un lista de datos y retorna un instancia.
+     * Método que recibe un lista de datos y retorna un instancia.
      *
      * @param array $data Lista de datos.
      *
@@ -91,7 +89,7 @@ class Term extends Model {
     }
     
     /**
-     * Metodo que obtiene una etiqueta segun su "nombre".
+     * Método que obtiene una etiqueta según su "nombre".
      *
      * @param int $value
      *
@@ -104,7 +102,7 @@ class Term extends Model {
     }
     
     /**
-     * Metodo que obtiene el identificador de la etiqueta.
+     * Método que obtiene el identificador de la etiqueta.
      * @return int
      */
     public function getID() {
@@ -112,7 +110,7 @@ class Term extends Model {
     }
     
     /**
-     * Metodo que obtiene el nombre de la etiqueta.
+     * Método que obtiene el nombre de la etiqueta.
      * @return string
      */
     public function getTermName() {
@@ -120,7 +118,7 @@ class Term extends Model {
     }
     
     /**
-     * Metodo que obtiene la descripción de la etiqueta.
+     * Método que obtiene la descripción de la etiqueta.
      * @return string
      */
     public function getTermDescription() {
@@ -128,7 +126,7 @@ class Term extends Model {
     }
     
     /**
-     * Metodo que obtiene el número de entradas vinculadas a la etiqueta.
+     * Método que obtiene el número de entradas vinculadas a la etiqueta.
      * @return int
      */
     public function getTermCount() {

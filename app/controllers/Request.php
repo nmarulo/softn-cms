@@ -6,8 +6,10 @@
 
 namespace SoftnCMS\controllers;
 
+use SoftnCMS\Helpers\ArrayHelp;
+
 /**
- * Clase que obtiene los datos enviatos por URL.
+ * Clase Request para obtener los datos enviados por URL.
  * @author Nicolás Marulanda P.
  */
 class Request {
@@ -42,9 +44,9 @@ class Request {
      * Método que comprueba la url y obtiene sus datos.
      */
     private function parseUrl() {
-        $get = isset($_GET[\URL_GET]) ? $_GET[\URL_GET] : NULL;
+        $get = ArrayHelp::get($_GET, URL_GET);
         
-        if ($get === NULL) {
+        if ($get === FALSE) {
             $this->route = Router::getRoutes()['default'];
             
             return TRUE;
@@ -53,7 +55,7 @@ class Request {
         $this->url = trim(Sanitize::url($get), '/');
         /*
          * La URL contiene:
-         * [] = carpeta - en caso de estar en el panel de administración.
+         * [] = carpeta - EJ: en caso de estar en el panel de administración.
          * [] = controlador
          * [] = método
          * [] = argumentos
@@ -71,7 +73,10 @@ class Request {
     }
     
     /**
-     * Método que establece la ruta actual del usuario.
+     * Método que comprueba la url y obtiene la ruta actual y los argumentos de la ruta adicionales. Retorna la lista
+     * con los datos de la url, pero, sin el nombre de la ruta (por ejemplo, si es "admin/post/update/1" retorna
+     * "post/update/1") y sin los argumentos adicionales, dejando el nombre del controlador, el nombre del método y el
+     * identificador a enviar al método (si es el caso, update o delete).
      *
      * @param array $url Lista con los datos de la URL.
      *
@@ -101,8 +106,8 @@ class Request {
     }
     
     /**
-     * Método que agrega los datos extra a los argumentos
-     * que se enviaran al método del controlador.
+     * Método que extrae los datos extra, a enviar al método del controlador, de la ruta y retorna la url sin estos
+     * datos.
      *
      * @param array $url
      *
@@ -165,14 +170,27 @@ class Request {
         $this->args['data']['id'] = Sanitize::integer($url);
     }
     
+    /**
+     * Método que obtiene la ruta que el usuario ingreso.
+     * @return string
+     */
     public function getUrl() {
         return $this->url;
     }
     
+    /**
+     * Método que obtiene el nombre de la ruta. EJ: "admin", "login", "register".
+     * @return string
+     */
     public function getRoute() {
         return $this->route;
     }
     
+    /**
+     * Método que establece el nombre de la ruta.
+     *
+     * @param $route
+     */
     public function setRoute($route) {
         $this->route = $route;
     }
@@ -200,6 +218,11 @@ class Request {
         return $this->method;
     }
     
+    /**
+     * Método que establece el nombre del método.
+     *
+     * @param $method
+     */
     public function setMethod($method) {
         $this->method = $method;
     }
@@ -212,6 +235,11 @@ class Request {
         return $this->args;
     }
     
+    /**
+     * Método que establece los argumentos.
+     *
+     * @param $args
+     */
     public function setArgs($args) {
         $this->args = $args;
     }

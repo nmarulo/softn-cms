@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Modulo del modelo de categorías.
- * Gestiona los datos de cada categoría.
+ * Modulo modelo: Gestiona los datos de cada categoría.
  */
 
 namespace SoftnCMS\models\admin;
@@ -11,7 +10,7 @@ use SoftnCMS\models\admin\base\Model;
 use SoftnCMS\models\admin\template\CategoryTemplate;
 
 /**
- * Clase que gestiona los datos de cada categoría.
+ * Clase Category para gestionar los datos de cada categoría.
  * @author Nicolás Marulanda P.
  */
 class Category extends Model {
@@ -44,7 +43,7 @@ class Category extends Model {
     }
     
     /**
-     * Metodo que obtiene el nombre de la tabla.
+     * Método que obtiene el nombre de la tabla.
      * @return string
      */
     public static function getTableName() {
@@ -52,7 +51,7 @@ class Category extends Model {
     }
     
     /**
-     * Metodo que retorna una instancia por defecto.
+     * Método que retorna una instancia por defecto.
      * @return Category
      */
     public static function defaultInstance() {
@@ -67,7 +66,7 @@ class Category extends Model {
     }
     
     /**
-     * Metodo que obtiene una categoría segun su "ID".
+     * Método que obtiene una categoría según su "ID".
      *
      * @param int $value
      *
@@ -80,7 +79,7 @@ class Category extends Model {
     }
     
     /**
-     * Metodo que recibe un lista de datos y retorna un instancia.
+     * Método que recibe un lista de datos y retorna un instancia.
      *
      * @param array $data Lista de datos.
      *
@@ -91,7 +90,7 @@ class Category extends Model {
     }
     
     /**
-     * Metodo que obtiene una categoría segun su "nombre".
+     * Método que obtiene una categoría según su "nombre".
      *
      * @param int $value
      *
@@ -104,7 +103,7 @@ class Category extends Model {
     }
     
     /**
-     * Metodo que obtiene el identificador de la categoría.
+     * Método que obtiene el identificador de la categoría.
      * @return int
      */
     public function getID() {
@@ -112,7 +111,7 @@ class Category extends Model {
     }
     
     /**
-     * Metodo que obtiene el nombre de la categoría.
+     * Método que obtiene el nombre de la categoría.
      * @return string
      */
     public function getCategoryName() {
@@ -120,7 +119,7 @@ class Category extends Model {
     }
     
     /**
-     * Metodo que obtiene la descripción de la categoría.
+     * Método que obtiene la descripción de la categoría.
      * @return string
      */
     public function getCategoryDescription() {
@@ -128,7 +127,7 @@ class Category extends Model {
     }
     
     /**
-     * Metodo que obtiene el número de entradas vinculadas a la categoría.
+     * Método que obtiene el número de entradas vinculadas a la categoría.
      * @return int
      */
     public function getCategoryCount() {

@@ -1,25 +1,24 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Modulo modelo: Gestiona grupos de Posts para la plantilla de la aplicación.
  */
-
 namespace SoftnCMS\models\theme;
 
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\Posts;
 
 /**
- * Class PostsTemplate
+ * Clase PostsTemplate para gestionar grupos de Posts para la plantilla de la aplicación.
  * @author Nicolás Marulanda P.
  */
 class PostsTemplate extends Posts {
     
     /**
-     * Metodo que obtiene un número limitado de datos.
+     * Método que obtiene un número limitado de datos.
+     *
      * @param string $limit
+     *
      * @return Posts|bool Si es FALSE, no hay datos.
      */
     public static function selectByLimit($limit) {
@@ -29,14 +28,21 @@ class PostsTemplate extends Posts {
     }
     
     /**
-     * Metodo que recibe un lista de datos y retorna un instancia.
+     * Método que recibe un lista de datos y retorna un instancia.
+     *
      * @param array $data Lista de datos.
-     * @return Posts|bool Si es FALSE, no hay datos.
+     *
+     * @return PostsTemplate|bool Si es FALSE, no hay datos.
      */
     public static function getInstanceData($data) {
         return parent::getInstance($data, __CLASS__);
     }
     
+    /**
+     * Método que recibe una lista de datos y los agrega a la lista actual.
+     *
+     * @param array $data
+     */
     public function addData($data) {
         foreach ($data as $value) {
             $this->add(new PostTemplate($value[Post::ID]));
