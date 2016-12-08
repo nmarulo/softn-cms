@@ -3,7 +3,7 @@
  * Modulo: Operaciones comunes en arrays.
  */
 
-namespace SoftnCMS\Helpers;
+namespace SoftnCMS\helpers;
 
 /**
  * Clase ArrayHelp

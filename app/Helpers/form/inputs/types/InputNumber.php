@@ -3,7 +3,7 @@
  * InputNumber.php
  */
 
-namespace SoftnCMS\Helpers\form\inputs\types;
+namespace SoftnCMS\helpers\form\inputs\types;
 
 /**
  * Class InputNumber

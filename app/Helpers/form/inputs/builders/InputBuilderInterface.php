@@ -3,7 +3,7 @@
  * InputBuilderInterface.php
  */
 
-namespace SoftnCMS\Helpers\form\inputs\builders;
+namespace SoftnCMS\helpers\form\inputs\builders;
 
 /**
  * Interface InputBuilderInterface

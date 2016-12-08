@@ -3,13 +3,13 @@
  * InputAlphabetic.php
  */
 
-namespace SoftnCMS\Helpers\form;
+namespace SoftnCMS\helpers\form;
 
 use SoftnCMS\controllers\Sanitize;
 use SoftnCMS\controllers\Validate;
-use SoftnCMS\Helpers\form\builders\InputAlphabeticBuilder;
-use SoftnCMS\Helpers\form\inputs\InputInterface;
-use SoftnCMS\Helpers\form\inputs\types\InputText;
+use SoftnCMS\helpers\form\builders\InputAlphabeticBuilder;
+use SoftnCMS\helpers\form\inputs\InputInterface;
+use SoftnCMS\helpers\form\inputs\types\InputText;
 
 /**
  * Class InputAlphabetic
@@ -39,7 +39,7 @@ class InputAlphabetic implements InputInterface {
     }
     
     public function filter() {
-        $output = Sanitize::alphabetic($this->value);
+        $output = Sanitize::alphabetic($this->value, $this->accents, $this->withoutSpace, $this->replaceSpace);
         
         if (!Validate::alphabetic($output, $this->lenMax, $this->accents, $this->lenStrict)) {
             $output = '';

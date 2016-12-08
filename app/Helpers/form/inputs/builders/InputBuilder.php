@@ -3,10 +3,10 @@
  * InputBuilder.php
  */
 
-namespace SoftnCMS\Helpers\form\inputs\builders;
+namespace SoftnCMS\helpers\form\inputs\builders;
 
-use SoftnCMS\Helpers\ArrayHelp;
-use SoftnCMS\Helpers\form\inputs\Input;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\form\inputs\Input;
 
 /**
  * Class InputBuild

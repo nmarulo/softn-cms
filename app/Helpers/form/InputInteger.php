@@ -3,13 +3,13 @@
  * InputInteger.php
  */
 
-namespace SoftnCMS\Helpers\form;
+namespace SoftnCMS\helpers\form;
 
 use SoftnCMS\controllers\Sanitize;
 use SoftnCMS\controllers\Validate;
-use SoftnCMS\Helpers\form\inputs\builders\InputNumberBuilder;
-use SoftnCMS\Helpers\form\inputs\InputInterface;
-use SoftnCMS\Helpers\form\inputs\types\InputNumber;
+use SoftnCMS\helpers\form\inputs\builders\InputNumberBuilder;
+use SoftnCMS\helpers\form\inputs\InputInterface;
+use SoftnCMS\helpers\form\inputs\types\InputNumber;
 
 /**
  * Class InputInteger
@@ -25,18 +25,20 @@ class InputInteger implements InputInterface {
      * @param InputNumberBuilder $builder
      */
     public function __construct($builder) {
-        $this->value     = $builder->value;
-        $this->name      = $builder->name;
-        $this->type      = $builder->type;
-        $this->method    = $builder->method;
-        $this->lenMax    = $builder->lenMax;
-        $this->require   = $builder->require;
-        $this->lenMin    = $builder->lenMin;
-        $this->lenStrict = $builder->lenStrict;
+        $this->value     = $builder->getValue();
+        $this->name      = $builder->getName();
+        $this->type      = $builder->getType();
+        $this->method    = $builder->getMethod();
+        $this->lenMax    = $builder->getLenMax();
+        $this->require   = $builder->isRequire();
+        $this->lenMin    = $builder->getLenMin();
+        $this->lenStrict = $builder->isLenStrict();
+        $this->sign      = $builder->isSign();
+        
     }
     
     public function filter() {
-        $output = Sanitize::integer($this->value);
+        $output = Sanitize::integer($this->value, $this->sign);
         
         if (!Validate::integer($output, $this->lenMax, $this->lenStrict)) {
             $output = '';

@@ -3,11 +3,11 @@
  * InputIntegerBuilder.php
  */
 
-namespace SoftnCMS\Helpers\form\builders;
+namespace SoftnCMS\helpers\form\builders;
 
-use SoftnCMS\Helpers\form\InputInteger;
-use SoftnCMS\Helpers\form\inputs\builders\InputBuilderInterface;
-use SoftnCMS\Helpers\form\inputs\builders\InputNumberBuilder;
+use SoftnCMS\helpers\form\InputInteger;
+use SoftnCMS\helpers\form\inputs\builders\InputBuilderInterface;
+use SoftnCMS\helpers\form\inputs\builders\InputNumberBuilder;
 
 /**
  * Class InputIntegerBuilder

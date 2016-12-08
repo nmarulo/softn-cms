@@ -3,11 +3,11 @@
  * InputListAlphabeticBuilder.php
  */
 
-namespace SoftnCMS\Helpers\form\builders;
+namespace SoftnCMS\helpers\form\builders;
 
-use SoftnCMS\Helpers\form\InputListAlphabetic;
-use SoftnCMS\Helpers\form\inputs\builders\InputBuilderInterface;
-use SoftnCMS\Helpers\form\inputs\builders\InputSelectTextBuilder;
+use SoftnCMS\helpers\form\InputListAlphabetic;
+use SoftnCMS\helpers\form\inputs\builders\InputBuilderInterface;
+use SoftnCMS\helpers\form\inputs\builders\InputSelectTextBuilder;
 
 /**
  * Class InputListAlphabeticBuilder

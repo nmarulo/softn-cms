@@ -3,11 +3,11 @@
  * InputEmailBuilder.php
  */
 
-namespace SoftnCMS\Helpers\form\builders;
+namespace SoftnCMS\helpers\form\builders;
 
-use SoftnCMS\Helpers\form\InputEmail;
-use SoftnCMS\Helpers\form\inputs\builders\InputBuilder;
-use SoftnCMS\Helpers\form\inputs\builders\InputBuilderInterface;
+use SoftnCMS\helpers\form\InputEmail;
+use SoftnCMS\helpers\form\inputs\builders\InputBuilder;
+use SoftnCMS\helpers\form\inputs\builders\InputBuilderInterface;
 
 /**
  * Class InputEmailBuilder

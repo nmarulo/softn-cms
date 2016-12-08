@@ -4,7 +4,7 @@
  * Modulo: Operaciones comunes.
  */
 
-namespace SoftnCMS\Helpers;
+namespace SoftnCMS\helpers;
 
 use SoftnCMS\controllers\Router;
 

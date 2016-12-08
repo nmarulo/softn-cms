@@ -3,13 +3,13 @@
  * InputAlphanumeric.php
  */
 
-namespace SoftnCMS\Helpers\form;
+namespace SoftnCMS\helpers\form;
 
 use SoftnCMS\controllers\Sanitize;
 use SoftnCMS\controllers\Validate;
-use SoftnCMS\Helpers\form\builders\InputAlphanumericBuilder;
-use SoftnCMS\Helpers\form\inputs\InputInterface;
-use SoftnCMS\Helpers\form\inputs\types\InputText;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\form\inputs\InputInterface;
+use SoftnCMS\helpers\form\inputs\types\InputText;
 
 /**
  * Interface InputAlphanumeric
@@ -39,7 +39,7 @@ class InputAlphanumeric implements InputInterface {
     }
     
     public function filter() {
-        $output = Sanitize::alphanumeric($this->value);
+        $output = Sanitize::alphanumeric($this->value, $this->accents, $this->withoutSpace, $this->replaceSpace);
         
         if (!Validate::alphanumeric($output, $this->lenMax, $this->accents, $this->lenStrict)) {
             $output = '';
