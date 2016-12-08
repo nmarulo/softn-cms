@@ -11,8 +11,13 @@ use SoftnCMS\controllers\Messages;
 use SoftnCMS\controllers\Pagination;
 use SoftnCMS\controllers\Router;
 use SoftnCMS\controllers\Token;
-use SoftnCMS\Helpers\ArrayHelp;
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\form\builders\InputAlphabeticBuilder;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\form\builders\InputEmailBuilder;
+use SoftnCMS\helpers\form\builders\InputIntegerBuilder;
+use SoftnCMS\helpers\form\builders\InputUrlBuilder;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\template\Template;
 use SoftnCMS\models\admin\User;
 use SoftnCMS\models\admin\Users;
@@ -89,15 +94,33 @@ class UserController extends BaseController {
             $isRequire = Router::getRequest()
                                ->getMethod() == 'insert';
             
-            Form::addInputAlphanumeric('userLogin', TRUE, FALSE, FALSE, FALSE, 1, TRUE, '');
-            Form::addInputAlphabetic('userName', TRUE);
-            Form::addInputEmail('userEmail', TRUE);
-            Form::addInputAlphanumeric('userPass', $isRequire, FALSE, FALSE);
-            Form::addInputAlphanumeric('userPassR', $isRequire, FALSE, FALSE);
-            Form::addInputInteger('userRol');
-            Form::addInputUrl('userUrl');
+            Form::setINPUT([
+                InputAlphanumericBuilder::init('userLogin')
+                                        ->setAccents(FALSE)
+                                        ->setWithoutSpace(TRUE)
+                                        ->setReplaceSpace('')
+                                        ->build(),
+                InputAlphabeticBuilder::init('userName')
+                                      ->build(),
+                InputEmailBuilder::init('userEmail')
+                                 ->build(),
+                InputAlphanumericBuilder::init('userPass')
+                                        ->setRequire($isRequire)
+                                        ->setAccents(FALSE)
+                                        ->build(),
+                InputAlphanumericBuilder::init('userPassR')
+                                        ->setRequire($isRequire)
+                                        ->setAccents(FALSE)
+                                        ->build(),
+                InputIntegerBuilder::init('userRol')
+                                   ->setRequire(FALSE)
+                                   ->build(),
+                InputUrlBuilder::init('userUrl')
+                               ->setRequire(FALSE)
+                               ->build(),
+            ]);
             
-            return Form::postInput();
+            return Form::inputFilter();
         }
         
         return FALSE;

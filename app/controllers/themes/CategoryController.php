@@ -8,8 +8,8 @@ namespace SoftnCMS\controllers\themes;
 
 use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Pagination;
-use SoftnCMS\Helpers\ArrayHelp;
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\theme\CategoryTemplate;
 use SoftnCMS\models\theme\PostsCategoryTemplate;
 use SoftnCMS\models\theme\Template;

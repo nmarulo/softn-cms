@@ -11,8 +11,9 @@ use SoftnCMS\controllers\Form;
 use SoftnCMS\controllers\Messages;
 use SoftnCMS\controllers\Pagination;
 use SoftnCMS\controllers\Token;
-use SoftnCMS\Helpers\ArrayHelp;
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\template\Template;
 use SoftnCMS\models\admin\Terms;
 use SoftnCMS\models\admin\Term;
@@ -84,10 +85,15 @@ class TermController extends BaseController {
      */
     protected function getDataInput() {
         if (Token::check()) {
-            Form::addInputAlphanumeric('termName', TRUE);
-            Form::addInputAlphanumeric('termDescription');
+            Form::setINPUT([
+                InputAlphanumericBuilder::init('termName')
+                                        ->build(),
+                InputAlphanumericBuilder::init('termDescription')
+                                        ->setRequire(FALSE)
+                                        ->build(),
+            ]);
             
-            return Form::postInput();
+            return Form::inputFilter();
         }
         
         return FALSE;

@@ -11,8 +11,12 @@ use SoftnCMS\controllers\Messages;
 use SoftnCMS\controllers\Pagination;
 use SoftnCMS\controllers\Token;
 use SoftnCMS\controllers\Form;
-use SoftnCMS\Helpers\ArrayHelp;
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\form\builders\InputBooleanBuilder;
+use SoftnCMS\helpers\form\builders\InputHtmlBuilder;
+use SoftnCMS\helpers\form\builders\InputListIntegerBuilder;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\Posts;
 use SoftnCMS\models\admin\PostUpdate;
@@ -121,14 +125,24 @@ class PostController extends BaseController {
      */
     protected function getDataInput() {
         if (Token::check()) {
-            Form::addInputAlphanumeric('postTitle');
-            Form::addInputHtml('postContents');
-            Form::addInputBoolean('commentStatus', TRUE);
-            Form::addInputBoolean('postStatus', TRUE);
-            Form::addInputArrayList('relationshipsCategoriesID');
-            Form::addInputArrayList('relationshipsTermsID');
+            Form::setINPUT([
+                InputAlphanumericBuilder::init('postTitle')
+                                        ->build(),
+                InputHtmlBuilder::init('postContents')
+                                ->build(),
+                InputBooleanBuilder::init('commentStatus')
+                                   ->build(),
+                InputBooleanBuilder::init('postStatus')
+                                   ->build(),
+                InputListIntegerBuilder::init('relationshipsCategoriesID')
+                                       ->setRequire(FALSE)
+                                       ->build(),
+                InputListIntegerBuilder::init('relationshipsTermsID')
+                                       ->setRequire(FALSE)
+                                       ->build(),
+            ]);
             
-            return Form::postInput();
+            return Form::inputFilter();
         }
         
         return FALSE;

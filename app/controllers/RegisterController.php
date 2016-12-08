@@ -6,7 +6,11 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\form\builders\InputBooleanBuilder;
+use SoftnCMS\helpers\form\builders\InputEmailBuilder;
+use SoftnCMS\helpers\form\InputEmail;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\Register;
 
 /**
@@ -50,12 +54,21 @@ class RegisterController extends Controller {
      */
     private function getDataInput() {
         if (Token::check()) {
-            Form::addInputAlphanumeric('userLogin', TRUE, FALSE, FALSE);
-            Form::addInputAlphanumeric('userPass', TRUE, FALSE, FALSE);
-            Form::addInputAlphanumeric('userPassR', TRUE, FALSE, FALSE);
-            Form::addInputEmail('userEmail', TRUE);
+            Form::setINPUT([
+                InputAlphanumericBuilder::init('userLogin')
+                                        ->setAccents(FALSE)
+                                        ->setWithoutSpace(TRUE)
+                                        ->setReplaceSpace('')
+                                        ->build(),
+                InputAlphanumericBuilder::init('userPass')
+                                        ->build(),
+                InputAlphanumericBuilder::init('userPassR')
+                                        ->build(),
+                InputEmailBuilder::init('userEmail')
+                                 ->build(),
+            ]);
             
-            return Form::postInput();
+            return Form::inputFilter();
         }
         
         return FALSE;

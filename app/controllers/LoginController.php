@@ -6,7 +6,9 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\form\builders\InputBooleanBuilder;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\Login;
 
 /**
@@ -18,11 +20,11 @@ class LoginController extends Controller {
     /**
      * Método llamado por la función INDEX.
      *
-     * @param int $paged Pagina actual
+     * @param array $data Lista de argumentos.
      *
      * @return array
      */
-    protected function dataIndex($paged) {
+    protected function dataIndex($data) {
         if (Form::submit('login')) {
             $dataInput = $this->getDataInput();
             
@@ -53,11 +55,19 @@ class LoginController extends Controller {
      */
     private function getDataInput() {
         if (Token::check()) {
-            Form::addInputAlphanumeric('userLogin', TRUE, FALSE, FALSE, FALSE, 1, TRUE, '');
-            Form::addInputAlphanumeric('userPass', TRUE);
-            Form::addInputBoolean('userRememberMe');
+            Form::setINPUT([
+                InputAlphanumericBuilder::init('userLogin')
+                                        ->setAccents(FALSE)
+                                        ->setWithoutSpace(TRUE)
+                                        ->setReplaceSpace('')
+                                        ->build(),
+                InputAlphanumericBuilder::init('userPass')
+                                        ->build(),
+                InputBooleanBuilder::init('userRememberMe')
+                                   ->build(),
+            ]);
             
-            return Form::postInput();
+            return Form::inputFilter();
         }
         
         return FALSE;

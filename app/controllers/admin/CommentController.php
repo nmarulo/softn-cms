@@ -12,8 +12,14 @@ use SoftnCMS\controllers\Messages;
 use SoftnCMS\controllers\Pagination;
 use SoftnCMS\controllers\Sanitize;
 use SoftnCMS\controllers\Token;
-use SoftnCMS\Helpers\ArrayHelp;
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\form\builders\InputBooleanBuilder;
+use SoftnCMS\helpers\form\builders\InputEmailBuilder;
+use SoftnCMS\helpers\form\builders\InputHtmlBuilder;
+use SoftnCMS\helpers\form\builders\InputIntegerBuilder;
+use SoftnCMS\helpers\form\inputs\builders\InputNumberBuilder;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\Comments;
 use SoftnCMS\models\admin\Comment;
 use SoftnCMS\models\admin\CommentUpdate;
@@ -93,13 +99,20 @@ class CommentController extends BaseController {
      */
     protected function getDataInput() {
         if (Token::check()) {
-            Form::addInputAlphanumeric('commentAuthor');
-            Form::addInputEmail('commentAuthorEmail');
-            Form::addInputInteger('postID', TRUE);
-            Form::addInputBoolean('commentStatus', TRUE);
-            Form::addInputHtml('commentContents', TRUE);
+            Form::setINPUT([
+                InputAlphanumericBuilder::init('commentAuthor')
+                                        ->build(),
+                InputEmailBuilder::init('commentAuthorEmail')
+                                 ->build(),
+                InputIntegerBuilder::init('postID')
+                                   ->build(),
+                InputBooleanBuilder::init('commentStatus')
+                                   ->build(),
+                InputHtmlBuilder::init('commentContents')
+                                ->build(),
+            ]);
             
-            return Form::postInput();
+            return Form::inputFilter();
         }
         
         return FALSE;

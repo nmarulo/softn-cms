@@ -10,6 +10,11 @@ use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Form;
 use SoftnCMS\controllers\Messages;
 use SoftnCMS\controllers\Token;
+use SoftnCMS\helpers\form\builders\InputAlphabeticBuilder;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\form\builders\InputEmailBuilder;
+use SoftnCMS\helpers\form\builders\InputIntegerBuilder;
+use SoftnCMS\helpers\form\builders\InputUrlBuilder;
 use SoftnCMS\models\admin\Options;
 use SoftnCMS\models\admin\OptionUpdate;
 
@@ -78,16 +83,27 @@ class OptionController extends Controller {
      * @return array|bool
      */
     private function getDataInput() {
-        if(Token::check()){
-            Form::addInputAlphabetic('optionTitle', TRUE);
-            Form::addInputAlphabetic('optionDescription');
-            Form::addInputEmail('optionEmailAdmin');
-            Form::addInputUrl('optionSiteUrl', TRUE);
-            Form::addInputInteger('optionPaged', TRUE);
-            Form::addInputAlphanumeric('optionTheme', TRUE);
-            Form::addInputAlphanumeric('optionMenu');
+        if (Token::check()) {
+            Form::setINPUT([
+                InputAlphabeticBuilder::init('optionTitle')
+                                      ->build(),
+                InputAlphabeticBuilder::init('optionDescription')
+                                      ->setRequire(FALSE)
+                                      ->build(),
+                InputEmailBuilder::init('optionEmailAdmin')
+                                 ->build(),
+                InputUrlBuilder::init('optionSiteUrl')
+                               ->build(),
+                InputIntegerBuilder::init('optionPaged')
+                                   ->build(),
+                InputAlphanumericBuilder::init('optionTheme')
+                                        ->build(),
+                InputAlphanumericBuilder::init('optionMenu')
+                                        ->setRequire(FALSE)
+                                        ->build(),
+            ]);
             
-            return Form::postInput();
+            return Form::inputFilter();
         }
         
         return FALSE;

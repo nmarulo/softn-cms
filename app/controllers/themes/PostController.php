@@ -10,8 +10,11 @@ use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Form;
 use SoftnCMS\controllers\Messages;
 use SoftnCMS\controllers\Token;
-use SoftnCMS\Helpers\ArrayHelp;
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\form\builders\InputEmailBuilder;
+use SoftnCMS\helpers\form\builders\InputIntegerBuilder;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\Post;
 use SoftnCMS\models\admin\CommentInsert;
 use SoftnCMS\models\Login;
@@ -92,13 +95,22 @@ class PostController extends Controller {
              */
             $isRequire = !Login::isLogin();
             
-            Form::addInputAlphanumeric('commentAuthor', $isRequire);
-            //commentUserID Corresponde al ID del usuario de la sesión.
-            Form::addInputInteger('commentUserID');
-            Form::addInputEmail('commentAuthorEmail', $isRequire);
-            Form::addInputAlphanumeric('commentContents', TRUE);
+            Form::setINPUT([
+                InputAlphanumericBuilder::init('commentAuthor')
+                                        ->setRequire($isRequire)
+                                        ->build(),
+                //commentUserID Corresponde al ID del usuario de la sesión.
+                InputIntegerBuilder::init('commentUserID')
+                                   ->setRequire(!$isRequire)
+                                   ->build(),
+                InputEmailBuilder::init('commentAuthorEmail')
+                                 ->setRequire($isRequire)
+                                 ->build(),
+                InputAlphanumericBuilder::init('commentContents')
+                                        ->build(),
+            ]);
             
-            return Form::postInput();
+            return Form::inputFilter();
         }
         
         return FALSE;

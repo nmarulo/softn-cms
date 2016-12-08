@@ -11,8 +11,9 @@ use SoftnCMS\controllers\Form;
 use SoftnCMS\controllers\Messages;
 use SoftnCMS\controllers\Pagination;
 use SoftnCMS\controllers\Token;
-use SoftnCMS\Helpers\ArrayHelp;
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\Categories;
 use SoftnCMS\models\admin\Category;
 use SoftnCMS\models\admin\CategoryDelete;
@@ -85,10 +86,15 @@ class CategoryController extends BaseController {
      */
     protected function getDataInput() {
         if (Token::check()) {
-            Form::addInputAlphanumeric('categoryName', TRUE);
-            Form::addInputAlphanumeric('categoryDescription');
+            Form::setINPUT([
+                InputAlphanumericBuilder::init('categoryName')
+                                        ->build(),
+                InputAlphanumericBuilder::init('categoryDescription')
+                                        ->setRequire(FALSE)
+                                        ->build(),
+            ]);
             
-            return Form::postInput();
+            return Form::inputFilter();
         }
         
         return FALSE;
