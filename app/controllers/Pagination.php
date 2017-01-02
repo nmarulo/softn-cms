@@ -8,7 +8,7 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\Helpers\ArrayHelp;
+use SoftnCMS\helpers\ArrayHelp;
 use SoftnCMS\models\admin\Option;
 
 /**

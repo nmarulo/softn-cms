@@ -18,7 +18,6 @@ use SoftnCMS\helpers\form\builders\InputBooleanBuilder;
 use SoftnCMS\helpers\form\builders\InputEmailBuilder;
 use SoftnCMS\helpers\form\builders\InputHtmlBuilder;
 use SoftnCMS\helpers\form\builders\InputIntegerBuilder;
-use SoftnCMS\helpers\form\inputs\builders\InputNumberBuilder;
 use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\Comments;
 use SoftnCMS\models\admin\Comment;

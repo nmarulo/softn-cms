@@ -6,7 +6,7 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\Login;
 
 /**

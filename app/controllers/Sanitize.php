@@ -11,6 +11,8 @@ namespace SoftnCMS\controllers;
  */
 class Sanitize {
     
+    private static $PATTERN = 'a-zA-Z\s';
+    
     /**
      * Método que filtra valores alfanuméricos.
      *
@@ -24,13 +26,12 @@ class Sanitize {
     public static function alphanumeric($value, $accents = TRUE, $withoutSpace = FALSE, $replaceSpace = '-') {
         $pattern = 'áéíóúÁÉÍÓÚ';
         
-        if (!$accents || $withoutSpace) {
+        if (!$accents) {
             $pattern = '';
         }
         
-        //        $value = mb_convert_encoding($value, 'UTF-8', mb_detect_encoding($value, 'auto'));
-        
-        $pattern = '/[^a-zA-Z' . $pattern . '0-9\s]/';
+        //Reemplaza lo que no (indicado con ^) este dentro de $pattern
+        $pattern = '/[^0-9' . $pattern . self::$PATTERN . ']/';
         $output  = preg_replace($pattern, '', $value);
         $output  = preg_replace('/[\¡]/', '', $output);
         $output  = self::clearSpace($output);
@@ -77,11 +78,11 @@ class Sanitize {
     public static function alphabetic($value, $accents = TRUE, $withoutSpace = FALSE, $replaceSpace = '-') {
         $pattern = 'áéíóúÁÉÍÓÚ';
         
-        if (!$accents || $withoutSpace) {
+        if (!$accents) {
             $pattern = '';
         }
         
-        $output = preg_replace('/[^a-zA-Z' . $pattern . '\s]/', '', $value);
+        $output = preg_replace('/[^' . $pattern . self::$PATTERN . ']/', '', $value);
         $output = preg_replace('/[\¡]/', '', $output);
         $output = self::clearSpace($output);
         
@@ -100,7 +101,7 @@ class Sanitize {
      * @return string
      */
     public static function url($value) {
-        return rtrim(filter_var($value, FILTER_SANITIZE_URL), '/') . '/';
+        return trim(filter_var($value, FILTER_SANITIZE_URL), '/') . '/';
     }
     
     /**

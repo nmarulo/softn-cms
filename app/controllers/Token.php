@@ -9,7 +9,7 @@ use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
-use SoftnCMS\Helpers\ArrayHelp;
+use SoftnCMS\helpers\ArrayHelp;
 use SoftnCMS\models\Login;
 
 /**

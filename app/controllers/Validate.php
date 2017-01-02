@@ -30,7 +30,6 @@ class Validate {
         }
         
         $pattern = '/^[a-zA-Z' . $pattern . '0-9\s]+$/';
-        
         if (!is_string($value) || !preg_match($pattern, $value) || !self::length($value, $length, $lenStrict)) {
             return FALSE;
         }
@@ -48,7 +47,7 @@ class Validate {
      * @return bool
      */
     public static function length($value, $length, $lenStrict = FALSE) {
-        if ($length === FALSE || ($lenStrict && mb_strlen($value) == $length) || (!$lenStrict && mb_strlen($value) <= $length)) {
+        if ($length === 0 || ($lenStrict && mb_strlen($value) == $length) || (!$lenStrict && mb_strlen($value) <= $length)) {
             return TRUE;
         }
         
@@ -91,7 +90,7 @@ class Validate {
      * @return bool
      */
     public static function integer($value, $length, $lenStrict = FALSE) {
-        $value = preg_replace('/[^0-9]/', '', $value);
+        $value = preg_replace('/[^0-9\.]/', '', $value);
         
         if (!ctype_digit($value) || !self::length($value, $length, $lenStrict)) {
             return FALSE;

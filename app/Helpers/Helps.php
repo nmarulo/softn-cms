@@ -15,6 +15,17 @@ use SoftnCMS\controllers\Router;
 class Helps {
     
     /**
+     * Método que obtiene la fecha actual.
+     *
+     * @param string $format Formato de la fecha.
+     *
+     * @return false|string
+     */
+    public static function dateNow($format = 'Y-m-d H:i:s') {
+        return date($format, time());
+    }
+    
+    /**
      * Método para redireccionar a la pagina del controlador actual y su método.
      *
      * @param string $concat
@@ -47,7 +58,7 @@ class Helps {
      * @param string $route
      */
     public static function redirect($route = '') {
-        header("Location: " . Router::getDATA()[SITE_URL] . $route);
+        header('Location: ' . Router::getDATA()[SITE_URL] . $route);
         exit();
     }
     

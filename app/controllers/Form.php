@@ -7,7 +7,8 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\Helpers\form\inputs\getters\InputGetters;
+use SoftnCMS\helpers\form\inputs\getters\InputGetters;
+use SoftnCMS\helpers\form\inputs\InputInterface;
 
 /**
  * Clase Form para los formularios de la aplicación.
@@ -34,7 +35,7 @@ class Form {
     /**
      * Método que agrega los datos a la lista de datos.
      *
-     * @param InputGetters $input
+     * @param InputInterface $input
      */
     public static function addInput($input) {
         self::$INPUT[] = $input;

@@ -71,6 +71,9 @@ abstract class InputBuilder {
         return $this;
     }
     
+    /**
+     * Método que obtiene y establece el valor del campo.
+     */
     public function initValue() {
         if (empty($this->method)) {
             $this->method = $_POST;

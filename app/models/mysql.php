@@ -27,10 +27,10 @@ class MySql {
     public function __construct() {
         //Establecer conexión con la base de datos
         try {
-            $strConnection = 'mysql:host=' . \DB_HOST . ';dbname=' . \DB_NAME . ';charset=' . \DB_CHARSET;
+            $strConnection = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
             //Conexión con la base de datos. PDO Object.
-            $this->connection = new \PDO($strConnection, \DB_USER, \DB_PASSWORD);
-            $this->connection->setAttribute(\PDO::ATTR_EMULATE_PREPARES, \FALSE);
+            $this->connection = new \PDO($strConnection, DB_USER, DB_PASSWORD);
+            $this->connection->setAttribute(\PDO::ATTR_EMULATE_PREPARES, FALSE);
             $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         } catch (\PDOException $ex) {
             die('Error al intentar establecer la conexión con la base de datos.');

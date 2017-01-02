@@ -7,9 +7,7 @@
 namespace SoftnCMS\controllers;
 
 use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
-use SoftnCMS\helpers\form\builders\InputBooleanBuilder;
 use SoftnCMS\helpers\form\builders\InputEmailBuilder;
-use SoftnCMS\helpers\form\InputEmail;
 use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\Register;
 

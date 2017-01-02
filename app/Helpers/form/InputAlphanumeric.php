@@ -13,7 +13,7 @@ use SoftnCMS\helpers\form\inputs\types\InputText;
 
 /**
  * Interface InputAlphanumeric
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
 class InputAlphanumeric implements InputInterface {
     

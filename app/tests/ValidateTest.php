@@ -16,13 +16,14 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue(Validate::integer('-123', 5));
         $this->assertTrue(Validate::integer('+123', 5));
         $this->assertFalse(Validate::integer(1234.5, 5));
+        $this->assertFalse(Validate::integer('1,234.5', 5));
         $this->assertFalse(Validate::integer('a', 5));
         $this->assertFalse(Validate::integer('a', 5, TRUE));
     }
     
     public function testLength(){
-        $this->assertTrue(Validate::length('abcd', FALSE));
-        $this->assertTrue(Validate::length(12345, FALSE, TRUE));
+        $this->assertTrue(Validate::length('abcd', 0));
+        $this->assertTrue(Validate::length(12345, 0, TRUE));
     }
     
     public function testLengthStrict() {
@@ -38,6 +39,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testAlphanumeric() {
+        $this->assertTrue(Validate::alphanumeric('ab12á', 0));
         $this->assertTrue(Validate::alphanumeric('ab12á', 5));
         $this->assertTrue(Validate::alphanumeric('ab12á', 5, TRUE, TRUE));
         $this->assertTrue(Validate::alphanumeric('ab12a', 5, FALSE, TRUE));

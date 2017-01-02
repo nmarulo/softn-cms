@@ -6,8 +6,8 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\Helpers\ArrayHelp;
-use SoftnCMS\Helpers\Helps;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\template\Template;
 
 /**

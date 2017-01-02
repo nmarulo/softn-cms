@@ -11,7 +11,7 @@ class SanitizeTest extends \PHPUnit_Framework_TestCase {
     
     public function testAlphanumeric() {
         $this->assertEquals('', Sanitize::alphanumeric(''));
-        $this->assertEquals('a-2-c-3-f', Sanitize::alphanumeric('  a  2 c 3 é     f   ', TRUE, TRUE));
+        $this->assertEquals('a-2-c-3-é-f', Sanitize::alphanumeric('  a  2 c 3 é     f   ', TRUE, TRUE));
         $this->assertEquals('abcéí123', Sanitize::alphanumeric('a<%><¡/\|*:.;,!-+>[]{}bcé#í123+'));
         $this->assertEquals('abc123', Sanitize::alphanumeric('abcé#í123+', FALSE));
         $this->assertEquals('a_b_c_1_2_3', Sanitize::alphanumeric('a <><¡/\|*:.;,!-+>[]{}b c 1 2 3+', TRUE, TRUE, '_'));
@@ -23,7 +23,8 @@ class SanitizeTest extends \PHPUnit_Framework_TestCase {
     
     public function testAlphabetic() {
         $this->assertEquals('', Sanitize::alphabetic(''));
-        $this->assertEquals('a-b-c-d-f', Sanitize::alphabetic('   a  b c d é     f   ', TRUE, TRUE));
+        $this->assertEquals('áéíóúÁÉÍÓÚ', Sanitize::alphabetic('áéíóúÁÉÍÓÚ'));
+        $this->assertEquals('a-b-c-d-é-f', Sanitize::alphabetic('   a  b c d é     f   ', TRUE, TRUE));
         $this->assertEquals('abcéí', Sanitize::alphabetic('a<%><¡/\|*:.;,!-+>[]{}bcé#í123+'));
         $this->assertEquals('abc', Sanitize::alphabetic('abcé#í123+', FALSE));
     }

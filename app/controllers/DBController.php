@@ -21,7 +21,7 @@ class DBController {
     public static function getConnection() {
         $connection = NULL;
         
-        switch (\DB_TYPE) {
+        switch (DB_TYPE) {
             case 'mysql':
                 $connection = new MySql();
                 break;
