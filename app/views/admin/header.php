@@ -4,11 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title><?php echo $data['siteTitle']; ?></title>
-        <link href="<?php echo $data['siteUrl']; ?>app/views/css/normalize.css" rel="stylesheet" type="text/css"/>
-        <link href="<?php echo $data['siteUrl']; ?>app/vendor/twbs/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-        <link href="<?php echo $data['siteUrl']; ?>app/vendor/fortawesome/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
-        <link href="<?php echo $data['siteUrl']; ?>app/views/css/style.css" rel="stylesheet" type="text/css"/>
+        <title><?php $data['template']::getTitle(); ?></title>
+        <link href="<?php $data['template']::getUrl(); ?>app/views/css/normalize.css" rel="stylesheet" type="text/css"/>
+        <link href="<?php $data['template']::getUrl(); ?>app/vendor/twbs/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        <link href="<?php $data['template']::getUrl(); ?>app/vendor/fortawesome/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+        <link href="<?php $data['template']::getUrl(); ?>app/views/css/style.css" rel="stylesheet" type="text/css"/>
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="<?php echo $data['siteUrl']; ?>"><?php echo $data['siteTitle']; ?></a>
+                        <a class="navbar-brand" href="<?php $data['template']::getUrl(); ?>"><?php $data['template']::getSiteTitle(); ?></a>
                     </div>
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="navbarHeader">
@@ -39,10 +39,10 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="<?php echo $data['siteUrl']; ?>admin/post/insert">Entrada</a></li>
-                                    <li><a href="<?php echo $data['siteUrl']; ?>admin/page/insert">Pagina</a></li>
-                                    <li><a href="<?php echo $data['siteUrl']; ?>admin/category">Categoría</a></li>
-                                    <li><a href="<?php echo $data['siteUrl']; ?>admin/term">Etiqueta</a></li>
+                                    <li><a href="<?php $data['template']::getUrlPostInsert(); ?>">Entrada</a></li>
+                                    <li><a href="<?php $data['template']::getUrlAdmin(); ?>">Pagina</a></li>
+                                    <li><a href="<?php $data['template']::getUrlCategoryInsert(); ?>">Categoría</a></li>
+                                    <li><a href="<?php $data['template']::getUrlTermInsert(); ?>">Etiqueta</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -50,13 +50,13 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     <span class="glyphicon glyphicon-user"></span>
-                                    Hola <?php echo $data['userSession']->getUserName(); ?>
+                                    Hola <?php $data['template']::getUserName(); ?>
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="<?php echo $data['siteUrl']; ?>admin/user/update/<?php echo $data['userSession']->getID(); ?>">Perfil</a></li>
+                                    <li><a href="<?php $data['template']::getUrlUserUpdateSession(); ?>">Perfil</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="<?php echo $data['siteUrl']; ?>logout" role="link">Cerrar sesión</a></li>
+                                    <li><a href="<?php $data['template']::getUrlLogout(); ?>" role="link">Cerrar sesión</a></li>
                                 </ul>
                             </li>
                         </ul>

@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="optionSiteUrl" class="col-sm-2 control-label">Dirrección URL</label>
+                    <label for="optionSiteUrl" class="col-sm-2 control-label">Dirección URL</label>
                     <div class="col-sm-10">
                         <input type="url" class="form-control" name="optionSiteUrl"  value="<?php echo $data['optionSiteUrl']->getOptionValue(); ?>">
                     </div>
@@ -45,21 +45,22 @@
                         </select>-->
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="optionMenu" class="col-sm-2 control-label">Seleccionar menu</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" name="optionMenu" value="<?php echo $data['optionMenu']->getOptionValue(); ?>" disabled>
+<!--                <div class="form-group">-->
+<!--                    <label for="optionMenu" class="col-sm-2 control-label">Seleccionar menu</label>-->
+<!--                    <div class="col-sm-10">-->
+<!--                        <input type="text" class="form-control" name="optionMenu" value="--><?php //echo $data['optionMenu']->getOptionValue(); ?><!--" disabled>-->
 <!--                        <select class="form-control" name="optionMenu">
                             <option value="0">--ninguno--</option>
                         <?php // echo $data['optionMenu']; ?>
                         </select>-->
-                    </div>
-                </div>
+<!--                    </div>-->
+<!--                </div>-->
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         <button class="btn btn-primary" type="submit" name="update" value="update">Guardar cambios</button>
                     </div>
                 </div>
+                <?php $data['template']::getTokenForm(); ?>
             </form>
         </div><!-- #content -->
     </div><!-- #snwarp -->

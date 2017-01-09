@@ -1,105 +1,83 @@
 <?php
 
 /**
- * Controlador del modulo vista.
+ * Modulo controlador: Presenta los módulos vista correspondientes.
  */
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\controllers\Request;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\Option;
 
 /**
- * Clase responsable de presentar el modulo vista al usuario.
- *
+ * Clase CategoryController presenta los módulos vista correspondientes.
  * @author Nicolás Marulanda P.
  */
 class ViewController {
-
+    
     /** @var Request Instancia Request. */
     private $request;
-
+    
     /** @var array Datos enviados al modulo. */
     private $data;
-
+    
     /** @var string Ruta del modulo vista. */
     private $nameView;
-
-    /**
-     * La aplicación se divide en 3 zonas cuyas vistas no son comunes.
-     * Zonas: "theme" Tema de la aplicación, "admin" Panel de administración 
-     * y "login" Formulario de inicio de sesión y registro de usuario.
-     * @var string Guarda el nombre de la zona a mostrar.
-     */
+    
+    /** @var string Nombre de la ruta correspondiente al método con las vistas. */
     private $nameMethodViews;
     
     /** @var string Nombre del tema actual */
     private $nameTheme;
-
+    
     /**
      * Constructor.
+     *
      * @param Request $request Instancia Request
-     * @param array $data Datos enviados al modulo.
+     * @param array   $data    Datos enviados al modulo.
      */
     public function __construct(Request $request, $data) {
-        $this->request = $request;
-        $this->data = $data;
+        $this->request         = $request;
+        $this->data            = $data;
+        $this->nameTheme       = '';
+        $this->nameMethodViews = '';
         $this->methodViews();
         $this->getNameView();
     }
-
+    
     /**
-     * Metodo que muestra los modulos vista al usuario.
-     */
-    public function render() {
-        global $urlSite;
-
-        $view = \VIEWS;
-
-        if ($this->request->isAdminPanel()) {
-            $view = \VIEWS_ADMIN;
-        } elseif ($this->request->isTheme()) {
-            $this->nameTheme = Option::selectByName('optionTheme')->getOptionValue();
-            $view = \THEMES . $this->nameTheme . \DIRECTORY_SEPARATOR;
-        }
-
-        $view .= $this->nameView . '.php';
-
-        //En caso de error.
-        if (!\is_readable($view)) {
-            \header("Location: $urlSite");
-            exit();
-        }
-
-        //Se obtiene los datos enviados a la vista.
-        if (\is_array($this->data)) {
-            \extract($this->data, EXTR_PREFIX_INVALID, 'softn');
-        }
-
-        //Array con la ruta de los modulos vista a incluir.
-        $viewsRequire = \call_user_func([$this, $this->nameMethodViews], $view);
-
-        foreach ($viewsRequire as $value) {
-            require $value;
-        }
-    }
-
-    /**
-     * Metodo que establece la zona en la que se encuentra el usuario.
+     * Método que establece el nombre del método con las vistas correspondientes.
      */
     private function methodViews() {
-        $this->nameMethodViews = 'theme';
-
-        if ($this->request->isAdminPanel()) {
-            $this->nameMethodViews = 'admin';
-        } elseif ($this->request->isLoginForm() || $this->request->isRegisterForm()) {
-            $this->nameMethodViews = 'login';
+        $this->nameMethodViews = $this->getKeyRouter();
+        
+        if ($this->nameMethodViews == 'default') {
+            $this->nameMethodViews = 'theme';
         }
     }
-
+    
     /**
-     * Metodo que establece el nombre del modelo vista a incluir 
-     * segun el metodo enviado por url.
+     * Método que obtiene el indice de la función "Router::getRoutes()"
+     * de la pagina actual.
+     * @return string
+     */
+    private function getKeyRouter() {
+        $controller = strtolower($this->request->getController());
+        
+        //Obtiene el indice de la ruta.
+        //Comprueba si el nombre controlador es una rutas
+        $key = array_search($controller, Router::getRoutes(), TRUE);
+        if (empty($key)) {
+            //de lo contrario comprueba el nombre de la ruta según REQUEST
+            $key = array_search($this->request->getRoute(), Router::getRoutes(), TRUE);
+        }
+        
+        return $key;
+    }
+    
+    /**
+     * Método que establece el nombre del modelo vista a incluir
+     * según el método enviado por url.
      */
     private function getNameView() {
         switch ($this->request->getMethod()) {
@@ -109,43 +87,70 @@ class ViewController {
                 break;
             case 'insert':
             case 'update':
-                $this->nameView = \strtolower($this->request->getController()) . 'form';
+                $this->nameView = \strtolower($this->request->getController()) . 'Form';
                 break;
         }
     }
-
+    
     /**
-     * Metodo que obtiene los modulos vista del login y registro de usuario.
-     * @param string $view Ruta de modulo vista a incluir.
-     * @return array
+     * Método que muestra los módulos vista al usuario.
      */
-    private function login($view) {
-        return [
-            \VIEWS . 'headerLogin.php',
-            \VIEWS . 'messages.php',
-            $view,
-            \VIEWS . 'footerLogin.php',
-        ];
+    public function render() {
+        $key = $this->getKeyRouter();
+        //Obtiene el directorio correspondiente.
+        $view = Router::getViewPath()[Router::getVIEWS()[$key]];
+        //Si el indice de la ruta es "default" obtiene el nombre del tema actual.
+        if ($key == 'default') {
+            $this->nameTheme = Option::selectByName('optionTheme')
+                                     ->getOptionValue();
+            $view .= $this->nameTheme . DIRECTORY_SEPARATOR;
+        }
+        
+        $view .= $this->nameView . '.php';
+        
+        //En caso de error.
+        if (!\is_readable($view)) {
+            Helps::redirect();
+        }
+        
+        //Se obtiene los datos enviados a la vista.
+        if (\is_array($this->data)) {
+            \extract($this->data, EXTR_PREFIX_INVALID, 'softn');
+        }
+        
+        //Array con la ruta de los módulos vista a incluir.
+        $viewsRequire = \call_user_func([
+            $this,
+            $this->nameMethodViews,
+        ], $view);
+        
+        foreach ($viewsRequire as $value) {
+            require $value;
+        }
     }
-
+    
     /**
-     * Metodo que obtiene los modulos vista del tema de la aplicación.
+     * Método que obtiene los módulos vista del tema de la aplicación.
+     *
      * @param string $view Ruta de modulo vista a incluir.
+     *
      * @return array
      */
     private function theme($view) {
         $path = \THEMES . $this->nameTheme . \DIRECTORY_SEPARATOR;
-
+        
         return [
             $path . 'header.php',
             $view,
             $path . 'footer.php',
         ];
     }
-
+    
     /**
-     * Metodo que obtiene los modulos vista del panel de administración.
+     * Método que obtiene los módulos vista del panel de administración.
+     *
      * @param string $view Ruta de modulo vista a incluir.
+     *
      * @return array
      */
     private function admin($view) {
@@ -158,5 +163,48 @@ class ViewController {
             \VIEWS_ADMIN . 'footer.php',
         ];
     }
-
+    
+    /**
+     * Método que obtiene los módulos vista de la pagina de registro.
+     *
+     * @param string $view Ruta de modulo vista a incluir.
+     *
+     * @return array
+     */
+    private function register($view) {
+        return $this->login($view);
+    }
+    
+    /**
+     * Método que obtiene los módulos vista de la pagina de login.
+     *
+     * @param string $view Ruta de modulo vista a incluir.
+     *
+     * @return array
+     */
+    private function login($view) {
+        return [
+            \VIEWS . 'headerLogin.php',
+            \VIEWS . 'messages.php',
+            $view,
+            \VIEWS . 'footerLogin.php',
+        ];
+    }
+    
+    /**
+     * Método que obtiene los módulos vista de la pagina de instalación.
+     *
+     * @param $view
+     *
+     * @return array
+     */
+    private function install($view) {
+        return [
+            //            \VIEWS_ADMIN . 'header.php',
+            \VIEWS . 'messages.php',
+            $view,
+            //            \VIEWS_ADMIN . 'footer.php',
+        ];
+    }
+    
 }

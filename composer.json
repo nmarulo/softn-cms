@@ -1,0 +1,29 @@
+{
+    "name": "softn/cms",
+    "description": "Sistema gestor de contenido",
+    "type": "project",
+    "require": {
+        "twbs/bootstrap": "3.3.*",
+        "fortawesome/font-awesome": "4.6.*",
+        "tinymce/tinymce": "4.4.*",
+        "ezyang/htmlpurifier": "4.8.*",
+        "firebase/php-jwt": "v4.0.*",
+        "phpunit/phpunit": "5.5.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "SoftnCMS\\": "app"
+        }
+    },
+    "config": {
+        "vendor-dir": "app/vendor",
+        "optimize-autoloader": true
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nicolas Marulanda P.",
+            "email": "info@softn.red"
+        }
+    ]
+}

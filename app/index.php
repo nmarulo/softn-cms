@@ -5,7 +5,7 @@
  * Comprueba si existe el archivo config.php, si no existe redirecciona
  * a la pagina de instalación.
  */
-/** Ruta absotula del proyecto. */
+/** Ruta absoluta del proyecto. */
 define('ABSPATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
 $config = \ABSPATH . 'config.php';
 

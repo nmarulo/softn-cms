@@ -1,130 +1,197 @@
 <?php
 
 /**
- * Modulo del controlador de la pagina de categorías.
+ * Modulo controlador: Pagina de categorías del panel de administración.
  */
 
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\BaseController;
+use SoftnCMS\controllers\Form;
 use SoftnCMS\controllers\Messages;
+use SoftnCMS\controllers\Pagination;
+use SoftnCMS\controllers\Token;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\Categories;
 use SoftnCMS\models\admin\Category;
 use SoftnCMS\models\admin\CategoryDelete;
 use SoftnCMS\models\admin\CategoryInsert;
 use SoftnCMS\models\admin\CategoryUpdate;
+use SoftnCMS\models\admin\template\Template;
 
 /**
- * Clase del controlador de la pagina de categorías.
- *
+ * Clase CategoryController de la pagina de categorías del panel de administración.
  * @author Nicolás Marulanda P.
  */
 class CategoryController extends BaseController {
-
+    
     /**
-     * Metodo llamado por la función INDEX.
+     * Método llamado por la función INDEX.
+     *
+     * @param array $data Lista de argumentos.
+     *
      * @return array
      */
-    protected function dataIndex() {
-        $categories = Categories::selectAll();
-        $output = [];
+    protected function dataIndex($data) {
+        $output     = [];
+        $countData  = Categories::count();
+        $pagination = new Pagination(ArrayHelp::get($data, 'paged'), $countData);
+        $limit      = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
+        $categories = Categories::selectByLimit($limit);
+        Template::setPagination($pagination);
         
-        if($categories !== \FALSE){
+        if ($categories !== \FALSE) {
             $output = $categories->getAll();
         }
-
-        return ['categories' => $output];
+        
+        return [
+            'categories' => $output,
+        ];
     }
-
+    
     /**
-     * Metodo llamado por la función INSERT.
+     * Método llamado por la función INSERT.
      * @return array
      */
     protected function dataInsert() {
-        global $urlSite;
-
-        if (filter_input(\INPUT_POST, 'publish')) {
+        if (Form::submit('publish')) {
             $dataInput = $this->getDataInput();
-            $insert = new CategoryInsert($dataInput['categoryName'], $dataInput['categoryDescription']);
-
-            if ($insert->insert()) {
-                Messages::addSuccess('Categoría publicada correctamente.');
-                //Si todo es correcto se muestra la pagina de edición.
-                header("Location: $urlSite" . 'admin/category/update/' . $insert->getLastInsertId());
-                exit();
+            
+            if ($dataInput !== FALSE) {
+                //Las categorías tienen nombres únicos, si ya existe se le agrega un numero al final
+                $categoryName = $this->checkName($dataInput['categoryName']);
+                
+                $insert = new CategoryInsert($categoryName, $dataInput['categoryDescription']);
+                
+                if ($insert->insert()) {
+                    Messages::addSuccess('Categoría publicada correctamente.');
+                    //Si es correcto se muestra la pagina de edición.
+                    Helps::redirectRoute('update/' . $insert->getLastInsertId());
+                }
             }
             Messages::addError('Error al publicar categoría');
         }
-
+        
         return [
             //Datos por defecto a mostrar en el formulario.
             'category' => Category::defaultInstance(),
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Publicar nuevo" si es FALSE 
-             * o "Actualizar" si es TRUE
-             */
-            'actionUpdate' => \FALSE
         ];
     }
-
+    
     /**
-     * Metodo llamado por la función UPDATE.
-     * @param int $id
+     * Método que obtiene los datos de los campos INPUT del formulario.
+     * @return array|bool
+     */
+    protected function getDataInput() {
+        if (Token::check()) {
+            Form::setINPUT([
+                InputAlphanumericBuilder::init('categoryName')
+                                        ->build(),
+                InputAlphanumericBuilder::init('categoryDescription')
+                                        ->setRequire(FALSE)
+                                        ->build(),
+            ]);
+            
+            return Form::inputFilter();
+        }
+        
+        return FALSE;
+    }
+    
+    /**
+     * Método que comprueba el nombre de la categoría
+     * y si existe retorna el nombre concatenado con un número al final.
+     *
+     * @param string $categoryName
+     * @param int    $id Identificador. Usado en el "Update".
+     *
+     * @return string
+     */
+    private function checkName($categoryName, $id = 0) {
+        $name = Category::selectByName($categoryName);
+        $aux  = $name;
+        $num  = 0;
+        
+        while ($name !== FALSE && $name->getID() != $id) {
+            $name = $aux->getCategoryName() . ++$num;
+            $name = Category::selectByName($name);
+        }
+        
+        if ($num > 0) {
+            $name = $aux->getCategoryName() . $num;
+        }
+        
+        if ($name === FALSE || (is_object($name) && $name->getID() == $id)) {
+            $name = $categoryName;
+        }
+        
+        return $name;
+    }
+    
+    /**
+     * Método llamado por la función UPDATE.
+     *
+     * @param array $data Lista de argumentos.
+     *
      * @return array
      */
-    protected function dataUpdate($id) {
-        global $urlSite;
-
+    protected function dataUpdate($data) {
+        $id       = ArrayHelp::get($data, 'id');
         $category = Category::selectByID($id);
-
+        
         //En caso de que no exista.
         if (empty($category)) {
             Messages::addError('Error. La categoría no existe.');
-            header("Location: $urlSite" . 'admin/category');
-            exit();
+            Helps::redirectRoute();
         }
-
-        if (filter_input(\INPUT_POST, 'update')) {
+        
+        if (Form::submit('update')) {
             $dataInput = $this->getDataInput();
-            $update = new CategoryUpdate($category, $dataInput['categoryName'], $dataInput['categoryDescription']);
-
-            //Si ocurre un error la función "$update->update()" retorna FALSE.
-            if ($update->update()) {
-                Messages::addSuccess('Categoría actualizada correctamente.');
-                $category = $update->getDataUpdate();
+            
+            if ($dataInput === FALSE) {
+                Messages::addError('Error al actualizar la entrada.');
             } else {
-                Messages::addError('Error al actualizar la categoría.');
+                //Las categorías tienen nombres únicos, si ya existe se le agrega un numero al final
+                $categoryName = $this->checkName($dataInput['categoryName'], $id);
+                $update       = new CategoryUpdate($category, $categoryName, $dataInput['categoryDescription']);
+                
+                //Si ocurre un error la función "$update->update()" retorna FALSE.
+                if ($update->update()) {
+                    Messages::addSuccess('Categoría actualizada correctamente.');
+                    $category = $update->getDataUpdate();
+                } else {
+                    Messages::addError('Error al actualizar la categoría.');
+                }
             }
         }
-
+        
         return [
             //Instancia Category
             'category' => $category,
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Publicar nuevo" si es FALSE 
-             * o "Actualizar" si es TRUE
-             */
-            'actionUpdate' => \TRUE
         ];
     }
-
+    
     /**
-     * Metodo llamado por la función DELETE.
-     * @param int $id
-     * @return array
+     * Método llamado por la función DELETE.
+     *
+     * @param array $data Lista de argumentos.
      */
-    protected function dataDelete($id) {
+    protected function dataDelete($data) {
         /*
-         * Ya que este metodo no tiene modulo vista propio
+         * Ya que este método no tiene modulo vista propio
          * se carga el modulo vista INDEX, asi que se retornan los datos
          * para esta vista.
          */
-
-        $delete = new CategoryDelete($id);
-        $output = $delete->delete();
-
+        
+        $output = FALSE;
+        
+        if (Token::check()) {
+            $delete = new CategoryDelete($data['id']);
+            $output = $delete->delete();
+        }
+        
         if ($output) {
             Messages::addSuccess('Categoría borrada correctamente.');
         } elseif ($output === 0) {
@@ -132,19 +199,7 @@ class CategoryController extends BaseController {
         } else {
             Messages::addError('Error al borrar la categoría.');
         }
-
-        return $this->dataIndex();
+        
     }
-
-    /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
-     * @return array
-     */
-    protected function getDataInput() {
-        return [
-            'categoryName' => \filter_input(\INPUT_POST, 'categoryName'),
-            'categoryDescription' => \filter_input(\INPUT_POST, 'categoryDescription'),
-        ];
-    }
-
+    
 }

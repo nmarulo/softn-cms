@@ -2,7 +2,7 @@
     <div id="snwrap"><!-- #snwarp -->
         <div id="header" class="clearfix">
             <br/>
-            <h1><?php echo $data['actionUpdate'] ? 'Actualizar' : 'Agregar nuevo' ?> usuario</h1>
+            <h1><?php echo $data['user']->isDefault() ? 'Agregar nuevo' : 'Actualizar' ?> usuario</h1>
         </div>
         <div id="content"><!-- #content -->
             <form class="form-horizontal" role="form" method="post">
@@ -42,13 +42,13 @@
                         <input type="number" class="form-control" name="userRol" value="<?php echo $data['user']->getUserRol(); ?>" disabled>
                         <!--<select class="form-control" name="user_rol">-->
                         <?php
-//                                foreach ($dataTable['option']['rol'] as $rol) {
-//                                    if ($rol['rol'] == $user['user_rol']) {
-//                                        echo "<option value='$rol[rol]' selected>$rol[title]</option>";
-//                                    } else {
-//                                        echo "<option value='$rol[rol]'>$rol[title]</option>";
-//                                    }
-//                                }
+                        //                                foreach ($dataTable['option']['rol'] as $rol) {
+                        //                                    if ($rol['rol'] == $user['user_rol']) {
+                        //                                        echo "<option value='$rol[rol]' selected>$rol[title]</option>";
+                        //                                    } else {
+                        //                                        echo "<option value='$rol[rol]'>$rol[title]</option>";
+                        //                                    }
+                        //                                }
                         ?>
                         <!--</select>-->
                     </div>
@@ -56,20 +56,21 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Sitio web</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="userUrl" value="<?php echo $data['user']->getUserUrl(); ?>">
+                        <input type="url" class="form-control" name="userUrl" value="<?php echo $data['user']->getUserUrl(); ?>">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         <?php
-                        if ($data['actionUpdate']) {
-                            echo '<button class="btn btn-primary" type="submit" name="update" value="update">Actualizar usuario</button>';
-                        } else {
+                        if ($data['user']->isDefault()) {
                             echo '<button class="btn btn-primary" type="submit" name="publish" value="publish">Agregar usuario</button>';
+                        } else {
+                            echo '<button class="btn btn-primary" type="submit" name="update" value="update">Actualizar usuario</button>';
                         }
                         ?>
                     </div>
                 </div>
+                <?php $data['template']::getTokenForm(); ?>
             </form>
         </div><!-- #content -->
     </div><!-- #snwarp -->

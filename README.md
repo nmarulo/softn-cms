@@ -7,7 +7,7 @@ SoftN CMS es un sistema de gestión de contenido con el que puedes crear sitios 
 
 > **Versión 0.2.1 Beta** https://github.com/nmarulo/softn-cms/tree/v0.2.1-Final
 
-> **branch:develop** Ultimos cambios realizados. https://github.com/nmarulo/softn-cms/tree/develop
+> **branch:develop** Últimos cambios realizados. https://github.com/nmarulo/softn-cms/tree/develop
 
 ----------
 

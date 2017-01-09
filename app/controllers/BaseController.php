@@ -6,62 +6,89 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\controllers\Controller;
+use SoftnCMS\helpers\ArrayHelp;
+use SoftnCMS\helpers\Helps;
+use SoftnCMS\models\admin\template\Template;
 
 /**
- * Clase que contiene los metodos que debe tener cada modulo controlador de la aplicación.
+ * Clase BaseController que contiene los métodos que debe tener cada modulo controlador de la aplicación.
  * @author Nicolás Marulanda P.
  */
 abstract class BaseController extends Controller {
-
+    
     /**
-     * Metodo que obtiene los datos y los guarda en la base de datos.
+     * Método que obtiene los datos y los guarda en la base de datos.
      * @return array
      */
     public function insert() {
-        return ['data' => $this->dataInsert()];
+        Token::generate();
+        $output = $this->dataInsert();
+        $output = array_merge($output, [
+            'template' => Template::class,
+        ]);
+        
+        return ['data' => $output];
     }
-
+    
     /**
-     * Metodo que actualiza los datos segun su identificador.
-     * @param int $id
-     * @return array
-     */
-    public function update($id) {
-        return ['data' => $this->dataUpdate($id)];
-    }
-
-    /**
-     * Metodo que borra los datos segun su identificador.
-     * @param int $id
-     * @return array
-     */
-    public function delete($id) {
-        return ['data' => $this->dataDelete($id)];
-    }
-
-    /**
-     * Metodo llamado por la función INSTER.
+     * Método llamado por la función INSERT.
      * @return array
      */
     abstract protected function dataInsert();
-
+    
     /**
-     * Metodo llamado por la función UPDATE.
+     * Método que actualiza los datos según su identificador.
+     *
+     * @param array $data Lista de argumentos.
+     *
      * @return array
      */
-    abstract protected function dataUpdate($id);
-
+    public function update($data) {
+        Token::generate();
+        $output = $this->dataUpdate($data);
+        $output = array_merge($output, [
+            'template' => Template::class,
+        ]);
+        
+        return ['data' => $output];
+    }
+    
     /**
-     * Metodo llamado por la función DELETE.
+     * Método llamado por la función UPDATE.
+     *
+     * @param array $data Lista de argumentos.
+     *
      * @return array
      */
-    abstract protected function dataDelete($id);
-
+    abstract protected function dataUpdate($data);
+    
     /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
-     * @return array
+     * Método que borra los datos según su identificador.
+     *
+     * @param array $data Lista de argumentos.
+     */
+    public function delete($data) {
+        $paged    = '';
+        $getPaged = ArrayHelp::get($data, 'paged');
+        
+        if (!empty($getPaged)) {
+            $paged = Pagination::getRoute() . "/$getPaged";
+        }
+        
+        $this->dataDelete($data);
+        Helps::redirectRoute($paged);
+    }
+    
+    /**
+     * Método llamado por la función DELETE.
+     *
+     * @param array $data Lista de argumentos.
+     */
+    abstract protected function dataDelete($data);
+    
+    /**
+     * Método que obtiene los datos de los campos INPUT del formulario.
+     * @return array|bool
      */
     abstract protected function getDataInput();
-    
 }
