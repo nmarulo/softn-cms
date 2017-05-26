@@ -170,6 +170,10 @@ class BaseTemplate {
      * @return string
      */
     public static function getSiteTitle($isEcho = TRUE) {
+        if (defined('INSTALL')) {
+            return '';
+        }
+        
         return self::get(Option::selectByName('optionTitle')
                                ->getOptionValue(), $isEcho);
     }

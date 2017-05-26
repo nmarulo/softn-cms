@@ -91,12 +91,14 @@ class Router {
      * Constructor.
      */
     public function __construct() {
-        $this->events                  = [];
-        self::$REQUEST                 = new Request();
-        $this->events['afterCallFunc'] = NULL;
-        $this->events['error']         = function() {
-            die('Error');
-        };
+        $this->events  = [
+            'beforeCheckRoute' => NULL,
+            'beforeCallView'   => NULL,
+            'error'            => function() {
+                throw new \Exception('Error');
+            },
+        ];
+        self::$REQUEST = new Request();
     }
     
     /**
@@ -263,11 +265,13 @@ class Router {
      * Método que llama a los controladores y carga las vistas.
      */
     public function load() {
-        $this->event();
+        $this->event('beforeCheckRoute');
         
         $instanceController = $this->getInstanceController();
         $method             = $this->getMethod($instanceController);
         $argument           = $this->getArguments();
+        
+        $this->event();
         
         $data       = call_user_func_array([
             $instanceController,
@@ -275,7 +279,7 @@ class Router {
         ], $argument);
         self::$DATA = array_merge_recursive(self::$DATA, $data);
         
-        $this->event('afterCallFunc');
+        $this->event('beforeCallView');
         
         $view = new ViewController(self::$REQUEST, self::$DATA);
         $view->render();

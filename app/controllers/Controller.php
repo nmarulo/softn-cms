@@ -24,7 +24,9 @@ abstract class Controller {
      * @return array
      */
     public function index($data) {
-        Token::generate();
+        if(!defined('INSTALL')) {
+            Token::generate();
+        }
         $output = $this->dataIndex($data);
         
         $template = ThemeTemplate::class;

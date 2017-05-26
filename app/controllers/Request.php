@@ -6,7 +6,7 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\Helpers\ArrayHelp;
+use SoftnCMS\helpers\ArrayHelp;
 
 /**
  * Clase Request para obtener los datos enviados por URL.
@@ -14,20 +14,23 @@ use SoftnCMS\Helpers\ArrayHelp;
  */
 class Request {
     
+    /** @var array Lista de argumentos. */
+    private $args;
+    
     /** @var string Nombre del controlador. */
     private $controller;
     
     /** @var string Nombre del método a ejecutar. */
     private $method;
     
-    /** @var array Lista de argumentos. */
-    private $args;
-    
     /** @var string Nombre de la ruta. */
     private $route;
     
-    /** @var string Dirección de la ruta. */
+    /** @var string Dirección url de la pagina. */
     private $url;
+    
+    /** @var string Dirección url actual. */
+    private $urlCurrent;
     
     /**
      * Constructor.
@@ -37,7 +40,30 @@ class Request {
         //La primera letra debe estar en mayúscula.
         $this->controller = 'Index';
         $this->args       = ['data' => []];
+        $this->initUrl();
         $this->parseUrl();
+    }
+    
+    /**
+     * Método que establece la url actual.
+     */
+    private function initUrl() {
+        $host       = $_SERVER['HTTP_HOST'];// localhost
+        $scheme     = $_SERVER['REQUEST_SCHEME'];// http
+        $uriCurrent = $_SERVER['REQUEST_URI'];// SoftN-CMS/user/1
+        $url        = $scheme . '://' . $host;
+        $get        = ArrayHelp::get($_GET, URL_GET);
+        $uri        = $uriCurrent;
+        
+        //Con esto logro obtener la(s) carpeta(s) donde este instalada la aplicación.
+        if ($get !== FALSE) {
+            $strPos = strpos($uriCurrent, $get);
+            //Para obtener la uri raíz de la pagina.
+            $uri = substr($uriCurrent, 0, $strPos);
+        }
+        
+        $this->urlCurrent = Sanitize::url($url . $uriCurrent);
+        $this->url        = Sanitize::url($url . $uri);
     }
     
     /**
@@ -52,7 +78,7 @@ class Request {
             return TRUE;
         }
         
-        $this->url = trim(Sanitize::url($get), '/');
+        $url = Sanitize::url($get);
         /*
          * La URL contiene:
          * [] = carpeta - EJ: en caso de estar en el panel de administración.
@@ -60,16 +86,18 @@ class Request {
          * [] = método
          * [] = argumentos
          */
-        $url = \explode('/', $this->url);
+        $url = explode('/', $url);
         $url = $this->checkUrl($url);
-        $this->selectController(\array_shift($url));
+        $this->selectController(array_shift($url));
         
         //La plantilla, por ahora, siempre llama al método index del controlador.
         if ($this->route == Router::getRoutes()['admin']) {
-            $this->selectMethod(\array_shift($url));
+            $this->selectMethod(array_shift($url));
         }
         
-        $this->selectArgs(\array_shift($url));
+        $this->selectArgs(array_shift($url));
+        
+        return TRUE;
     }
     
     /**
@@ -84,7 +112,7 @@ class Request {
      */
     private function checkUrl($url) {
         $aux   = $url;
-        $value = \array_shift($aux);
+        $value = array_shift($aux);
         //Comprueba si la ruta existe
         $key = array_search($value, Router::getRoutes());
         //Obtengo la ruta
@@ -109,28 +137,29 @@ class Request {
      * Método que extrae los datos extra, a enviar al método del controlador, de la ruta y retorna la url sin estos
      * datos.
      *
-     * @param array $url
+     * @param string $argName
+     * @param array  $url
      *
      * @return array
      */
-    private function routeArg($route, $url) {
-        $key = \array_search($route, $url);
+    private function routeArg($argName, $url) {
+        $key = array_search($argName, $url);
         
-        if ($key === \FALSE) {
+        if ($key === FALSE) {
             return $url;
         }
         
         //Incremento la posición para obtener el valor de la ruta
         ++$key;
         
-        if (\array_key_exists($key, $url)) {
-            $this->args['data'][$route] = $url[$key];
+        if (array_key_exists($key, $url)) {
+            $this->args['data'][$argName] = $url[$key];
             unset($url[$key]);
         }
         unset($url[$key - 1]);
         
         //Luego de eliminar los datos se reinician los valores de los indices.
-        return \array_merge($url);
+        return array_merge($url);
     }
     
     /**
@@ -171,28 +200,20 @@ class Request {
     }
     
     /**
-     * Método que obtiene la ruta que el usuario ingreso.
-     * @return string
+     * Método que obtiene los argumentos.
+     * @return array
      */
-    public function getUrl() {
-        return $this->url;
+    public function getArgs() {
+        return $this->args;
     }
     
     /**
-     * Método que obtiene el nombre de la ruta. EJ: "admin", "login", "register".
-     * @return string
-     */
-    public function getRoute() {
-        return $this->route;
-    }
-    
-    /**
-     * Método que establece el nombre de la ruta.
+     * Método que establece los argumentos.
      *
-     * @param $route
+     * @param $args
      */
-    public function setRoute($route) {
-        $this->route = $route;
+    public function setArgs($args) {
+        $this->args = $args;
     }
     
     /**
@@ -204,6 +225,8 @@ class Request {
     }
     
     /**
+     * Método que establece el nombre del controlador.
+     *
      * @param string $controller
      */
     public function setController($controller) {
@@ -228,20 +251,36 @@ class Request {
     }
     
     /**
-     * Método que obtiene los argumentos.
-     * @return array
+     * Método que obtiene el nombre de la ruta. EJ: "admin", "login", "register".
+     * @return string
      */
-    public function getArgs() {
-        return $this->args;
+    public function getRoute() {
+        return $this->route;
     }
     
     /**
-     * Método que establece los argumentos.
+     * Método que establece el nombre de la ruta.
      *
-     * @param $args
+     * @param $route
      */
-    public function setArgs($args) {
-        $this->args = $args;
+    public function setRoute($route) {
+        $this->route = $route;
+    }
+    
+    /**
+     * Método que obtiene la url de la pagina.
+     * @return string
+     */
+    public function getUrl() {
+        return $this->url;
+    }
+    
+    /**
+     * Método que obtiene la url actual.
+     * @return string
+     */
+    public function getUrlCurrent() {
+        return $this->urlCurrent;
     }
     
 }
