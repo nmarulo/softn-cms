@@ -39,10 +39,21 @@
                 <div class="form-group">
                     <label for="optionTheme" class="col-sm-2 control-label">Seleccionar plantilla</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="optionTheme" value="<?php echo $data['optionTheme']->getOptionValue(); ?>">
-<!--                        <select class="form-control" name="optionTheme">
-                        <?php // echo $data['optionTheme']; ?>
-                        </select>-->
+                        <select class="form-control" name="optionTheme">
+                        <?php
+                        $themeActual = $data['optionTheme']->getOptionValue();
+                        foreach ($data['optionThemeSelectItem'] as $optionThemeItem){
+                            $selected = '';
+                            
+                            if($themeActual == $optionThemeItem){
+                                $selected = 'selected';
+                            }
+                            
+                            echo "<option value='$optionThemeItem' $selected>$optionThemeItem</option>";
+                        }
+                        
+                        ?>
+                        </select>
                     </div>
                 </div>
 <!--                <div class="form-group">-->

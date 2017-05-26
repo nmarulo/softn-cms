@@ -31,6 +31,12 @@ class Options extends Models {
         return self::getInstanceData($select);
     }
     
+    public static function selectByValue($value){
+        $select = self::selectBy(Option::getTableName(), $value, Option::OPTION_VALUE);
+    
+        return self::getInstanceData($select);
+    }
+    
     /**
      * Método que recibe un lista de datos y retorna un instancia.
      *

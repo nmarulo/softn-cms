@@ -71,7 +71,7 @@ INSERT INTO `sn_categories` (`ID`, `category_name`, `category_description`, `cat
 DROP TABLE IF EXISTS `sn_comments`;
 CREATE TABLE IF NOT EXISTS `sn_comments` (
   `ID` int(11) NOT NULL,
-  `comment_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Estado de aprovación del comentario. (1 = aprobado, 0 = sin aprobar)',
+  `comment_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Estado de aprobación del comentario. (1 = aprobado, 0 = sin aprobar)',
   `comment_autor` varchar(60) NOT NULL,
   `comment_author_email` varchar(100) NOT NULL,
   `comment_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,

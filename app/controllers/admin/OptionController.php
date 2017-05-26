@@ -9,12 +9,15 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\controllers\Controller;
 use SoftnCMS\controllers\Form;
 use SoftnCMS\controllers\Messages;
+use SoftnCMS\controllers\Router;
 use SoftnCMS\controllers\Token;
 use SoftnCMS\helpers\form\builders\InputAlphabeticBuilder;
 use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\helpers\form\builders\InputEmailBuilder;
 use SoftnCMS\helpers\form\builders\InputIntegerBuilder;
 use SoftnCMS\helpers\form\builders\InputUrlBuilder;
+use SoftnCMS\helpers\Helps;
+use SoftnCMS\models\admin\Option;
 use SoftnCMS\models\admin\Options;
 use SoftnCMS\models\admin\OptionUpdate;
 
@@ -34,9 +37,15 @@ class OptionController extends Controller {
     protected function dataIndex($data) {
         //comprueba si hay datos para actualizar.
         $this->dataUpdate();
-        $options = Options::selectAll();
+        $options                          = Options::selectAll()
+                                                   ->getAll();
+        $options['optionThemeSelectItem'] = array_diff(scandir(THEMES), [
+            '..',
+            '.',
+            'index.php',
+        ]);
         
-        return $options->getAll();
+        return $options;
     }
     
     /**

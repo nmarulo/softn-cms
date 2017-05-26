@@ -8,6 +8,8 @@ namespace SoftnCMS\controllers;
 
 use SoftnCMS\helpers\Helps;
 use SoftnCMS\models\admin\Option;
+use SoftnCMS\models\admin\Options;
+use SoftnCMS\models\admin\OptionUpdate;
 
 /**
  * Clase CategoryController presenta los módulos vista correspondientes.
@@ -101,8 +103,9 @@ class ViewController {
         $view = Router::getViewPath()[Router::getVIEWS()[$key]];
         //Si el indice de la ruta es "default" obtiene el nombre del tema actual.
         if ($key == 'default') {
-            $this->nameTheme = Option::selectByName('optionTheme')
-                                     ->getOptionValue();
+            $optionTheme = Option::selectByName('optionTheme');
+            $this->nameTheme = $optionTheme->getOptionValue();
+            $this->checkTheme($this->nameTheme, $optionTheme);
             $view .= $this->nameTheme . DIRECTORY_SEPARATOR;
         }
         
@@ -144,6 +147,27 @@ class ViewController {
             $view,
             $path . 'footer.php',
         ];
+    }
+    
+    private function checkTheme($name, $optionTheme){
+        $error = FALSE;
+        $themeRoute = THEMES . $name . DIRECTORY_SEPARATOR . 'index.php';
+        
+        if(!file_exists($themeRoute)){
+            $error = TRUE;
+            $themeRoute = THEMES . 'default' . DIRECTORY_SEPARATOR . 'index.php';
+            
+            if(file_exists($themeRoute)){
+                $option = new OptionUpdate($optionTheme, 'default');
+                $option->update();
+                $error = FALSE;
+            }
+        }
+        
+        if($error){
+            Messages::addError('No se encontró ninguna plantilla disponible.');
+            Helps::redirect(Router::getRoutes()['login']);
+        }
     }
     
     /**

@@ -97,14 +97,14 @@ h2 .label {
  * messages.php ================================================================
  * ========================================================================== */
 #messages{
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1040;
-    overflow: hidden;
-    -webkit-overflow-scrolling: touch;
-    outline: 0;
-}
+     position: fixed;
+     top: 0;
+     left: 0;
+     z-index: 1040;
+     overflow: hidden;
+     -webkit-overflow-scrolling: touch;
+     outline: 0;
+ }
 
 #messages-content{
     /*    width: 600px;
