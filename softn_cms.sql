@@ -1,3 +1,16 @@
+NOTA: actualizar script.
+
+
+
+
+
+
+
+
+
+
+
+
 -- phpMyAdmin SQL Dump
 -- version 4.4.12
 -- http://www.phpmyadmin.net
