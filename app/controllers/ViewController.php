@@ -53,18 +53,8 @@ class ViewController {
      *
      * @param string $fileName
      */
-    public static function setViewContent($fileName) {
-        $directoryAndSeparator = '';
-        
-        /*
-         * Para casos donde se quiera obtener,
-         * las vistas, fuera de los directorios.
-         */
-        if (!empty(self::$DIRECTORY)) {
-            $directoryAndSeparator = self::$DIRECTORY . DIRECTORY_SEPARATOR;
-        }
-        
-        self::$VIEW_CONTENT = VIEWS . $directoryAndSeparator . $fileName . '.php';
+    private static function setViewContent($fileName) {
+        self::$VIEW_CONTENT = VIEWS . self::$DIRECTORY . DIRECTORY_SEPARATOR . $fileName . '.php';
     }
     
     /**
@@ -77,13 +67,26 @@ class ViewController {
     }
     
     /**
-     * Método que incluye únicamente la vista indicada.
+     * Método que incluye únicamente la vista indicada,
+     * con la posibilidad de indicar un directorio diferente.
      *
+     * @param string $fileName
+     * @param string $directory
+     */
+    public static function singleViewDirectory($fileName, $directory = '') {
+        if (!empty($directory)) {
+            $directory .= DIRECTORY_SEPARATOR;
+        }
+        
+        self::includeView(VIEWS . $directory . $fileName . '.php');
+    }
+    
+    /**
+     * Método que incluye únicamente la vista indicada del directorio actual.
      * @param $fileName
      */
     public static function singleView($fileName) {
-        self::setViewContent($fileName);
-        self::includeView(self::$VIEW_CONTENT);
+        self::singleViewDirectory($fileName, self::$DIRECTORY);
     }
     
     /**
@@ -157,17 +160,17 @@ class ViewController {
         self::registerScriptRoute("app/resources/js/$scriptName");
     }
     
-    public static function registerStyle($styleName) {
-        self::registerStyleRoute("app/resources/css/$styleName");
-    }
-    
-    public static function registerScriptRoute($scriptRute){
+    public static function registerScriptRoute($scriptRute) {
         if (Arrays::valueExists(self::$VIEW_SCRIPTS, $scriptRute) === FALSE) {
             self::$VIEW_SCRIPTS[] = $scriptRute;
         }
     }
     
-    public static function registerStyleRoute($styleRute){
+    public static function registerStyle($styleName) {
+        self::registerStyleRoute("app/resources/css/$styleName");
+    }
+    
+    public static function registerStyleRoute($styleRute) {
         if (Arrays::valueExists(self::$VIEW_STYLES, $styleRute) === FALSE) {
             self::$VIEW_STYLES[] = $styleRute;
         }

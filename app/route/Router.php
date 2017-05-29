@@ -29,6 +29,7 @@ class Router {
     /** @var Route */
     private $route;
     
+    /** @var array */
     private $events;
     
     /**
@@ -55,6 +56,7 @@ class Router {
         $method             = $this->getMethod($instanceController);
         $parameter          = $this->getParameter();
         
+        ViewController::sendViewData('method', $method);
         $this->setDirectoryView();
         $this->events(self::EVENT_BEFORE_CALL_METHOD);
         

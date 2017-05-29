@@ -10,6 +10,9 @@
     box-shadow: none;
 }
 
+.btn,
+.input-lg,
+.form-control,
 .alert,
 .panel,
 .panel-heading,
@@ -17,9 +20,16 @@
     border-radius: 0;
 }
 
-.panel-heading{
+.panel-heading {
     font-size: 2em;
     padding: 20px 30px;
+}
+
+.pagination > li > a,
+.pagination > li > span,
+.form-control,
+.input-group-addon {
+    border: 1px solid #DDDDDD;
 }
 
 /* COMÚN ================================= */
@@ -122,9 +132,24 @@ h2 .label {
     outline: 0;
 }
 
-#messages-content {
-    /*    width: 600px;
-        margin: 30px auto;*/
+#messages .messages-content {
+    margin: 5px auto;
+}
+
+#messages .alert {
+    margin-bottom: 0;
+}
+
+#messages .alert {
+    border-left: 4px solid transparent;
+}
+
+#messages .alert-danger {
+    border-color: #A94442;
+}
+
+#messages .alert-success {
+    border-color: #3C763D;
 }
 
 /* install.php - login.php */

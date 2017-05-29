@@ -13,9 +13,9 @@ abstract class CUDControllerAbstract extends ControllerAbstract {
     
     public abstract function create();
     
-    public abstract function update();
+    public abstract function update($id);
     
-    public abstract function delete();
+    public abstract function delete($id);
     
     protected abstract function form();
 }

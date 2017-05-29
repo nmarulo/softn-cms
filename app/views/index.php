@@ -2,6 +2,7 @@
 use SoftnCMS\controllers\ViewController;
 
 ViewController::registerScript('jquery-3.2.1');
+ViewController::registerScript('common');
 ViewController::registerScriptRoute('app/vendor/twbs/bootstrap/dist/js/bootstrap');
 ViewController::registerScriptRoute('app/vendor/tinymce/tinymce/tinymce');
 ViewController::registerScript('script');
@@ -45,6 +46,9 @@ ViewController::registerStyle('style'); ?>
                 </div>
             </div>
         </div>
-        <?php ViewController::includeScripts(); ?>
+        <?php
+        ViewController::singleViewDirectory('messages');
+        ViewController::includeScripts();
+        ?>
     </body>
 </html>

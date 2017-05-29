@@ -6,7 +6,7 @@
         <div class="row clearfix">
             <div class="col-sm-6">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">Estadisticas Generales</div>
+                    <div class="panel-heading">Estadísticas Generales</div>
                     <div class="panel-body">
                         <ul class="list-group">
                             <li class="list-group-item">
@@ -23,7 +23,7 @@
                             </li>
                             <li class="list-group-item">
                                 <span class="badge">0</span>
-                                <a href="#">Categorias</a>
+                                <a href="#">Categorías</a>
                             </li>
                             <li class="list-group-item">
                                 <span class="badge">0</span>
