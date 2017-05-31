@@ -60,6 +60,7 @@ class PostController extends CUDControllerAbstract {
         $post->setPostStatus(Arrays::get($_POST, PostsManager::POST_STATUS));
         $post->setCommentStatus(Arrays::get($_POST, PostsManager::COMMENT_STATUS));
         $post->setPostContents(Arrays::get($_POST, PostsManager::POST_CONTENTS));
+        //TODO: temporalmente establecido al id 1.
         $post->setUserID(1);
         
         if ($isCreate) {
@@ -96,7 +97,7 @@ class PostController extends CUDControllerAbstract {
             Messages::sendMessagesView($messages, $typeMessage);
         }
         
-        $post = $postsManager->getById($id);
+        $post = $postsManager->searchById($id);
         
         ViewController::sendViewData('post', $post);
         ViewController::sendViewData('title', 'Actualizar entrada');

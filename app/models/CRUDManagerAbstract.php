@@ -13,12 +13,18 @@ use SoftnCMS\util\MySQL;
  */
 abstract class CRUDManagerAbstract extends ManagerAbstract {
     
+    /**
+     * Identifica si el formulario es para actualizar datos.
+     */
     const FORM_UPDATE = 'update';
     
+    /**
+     * Identifica si el formulario es para insertar datos.
+     */
     const FORM_CREATE = 'create';
     
     /** @var int */
-    private $lastInsert;
+    private $lastInsertId;
     
     /**
      * CRUDManagerAbstract constructor.
@@ -30,59 +36,69 @@ abstract class CRUDManagerAbstract extends ManagerAbstract {
     /**
      * @return int
      */
-    public function getLastInsert() {
-        return $this->lastInsert;
+    public function getLastInsertId() {
+        return $this->lastInsertId;
     }
     
-    protected function createData() {
-        $this->lastInsert = 0;
-        $mySQL            = new MySQL();
-        $result           = $mySQL->insert(parent::getTableWithPrefix(), $this->columns, $this->values, $this->prepare);
+    /**
+     * @param TableAbstract $object
+     *
+     * @return bool
+     */
+    public function update($object) {
+        parent::parameterQuery(self::ID, $object->getId(), \PDO::PARAM_INT);
+        
+        return $this->updateData($object);
+    }
+    
+    /**
+     * @param        $object
+     * @param string $column
+     *
+     * @return bool
+     */
+    protected function updateData($object, $column = self::ID) {
+        $this->addParameterQuery($object);
+        $mySQL  = new MySQL();
+        $result = $mySQL->update(parent::getTableWithPrefix(), $this->prepare, $column);
+        parent::closeConnection($mySQL);
+        
+        return $result;
+    }
+    
+    protected abstract function addParameterQuery($object);
+    
+    /**
+     * @param $object
+     *
+     * @return bool
+     */
+    public function create($object) {
+        $this->addParameterQuery($object);
+        $this->lastInsertId = 0;
+        $mySQL              = new MySQL();
+        $result             = $mySQL->insert(parent::getTableWithPrefix(), $this->prepare);
         
         if ($result) {
-            $this->lastInsert = $mySQL->lastInsertId();
+            $this->lastInsertId = $mySQL->lastInsertId();
         }
         
-        $mySQL->close();
-        parent::clearData();
-        
+        parent::closeConnection($mySQL);
         
         return $result;
     }
     
-    protected function updateData() {
+    /**
+     * @param int $id
+     *
+     * @return bool
+     */
+    public function delete($id) {
+        parent::parameterQuery(self::ID, $id, \PDO::PARAM_INT);
         $mySQL  = new MySQL();
-        $result = $mySQL->update(parent::getTableWithPrefix(), $this->columns, $this->values, $this->prepare);
-        $mySQL->close();
-        parent::clearData();
+        $result = $mySQL->delete(parent::getTableWithPrefix(), $this->prepare);
+        parent::closeConnection($mySQL);
         
         return $result;
     }
-    
-    protected function deleteData() {
-        $mySQL  = new MySQL();
-        $result = $mySQL->delete(parent::getTableWithPrefix(), $this->values, $this->prepare);
-        $mySQL->close();
-        parent::clearData();
-        
-        return $result;
-    }
-    
-    protected function addPrepareUpdate($parameter, $value, $dataType) {
-        if ($value !== NULL) {
-            $param         = ":$parameter";
-            $this->columns .= empty($this->columns) ? '' : ', ';
-            $this->columns .= "$parameter = $param";
-            parent::prepare($param, $value, $dataType);
-        }
-    }
-    
-    protected function addPrepareInsert($parameter, $value, $dataType) {
-        $param        = ":$parameter";
-        $this->values .= empty($this->values) ? '' : ', ';
-        $this->values .= $param;
-        parent::setColumns($parameter);
-        parent::prepare($param, $value, $dataType);
-    }
-    
 }

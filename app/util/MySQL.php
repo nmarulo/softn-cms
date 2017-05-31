@@ -41,23 +41,6 @@ class MySQL {
     }
     
     /**
-     * @param int    $value
-     * @param string $table
-     * @param string $column
-     * @param int    $dataType
-     *
-     * @return array|bool|\PDOStatement
-     */
-    public function selectByColumn($value, $table, $column, $dataType = \PDO::PARAM_INT) {
-        $where     = $column . ' = :' . $column;
-        $prepare   = [];
-        $prepare[] = $this->prepareStatement(':' . $column, $value, $dataType);
-        $select    = $this->select($table, MySql::FETCH_ALL, $where, $prepare);
-        
-        return $select;
-    }
-    
-    /**
      * Método que obtiene los indices a reemplazar en la consulta.
      * EJ: [
      *   [
@@ -87,62 +70,20 @@ class MySQL {
     }
     
     /**
-     * Método que ejecuta una consulta "SELECT" simple.
+     * Método que ejecuta una consulta.
      *
-     * @param string $table   Nombre de la tabla.
-     * @param string $fetch   [Opcional] Tipo de datos a retornar.
-     *                        Si esta vacía retorna la declaración de la consulta preparada.
-     *                        Si es "fetchAll", retorna un array con todos los elementos.
-     *                        Si es "fetchObject", retorna un objeto \PDOStatement.
-     * @param string $where   [Opcional] Condiciones de la consulta.
-     * @param array  $prepare [Opcional] Lista de indices a reemplazar en la consulta.
-     *                        Usar prepareStatement().
-     * @param string $columns [Opcional] Columnas a obtener.
-     * @param string $orderBy [Opcional] Ordenar la consulta por.
-     * @param string $limit   [Opcional] Limitar los datos a retornar de la consulta.
+     * @param string $query          Consulta SQL.
+     * @param string $fetch          [Opcional] Tipo de datos a retornar.
+     * @param array  $parameterQuery [Opcional] Lista de indices a reemplazar en la consulta.
+     *                               Usar prepareStatement().
      *
-     * @return array|\PDOStatement|bool Retorna \FALSE en caso de error.
+     * @return array|bool|mixed|\PDOStatement
      */
-    public function select($table, $fetch = '', $where = '', $prepare = [], $columns = '*', $orderBy = '', $limit = '') {
-        $sql = $this->createSelect($table, $where, $columns, $orderBy, $limit);
-        
-        return $this->executeSelect($sql, $prepare, $fetch);
-    }
-    
-    /**
-     * Método que crea y retorna una sentencia Select.
-     *
-     * @param string $table
-     * @param string $where
-     * @param string $columns
-     * @param string $orderBy
-     * @param string $limit
-     *
-     * @return string
-     */
-    public function createSelect($table, $where = '', $columns = '*', $orderBy = '', $limit = '') {
-        $sql = "SELECT $columns FROM $table";
-        $sql .= empty($where) ? '' : " WHERE $where";
-        $sql .= empty($orderBy) ? '' : " ORDER BY $orderBy";
-        $sql .= empty($limit) ? '' : " LIMIT $limit";
-        
-        return $sql;
-    }
-    
-    /**
-     * Método que ejecuta una sentencia Select y obtiene como array o como objetos los resultados.
-     *
-     * @param string $sql
-     * @param array  $prepare
-     * @param string $fetch
-     *
-     * @return array|bool|mixed|\PDOStatement Retorna FALSE en caso de error.
-     */
-    public function executeSelect($sql, $prepare, $fetch = '') {
+    public function select($query, $fetch = '', $parameterQuery = []) {
         $output      = \FALSE;
-        $this->query = $sql;
+        $this->query = $query;
         
-        if ($this->execute($sql, $prepare)) {
+        if ($this->execute($query, $parameterQuery)) {
             
             switch ($fetch) {
                 case 'fetchAll':
@@ -163,15 +104,15 @@ class MySQL {
     /**
      * Método que ejecuta la consulta.
      *
-     * @param string $sql     Consulta.
-     * @param array  $prepare Lista de indices a reemplazar en la consulta.
+     * @param string $query          Consulta SQL.
+     * @param array  $parameterQuery Lista de indices a reemplazar en la consulta.
      *
      * @return bool Si es TRUE, la consulta se ejecuto correctamente.
      */
-    private function execute($sql, $prepare) {
-        $this->prepareObject = $this->connection->prepare($sql);
+    private function execute($query, $parameterQuery) {
+        $this->prepareObject = $this->connection->prepare($query);
         
-        if (!$this->bindValue($prepare)) {
+        if (!$this->bindValue($parameterQuery)) {
             return \FALSE;
         }
         
@@ -187,17 +128,17 @@ class MySQL {
     /**
      * Método que comprueba los tipos de datos de los valores vinculados a un parámetro.
      *
-     * @param array $data Lista de indices a reemplazar en la consulta.
+     * @param array $parameterQuery Lista de indices a reemplazar en la consulta.
      *
      * @return bool Si es \TRUE la operación se realizado correctamente.
      */
-    private function bindValue($data) {
-        $count = \count($data);
+    private function bindValue($parameterQuery) {
+        $count = \count($parameterQuery);
         $error = \FALSE;
         
         for ($i = 0; $i < $count && !$error; ++$i) {
-            $value          = $data[$i];
-            $parameter      = $value['parameter'];
+            $value          = $parameterQuery[$i];
+            $parameter      = ':' . $value['parameter'];
             $parameterValue = $value['value'];
             
             try {
@@ -221,71 +162,86 @@ class MySQL {
     /**
      * Método que ejecuta una consulta "INSERT".
      *
-     * @param string $table   Nombre de la tabla.
-     * @param string $columns Nombre de las columnas.
-     * @param string $values  Valores.
-     * @param array  $prepare Lista de indices a reemplazar en la consulta.
-     *                        Usar prepareStatement().
+     * @param string $table          Nombre de la tabla.
+     * @param array  $parameterQuery Lista de indices a reemplazar en la consulta.
+     *                               Usar prepareStatement().
      *
      * @return bool Si es \TRUE la consulta se ejecuto correctamente.
      */
-    public function insert($table, $columns, $values, $prepare) {
-        $sql         = "INSERT INTO $table ($columns) VALUES ($values)";
-        $this->query = $sql;
+    public function insert($table, $parameterQuery) {
+        $fields = array_map(function($value) {
+            return $value['parameter'];
+        }, $parameterQuery);
         
-        return $this->execute($sql, $prepare);
+        $values = array_map(function($value) {
+            return ':' . $value['parameter'];
+        }, $parameterQuery);
+        
+        $query       = 'INSERT INTO ';
+        $query       .= $table;
+        $query       .= ' (';
+        $query       .= implode(', ', $fields);
+        $query       .= ') VALUES (';
+        $query       .= implode(', ', $values);
+        $query       .= ')';
+        $this->query = $query;
+        
+        return $this->execute($query, $parameterQuery);
     }
     
     /**
      * Método que ejecuta una consulta "UPDATE".
      *
-     * @param string $table   Nombre de la tabla.
-     * @param string $columns Asignación de valores a la columna.
-     * @param string $where   Condiciones de la consulta.
-     * @param array  $prepare Lista de indices a reemplazar en la consulta.
-     *                        Usar prepareStatement().
+     * @param string $table          Nombre de la tabla.
+     * @param array  $parameterQuery Lista de indices a reemplazar en la consulta.
+     *                               Usar prepareStatement().
+     * @param string $column         Por ejemplo: Nombre de la columna "ID" en la tabla.
      *
      * @return bool Si es \TRUE la consulta se ejecuto correctamente.
      */
-    public function update($table, $columns, $where, $prepare) {
-        $sql         = "UPDATE $table SET $columns WHERE $where";
-        $this->query = $sql;
+    public function update($table, $parameterQuery, $column) {
+        $fields = array_filter($parameterQuery, function($value) use ($column){
+           return $value['parameter'] != $column;
+        });
+        $fields = array_map(function($value) {
+            return $value['parameter'] . ' = :' . $value['parameter'];
+        }, $fields);
         
-        return $this->execute($sql, $prepare);
+        $query       = 'UPDATE ';
+        $query       .= $table;
+        $query       .= ' SET ';
+        $query       .= implode(', ', $fields);
+        $query       .= ' WHERE ';
+        $query       .= "$column = :$column";
+        $this->query = $query;
+        
+        return $this->execute($query, $parameterQuery);
     }
     
     /**
-     * @param mixed  $value
-     * @param string $table
-     * @param string $column
-     * @param int    $dataType
+     * Método que ejecuta una consulta "DELETE",
+     * si la lista "$parameterQuery" es mayor a 1,
+     * se concatenaran con el operador lógico "AND".
      *
-     * @return bool
-     */
-    public function deleteByColumn($value, $table, $column, $dataType = \PDO::PARAM_INT) {
-        $param     = ":$column";
-        $where     = "$column = $param";
-        $prepare   = [];
-        $prepare[] = $this->prepareStatement($param, $value, $dataType);
-        
-        return $this->delete($table, $where, $prepare);
-    }
-    
-    /**
-     * Método que ejecuta una consulta "DELETE".
-     *
-     * @param string $table   Nombre de la tabla.
-     * @param string $where   Condiciones de la consulta.
-     * @param array  $prepare Lista de indices a reemplazar en la consulta.
-     *                        Usar prepareStatement().
+     * @param string $table          Nombre de la tabla.
+     * @param array  $parameterQuery Lista de indices a reemplazar en la consulta.
+     *                               Usar prepareStatement().
      *
      * @return bool Si es \TRUE la consulta se ejecuto correctamente.
      */
-    public function delete($table, $where, $prepare) {
-        $sql         = "DELETE FROM $table WHERE $where";
-        $this->query = $sql;
+    public function delete($table, $parameterQuery) {
+        $values = array_map(function($value) {
+            return $value['parameter'] . ' = :' . $value['parameter'];
+        }, $parameterQuery);
         
-        if ($this->execute($sql, $prepare)) {
+        $query = 'DELETE FROM ';
+        $query .= $table;
+        $query .= ' WHERE ';
+        //En caso de enviar mas de un dato en el "$parameterQuery".
+        $query       .= implode(' AND ', $values);
+        $this->query = $query;
+        
+        if ($this->execute($query, $parameterQuery)) {
             return $this->prepareObject->rowCount();
         }
         

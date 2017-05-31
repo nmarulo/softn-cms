@@ -42,70 +42,17 @@ class PostsManager extends CRUDManagerAbstract {
     }
     
     /**
-     * @param int $id
-     *
-     * @return bool|mixed
-     */
-    public function getById($id) {
-        return parent::getById($id);
-    }
-    
-    /**
-     * @return array
-     */
-    public function read() {
-        parent::setColumns('*');
-        
-        return parent::readData();
-    }
-    
-    /**
      * @param Post $object
-     *
-     * @return bool
      */
-    public function create($object) {
-        parent::addPrepareInsert(self::POST_TITLE, $object->getPostTitle(), \PDO::PARAM_STR);
-        parent::addPrepareInsert(self::POST_STATUS, $object->getPostStatus(), \PDO::PARAM_INT);
-        parent::addPrepareInsert(self::POST_DATE, $object->getPostDate(), \PDO::PARAM_STR);
-        parent::addPrepareInsert(self::POST_UPDATE, $object->getPostUpdate(), \PDO::PARAM_STR);
-        parent::addPrepareInsert(self::POST_CONTENTS, $object->getPostContents(), \PDO::PARAM_STR);
-        parent::addPrepareInsert(self::COMMENT_STATUS, $object->getCommentStatus(), \PDO::PARAM_INT);
-        parent::addPrepareInsert(self::COMMENT_COUNT, $object->getCommentCount(), \PDO::PARAM_INT);
-        parent::addPrepareInsert(self::USER_ID, $object->getUserID(), \PDO::PARAM_INT);
-        
-        return parent::createData();
-    }
-    
-    /**
-     * @param Post $object
-     *
-     * @return bool
-     */
-    public function update($object) {
-        parent::addPrepareUpdate(self::POST_TITLE, $object->getPostTitle(), \PDO::PARAM_STR);
-        parent::addPrepareUpdate(self::POST_STATUS, $object->getPostStatus(), \PDO::PARAM_INT);
-        parent::addPrepareUpdate(self::POST_DATE, $object->getPostDate(), \PDO::PARAM_STR);
-        parent::addPrepareUpdate(self::POST_UPDATE, $object->getPostUpdate(), \PDO::PARAM_STR);
-        parent::addPrepareUpdate(self::POST_CONTENTS, $object->getPostContents(), \PDO::PARAM_STR);
-        parent::addPrepareUpdate(self::COMMENT_STATUS, $object->getCommentStatus(), \PDO::PARAM_INT);
-        parent::addPrepareUpdate(self::COMMENT_COUNT, $object->getCommentCount(), \PDO::PARAM_INT);
-        parent::addPrepareUpdate(self::USER_ID, $object->getUserID(), \PDO::PARAM_INT);
-        
-        parent::addPrepareWhere(self::ID, $object->getId(), \PDO::PARAM_INT);
-        
-        return parent::updateData();
-    }
-    
-    /**
-     * @param int $id
-     *
-     * @return bool
-     */
-    public function delete($id) {
-        parent::addPrepareWhere(self::ID, $id, \PDO::PARAM_INT);
-        
-        return parent::deleteData();
+    protected function addParameterQuery($object) {
+        parent::parameterQuery(self::POST_TITLE, $object->getPostTitle(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::POST_STATUS, $object->getPostStatus(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::POST_DATE, $object->getPostDate(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::POST_UPDATE, $object->getPostUpdate(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::POST_CONTENTS, $object->getPostContents(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::COMMENT_STATUS, $object->getCommentStatus(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::COMMENT_COUNT, $object->getCommentCount(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::USER_ID, $object->getUserID(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {

@@ -53,7 +53,7 @@ $posts = ViewController::getViewData('posts');
                     <tr>
                         <td class="options">
                             <a class="btnAction-sm btn btn-primary" href="#" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
-                            <a class="btnAction-sm btn btn-danger" href="#" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a><?php echo $post->getId(); ?>
+                            <a class="btnAction-sm btn btn-danger" href="#" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a>
                         </td>
                         <td><a href="#" target="_blank"><?php echo $post->getPostTitle(); ?></a></td>
                         <td><a href="#" target="_blank"><?php echo $post->getUserID(); ?></a></td>

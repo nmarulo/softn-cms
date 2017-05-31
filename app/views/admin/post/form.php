@@ -6,7 +6,6 @@ $title    = ViewController::getViewData('title');
 $post     = ViewController::getViewData('post');
 $method   = ViewController::getViewData('method');
 $isUpdate = $method == 'update';
-var_dump($_POST);
 ?>
 <div class="sn-content">
     <div>

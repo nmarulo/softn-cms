@@ -16,12 +16,6 @@ abstract class ManagerAbstract {
     
     const ID = 'ID';
     
-    /** @var string */
-    protected $columns;
-    
-    /** @var string */
-    protected $values;
-    
     /** @var array */
     protected $prepare;
     
@@ -29,35 +23,68 @@ abstract class ManagerAbstract {
      * ManagerAbstract constructor.
      */
     public function __construct() {
-        $this->clearData();
+        $this->prepare = [];
     }
     
-    protected function getById($id) {
-        $this->setColumns('*');
-        $this->addPrepareWhere(self::ID, $id, \PDO::PARAM_INT);
+    /**
+     * @param int $id
+     *
+     * @return bool|mixed
+     */
+    public function searchById($id) {
+        $this->parameterQuery(self::ID, $id, \PDO::PARAM_INT);
         
-        return Arrays::get($this->readData(), 0);
+        return $this->searchBy(self::ID);
     }
     
-    protected function addPrepareWhere($parameter, $value, $dataType, $comparisionOperator = '=', $logicalOperator = '') {
-        $param        = ":$parameter";
-        $this->values .= empty($this->values) ? '' : " $logicalOperator ";
-        $this->values .= "$parameter $comparisionOperator $param";
-        
-        $this->prepare($param, $value, $dataType);
-    }
-    
-    protected function prepare($parameter, $value, $dataType) {
+    /**
+     * @param string $parameter
+     * @param mixed  $value
+     * @param int    $dataType
+     */
+    protected function parameterQuery($parameter, $value, $dataType) {
         $this->prepare[] = MySQL::prepareStatement($parameter, $value, $dataType);
     }
     
-    protected function readData($limit = '', $orderBy = 'ID DESC', $fetch = MySQL::FETCH_ALL) {
-        $mySQL  = new MySQL();
-        $result = $mySQL->select($this->getTableWithPrefix(), $fetch, $this->values, $this->prepare, $this->columns, $orderBy, $limit);
-        $mySQL->close();
-        $this->clearData();
+    /**
+     * @param string $parameter
+     *
+     * @return bool|mixed
+     */
+    protected function searchBy($parameter) {
+        $query = 'SELECT * FROM ';
+        $query .= $this->getTableWithPrefix();
+        $query .= " WHERE $parameter = :$parameter";
+        
+        return Arrays::get($this->readData($query), 0);
+    }
+    
+    /**
+     * @return string
+     */
+    protected function getTableWithPrefix() {
+        return DB_PREFIX . $this->getTable();
+    }
+    
+    protected abstract function getTable();
+    
+    /**
+     * @param string $query
+     * @param string $fetch
+     *
+     * @return array
+     */
+    protected function readData($query = "", $fetch = MySQL::FETCH_ALL) {
+        if (empty($query)) {
+            $query = 'SELECT * FROM ';
+            $query .= $this->getTableWithPrefix();
+            $query .= ' ORDER BY ID DESC';
+        }
         
         $objects = [];
+        $mySQL   = new MySQL();
+        $result  = $mySQL->select($query, $fetch, $this->prepare);
+        $this->closeConnection($mySQL);
         
         foreach ($result as $value) {
             $objects[] = $this->buildObjectTable($value);
@@ -66,22 +93,17 @@ abstract class ManagerAbstract {
         return $objects;
     }
     
-    protected function clearData() {
+    /**
+     * @param MySQL $connection
+     */
+    protected function closeConnection($connection) {
+        $connection->close();
         $this->prepare = [];
-        $this->values  = '';
-        $this->columns = '';
     }
     
     protected abstract function buildObjectTable($result, $fetch = MySQL::FETCH_ALL);
     
-    protected function setColumns($column) {
-        $this->columns .= empty($this->columns) ? '' : ', ';
-        $this->columns .= $column;
-    }
-    
-    protected abstract function getTable();
-    
-    protected function getTableWithPrefix(){
-        return DB_PREFIX . $this->getTable();
+    public function read() {
+        return $this->readData();
     }
 }
