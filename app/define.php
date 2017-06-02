@@ -41,3 +41,10 @@ define('THEMES', ABSPATH . 'themes' . DIRECTORY_SEPARATOR);
 
 /** Directorio de los temas de la aplicación. */
 define('APP_THEMES', 'app' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR);
+
+define('OPTION_TITLE', 'optionTitle');
+define('OPTION_DESCRIPTION', 'optionTitle');
+define('OPTION_PAGED', 'optionTitle');
+define('OPTION_SITE_URL', 'optionTitle');
+define('OPTION_THEME', 'optionTitle');
+define('OPTION_EMAIL_ADMIN', 'optionTitle');

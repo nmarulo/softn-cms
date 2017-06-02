@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\controllers;
 
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\util\Arrays;
 
 /**
@@ -67,6 +68,15 @@ class ViewController {
     }
     
     /**
+     * Método que incluye únicamente la vista indicada del directorio actual.
+     *
+     * @param $fileName
+     */
+    public static function singleView($fileName) {
+        self::singleViewDirectory($fileName, self::$DIRECTORY);
+    }
+    
+    /**
      * Método que incluye únicamente la vista indicada,
      * con la posibilidad de indicar un directorio diferente.
      *
@@ -79,14 +89,6 @@ class ViewController {
         }
         
         self::includeView(VIEWS . $directory . $fileName . '.php');
-    }
-    
-    /**
-     * Método que incluye únicamente la vista indicada del directorio actual.
-     * @param $fileName
-     */
-    public static function singleView($fileName) {
-        self::singleViewDirectory($fileName, self::$DIRECTORY);
     }
     
     /**
@@ -143,16 +145,22 @@ class ViewController {
      * Método que incluye el nombre del script js.
      */
     public static function includeScripts() {
-        //TODO: temporalmente estara la ruta local.
+        $optionsManager = new OptionsManager();
+        $baseUrl        = $optionsManager->searchByName(OPTION_SITE_URL);
+        
         foreach (self::$VIEW_SCRIPTS as $script) {
-            echo "<script src='http://localhost/softn-cms/$script.js' type='text/javascript'></script>";
+            $baseUrl .= $script;
+            echo "<script src='$baseUrl.js' type='text/javascript'></script>";
         }
     }
     
     public static function includeStyles() {
-        //TODO: temporalmente estara la ruta local.
+        $optionsManager = new OptionsManager();
+        $baseUrl        = $optionsManager->searchByName(OPTION_SITE_URL);
+        
         foreach (self::$VIEW_STYLES as $style) {
-            echo "<link href='http://localhost/softn-cms/$style.css' rel='stylesheet' type='text/css'/>";
+            $baseUrl .= $style;
+            echo "<link href='$baseUrl.css' rel='stylesheet' type='text/css'/>";
         }
     }
     

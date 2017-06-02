@@ -21,6 +21,12 @@ class OptionsManager extends CRUDManagerAbstract {
     
     const OPTION_VALUE = 'option_value';
     
+    public function searchByName($name) {
+        parent::parameterQuery(self::OPTION_NAME, $name, \PDO::PARAM_STR);
+        
+        return parent::searchBy(self::OPTION_NAME);
+    }
+    
     /**
      * @param Option $object
      */
