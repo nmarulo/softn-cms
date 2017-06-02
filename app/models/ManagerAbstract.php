@@ -70,11 +70,10 @@ abstract class ManagerAbstract {
     
     /**
      * @param string $query
-     * @param string $fetch
      *
      * @return array
      */
-    protected function readData($query = "", $fetch = MySQL::FETCH_ALL) {
+    protected function readData($query = "") {
         if (empty($query)) {
             $query = 'SELECT * FROM ';
             $query .= $this->getTableWithPrefix();
@@ -83,7 +82,7 @@ abstract class ManagerAbstract {
         
         $objects = [];
         $mySQL   = new MySQL();
-        $result  = $mySQL->select($query, $fetch, $this->prepare);
+        $result  = $mySQL->select($query, $this->prepare);
         $this->closeConnection($mySQL);
         
         foreach ($result as $value) {
@@ -101,7 +100,13 @@ abstract class ManagerAbstract {
         $this->prepare = [];
     }
     
-    protected abstract function buildObjectTable($result, $fetch = MySQL::FETCH_ALL);
+    protected function buildObjectTable($result) {
+        if (empty($result) || !is_array($result)) {
+            throw new \Exception('Error');
+        }
+        
+        return null;
+    }
     
     public function read() {
         return $this->readData();

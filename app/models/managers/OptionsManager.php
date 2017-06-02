@@ -6,7 +6,8 @@
 namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\CRUDManagerAbstract;
-use SoftnCMS\util\MySQL;
+use SoftnCMS\models\tables\Option;
+use SoftnCMS\util\Arrays;
 
 /**
  * Class OptionsManager
@@ -20,16 +21,26 @@ class OptionsManager extends CRUDManagerAbstract {
     
     const OPTION_VALUE = 'option_value';
     
+    /**
+     * @param Option $object
+     */
     protected function addParameterQuery($object) {
-        // TODO: Implement addParameterQuery() method.
+        parent::parameterQuery(self::OPTION_VALUE, $object->getOptionValue(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::OPTION_NAME, $object->getOptionName(), \PDO::PARAM_STR);
     }
     
     protected function getTable() {
-        // TODO: Implement getTable() method.
+        return self::TABLE;
     }
     
-    protected function buildObjectTable($result, $fetch = MySQL::FETCH_ALL) {
-        // TODO: Implement buildObjectTable() method.
+    protected function buildObjectTable($result) {
+        parent::buildObjectTable($result);
+        $option = new Option();
+        $option->setId(Arrays::get($result, self::ID));
+        $option->setOptionName(Arrays::get($result, self::OPTION_NAME));
+        $option->setOptionValue(Arrays::get($result, self::OPTION_VALUE));
+        
+        return $option;
     }
     
 }

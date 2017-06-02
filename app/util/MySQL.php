@@ -11,10 +11,6 @@ namespace SoftnCMS\util;
  */
 class MySQL {
     
-    const FETCH_ALL    = 'fetchAll';
-    
-    const FETCH_OBJECT = 'fetchObject';
-    
     /** @var \PDO Instancia de la conexión a la base de datos. */
     private $connection;
     
@@ -73,29 +69,17 @@ class MySQL {
      * Método que ejecuta una consulta.
      *
      * @param string $query          Consulta SQL.
-     * @param string $fetch          [Opcional] Tipo de datos a retornar.
      * @param array  $parameterQuery [Opcional] Lista de indices a reemplazar en la consulta.
      *                               Usar prepareStatement().
      *
      * @return array|bool|mixed|\PDOStatement
      */
-    public function select($query, $fetch = '', $parameterQuery = []) {
+    public function select($query, $parameterQuery = []) {
         $output      = \FALSE;
         $this->query = $query;
         
         if ($this->execute($query, $parameterQuery)) {
-            
-            switch ($fetch) {
-                case 'fetchAll':
-                    $output = $this->prepareObject->fetchAll();
-                    break;
-                case 'fetchObject':
-                    $output = $this->prepareObject->fetchObject();
-                    break;
-                default:
-                    $output = $this->prepareObject;
-                    break;
-            }
+            $output = $this->prepareObject->fetchAll();
         }
         
         return $output;
@@ -200,8 +184,8 @@ class MySQL {
      * @return bool Si es \TRUE la consulta se ejecuto correctamente.
      */
     public function update($table, $parameterQuery, $column) {
-        $fields = array_filter($parameterQuery, function($value) use ($column){
-           return $value['parameter'] != $column;
+        $fields = array_filter($parameterQuery, function($value) use ($column) {
+            return $value['parameter'] != $column;
         });
         $fields = array_map(function($value) {
             return $value['parameter'] . ' = :' . $value['parameter'];

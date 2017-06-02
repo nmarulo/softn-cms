@@ -59,26 +59,18 @@ class PostsManager extends CRUDManagerAbstract {
         return self::TABLE;
     }
     
-    protected function buildObjectTable($result, $fetch = MySQL::FETCH_ALL) {
-        if (empty($result)) {
-            throw new \Exception('Error');
-        }
-        
+    protected function buildObjectTable($result) {
+        parent::buildObjectTable($result);
         $post = new Post();
-        
-        switch ($fetch) {
-            case MySQL::FETCH_ALL:
-                $post->setId(Arrays::get($result, self::ID));
-                $post->setUserID(Arrays::get($result, self::USER_ID));
-                $post->setCommentCount(Arrays::get($result, self::COMMENT_COUNT));
-                $post->setCommentStatus(Arrays::get($result, self::COMMENT_STATUS));
-                $post->setPostContents(Arrays::get($result, self::POST_CONTENTS));
-                $post->setPostUpdate(Arrays::get($result, self::POST_UPDATE));
-                $post->setPostDate(Arrays::get($result, self::POST_DATE));
-                $post->setPostStatus(Arrays::get($result, self::POST_STATUS));
-                $post->setPostTitle(Arrays::get($result, self::POST_TITLE));
-                break;
-        }
+        $post->setId(Arrays::get($result, self::ID));
+        $post->setUserID(Arrays::get($result, self::USER_ID));
+        $post->setCommentCount(Arrays::get($result, self::COMMENT_COUNT));
+        $post->setCommentStatus(Arrays::get($result, self::COMMENT_STATUS));
+        $post->setPostContents(Arrays::get($result, self::POST_CONTENTS));
+        $post->setPostUpdate(Arrays::get($result, self::POST_UPDATE));
+        $post->setPostDate(Arrays::get($result, self::POST_DATE));
+        $post->setPostStatus(Arrays::get($result, self::POST_STATUS));
+        $post->setPostTitle(Arrays::get($result, self::POST_TITLE));
         
         return $post;
     }

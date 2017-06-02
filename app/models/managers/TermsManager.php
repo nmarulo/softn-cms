@@ -6,6 +6,8 @@
 namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\CRUDManagerAbstract;
+use SoftnCMS\models\tables\Term;
+use SoftnCMS\util\Arrays;
 use SoftnCMS\util\MySQL;
 
 /**
@@ -22,16 +24,28 @@ class TermsManager extends CRUDManagerAbstract {
     
     const TERM_COUNT       = 'term_count';
     
+    /**
+     * @param Term $object
+     */
     protected function addParameterQuery($object) {
-        // TODO: Implement addParameterQuery() method.
+        parent::parameterQuery(self::TERM_NAME, $object->getTermName(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::TERM_DESCRIPTION, $object->getTermDescription(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::TERM_COUNT, $object->getTermCount(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {
-        // TODO: Implement getTable() method.
+        return self::TABLE;
     }
     
-    protected function buildObjectTable($result, $fetch = MySQL::FETCH_ALL) {
-        // TODO: Implement buildObjectTable() method.
+    protected function buildObjectTable($result) {
+        parent::buildObjectTable($result);
+        $term = new Term();
+        $term->setId(Arrays::get($result, self::ID));
+        $term->setTermName(Arrays::get($result, self::TERM_NAME));
+        $term->setTermDescription(Arrays::get($result, self::TERM_DESCRIPTION));
+        $term->setTermCount(Arrays::get($result, self::TERM_COUNT));
+        
+        return $term;
     }
     
 }
