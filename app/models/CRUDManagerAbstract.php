@@ -60,7 +60,7 @@ abstract class CRUDManagerAbstract extends ManagerAbstract {
     protected function updateData($object, $column = self::ID) {
         $this->addParameterQuery($object);
         $mySQL  = new MySQL();
-        $result = $mySQL->update(parent::getTableWithPrefix(), $this->prepare, $column);
+        $result = $mySQL->update(parent::getTableWithPrefix($this->getTable()), $this->prepare, $column);
         parent::closeConnection($mySQL);
         
         return $result;
@@ -77,7 +77,7 @@ abstract class CRUDManagerAbstract extends ManagerAbstract {
         $this->addParameterQuery($object);
         $this->lastInsertId = 0;
         $mySQL              = new MySQL();
-        $result             = $mySQL->insert(parent::getTableWithPrefix(), $this->prepare);
+        $result             = $mySQL->insert(parent::getTableWithPrefix($this->getTable()), $this->prepare);
         
         if ($result) {
             $this->lastInsertId = $mySQL->lastInsertId();
@@ -95,8 +95,13 @@ abstract class CRUDManagerAbstract extends ManagerAbstract {
      */
     public function delete($id) {
         parent::parameterQuery(self::ID, $id, \PDO::PARAM_INT);
+        
+        return $this->deleteBy();
+    }
+    
+    protected function deleteBy() {
         $mySQL  = new MySQL();
-        $result = $mySQL->delete(parent::getTableWithPrefix(), $this->prepare);
+        $result = $mySQL->delete(parent::getTableWithPrefix($this->getTable()), $this->prepare);
         parent::closeConnection($mySQL);
         
         return $result;

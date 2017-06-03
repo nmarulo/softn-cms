@@ -146,21 +146,21 @@ class ViewController {
      */
     public static function includeScripts() {
         $optionsManager = new OptionsManager();
-        $baseUrl        = $optionsManager->searchByName(OPTION_SITE_URL);
+        $baseUrl        = $optionsManager->getSiteUrl();
         
         foreach (self::$VIEW_SCRIPTS as $script) {
-            $baseUrl .= $script;
-            echo "<script src='$baseUrl.js' type='text/javascript'></script>";
+            $script = $baseUrl . $script;
+            echo "<script src='$script.js' type='text/javascript'></script>";
         }
     }
     
     public static function includeStyles() {
         $optionsManager = new OptionsManager();
-        $baseUrl        = $optionsManager->searchByName(OPTION_SITE_URL);
+        $baseUrl        = $optionsManager->getSiteUrl();
         
         foreach (self::$VIEW_STYLES as $style) {
-            $baseUrl .= $style;
-            echo "<link href='$baseUrl.css' rel='stylesheet' type='text/css'/>";
+            $style = $baseUrl . $style;
+            echo "<link href='$style.css' rel='stylesheet' type='text/css'/>";
         }
     }
     

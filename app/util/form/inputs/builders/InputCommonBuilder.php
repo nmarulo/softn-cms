@@ -3,9 +3,9 @@
  * InputCommonBuilder.php
  */
 
-namespace SoftnCMS\helpers\form\inputs\builders;
+namespace SoftnCMS\util\form\inputs\builders;
 
-use SoftnCMS\helpers\form\inputs\types\InputCommon;
+use SoftnCMS\util\form\inputs\types\InputCommon;
 
 /**
  * Class InputCommonBuilder

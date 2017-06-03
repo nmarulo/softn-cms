@@ -3,13 +3,13 @@
  * InputAlphanumeric.php
  */
 
-namespace SoftnCMS\helpers\form;
+namespace SoftnCMS\util\form;
 
-use SoftnCMS\controllers\Sanitize;
-use SoftnCMS\controllers\Validate;
-use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
-use SoftnCMS\helpers\form\inputs\InputInterface;
-use SoftnCMS\helpers\form\inputs\types\InputText;
+use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\util\form\inputs\InputInterface;
+use SoftnCMS\util\form\inputs\types\InputText;
+use SoftnCMS\util\Sanitize;
+use SoftnCMS\util\Validate;
 
 /**
  * Interface InputAlphanumeric

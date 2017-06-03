@@ -3,13 +3,13 @@
  * InputUrl.php
  */
 
-namespace SoftnCMS\helpers\form;
+namespace SoftnCMS\util\form;
 
-use SoftnCMS\controllers\Sanitize;
-use SoftnCMS\controllers\Validate;
-use SoftnCMS\helpers\form\builders\InputUrlBuilder;
-use SoftnCMS\helpers\form\inputs\Input;
-use SoftnCMS\helpers\form\inputs\InputInterface;
+use SoftnCMS\util\form\builders\InputUrlBuilder;
+use SoftnCMS\util\form\inputs\Input;
+use SoftnCMS\util\form\inputs\InputInterface;
+use SoftnCMS\util\Sanitize;
+use SoftnCMS\util\Validate;
 
 /**
  * Class InputUrl

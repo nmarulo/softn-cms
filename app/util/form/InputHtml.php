@@ -3,12 +3,12 @@
  * InputHtml.php
  */
 
-namespace SoftnCMS\helpers\form;
+namespace SoftnCMS\util\form;
 
-use SoftnCMS\controllers\Escape;
-use SoftnCMS\helpers\form\builders\InputHtmlBuilder;
-use SoftnCMS\helpers\form\inputs\InputInterface;
-use SoftnCMS\helpers\form\inputs\types\InputText;
+use SoftnCMS\util\Escape;
+use SoftnCMS\util\form\builders\InputHtmlBuilder;
+use SoftnCMS\util\form\inputs\InputInterface;
+use SoftnCMS\util\form\inputs\types\InputText;
 
 /**
  * Class InputHtml

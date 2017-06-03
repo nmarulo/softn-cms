@@ -3,12 +3,12 @@
  * InputBoolean.php
  */
 
-namespace SoftnCMS\helpers\form;
+namespace SoftnCMS\util\form;
 
-use SoftnCMS\controllers\Validate;
-use SoftnCMS\helpers\form\inputs\builders\InputBuilder;
-use SoftnCMS\helpers\form\inputs\Input;
-use SoftnCMS\helpers\form\inputs\InputInterface;
+use SoftnCMS\util\form\inputs\builders\InputBuilder;
+use SoftnCMS\util\form\inputs\Input;
+use SoftnCMS\util\form\inputs\InputInterface;
+use SoftnCMS\util\Validate;
 
 /**
  * Class InputBoolean

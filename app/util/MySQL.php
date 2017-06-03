@@ -218,9 +218,9 @@ class MySQL {
             return $value['parameter'] . ' = :' . $value['parameter'];
         }, $parameterQuery);
         
-        $query = 'DELETE FROM ';
-        $query .= $table;
-        $query .= ' WHERE ';
+        $query = 'DELETE ';
+        $query .= "FROM $table ";
+        $query .= 'WHERE ';
         //En caso de enviar mas de un dato en el "$parameterQuery".
         $query       .= implode(' AND ', $values);
         $this->query = $query;

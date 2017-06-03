@@ -3,7 +3,7 @@
  * InputInterface.php
  */
 
-namespace SoftnCMS\helpers\form\inputs;
+namespace SoftnCMS\util\form\inputs;
 
 /**
  * Class Input

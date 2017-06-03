@@ -3,9 +3,9 @@
  * InputNumberBuilder.php
  */
 
-namespace SoftnCMS\helpers\form\inputs\builders;
+namespace SoftnCMS\util\form\inputs\builders;
 
-use SoftnCMS\helpers\form\inputs\types\InputNumber;
+use SoftnCMS\util\form\inputs\types\InputNumber;
 
 /**
  * Class InputNumberBuilder

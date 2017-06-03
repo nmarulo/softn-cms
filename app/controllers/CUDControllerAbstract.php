@@ -18,4 +18,6 @@ abstract class CUDControllerAbstract extends ControllerAbstract {
     public abstract function delete($id);
     
     protected abstract function form();
+    
+    protected abstract function filterInputs();
 }

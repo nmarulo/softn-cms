@@ -43,8 +43,8 @@ define('THEMES', ABSPATH . 'themes' . DIRECTORY_SEPARATOR);
 define('APP_THEMES', 'app' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR);
 
 define('OPTION_TITLE', 'optionTitle');
-define('OPTION_DESCRIPTION', 'optionTitle');
-define('OPTION_PAGED', 'optionTitle');
-define('OPTION_SITE_URL', 'optionTitle');
-define('OPTION_THEME', 'optionTitle');
-define('OPTION_EMAIL_ADMIN', 'optionTitle');
+define('OPTION_DESCRIPTION', 'optionDescription');
+define('OPTION_PAGED', 'optionPaged');
+define('OPTION_SITE_URL', 'optionSiteUrl');
+define('OPTION_THEME', 'optionTheme');
+define('OPTION_EMAIL_ADMIN', 'optionEmailAdmin');

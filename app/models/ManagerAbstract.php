@@ -52,18 +52,22 @@ abstract class ManagerAbstract {
      * @return bool|mixed
      */
     protected function searchBy($parameter) {
-        $query = 'SELECT * FROM ';
-        $query .= $this->getTableWithPrefix();
+        return Arrays::get($this->searchAllBy($parameter), 0);
+    }
+    
+    protected function searchAllBy($parameter) {
+        $query = 'SELECT * ';
+        $query .= 'FROM ' . $this->getTableWithPrefix($this->getTable());
         $query .= " WHERE $parameter = :$parameter";
         
-        return Arrays::get($this->readData($query), 0);
+        return $this->readData($query);
     }
     
     /**
      * @return string
      */
-    protected function getTableWithPrefix() {
-        return DB_PREFIX . $this->getTable();
+    protected function getTableWithPrefix($table) {
+        return DB_PREFIX . $table;
     }
     
     protected abstract function getTable();
@@ -75,8 +79,8 @@ abstract class ManagerAbstract {
      */
     protected function readData($query = "") {
         if (empty($query)) {
-            $query = 'SELECT * FROM ';
-            $query .= $this->getTableWithPrefix();
+            $query = 'SELECT * ';
+            $query .= 'FROM ' . $this->getTableWithPrefix($this->getTable());
             $query .= ' ORDER BY ID DESC';
         }
         
@@ -105,7 +109,7 @@ abstract class ManagerAbstract {
             throw new \Exception('Error');
         }
         
-        return null;
+        return NULL;
     }
     
     public function read() {

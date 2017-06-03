@@ -1,11 +1,19 @@
 <?php
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\PostsManager;
+use SoftnCMS\util\Arrays;
+use SoftnCMS\models\managers\PostsCategoriesManager;
+use SoftnCMS\models\managers\PostsTermsManager;
 
-$title    = ViewController::getViewData('title');
-$post     = ViewController::getViewData('post');
-$method   = ViewController::getViewData('method');
-$isUpdate = $method == 'update';
+$title                = ViewController::getViewData('title');
+$post                 = ViewController::getViewData('post');
+$method               = ViewController::getViewData('method');
+$categories           = ViewController::getViewData('categories');
+$terms                = ViewController::getViewData('terms');
+$selectedCategoriesId = ViewController::getViewData('selectedCategoriesId');
+$selectedTermsId      = ViewController::getViewData('selectedTermsId');
+$isUpdate             = $method == PostsManager::FORM_UPDATE;
+$linkPost             = ViewController::getViewData('linkPost');
 ?>
 <div class="sn-content">
     <div>
@@ -20,7 +28,7 @@ $isUpdate = $method == 'update';
                     </div>
                     <?php if ($isUpdate) { ?>
                         <div class="form-group">
-                            <label>Enlace: <a href="#" target="_blank">link post ...</a></label>
+                            <label>Enlace: <a href="<?php echo $linkPost; ?>" target="_blank"><?php echo $linkPost; ?></a></label>
                         </div>
                     <?php } ?>
                     <div class="form-group">
@@ -60,18 +68,18 @@ $isUpdate = $method == 'update';
                     <div class="panel panel-default">
                         <div class="panel-heading">Categorías</div>
                         <div class="panel-body">
-                            <select name="relationshipsCategoriesID[]" multiple class="form-control">
+                            <select name="<?php echo PostsCategoriesManager::CATEGORY_ID; ?>[]" multiple class="form-control">
                                 <?php
-                                //                                foreach ($data['categories'] as $category) {
-                                //                                    $categoryID = $category->getID();
-                                //                                    $selected   = '';
-                                //
-                                //                                    if($data['isSelectOption']($categoryID, $data, 'relationshipsCategoriesID')){
-                                //                                        $selected = 'selected';
-                                //                                    }
-                                //
-                                //                                    echo "<option value='$categoryID' $selected>" . $category->getCategoryName() . '</option>';
-                                //                                }
+                                foreach ($categories as $category) {
+                                    $categoryID = $category->getID();
+                                    $selected   = '';
+    
+                                    if (Arrays::valueExists($selectedCategoriesId, $categoryID)) {
+                                        $selected = 'selected';
+                                    }
+    
+                                    echo "<option value='$categoryID' $selected>" . $category->getCategoryName() . '</option>';
+                                }
                                 ?>
                             </select>
                         </div>
@@ -79,18 +87,18 @@ $isUpdate = $method == 'update';
                     <div class="panel panel-default">
                         <div class="panel-heading">Etiquetas</div>
                         <div class="panel-body">
-                            <select name="relationshipsTermsID[]" multiple class="form-control">
+                            <select name="<?php echo PostsTermsManager::TERM_ID; ?>[]" multiple class="form-control">
                                 <?php
-                                //                                foreach ($data['terms'] as $term) {
-                                //                                    $termID   = $term->getID();
-                                //                                    $selected = '';
-                                //
-                                //                                    if($data['isSelectOption']($termID, $data, 'relationshipsTermsID')){
-                                //                                        $selected = 'selected';
-                                //                                    }
-                                //
-                                //                                    echo "<option value='$termID' $selected>" . $term->getTermName() . '</option>';
-                                //                                }
+                                foreach ($terms as $term) {
+                                    $termID   = $term->getID();
+                                    $selected = '';
+    
+                                    if (Arrays::valueExists($selectedTermsId, $termID)) {
+                                        $selected = 'selected';
+                                    }
+    
+                                    echo "<option value='$termID' $selected>" . $term->getTermName() . '</option>';
+                                }
                                 ?>
                             </select>
                         </div>

@@ -3,10 +3,11 @@
  * InputBuilder.php
  */
 
-namespace SoftnCMS\helpers\form\inputs\builders;
+namespace SoftnCMS\util\form\inputs\builders;
 
 use SoftnCMS\helpers\ArrayHelp;
-use SoftnCMS\helpers\form\inputs\Input;
+use SoftnCMS\util\Arrays;
+use SoftnCMS\util\form\inputs\Input;
 
 /**
  * Class InputBuild
@@ -79,7 +80,7 @@ abstract class InputBuilder {
             $this->method = $_POST;
         }
         
-        $this->value = ArrayHelp::get($this->method, $this->name);
+        $this->value = Arrays::get($this->method, $this->name);
     }
     
     public abstract function build();

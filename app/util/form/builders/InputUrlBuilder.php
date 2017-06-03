@@ -3,11 +3,11 @@
  * InputUrlBuilder.php
  */
 
-namespace SoftnCMS\helpers\form\builders;
+namespace SoftnCMS\util\form\builders;
 
-use SoftnCMS\helpers\form\inputs\builders\InputBuilder;
-use SoftnCMS\helpers\form\inputs\builders\InputBuilderInterface;
-use SoftnCMS\helpers\form\InputUrl;
+use SoftnCMS\util\form\inputs\builders\InputBuilder;
+use SoftnCMS\util\form\inputs\builders\InputBuilderInterface;
+use SoftnCMS\util\form\InputUrl;
 
 /**
  * Class InputUrlBuilder

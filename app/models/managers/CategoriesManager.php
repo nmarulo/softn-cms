@@ -24,6 +24,20 @@ class CategoriesManager extends CRUDManagerAbstract {
     
     const CATEGORY_COUNT       = 'category_count';
     
+    public function searchByPostId($postId) {
+        $table                = parent::getTableWithPrefix(self::TABLE);
+        $tablePostsCategories = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
+        $query                = 'SELECT * ';
+        $query                .= "FROM $table ";
+        $query                .= 'WHERE id IN (';
+        $query                .= 'SELECT category_ID ';
+        $query                .= "FROM $tablePostsCategories ";
+        $query                .= 'WHERE post_ID = :post_ID)';
+        $this->parameterQuery(PostsCategoriesManager::POST_ID, $postId, \PDO::PARAM_INT);
+        
+        return parent::readData($query);
+    }
+    
     /**
      * @param Category $object
      */

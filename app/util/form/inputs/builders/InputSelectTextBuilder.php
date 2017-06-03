@@ -3,10 +3,10 @@
  * InputSelectTextBuilder.php
  */
 
-namespace SoftnCMS\helpers\form\inputs\builders;
+namespace SoftnCMS\util\form\inputs\builders;
 
-use SoftnCMS\helpers\form\inputs\types\InputSelect;
-use SoftnCMS\helpers\form\inputs\types\InputSelectText;
+use SoftnCMS\util\form\inputs\types\InputSelect;
+use SoftnCMS\util\form\inputs\types\InputSelectText;
 
 /**
  * Class InputSelectTextBuilder

@@ -21,6 +21,23 @@ class OptionsManager extends CRUDManagerAbstract {
     
     const OPTION_VALUE = 'option_value';
     
+    public function getSiteUrl() {
+        //TODO: temporalmente.
+        $siteUrl       = "http://localhost/softn-cms/";
+        $optionSiteUrl = $this->searchByName(OPTION_SITE_URL);
+        
+        if ($optionSiteUrl !== FALSE) {
+            $siteUrl = $optionSiteUrl->getOptionValue();
+        }
+        
+        return $siteUrl;
+    }
+    
+    /**
+     * @param string $name
+     *
+     * @return bool|Option
+     */
     public function searchByName($name) {
         parent::parameterQuery(self::OPTION_NAME, $name, \PDO::PARAM_STR);
         
@@ -48,5 +65,4 @@ class OptionsManager extends CRUDManagerAbstract {
         
         return $option;
     }
-    
 }

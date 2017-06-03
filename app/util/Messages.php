@@ -5,8 +5,6 @@
 
 namespace SoftnCMS\util;
 
-use SoftnCMS\controllers\ViewController;
-
 /**
  * Class Messages
  * @author Nicolás Marulanda P.
@@ -17,16 +15,27 @@ class Messages {
     
     const TYPE_SUCCESS = 'success';
     
-    public static function sendMessagesView($message, $typeMessage) {
-        ViewController::sendViewData('messages', $message);
-        ViewController::sendViewData('typeMessage', $typeMessage);
+    private static $messages = [];
+    
+    public static function addMessage($message, $typeMessage) {
+        self::$messages[] = [
+            'message'     => $message,
+            'typeMessage' => $typeMessage,
+        ];
     }
     
     public static function getMessages() {
-        return ViewController::getViewData('messages');
+        $messages       = self::$messages;
+        self::$messages = [];
+        
+        return $messages;
     }
     
-    public static function getTypeMessage() {
-        return ViewController::getViewData('typeMessage');
+    public static function getMessage($value) {
+        return Arrays::get($value, 'message');
+    }
+    
+    public static function getTypeMessage($value) {
+        return Arrays::get($value, 'typeMessage');
     }
 }

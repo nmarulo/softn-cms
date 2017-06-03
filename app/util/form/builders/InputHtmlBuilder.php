@@ -3,11 +3,11 @@
  * InputHtmlBuilder.php
  */
 
-namespace SoftnCMS\helpers\form\builders;
+namespace SoftnCMS\util\form\builders;
 
-use SoftnCMS\helpers\form\InputHtml;
-use SoftnCMS\helpers\form\inputs\builders\InputBuilderInterface;
-use SoftnCMS\helpers\form\inputs\builders\InputTextBuilder;
+use SoftnCMS\util\form\InputHtml;
+use SoftnCMS\util\form\inputs\builders\InputBuilderInterface;
+use SoftnCMS\util\form\inputs\builders\InputTextBuilder;
 
 /**
  * Class InputHtmlBuilder

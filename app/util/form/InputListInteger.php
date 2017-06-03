@@ -3,12 +3,12 @@
  * InputListInteger.php
  */
 
-namespace SoftnCMS\helpers\form;
+namespace SoftnCMS\util\form;
 
-use SoftnCMS\controllers\Sanitize;
-use SoftnCMS\helpers\form\inputs\builders\InputSelectNumberBuilder;
-use SoftnCMS\helpers\form\inputs\InputInterface;
-use SoftnCMS\helpers\form\inputs\types\InputSelectNumber;
+use SoftnCMS\util\form\inputs\builders\InputSelectNumberBuilder;
+use SoftnCMS\util\form\inputs\InputInterface;
+use SoftnCMS\util\form\inputs\types\InputSelectNumber;
+use SoftnCMS\util\Sanitize;
 
 /**
  * Class InputListInteger

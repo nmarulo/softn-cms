@@ -3,9 +3,9 @@
  * InputTextBuilder.php
  */
 
-namespace SoftnCMS\helpers\form\inputs\builders;
+namespace SoftnCMS\util\form\inputs\builders;
 
-use SoftnCMS\helpers\form\inputs\types\InputText;
+use SoftnCMS\util\form\inputs\types\InputText;
 
 /**
  * Class InputTextBuilder

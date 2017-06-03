@@ -1,11 +1,13 @@
 <?php
 use SoftnCMS\controllers\ViewController;
-
+use SoftnCMS\models\managers\OptionsManager;
 $posts = ViewController::getViewData('posts');
+$optionsManager = new OptionsManager();
+$siteUrl = $optionsManager->getSiteUrl();
 ?>
 <div class="sn-content">
     <div>
-        <h1>Publicaciones <a href="#" class="btn btn-default">Nueva entrada</a></h1>
+        <h1>Publicaciones <a href="<?php echo $siteUrl . 'admin/post/create'; ?>" class="btn btn-default">Nueva entrada</a></h1>
     </div>
     <div>
         <div class="row pagination-content">
@@ -52,8 +54,8 @@ $posts = ViewController::getViewData('posts');
                 <?php foreach ($posts as $post) { ?>
                     <tr>
                         <td class="options">
-                            <a class="btnAction-sm btn btn-primary" href="#" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
-                            <a class="btnAction-sm btn btn-danger" href="#" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                            <a class="btnAction-sm btn btn-primary" href="<?php echo $siteUrl . 'admin/post/update/' . $post->getId(); ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
+                            <a class="btnAction-sm btn btn-danger" href="<?php echo $siteUrl . 'admin/post/delete/' . $post->getId(); ?>" title="Editar"><span class="glyphicon glyphicon-remove-sign"></span></a>
                         </td>
                         <td><a href="#" target="_blank"><?php echo $post->getPostTitle(); ?></a></td>
                         <td><a href="#" target="_blank"><?php echo $post->getUserID(); ?></a></td>

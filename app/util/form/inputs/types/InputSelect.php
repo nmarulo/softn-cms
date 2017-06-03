@@ -3,7 +3,7 @@
  * InputSelect.php
  */
 
-namespace SoftnCMS\helpers\form\inputs\types;
+namespace SoftnCMS\util\form\inputs\types;
 
 /**
  * Class InputSelect
