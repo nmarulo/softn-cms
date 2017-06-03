@@ -15,6 +15,13 @@ use SoftnCMS\util\Validate;
  */
 class InputInteger extends InputNumber {
     
+    /**
+     * InputInteger constructor.
+     */
+    public function __construct() {
+        parent::__construct();
+    }
+    
     public function filter() {
         $output = Sanitize::integer($this->value, $this->sign);
         

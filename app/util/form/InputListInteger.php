@@ -14,6 +14,13 @@ use SoftnCMS\util\Sanitize;
  */
 class InputListInteger extends InputSelectNumber {
     
+    /**
+     * InputListInteger constructor.
+     */
+    public function __construct() {
+        parent::__construct();
+    }
+    
     public function filter() {
         return Sanitize::arrayList($this->value, $this->listType, $this->sign);
     }

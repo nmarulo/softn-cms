@@ -15,6 +15,13 @@ use SoftnCMS\util\Validate;
  */
 class InputUrl extends Input {
     
+    /**
+     * InputUrl constructor.
+     */
+    public function __construct() {
+        parent::__construct();
+    }
+    
     public function filter() {
         $output = Sanitize::url($this->value);
         

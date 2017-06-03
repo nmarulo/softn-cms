@@ -14,6 +14,13 @@ use SoftnCMS\util\form\inputs\types\InputText;
  */
 class InputHtml extends InputText {
     
+    /**
+     * InputHtml constructor.
+     */
+    public function __construct() {
+        parent::__construct();
+    }
+    
     public function filter() {
         return Escape::htmlEncode($this->value);
     }

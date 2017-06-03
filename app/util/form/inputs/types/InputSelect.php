@@ -11,7 +11,7 @@ namespace SoftnCMS\util\form\inputs\types;
  */
 trait InputSelect {
     
-    protected $listType = 'integer';
+    protected $listType;
     
     /**
      * InputSelect constructor.

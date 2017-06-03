@@ -15,6 +15,13 @@ use SoftnCMS\util\Validate;
  */
 class InputAlphanumeric extends InputText {
     
+    /**
+     * InputAlphanumeric constructor.
+     */
+    public function __construct() {
+        parent::__construct();
+    }
+    
     public function filter() {
         $output = Sanitize::alphanumeric($this->value, $this->accents, $this->withoutSpace, $this->replaceSpace);
         

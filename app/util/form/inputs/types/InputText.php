@@ -11,11 +11,11 @@ namespace SoftnCMS\util\form\inputs\types;
  */
 abstract class InputText extends InputCommon {
     
-    protected $accents      = TRUE;
+    protected $accents;
     
-    protected $withoutSpace = FALSE;
+    protected $withoutSpace;
     
-    protected $replaceSpace = '-';
+    protected $replaceSpace;
     
     /**
      * InputText constructor.

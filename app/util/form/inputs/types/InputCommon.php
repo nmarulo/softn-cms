@@ -17,17 +17,17 @@ abstract class InputCommon extends Input implements InputCommonInterface {
     /**
      * @var int
      */
-    protected $lenMax = 0;
+    protected $lenMax;
     
     /**
      * @var int
      */
-    protected $lenMin = 1;
+    protected $lenMin;
     
     /**
      * @var bool Longitud estricta
      */
-    protected $lenStrict = FALSE;
+    protected $lenStrict;
     
     /**
      * InputCommon constructor.

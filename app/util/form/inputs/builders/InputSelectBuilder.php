@@ -15,16 +15,6 @@ trait InputSelectBuilder {
     private $input;
     
     /**
-     * InputSelectBuilder constructor.
-     *
-     * @param InputSelect $input
-     */
-    public function __construct(InputSelect $input) {
-        parent::__construct($input);
-        $this->input = $input;
-    }
-    
-    /**
      * @param string $listType
      *
      * @return $this

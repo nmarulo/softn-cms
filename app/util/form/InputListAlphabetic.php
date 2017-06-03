@@ -13,6 +13,13 @@ use SoftnCMS\util\form\inputs\types\InputSelectText;
  */
 class InputListAlphabetic extends InputSelectText {
     
+    /**
+     * InputListAlphabetic constructor.
+     */
+    public function __construct() {
+        parent::__construct();
+    }
+    
     public function filter() {
         //TODO: pendiente
         return $this->value;

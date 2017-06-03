@@ -40,7 +40,7 @@ class InputAlphanumericBuilder extends InputTextBuilder {
         $input->setName($name);
         $input->setType($type);
         
-        return new InputAlphanumericBuilder($name, $type);
+        return new InputAlphanumericBuilder($input);
     }
     
     /**

@@ -6,7 +6,6 @@
 namespace SoftnCMS\util\form\builders;
 
 use SoftnCMS\util\form\InputListInteger;
-
 use SoftnCMS\util\form\inputs\builders\InputSelectNumberBuilder;
 
 /**

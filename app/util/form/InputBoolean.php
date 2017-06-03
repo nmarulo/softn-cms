@@ -14,6 +14,13 @@ use SoftnCMS\util\Validate;
  */
 class InputBoolean extends Input {
     
+    /**
+     * InputBoolean constructor.
+     */
+    public function __construct() {
+        parent::__construct();
+    }
+    
     public function filter() {
         return Validate::boolean($this->value);
     }

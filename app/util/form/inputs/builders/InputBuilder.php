@@ -28,7 +28,7 @@ abstract class InputBuilder implements InputInterface, InputBuilderInterface {
     }
     
     /**
-     * @param string $value
+     * @param mixed $value
      *
      * @return $this
      */

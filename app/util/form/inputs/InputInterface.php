@@ -12,7 +12,7 @@ namespace SoftnCMS\util\form\inputs;
 interface InputInterface {
     
     /**
-     * @param string $value
+     * @param mixed $value
      */
     public function setValue($value);
     
