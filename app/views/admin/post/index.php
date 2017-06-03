@@ -10,24 +10,7 @@ $siteUrl = $optionsManager->getSiteUrl();
         <h1>Publicaciones <a href="<?php echo $siteUrl . 'admin/post/create'; ?>" class="btn btn-default">Nueva entrada</a></h1>
     </div>
     <div>
-        <div class="row pagination-content">
-            <div class="col-md-4">
-                <div class="input-group">
-                    <span class="input-group-addon">Pagina</span>
-                    <input id="goToPage" title="Presione Enter para continuar." class="form-control" type="number" name="pagination_num" min="1" value="0">
-                    <input type="hidden" name="search" value="#" id="goToPageHide">
-                </div>
-            </div>
-            <nav class="col-md-8">
-                <ul class="pagination clearfix">
-                    <li><a data-paged="" href="#"><span>&laquo;</span></a></li>
-                    <li><a data-paged='0' href='#'>01</a></li>
-                    <li><a data-paged='0' href='#'>02</a></li>
-                    <li><a data-paged='0' href='#'>03</a></li>
-                    <li><a data-paged="" href="#"><span>&raquo;</span></a></li>
-                </ul>
-            </nav>
-        </div>
+        <?php ViewController::singleViewDirectory('pagination'); ?>
         <div id="contentPost" class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -67,6 +50,6 @@ $siteUrl = $optionsManager->getSiteUrl();
                 </tbody>
             </table>
         </div>
-        <?php //$data['template']::getPagedNav(); ?>
+        <?php ViewController::singleViewDirectory('pagination'); ?>
     </div>
 </div>

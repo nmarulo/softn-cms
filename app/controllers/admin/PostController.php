@@ -31,6 +31,7 @@ use SoftnCMS\util\form\InputListInteger;
 use SoftnCMS\util\form\inputs\builders\InputNumberBuilder;
 use SoftnCMS\util\form\inputs\builders\InputTextBuilder;
 use SoftnCMS\util\Messages;
+use SoftnCMS\util\Pagination;
 use SoftnCMS\util\Util;
 
 /**
@@ -55,6 +56,11 @@ class PostController extends CUDControllerAbstract {
                 if ($result) {
                     $messages    = 'Entrada publicada correctamente.';
                     $typeMessage = Messages::TYPE_SUCCESS;
+                    $postId      = $postsManager->getLastInsertId();
+                    $terms       = Arrays::get($form, 'terms'); //Etiquetas nuevas
+                    $categories  = Arrays::get($form, 'categories'); //Categorías nuevas
+                    $this->createOrDeleteTerms($terms, $postId);
+                    $this->createOrDeleteCategories($categories, $postId);
                     Messages::addMessage($messages, $typeMessage);
                     //TODO: temporalmente, hasta crear una redirección a la pagina "update".
                     $this->index();
@@ -87,6 +93,7 @@ class PostController extends CUDControllerAbstract {
         
         $post->setId(Arrays::get($inputs, PostsManager::ID));
         $post->setCommentCount(NULL);
+        $post->setPostDate(NULL);
         $post->setPostUpdate($date);
         $post->setPostTitle(Arrays::get($inputs, PostsManager::POST_TITLE));
         $post->setPostStatus(Arrays::get($inputs, PostsManager::POST_STATUS));
@@ -108,30 +115,149 @@ class PostController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
-            InputAlphabeticBuilder::init(PostsManager::FORM_UPDATE)
-                                  ->setRequire(FALSE)
-                                  ->setAccents(FALSE)
-                                  ->build(),
-            InputIntegerBuilder::init(PostsManager::ID)
-                               ->build(),
-            InputAlphanumericBuilder::init(PostsManager::POST_TITLE)
-                                    ->build(),
-            InputHtmlBuilder::init(PostsManager::POST_CONTENTS)
-                            ->build(),
-            InputBooleanBuilder::init(PostsManager::COMMENT_STATUS)
-                               ->build(),
-            InputBooleanBuilder::init(PostsManager::POST_STATUS)
-                               ->build(),
-            InputListIntegerBuilder::init(PostsCategoriesManager::CATEGORY_ID)
-                                   ->setRequire(FALSE)
-                                   ->build(),
-            InputListIntegerBuilder::init(PostsTermsManager::TERM_ID)
-                                   ->setRequire(FALSE)
-                                   ->build(),
-        ]);
+        //TODO: revisar.
+        //        Form::setINPUT([
+        //            InputAlphabeticBuilder::init(PostsManager::FORM_UPDATE)
+        //                                  ->setRequire(FALSE)
+        //                                  ->setAccents(FALSE)
+        //                                  ->build(),
+        //            InputIntegerBuilder::init(PostsManager::ID)
+        //                               ->build(),
+        //            InputAlphanumericBuilder::init(PostsManager::POST_TITLE)
+        //                                    ->build(),
+        //            InputHtmlBuilder::init(PostsManager::POST_CONTENTS)
+        //                            ->build(),
+        //            InputBooleanBuilder::init(PostsManager::COMMENT_STATUS)
+        //                               ->build(),
+        //            InputBooleanBuilder::init(PostsManager::POST_STATUS)
+        //                               ->build(),
+        //            InputListIntegerBuilder::init(PostsCategoriesManager::CATEGORY_ID)
+        //                                   ->setRequire(FALSE)
+        //                                   ->build(),
+        //            InputListIntegerBuilder::init(PostsTermsManager::TERM_ID)
+        //                                   ->setRequire(FALSE)
+        //                                   ->build(),
+        //        ]);
+        //
+        //        return Form::inputFilter();
         
-        return Form::inputFilter();
+        return $_POST;
+    }
+    
+    private function createOrDeleteTerms($termsId, $postId) {
+        $typeMessage       = Messages::TYPE_DANGER;
+        $postsTermsManager = new PostsTermsManager();
+        $selectedTermsId   = $this->getSelectedTermsId($postId);
+        
+        if (empty($termsId)) {
+            if ($postsTermsManager->deleteAllByPostId($postId) === FALSE) {
+                $message = 'Error al borrar las etiquetas.';
+                Messages::addMessage($message, $typeMessage);
+            }
+            
+        } else {
+            $numError = 0;
+            //Obtengo los identificadores de las nuevas etiquetas.
+            $newTerms = array_filter($termsId, function($value) use ($selectedTermsId) {
+                return !Arrays::valueExists($selectedTermsId, $value);
+            });
+            $newTerms = array_map(function($value) use ($postId) {
+                $object = new PostTerm();
+                $object->setTermID($value);
+                $object->setPostID($postId);
+                
+                return $object;
+            }, $newTerms);
+            
+            //Obtengo los identificadores de las etiquetas que no se han seleccionado.
+            $termsNotSelected = array_filter($selectedTermsId, function($value) use ($termsId) {
+                return !Arrays::valueExists($termsId, $value);
+            });
+            
+            array_walk($termsNotSelected, function($value) use ($postId, $postsTermsManager, &$numError) {
+                if ($postsTermsManager->deleteByPostAndTerm($postId, $value) === FALSE) {
+                    $numError++;
+                }
+            });
+            
+            array_walk($newTerms, function($value) use ($postsTermsManager, &$numError) {
+                if (!$postsTermsManager->create($value)) {
+                    $numError++;
+                }
+            });
+            
+            if ($numError > 0) {
+                Messages::addMessage('Error al actualizar las etiquetas.', Messages::TYPE_DANGER);
+            }
+        }
+    }
+    
+    private function getSelectedTermsId($postId) {
+        $postsTermsManager = new PostsTermsManager();
+        $postTerms         = $postsTermsManager->searchAllByPostId($postId); //Etiquetas actuales
+        $selectedTermsId   = array_map(function($value) {
+            return $value->getTermID();
+        }, $postTerms);
+        
+        return $selectedTermsId;
+    }
+    
+    private function createOrDeleteCategories($categoriesId, $postId) {
+        $typeMessage            = Messages::TYPE_DANGER;
+        $postsCategoriesManager = new PostsCategoriesManager();
+        $selectedCategoriesId   = $this->getSelectedCategoriesId($postId);
+        
+        if (empty($categoriesId)) {
+            if ($postsCategoriesManager->deleteAllByPostId($postId) === FALSE) {
+                $message = 'Error al borrar las categorías.';
+                Messages::addMessage($message, $typeMessage);
+            }
+            
+        } else {
+            $numError = 0;
+            //Obtengo los identificadores de las nuevas categorías.
+            $newCategories = array_filter($categoriesId, function($value) use ($selectedCategoriesId) {
+                return !Arrays::valueExists($selectedCategoriesId, $value);
+            });
+            $newCategories = array_map(function($value) use ($postId) {
+                $object = new PostCategory();
+                $object->setCategoryID($value);
+                $object->setPostID($postId);
+                
+                return $object;
+            }, $newCategories);
+            
+            //Obtengo los identificadores de las categorías que no se han seleccionado.
+            $CategoriesNotSelected = array_filter($selectedCategoriesId, function($value) use ($categoriesId) {
+                return !Arrays::valueExists($categoriesId, $value);
+            });
+            
+            array_walk($CategoriesNotSelected, function($value) use ($postId, $postsCategoriesManager, &$numError) {
+                if ($postsCategoriesManager->deleteByPostAndCategory($postId, $value) === FALSE) {
+                    $numError++;
+                }
+            });
+            
+            array_walk($newCategories, function($value) use ($postsCategoriesManager, &$numError) {
+                if (!$postsCategoriesManager->create($value)) {
+                    $numError++;
+                }
+            });
+            
+            if ($numError > 0) {
+                Messages::addMessage('Error al actualizar las categorías.', Messages::TYPE_DANGER);
+            }
+        }
+    }
+    
+    private function getSelectedCategoriesId($postId) {
+        $postsCategoriesManager = new PostsCategoriesManager();
+        $postCategories         = $postsCategoriesManager->searchAllByPostId($postId); //Categorías actuales
+        $selectedCategoriesId   = array_map(function($value) {
+            return $value->getCategoryID();
+        }, $postCategories);
+        
+        return $selectedCategoriesId;
     }
     
     public function index() {
@@ -140,8 +266,17 @@ class PostController extends CUDControllerAbstract {
     }
     
     protected function read() {
+        $filters      = [];
         $postsManager = new PostsManager();
-        ViewController::sendViewData('posts', $postsManager->read());
+        $count        = $postsManager->count();
+        $postsManager = new PostsManager();
+        $pagination   = $this->pagination($count);
+        
+        if ($pagination !== FALSE) {
+            $filters['limit'] = $pagination;
+        }
+        
+        ViewController::sendViewData('posts', $postsManager->read($filters));
     }
     
     private function sendViewCategoriesAndTerms() {
@@ -189,128 +324,12 @@ class PostController extends CUDControllerAbstract {
         ViewController::view('form');
     }
     
-    private function createOrDeleteTerms($termsId, $postId) {
-        $typeMessage       = Messages::TYPE_DANGER;
-        $postsTermsManager = new PostsTermsManager();
-        $selectedTermsId   = $this->getSelectedTermsId($postId);
-        
-        if (empty($termsId)) {
-            if (!$postsTermsManager->deleteAllByPostId($postId)) {
-                $message = 'Error al borrar las etiquetas.';
-                Messages::addMessage($message, $typeMessage);
-            }
-            
-        } else {
-            $numError = 0;
-            //Obtengo los identificadores de las nuevas etiquetas.
-            $newTerms = array_filter($termsId, function($value) use ($selectedTermsId) {
-                return !Arrays::valueExists($selectedTermsId, $value);
-            });
-            $newTerms = array_map(function($value) use ($postId) {
-                $object = new PostTerm();
-                $object->setTermID($value);
-                $object->setPostID($postId);
-                
-                return $object;
-            }, $newTerms);
-            
-            //Obtengo los identificadores de las etiquetas que no se han seleccionado.
-            $termsNotSelected = array_filter($selectedTermsId, function($value) use ($termsId) {
-                return !Arrays::valueExists($termsId, $value);
-            });
-            
-            array_walk($termsNotSelected, function($value) use ($postId, $postsTermsManager, &$numError) {
-                if (!$postsTermsManager->deleteByPostAndTerm($postId, $value)) {
-                    $numError++;
-                }
-            });
-            
-            array_walk($newTerms, function($value) use ($postsTermsManager, &$numError) {
-                if (!$postsTermsManager->create($value)) {
-                    $numError++;
-                }
-            });
-            
-            if ($numError > 0) {
-                Messages::addMessage('Error al actualizar las etiquetas.', Messages::TYPE_DANGER);
-            }
-        }
-    }
-    
-    private function getSelectedTermsId($postId) {
-        $postsTermsManager = new PostsTermsManager();
-        $postTerms         = $postsTermsManager->searchAllByPostId($postId); //Etiquetas actuales
-        $selectedTermsId   = array_map(function($value) {
-            return $value->getTermID();
-        }, $postTerms);
-        
-        return $selectedTermsId;
-    }
-    
-    private function createOrDeleteCategories($categoriesId, $postId) {
-        $typeMessage            = Messages::TYPE_DANGER;
-        $postsCategoriesManager = new PostsCategoriesManager();
-        $selectedCategoriesId   = $this->getSelectedCategoriesId($postId);
-        
-        if (empty($categoriesId)) {
-            if (!$postsCategoriesManager->deleteAllByPostId($postId)) {
-                $message = 'Error al borrar las categorías.';
-                Messages::addMessage($message, $typeMessage);
-            }
-            
-        } else {
-            $numError = 0;
-            //Obtengo los identificadores de las nuevas categorías.
-            $newCategories = array_filter($categoriesId, function($value) use ($selectedCategoriesId) {
-                return !Arrays::valueExists($selectedCategoriesId, $value);
-            });
-            $newCategories = array_map(function($value) use ($postId) {
-                $object = new PostCategory();
-                $object->setCategoryID($value);
-                $object->setPostID($postId);
-                
-                return $object;
-            }, $newCategories);
-            
-            //Obtengo los identificadores de las categorías que no se han seleccionado.
-            $CategoriesNotSelected = array_filter($selectedCategoriesId, function($value) use ($categoriesId) {
-                return !Arrays::valueExists($categoriesId, $value);
-            });
-            
-            array_walk($CategoriesNotSelected, function($value) use ($postId, $postsCategoriesManager, &$numError) {
-                if (!$postsCategoriesManager->deleteByPostAndCategory($postId, $value)) {
-                    $numError++;
-                }
-            });
-            
-            array_walk($newCategories, function($value) use ($postsCategoriesManager, &$numError) {
-                if (!$postsCategoriesManager->create($value)) {
-                    $numError++;
-                }
-            });
-            
-            if ($numError > 0) {
-                Messages::addMessage('Error al actualizar las categorías.', Messages::TYPE_DANGER);
-            }
-        }
-    }
-    
-    private function getSelectedCategoriesId($postId) {
-        $postsCategoriesManager = new PostsCategoriesManager();
-        $postCategories         = $postsCategoriesManager->searchAllByPostId($postId); //Categorías actuales
-        $selectedCategoriesId   = array_map(function($value) {
-            return $value->getCategoryID();
-        }, $postCategories);
-        
-        return $selectedCategoriesId;
-    }
-    
     public function delete($id) {
         $messages     = 'Error al borrar la entrada.';
         $typeMessage  = Messages::TYPE_DANGER;
         $postsManager = new PostsManager();
         
-        if ($postsManager->delete($id)) {
+        if (!empty($postsManager->delete($id))) {
             $messages    = 'Entrada borrada correctamente.';
             $typeMessage = Messages::TYPE_SUCCESS;
         }

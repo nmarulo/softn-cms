@@ -43,7 +43,9 @@ abstract class ManagerAbstract {
      * @param int    $dataType
      */
     protected function parameterQuery($parameter, $value, $dataType) {
-        $this->prepare[] = MySQL::prepareStatement($parameter, $value, $dataType);
+        if (!is_null($value)) {
+            $this->prepare[] = MySQL::prepareStatement($parameter, $value, $dataType);
+        }
     }
     
     /**
@@ -64,9 +66,15 @@ abstract class ManagerAbstract {
     }
     
     /**
+     * @param string $table
+     *
      * @return string
      */
-    protected function getTableWithPrefix($table) {
+    protected function getTableWithPrefix($table = '') {
+        if (empty($table)) {
+            $table = $this->getTable();
+        }
+        
         return DB_PREFIX . $table;
     }
     
@@ -85,15 +93,21 @@ abstract class ManagerAbstract {
         }
         
         $objects = [];
-        $mySQL   = new MySQL();
-        $result  = $mySQL->select($query, $this->prepare);
-        $this->closeConnection($mySQL);
+        $result  = $this->select($query);
         
         foreach ($result as $value) {
             $objects[] = $this->buildObjectTable($value);
         }
         
         return $objects;
+    }
+    
+    private function select($query) {
+        $mySQL  = new MySQL();
+        $result = $mySQL->select($query, $this->prepare);
+        $this->closeConnection($mySQL);
+        
+        return $result;
     }
     
     /**
@@ -112,7 +126,21 @@ abstract class ManagerAbstract {
         return NULL;
     }
     
-    public function read() {
+    public function read($filters = []) {
         return $this->readData();
+    }
+    
+    public function count() {
+        $query  = 'SELECT COUNT(*) AS COUNT ';
+        $query  .= 'FROM ' . $this->getTableWithPrefix();
+        $result = $this->select($query);
+        
+        $result = Arrays::get($result, 0);
+        
+        if ($result === FALSE) {
+            return 0;
+        }
+        
+        return Arrays::get($result, 'COUNT');
     }
 }
