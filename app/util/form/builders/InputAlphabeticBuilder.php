@@ -47,6 +47,8 @@ class InputAlphabeticBuilder extends InputTextBuilder {
      * @return InputAlphabetic
      */
     public function build() {
+        parent::build();
+        
         return $this->input;
     }
     

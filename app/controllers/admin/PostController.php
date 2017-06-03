@@ -115,33 +115,30 @@ class PostController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        //TODO: revisar.
-        //        Form::setINPUT([
-        //            InputAlphabeticBuilder::init(PostsManager::FORM_UPDATE)
-        //                                  ->setRequire(FALSE)
-        //                                  ->setAccents(FALSE)
-        //                                  ->build(),
-        //            InputIntegerBuilder::init(PostsManager::ID)
-        //                               ->build(),
-        //            InputAlphanumericBuilder::init(PostsManager::POST_TITLE)
-        //                                    ->build(),
-        //            InputHtmlBuilder::init(PostsManager::POST_CONTENTS)
-        //                            ->build(),
-        //            InputBooleanBuilder::init(PostsManager::COMMENT_STATUS)
-        //                               ->build(),
-        //            InputBooleanBuilder::init(PostsManager::POST_STATUS)
-        //                               ->build(),
-        //            InputListIntegerBuilder::init(PostsCategoriesManager::CATEGORY_ID)
-        //                                   ->setRequire(FALSE)
-        //                                   ->build(),
-        //            InputListIntegerBuilder::init(PostsTermsManager::TERM_ID)
-        //                                   ->setRequire(FALSE)
-        //                                   ->build(),
-        //        ]);
-        //
-        //        return Form::inputFilter();
+        Form::setINPUT([
+            InputAlphabeticBuilder::init(PostsManager::FORM_UPDATE)
+                                  ->setRequire(FALSE)
+                                  ->setAccents(FALSE)
+                                  ->build(),
+            InputIntegerBuilder::init(PostsManager::ID)
+                               ->build(),
+            InputAlphanumericBuilder::init(PostsManager::POST_TITLE)
+                                    ->build(),
+            InputHtmlBuilder::init(PostsManager::POST_CONTENTS)
+                            ->build(),
+            InputBooleanBuilder::init(PostsManager::COMMENT_STATUS)
+                               ->build(),
+            InputBooleanBuilder::init(PostsManager::POST_STATUS)
+                               ->build(),
+            InputListIntegerBuilder::init(PostsCategoriesManager::CATEGORY_ID)
+                                   ->setRequire(FALSE)
+                                   ->build(),
+            InputListIntegerBuilder::init(PostsTermsManager::TERM_ID)
+                                   ->setRequire(FALSE)
+                                   ->build(),
+        ]);
         
-        return $_POST;
+        return Form::inputFilter();
     }
     
     private function createOrDeleteTerms($termsId, $postId) {
@@ -290,38 +287,47 @@ class PostController extends CUDControllerAbstract {
     }
     
     public function update($id) {
-        $postsManager   = new PostsManager();
-        $optionsManager = new OptionsManager();
+        $typeMessage  = Messages::TYPE_DANGER;
+        $messages     = 'La entrada no existe.';
+        $postsManager = new PostsManager();
+        $post         = $postsManager->searchById($id);
         
-        if (Arrays::get($_POST, PostsManager::FORM_UPDATE)) {
-            $typeMessage = Messages::TYPE_DANGER;
-            $messages    = 'Error al actualizar la entrada.';
-            $form        = $this->form();
-            $post        = Arrays::get($form, 'post');
+        if (empty($post)) {
+            Messages::addMessage($messages, $typeMessage);
+            $this->index();
+        } else {
             
-            if ($postsManager->update($post)) {
-                $messages    = 'Entrada actualizada correctamente.';
-                $typeMessage = Messages::TYPE_SUCCESS;
-                $terms       = Arrays::get($form, 'terms'); //Etiquetas nuevas
-                $categories  = Arrays::get($form, 'categories'); //Categorías nuevas
-                $this->createOrDeleteTerms($terms, $id);
-                $this->createOrDeleteCategories($categories, $id);
+            $optionsManager = new OptionsManager();
+            
+            if (Arrays::get($_POST, PostsManager::FORM_UPDATE)) {
+                $messages = 'Error al actualizar la entrada.';
+                $form     = $this->form();
+                $post     = Arrays::get($form, 'post');
+                
+                if ($postsManager->update($post)) {
+                    $post        = $postsManager->searchById($id);
+                    $messages    = 'Entrada actualizada correctamente.';
+                    $typeMessage = Messages::TYPE_SUCCESS;
+                    $terms       = Arrays::get($form, 'terms'); //Etiquetas nuevas
+                    $categories  = Arrays::get($form, 'categories'); //Categorías nuevas
+                    $this->createOrDeleteTerms($terms, $id);
+                    $this->createOrDeleteCategories($categories, $id);
+                }
+                
+                Messages::addMessage($messages, $typeMessage);
             }
             
-            Messages::addMessage($messages, $typeMessage);
+            $linkPost             = $optionsManager->getSiteUrl() . 'post/' . $id;
+            $selectedCategoriesId = $this->getSelectedCategoriesId($id);
+            $selectedTermsId      = $this->getSelectedTermsId($id);
+            $this->sendViewCategoriesAndTerms();
+            ViewController::sendViewData('linkPost', $linkPost);
+            ViewController::sendViewData('selectedCategoriesId', $selectedCategoriesId);
+            ViewController::sendViewData('selectedTermsId', $selectedTermsId);
+            ViewController::sendViewData('post', $post);
+            ViewController::sendViewData('title', 'Actualizar entrada');
+            ViewController::view('form');
         }
-        
-        $linkPost             = $optionsManager->getSiteUrl() . 'post/' . $id;
-        $post                 = $postsManager->searchById($id);
-        $selectedCategoriesId = $this->getSelectedCategoriesId($id);
-        $selectedTermsId      = $this->getSelectedTermsId($id);
-        $this->sendViewCategoriesAndTerms();
-        ViewController::sendViewData('linkPost', $linkPost);
-        ViewController::sendViewData('selectedCategoriesId', $selectedCategoriesId);
-        ViewController::sendViewData('selectedTermsId', $selectedTermsId);
-        ViewController::sendViewData('post', $post);
-        ViewController::sendViewData('title', 'Actualizar entrada');
-        ViewController::view('form');
     }
     
     public function delete($id) {

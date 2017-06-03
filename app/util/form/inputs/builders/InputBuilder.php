@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\util\form\inputs\builders;
 
+use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\inputs\Input;
 use SoftnCMS\util\form\inputs\InputBuilderInterface;
 use SoftnCMS\util\form\inputs\InputInterface;
@@ -82,6 +83,14 @@ abstract class InputBuilder implements InputInterface, InputBuilderInterface {
         return $this;
     }
     
-    public abstract function build();
+    public function build(){
+        if(empty($this->input->getMethod())){
+            $this->input->setMethod($_POST);
+        }
+        
+        $this->input->setValue(Arrays::get($this->input->getMethod(), $this->input->getName()));
+        
+        return $this->input;
+    }
     
 }

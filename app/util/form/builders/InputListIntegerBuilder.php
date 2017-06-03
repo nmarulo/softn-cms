@@ -38,6 +38,8 @@ class InputListIntegerBuilder extends InputSelectNumberBuilder {
     }
     
     public function build() {
+        parent::build();
+        
         return $this->input;
     }
     

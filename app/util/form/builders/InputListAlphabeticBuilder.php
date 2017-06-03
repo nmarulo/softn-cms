@@ -38,6 +38,8 @@ class InputListAlphabeticBuilder extends InputSelectTextBuilder {
     }
     
     public function build() {
+        parent::build();
+        
         return $this->input;
     }
     

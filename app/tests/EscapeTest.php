@@ -5,7 +5,7 @@
 
 namespace SoftnCMS\tests;
 
-use SoftnCMS\controllers\Escape;
+use SoftnCMS\util\Escape;
 
 class EscapeTest extends \PHPUnit_Framework_TestCase {
     

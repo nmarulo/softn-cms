@@ -143,4 +143,5 @@ abstract class ManagerAbstract {
         
         return Arrays::get($result, 'COUNT');
     }
+    
 }

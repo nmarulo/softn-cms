@@ -47,6 +47,8 @@ class InputBooleanBuilder extends InputBuilder {
      * @return InputBoolean
      */
     public function build() {
+        parent::build();
+        
         return $this->input;
     }
     

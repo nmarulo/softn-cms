@@ -38,6 +38,8 @@ class InputHtmlBuilder extends InputTextBuilder {
     }
     
     public function build() {
+        parent::build();
+        
         return $this->input;
     }
 }

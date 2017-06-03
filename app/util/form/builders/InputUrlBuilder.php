@@ -38,6 +38,8 @@ class InputUrlBuilder extends InputBuilder {
     }
     
     public function build() {
+        parent::build();
+        
         return $this->input;
     }
 }
