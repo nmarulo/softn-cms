@@ -5,17 +5,27 @@
 
 namespace SoftnCMS\util\form\inputs\builders;
 
-use SoftnCMS\helpers\ArrayHelp;
-use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\inputs\Input;
+use SoftnCMS\util\form\inputs\InputBuilderInterface;
+use SoftnCMS\util\form\inputs\InputInterface;
 
 /**
  * Class InputBuild
  * @author Nicolás Marulanda P.
  */
-abstract class InputBuilder {
+abstract class InputBuilder implements InputInterface, InputBuilderInterface {
     
-    use Input;
+    /** @var Input */
+    private $input;
+    
+    /**
+     * InputBuilder constructor.
+     *
+     * @param Input $input
+     */
+    public function __construct(Input $input) {
+        $this->input = $input;
+    }
     
     /**
      * @param string $value
@@ -23,7 +33,7 @@ abstract class InputBuilder {
      * @return $this
      */
     public function setValue($value) {
-        $this->value = $value;
+        $this->input->setValue($value);
         
         return $this;
     }
@@ -34,7 +44,7 @@ abstract class InputBuilder {
      * @return $this
      */
     public function setName($name) {
-        $this->name = $name;
+        $this->input->setName($name);
         
         return $this;
     }
@@ -45,7 +55,7 @@ abstract class InputBuilder {
      * @return $this
      */
     public function setType($type) {
-        $this->type = $type;
+        $this->input->setType($type);
         
         return $this;
     }
@@ -56,7 +66,7 @@ abstract class InputBuilder {
      * @return $this
      */
     public function setRequire($require) {
-        $this->require = $require;
+        $this->input->setRequire($require);
         
         return $this;
     }
@@ -67,20 +77,9 @@ abstract class InputBuilder {
      * @return $this
      */
     public function setMethod($method) {
-        $this->method = $method;
+        $this->input->setMethod($method);
         
         return $this;
-    }
-    
-    /**
-     * Método que obtiene y establece el valor del campo.
-     */
-    public function initValue() {
-        if (empty($this->method)) {
-            $this->method = $_POST;
-        }
-        
-        $this->value = Arrays::get($this->method, $this->name);
     }
     
     public abstract function build();

@@ -9,9 +9,7 @@ namespace SoftnCMS\util\form\inputs\types;
  * Class InputText
  * @author Nicolás Marulanda P.
  */
-trait InputText {
-    
-    use InputCommon;
+abstract class InputText extends InputCommon {
     
     protected $accents      = TRUE;
     
@@ -20,10 +18,27 @@ trait InputText {
     protected $replaceSpace = '-';
     
     /**
+     * InputText constructor.
+     */
+    public function __construct() {
+        parent::__construct();
+        $this->accents      = TRUE;
+        $this->withoutSpace = FALSE;
+        $this->replaceSpace = '-';
+    }
+    
+    /**
      * @return boolean
      */
     public function isAccents() {
         return $this->accents;
+    }
+    
+    /**
+     * @param bool $accents
+     */
+    public function setAccents($accents) {
+        $this->accents = $accents;
     }
     
     /**
@@ -34,9 +49,23 @@ trait InputText {
     }
     
     /**
+     * @param bool $withoutSpace
+     */
+    public function setWithoutSpace($withoutSpace) {
+        $this->withoutSpace = $withoutSpace;
+    }
+    
+    /**
      * @return string
      */
     public function getReplaceSpace() {
         return $this->replaceSpace;
+    }
+    
+    /**
+     * @param string $replaceSpace
+     */
+    public function setReplaceSpace($replaceSpace) {
+        $this->replaceSpace = $replaceSpace;
     }
 }

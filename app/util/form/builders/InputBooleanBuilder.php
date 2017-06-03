@@ -7,18 +7,26 @@ namespace SoftnCMS\util\form\builders;
 
 use SoftnCMS\util\form\InputBoolean;
 use SoftnCMS\util\form\inputs\builders\InputBuilder;
-use SoftnCMS\util\form\inputs\builders\InputBuilderInterface;
 
 /**
  * Class InputBooleanBuilder
  * @author Nicolás Marulanda P.
  */
-class InputBooleanBuilder extends InputBuilder implements InputBuilderInterface {
+class InputBooleanBuilder extends InputBuilder {
     
-    public function __construct($name, $type) {
-        $this->name = $name;
-        $this->type = $type;
-        $this->initValue();
+    /**
+     * @var InputBoolean
+     */
+    private $input;
+    
+    /**
+     * InputBooleanBuilder constructor.
+     *
+     * @param InputBoolean $input
+     */
+    public function __construct($input) {
+        parent::__construct($input);
+        $this->input = $input;
     }
     
     /**
@@ -28,14 +36,18 @@ class InputBooleanBuilder extends InputBuilder implements InputBuilderInterface 
      * @return InputBooleanBuilder
      */
     public static function init($name, $type = 'text') {
-        return new InputBooleanBuilder($name, $type);
+        $input = new InputBoolean();
+        $input->setName($name);
+        $input->setType($type);
+        
+        return new InputBooleanBuilder($input);
     }
     
     /**
      * @return InputBoolean
      */
     public function build() {
-        return new InputBoolean($this);
+        return $this->input;
     }
     
 }

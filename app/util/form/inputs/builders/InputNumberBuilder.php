@@ -5,15 +5,29 @@
 
 namespace SoftnCMS\util\form\inputs\builders;
 
+use SoftnCMS\util\form\inputs\InputNumberInterface;
 use SoftnCMS\util\form\inputs\types\InputNumber;
 
 /**
  * Class InputNumberBuilder
  * @author Nicolás Marulanda P.
  */
-abstract class InputNumberBuilder extends InputCommonBuilder {
+abstract class InputNumberBuilder extends InputCommonBuilder implements InputNumberInterface {
     
-    use InputNumber;
+    /**
+     * @var InputNumber
+     */
+    private $input;
+    
+    /**
+     * InputNumberBuilder constructor.
+     *
+     * @param InputNumber $input
+     */
+    public function __construct(InputNumber $input) {
+        parent::__construct($input);
+        $this->input = $input;
+    }
     
     /**
      * @param boolean $sign
@@ -21,7 +35,7 @@ abstract class InputNumberBuilder extends InputCommonBuilder {
      * @return $this
      */
     public function setSign($sign) {
-        $this->sign = $sign;
+        $this->input->setSign($sign);
         
         return $this;
     }

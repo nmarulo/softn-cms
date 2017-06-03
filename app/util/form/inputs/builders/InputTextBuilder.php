@@ -5,15 +5,29 @@
 
 namespace SoftnCMS\util\form\inputs\builders;
 
+use SoftnCMS\util\form\inputs\InputCommonInterface;
 use SoftnCMS\util\form\inputs\types\InputText;
 
 /**
  * Class InputTextBuilder
  * @author Nicolás Marulanda P.
  */
-abstract class InputTextBuilder extends InputCommonBuilder {
+abstract class InputTextBuilder extends InputCommonBuilder implements InputCommonInterface {
     
-    use InputText;
+    /**
+     * @var InputText
+     */
+    private $input;
+    
+    /**
+     * InputTextBuilder constructor.
+     *
+     * @param InputText $input
+     */
+    public function __construct(InputText $input) {
+        parent::__construct($input);
+        $this->input = $input;
+    }
     
     /**
      * @param boolean $accents
@@ -21,7 +35,7 @@ abstract class InputTextBuilder extends InputCommonBuilder {
      * @return $this
      */
     public function setAccents($accents) {
-        $this->accents = $accents;
+        $this->input->setAccents($accents);
         
         return $this;
     }
@@ -32,7 +46,7 @@ abstract class InputTextBuilder extends InputCommonBuilder {
      * @return $this
      */
     public function setWithoutSpace($withoutSpace) {
-        $this->withoutSpace = $withoutSpace;
+        $this->input->setWithoutSpace($withoutSpace);
         
         return $this;
     }
@@ -43,7 +57,7 @@ abstract class InputTextBuilder extends InputCommonBuilder {
      * @return $this
      */
     public function setReplaceSpace($replaceSpace) {
-        $this->replaceSpace = $replaceSpace;
+        $this->input->setReplaceSpace($replaceSpace);
         
         return $this;
     }

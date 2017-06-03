@@ -7,8 +7,7 @@
 
 namespace SoftnCMS\util\form;
 
-use SoftnCMS\helpers\form\inputs\getters\InputGetters;
-use SoftnCMS\helpers\form\inputs\InputInterface;
+use SoftnCMS\util\form\inputs\Input;
 use SoftnCMS\util\Messages;
 
 /**
@@ -36,7 +35,7 @@ class Form {
     /**
      * Método que agrega los datos a la lista de datos.
      *
-     * @param InputInterface $input
+     * @param Input $input
      */
     public static function addInput($input) {
         self::$INPUT[] = $input;
@@ -67,7 +66,7 @@ class Form {
             $value = $data->filter();
             
             if ($value === '' && $data->isRequire()) {
-                Messages::addMessage('Error. Los datos no son validos.', Messages::TYPE_DANGER);
+                Messages::addMessage('El campo "' . $data->getName() . '" es obligatorio.', Messages::TYPE_DANGER);
                 
                 $error  = TRUE;
                 $output = FALSE;

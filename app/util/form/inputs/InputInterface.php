@@ -11,6 +11,29 @@ namespace SoftnCMS\util\form\inputs;
  */
 interface InputInterface {
     
-    public function filter();
+    /**
+     * @param string $value
+     */
+    public function setValue($value);
+    
+    /**
+     * @param string $name
+     */
+    public function setName($name);
+    
+    /**
+     * @param string $type
+     */
+    public function setType($type);
+    
+    /**
+     * @param bool $require
+     */
+    public function setRequire($require);
+    
+    /**
+     * @param array $method
+     */
+    public function setMethod($method);
     
 }

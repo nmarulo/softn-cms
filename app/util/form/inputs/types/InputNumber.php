@@ -5,20 +5,38 @@
 
 namespace SoftnCMS\util\form\inputs\types;
 
+use SoftnCMS\util\form\inputs\InputNumberInterface;
+
 /**
  * Class InputNumber
  * @author Nicolás Marulanda P.
  */
-trait InputNumber {
+abstract class InputNumber extends InputCommon implements InputNumberInterface {
     
-    use InputCommon;
+    /**
+     * @var bool
+     */
+    protected $sign;
     
-    protected $sign = FALSE;
+    /**
+     * InputNumber constructor.
+     */
+    public function __construct() {
+        parent::__construct();
+        $this->sign = FALSE;
+    }
     
     /**
      * @return boolean
      */
     public function isSign() {
         return $this->sign;
+    }
+    
+    /**
+     * @param bool $sign
+     */
+    public function setSign($sign) {
+        $this->sign = $sign;
     }
 }

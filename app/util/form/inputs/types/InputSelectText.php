@@ -5,8 +5,11 @@
 
 namespace SoftnCMS\util\form\inputs\types;
 
-trait InputSelectText {
+abstract class InputSelectText extends InputText {
     
-    use InputText;
+    /*
+     * Se llamara primero al constructor del "InputSelect" y
+     * el constructor del "InputSelect" llamara al del "InputText".
+     */
     use InputSelect;
 }

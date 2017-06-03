@@ -6,26 +6,38 @@
 namespace SoftnCMS\util\form\builders;
 
 use SoftnCMS\util\form\InputHtml;
-use SoftnCMS\util\form\inputs\builders\InputBuilderInterface;
 use SoftnCMS\util\form\inputs\builders\InputTextBuilder;
 
 /**
  * Class InputHtmlBuilder
  * @author Nicolás Marulanda P.
  */
-class InputHtmlBuilder extends InputTextBuilder implements InputBuilderInterface {
+class InputHtmlBuilder extends InputTextBuilder {
     
-    public function __construct($name, $type) {
-        $this->name = $name;
-        $this->type = $type;
-        $this->initValue();
+    /**
+     * @var InputHtml
+     */
+    private $input;
+    
+    /**
+     * InputHtmlBuilder constructor.
+     *
+     * @param InputHtml $input
+     */
+    public function __construct($input) {
+        parent::__construct($input);
+        $this->input = $input;
     }
     
     public static function init($name, $type = 'text') {
-        return new InputHtmlBuilder($name, $type);
+        $input = new InputHtml();
+        $input->setName($name);
+        $input->setType($type);
+        
+        return new InputHtmlBuilder($input);
     }
     
     public function build() {
-        return new InputHtml($this);
+        return $this->input;
     }
 }

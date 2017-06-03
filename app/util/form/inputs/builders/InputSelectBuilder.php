@@ -9,7 +9,20 @@ use SoftnCMS\util\form\inputs\types\InputSelect;
 
 trait InputSelectBuilder {
     
-    use InputSelect;
+    /**
+     * @var InputSelect
+     */
+    private $input;
+    
+    /**
+     * InputSelectBuilder constructor.
+     *
+     * @param InputSelect $input
+     */
+    public function __construct(InputSelect $input) {
+        parent::__construct($input);
+        $this->input = $input;
+    }
     
     /**
      * @param string $listType
@@ -17,7 +30,7 @@ trait InputSelectBuilder {
      * @return $this
      */
     public function setListType($listType) {
-        $this->listType = $listType;
+        $this->input->setListType($listType);
         
         return $this;
     }

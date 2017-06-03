@@ -6,27 +6,40 @@
 namespace SoftnCMS\util\form\builders;
 
 use SoftnCMS\util\form\InputListInteger;
-use SoftnCMS\util\form\inputs\builders\InputBuilderInterface;
+
 use SoftnCMS\util\form\inputs\builders\InputSelectNumberBuilder;
 
 /**
  * Class InputListIntegerBuild
  * @author Nicolás Marulanda P.
  */
-class InputListIntegerBuilder extends InputSelectNumberBuilder implements InputBuilderInterface {
+class InputListIntegerBuilder extends InputSelectNumberBuilder {
     
-    public function __construct($name, $type) {
-        $this->name = $name;
-        $this->type = $type;
-        $this->initValue();
+    /**
+     * @var InputListInteger
+     */
+    private $input;
+    
+    /**
+     * InputListIntegerBuilder constructor.
+     *
+     * @param InputListInteger $input
+     */
+    public function __construct($input) {
+        parent::__construct($input);
+        $this->input = $input;
     }
     
     public static function init($name, $type = 'text') {
-        return new InputListIntegerBuilder($name, $type);
+        $input = new InputListInteger();
+        $input->setName($name);
+        $input->setType($type);
+        
+        return new InputListIntegerBuilder($input);
     }
     
     public function build() {
-        return new InputListInteger($this);
+        return $this->input;
     }
     
 }

@@ -6,27 +6,39 @@
 namespace SoftnCMS\util\form\builders;
 
 use SoftnCMS\util\form\InputListAlphabetic;
-use SoftnCMS\util\form\inputs\builders\InputBuilderInterface;
 use SoftnCMS\util\form\inputs\builders\InputSelectTextBuilder;
 
 /**
  * Class InputListAlphabeticBuilder
  * @author Nicolás Marulanda P.
  */
-class InputListAlphabeticBuilder extends InputSelectTextBuilder implements InputBuilderInterface {
+class InputListAlphabeticBuilder extends InputSelectTextBuilder {
     
-    public function __construct($name, $type) {
-        $this->name = $name;
-        $this->type = $type;
-        $this->initValue();
+    /**
+     * @var InputListAlphabetic
+     */
+    private $input;
+    
+    /**
+     * InputListAlphabeticBuilder constructor.
+     *
+     * @param InputListAlphabetic $input
+     */
+    public function __construct($input) {
+        parent::__construct($input);
+        $this->input = $input;
     }
     
     public static function init($name, $type = 'text') {
-        return new InputListAlphabeticBuilder($name, $type);
+        $input = new InputListAlphabetic();
+        $input->setName($name);
+        $input->setType($type);
+        
+        return new InputListAlphabeticBuilder($input);
     }
     
     public function build() {
-        return new InputListAlphabetic($this);
+        return $this->input;
     }
     
 }
