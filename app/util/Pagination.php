@@ -149,7 +149,7 @@ class Pagination {
             $iStr = $i <= 9 ? '0' . $i : $i;
             
             $data = [
-                'dataPaged' => '?' . self::getRoute() . "=$dataPaged",
+                'dataPaged' => self::getRoute() . "=$dataPaged",
                 'page'      => $iStr,
                 'active'    => $this->pagedNow == $i,
             ];
@@ -216,7 +216,7 @@ class Pagination {
          */
         if ($this->pagedNow > 1) {
             $page                = $this->pagedNow - 1;
-            $this->dataLeftArrow = '?' . self::getRoute() . "=$page" . $this->urlData;
+            $this->dataLeftArrow = self::getRoute() . "=$page" . $this->urlData;
         }
         
         /*
@@ -225,7 +225,7 @@ class Pagination {
          */
         if ($this->pagedNow < $this->countPages) {
             $page                 = $this->pagedNow + 1;
-            $this->dataRightArrow = '?' . self::getRoute() . "=$page" . $this->urlData;
+            $this->dataRightArrow = self::getRoute() . "=$page" . $this->urlData;
         }
     }
     

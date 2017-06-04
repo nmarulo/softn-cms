@@ -10,6 +10,7 @@
     box-shadow: none;
 }
 
+.input-group-addon,
 .btn,
 .input-lg,
 .form-control,
@@ -47,14 +48,6 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     color: #002745;
-}
-
-.pagination-content {
-    margin: 15px auto;
-}
-
-.pagination-content > div {
-    margin-bottom: 15px;
 }
 
 nav ul.pagination {
@@ -101,17 +94,17 @@ td.options {
     background-color: #7E8A99;
 }
 
-h2 a.btnAction-sm,
-h2 button.btnAction-sm,
-.panel-heading a.btnAction-sm,
-.panel-heading button.btnAction-sm {
+h2 a.btn-action-sm,
+h2 button.btn-action-sm,
+.panel-heading a.btn-action-sm,
+.panel-heading button.btn-action-sm {
     font-size: 14px;
 }
 
-a.btnAction-sm,
-button.btnAction-sm {
+a.btn-action-sm,
+button.btn-action-sm {
     font-size: 0.8em;
-    padding: 0px 5px;
+    padding: 0 5px;
 }
 
 .panel .panel-heading .label,
@@ -119,9 +112,12 @@ h2 .label {
     font-size: 0.46em;
 }
 
-/** ============================================================================
- * messages.php ================================================================
- * ========================================================================== */
+/** views/pagination.php ======================================================= */
+.pagination-container > div {
+    margin-bottom: 15px;
+}
+
+/** views/messages.php ========================================================== */
 #messages {
     position: fixed;
     top: 0;
@@ -152,6 +148,7 @@ h2 .label {
     border-color: #3C763D;
 }
 
+/** views/ .php ========================================================== */
 /* install.php - login.php */
 #install,
 #login {
@@ -159,9 +156,7 @@ h2 .label {
     width: 600px;
 }
 
-/** ============================================================================
- * menus.php =========================================================== 
- * ========================================================================== */
+/** menus.php ==================================================================== */
 [data-page="menus"] h2 a.label {
     font-size: 45%;
 }
@@ -241,16 +236,16 @@ ul.list-group li {list-style: none;}
 /** ============================================================================
  * Bloque derecho (Contenido) General ================================= 
  * ========================================================================== */
-.sn-content {
+.page-container {
     padding: 0 15px;
     margin-bottom: 20px;
 }
 
-.sn-content .list-group {
+.page-container .list-group {
     margin-bottom: 0;
 }
 
-.sn-content span.pull-left {
+.page-container span.pull-left {
     margin-right: 10px;
 }
 

@@ -8,7 +8,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href=""></a>
+                <a class="navbar-brand" href="">SoftN</a>
             </div>
             <div class="collapse navbar-collapse" id="navbarHeader">
                 <ul class="nav navbar-nav">

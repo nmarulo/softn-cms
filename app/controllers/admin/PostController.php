@@ -267,7 +267,7 @@ class PostController extends CUDControllerAbstract {
         $postsManager = new PostsManager();
         $count        = $postsManager->count();
         $postsManager = new PostsManager();
-        $pagination   = $this->pagination($count);
+        $pagination   = parent::pagination($count);
         
         if ($pagination !== FALSE) {
             $filters['limit'] = $pagination;
@@ -331,6 +331,7 @@ class PostController extends CUDControllerAbstract {
     }
     
     public function delete($id) {
+        $isCallAJAX   = Arrays::get($_POST, 'deleteAJAX');
         $messages     = 'Error al borrar la entrada.';
         $typeMessage  = Messages::TYPE_DANGER;
         $postsManager = new PostsManager();
@@ -341,7 +342,17 @@ class PostController extends CUDControllerAbstract {
         }
         
         Messages::addMessage($messages, $typeMessage);
-        $this->index();
+        
+        if (empty($isCallAJAX)) {
+            $this->index();
+        }else{
+            ViewController::singleViewDirectory('messages');
+        }
+    }
+    
+    public function reloadAJAX() {
+        $this->read();
+        ViewController::singleView('data');
     }
     
 }

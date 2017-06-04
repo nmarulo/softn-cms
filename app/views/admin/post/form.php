@@ -4,7 +4,7 @@ use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\models\managers\PostsCategoriesManager;
 use SoftnCMS\models\managers\PostsTermsManager;
-
+ViewController::registerScript('form');
 $title                = ViewController::getViewData('title');
 $post                 = ViewController::getViewData('post');
 $method               = ViewController::getViewData('method');
@@ -15,7 +15,7 @@ $selectedTermsId      = ViewController::getViewData('selectedTermsId');
 $isUpdate             = $method == PostsManager::FORM_UPDATE;
 $linkPost             = ViewController::getViewData('linkPost');
 ?>
-<div class="sn-content">
+<div class="page-container">
     <div>
         <h1><?php echo $title; ?></h1>
     </div>

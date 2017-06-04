@@ -25,8 +25,6 @@ abstract class ControllerAbstract {
         $optionPaged    = $optionsManager->searchByName(OPTION_PAGED);
         $optionSiteUrl  = $optionsManager->searchByName(OPTION_SITE_URL);
         $paged          = InputIntegerBuilder::init('paged')
-                                             ->setMethod($_GET)
-                                             ->setValue(Arrays::get($_GET, 'paged'))
                                              ->build();
         $pagedNow       = $paged->filter();
         $rowCount       = 0;
