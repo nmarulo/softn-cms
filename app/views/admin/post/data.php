@@ -5,9 +5,9 @@ use SoftnCMS\models\managers\OptionsManager;
 $posts          = ViewController::getViewData('posts');
 $optionsManager = new OptionsManager();
 $siteUrl        = $optionsManager->getSiteUrl();
-
+$siteUrlUpdate  = $siteUrl . 'admin/post/update/';
 ViewController::singleViewDirectory('pagination'); ?>
-    <div id="contentPost" class="table-responsive">
+<div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
@@ -33,7 +33,7 @@ ViewController::singleViewDirectory('pagination'); ?>
         <?php foreach ($posts as $post) { ?>
             <tr>
                 <td class="options">
-                    <a class="btn-action-sm btn btn-primary" href="<?php echo $siteUrl . 'admin/post/update/' . $post->getId(); ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
+                    <a class="btn-action-sm btn btn-primary" href="<?php echo $siteUrlUpdate . $post->getId(); ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
                     <a class="btn-action-sm btn btn-danger" data-id="<?php echo $post->getId(); ?>" href="#" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></a>
                 </td>
                 <td><a href="#" target="_blank"><?php echo $post->getPostTitle(); ?></a></td>

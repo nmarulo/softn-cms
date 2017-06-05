@@ -102,7 +102,7 @@ abstract class ManagerAbstract {
         return $objects;
     }
     
-    private function select($query) {
+    protected function select($query) {
         $mySQL  = new MySQL();
         $result = $mySQL->select($query, $this->prepare);
         $this->closeConnection($mySQL);
@@ -127,7 +127,18 @@ abstract class ManagerAbstract {
     }
     
     public function read($filters = []) {
-        return $this->readData();
+        if (empty($filters)) {
+            return $this->readData();
+        }
+    
+        $limit = Arrays::get($filters, 'limit');
+    
+        $query = 'SELECT * ';
+        $query .= 'FROM ' . $this->getTableWithPrefix();
+        $query .= ' ORDER BY ID DESC';
+        $query .= $limit === FALSE ? '' : " LIMIT $limit";
+    
+        return $this->readData($query);
     }
     
     public function count() {

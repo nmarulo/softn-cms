@@ -7,6 +7,7 @@ namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\ManagerAbstract;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\OptionsManager;
@@ -41,19 +42,19 @@ use SoftnCMS\util\Util;
 class PostController extends CUDControllerAbstract {
     
     public function create() {
-        $result = FALSE;
+        $showForm = TRUE;
         
-        if (Arrays::get($_POST, PostsManager::FORM_CREATE)) {
+        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $postsManager = new PostsManager();
             $messages     = 'Error al publicar la entrada.';
             $typeMessage  = Messages::TYPE_DANGER;
             $form         = $this->form();
             
             if (!empty($form)) {
-                $post   = Arrays::get($form, 'post');
-                $result = $postsManager->create($post);
+                $post = Arrays::get($form, 'post');
                 
-                if ($result) {
+                if ($postsManager->create($post)) {
+                    $showForm    = FALSE;
                     $messages    = 'Entrada publicada correctamente.';
                     $typeMessage = Messages::TYPE_SUCCESS;
                     $postId      = $postsManager->getLastInsertId();
@@ -70,7 +71,7 @@ class PostController extends CUDControllerAbstract {
             Messages::addMessage($messages, $typeMessage);
         }
         
-        if (!$result) {
+        if ($showForm) {
             $this->sendViewCategoriesAndTerms();
             ViewController::sendViewData('post', new Post());
             ViewController::sendViewData('title', 'Publicar nueva entrada');
@@ -87,10 +88,8 @@ class PostController extends CUDControllerAbstract {
         
         $post       = new Post();
         $date       = Util::dateNow();
-        $isUpdate   = Arrays::get($inputs, PostsManager::FORM_UPDATE);
         $terms      = Arrays::get($inputs, PostsTermsManager::TERM_ID);
         $categories = Arrays::get($inputs, PostsCategoriesManager::CATEGORY_ID);
-        
         $post->setId(Arrays::get($inputs, PostsManager::ID));
         $post->setCommentCount(NULL);
         $post->setPostDate(NULL);
@@ -102,7 +101,7 @@ class PostController extends CUDControllerAbstract {
         //TODO: temporalmente establecido al id 1.
         $post->setUserID(1);
         
-        if (empty($isUpdate)) {
+        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $post->setCommentCount(0);
             $post->setPostDate($date);
         }
@@ -116,10 +115,6 @@ class PostController extends CUDControllerAbstract {
     
     protected function filterInputs() {
         Form::setINPUT([
-            InputAlphabeticBuilder::init(PostsManager::FORM_UPDATE)
-                                  ->setRequire(FALSE)
-                                  ->setAccents(FALSE)
-                                  ->build(),
             InputIntegerBuilder::init(PostsManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(PostsManager::POST_TITLE)
@@ -266,7 +261,6 @@ class PostController extends CUDControllerAbstract {
         $filters      = [];
         $postsManager = new PostsManager();
         $count        = $postsManager->count();
-        $postsManager = new PostsManager();
         $pagination   = parent::pagination($count);
         
         if ($pagination !== FALSE) {
@@ -296,27 +290,28 @@ class PostController extends CUDControllerAbstract {
             Messages::addMessage($messages, $typeMessage);
             $this->index();
         } else {
-            
-            $optionsManager = new OptionsManager();
-            
-            if (Arrays::get($_POST, PostsManager::FORM_UPDATE)) {
+            if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $messages = 'Error al actualizar la entrada.';
                 $form     = $this->form();
-                $post     = Arrays::get($form, 'post');
                 
-                if ($postsManager->update($post)) {
-                    $post        = $postsManager->searchById($id);
-                    $messages    = 'Entrada actualizada correctamente.';
-                    $typeMessage = Messages::TYPE_SUCCESS;
-                    $terms       = Arrays::get($form, 'terms'); //Etiquetas nuevas
-                    $categories  = Arrays::get($form, 'categories'); //Categorías nuevas
-                    $this->createOrDeleteTerms($terms, $id);
-                    $this->createOrDeleteCategories($categories, $id);
+                if (!empty($form)) {
+                    $post = Arrays::get($form, 'post');
+                    
+                    if ($postsManager->update($post)) {
+                        $post        = $postsManager->searchById($id);
+                        $messages    = 'Entrada actualizada correctamente.';
+                        $typeMessage = Messages::TYPE_SUCCESS;
+                        $terms       = Arrays::get($form, 'terms'); //Etiquetas nuevas
+                        $categories  = Arrays::get($form, 'categories'); //Categorías nuevas
+                        $this->createOrDeleteTerms($terms, $id);
+                        $this->createOrDeleteCategories($categories, $id);
+                    }
                 }
                 
                 Messages::addMessage($messages, $typeMessage);
             }
             
+            $optionsManager       = new OptionsManager();
             $linkPost             = $optionsManager->getSiteUrl() . 'post/' . $id;
             $selectedCategoriesId = $this->getSelectedCategoriesId($id);
             $selectedTermsId      = $this->getSelectedTermsId($id);
@@ -331,7 +326,6 @@ class PostController extends CUDControllerAbstract {
     }
     
     public function delete($id) {
-        $isCallAJAX   = Arrays::get($_POST, 'deleteAJAX');
         $messages     = 'Error al borrar la entrada.';
         $typeMessage  = Messages::TYPE_DANGER;
         $postsManager = new PostsManager();
@@ -342,17 +336,7 @@ class PostController extends CUDControllerAbstract {
         }
         
         Messages::addMessage($messages, $typeMessage);
-        
-        if (empty($isCallAJAX)) {
-            $this->index();
-        }else{
-            ViewController::singleViewDirectory('messages');
-        }
-    }
-    
-    public function reloadAJAX() {
-        $this->read();
-        ViewController::singleView('data');
+        parent::delete($id);
     }
     
 }

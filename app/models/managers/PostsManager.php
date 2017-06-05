@@ -41,21 +41,6 @@ class PostsManager extends CRUDManagerAbstract {
         parent::__construct();
     }
     
-    public function read($filters = []) {
-        if (empty($filters)) {
-            return parent::readData();
-        }
-        
-        $limit = Arrays::get($filters, 'limit');
-        
-        $query = 'SELECT * ';
-        $query .= 'FROM ' . parent::getTableWithPrefix();
-        $query .= ' ORDER BY ID DESC';
-        $query .= $limit === FALSE ? '' : " LIMIT $limit";
-        
-        return parent::readData($query);
-    }
-    
     /**
      * @param Post $object
      */

@@ -8,7 +8,7 @@
  * - Tiempo de vencimiento de las cookies.
  */
 /** Nombre de la base de datos */
-define('DB_NAME', 'softn_cms');
+define('DB_NAME', 'softn_cms_test');
 
 /** Usuario de la base de datos */
 define('DB_USER', 'root');
@@ -27,6 +27,8 @@ define('DB_PREFIX', 'sn_');
 
 /** Tipo de base de datos. */
 define('DB_TYPE', 'mysql');
+
+define('DEBUG', FALSE);
 
 // Claves SALTED
 define('LOGGED_KEY', '5GLhueRQNTmlo8nY6XusgNN1JDSnQWRKsGiQTkjU0QuD9IVf9SdtmPrwDxc6irBs');

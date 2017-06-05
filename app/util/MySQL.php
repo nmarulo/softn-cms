@@ -32,7 +32,7 @@ class MySQL {
             $this->connection->setAttribute(\PDO::ATTR_EMULATE_PREPARES, FALSE);
             $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         } catch (\PDOException $ex) {
-            die('Error al intentar establecer la conexión con la base de datos.');
+            die('Error al intentar establecer la conexión con la base de datos.' . $ex->getMessage());
         }
     }
     
@@ -104,6 +104,9 @@ class MySQL {
             
             return $this->prepareObject->execute();
         } catch (\PDOException $ex) {
+            if(DEBUG){
+                Messages::addMessage($ex->getMessage(), Messages::TYPE_DANGER);
+            }
             
             return FALSE;
         }
@@ -130,6 +133,10 @@ class MySQL {
                     $error = \TRUE;
                 }
             } catch (\PDOException $ex) {
+                if(DEBUG) {
+                    Messages::addMessage($ex->getMessage(), Messages::TYPE_DANGER);
+                }
+                
                 $error = \TRUE;
             }
             
@@ -161,9 +168,9 @@ class MySQL {
             return ':' . $value['parameter'];
         }, $parameterQuery);
         
-        $query       = 'INSERT INTO ';
-        $query       .= $table;
-        $query       .= ' (';
+        $query       = 'INSERT ';
+        $query       .= "INTO $table ";
+        $query       .= '(';
         $query       .= implode(', ', $fields);
         $query       .= ') VALUES (';
         $query       .= implode(', ', $values);

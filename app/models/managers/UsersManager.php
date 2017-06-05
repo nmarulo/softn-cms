@@ -16,21 +16,53 @@ use SoftnCMS\util\MySQL;
  */
 class UsersManager extends CRUDManagerAbstract {
     
-    const TABLE           = 'users';
+    const TABLE                 = 'users';
     
-    const USER_LOGIN      = 'user_login';
+    const USER_LOGIN            = 'user_login';
     
-    const USER_NAME       = 'user_name';
+    const USER_NAME             = 'user_name';
     
-    const USER_EMAIL      = 'user_email';
+    const USER_EMAIL            = 'user_email';
     
-    const USER_PASSWORD   = 'user_password';
+    const USER_PASSWORD         = 'user_password';
     
-    const USER_ROL        = 'user_rol';
+    const USER_PASSWORD_REWRITE = 'user_password_rewrite';
     
-    const USER_REGISTERED = 'user_registered';
+    const USER_ROL              = 'user_rol';
     
-    const USER_URL        = 'user_url';
+    const USER_REGISTERED       = 'user_registered';
+    
+    const USER_URL              = 'user_url';
+    
+    public function delete($id) {
+        if (empty($this->countPosts($id))) {
+            return parent::delete($id);
+        }
+        
+        return FALSE;
+    }
+    
+    public function countPosts($id){
+        //TODO: crear una columna en la tabla con el numero de posts.
+        parent::parameterQuery(self::ID, $id, \PDO::PARAM_INT);
+        $query  = 'SELECT COUNT(*) AS COUNT ';
+        $query  .= 'FROM ' . parent::getTableWithPrefix();
+        $query  .= ' WHERE ' . self::ID;
+        $query  .= ' IN (';
+        $query  .= 'SELECT ' . PostsManager::USER_ID;
+        $query  .= ' FROM ' . parent::getTableWithPrefix(PostsManager::TABLE);
+        $query  .= ' WHERE ' . PostsManager::USER_ID;
+        $query  .= ' = :' . self::ID;
+        $query  .= ')';
+        $result = parent::select($query);
+        $result = Arrays::get($result, 0);
+    
+        if ($result === FALSE) {
+            return 0;
+        }
+    
+        return Arrays::get($result, 'COUNT');
+    }
     
     /**
      * @param User $object

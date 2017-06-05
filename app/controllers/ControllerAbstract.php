@@ -18,6 +18,11 @@ abstract class ControllerAbstract {
     
     public abstract function index();
     
+    public function reloadAJAX() {
+        $this->read();
+        ViewController::singleView('data');
+    }
+    
     protected abstract function read();
     
     protected function pagination($count) {

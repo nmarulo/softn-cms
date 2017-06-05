@@ -112,6 +112,15 @@ h2 .label {
     font-size: 0.46em;
 }
 
+#data-container table {
+    border: 1px solid #E5E5E5;
+    background-color: #FFFFFF;
+}
+
+#data-container table > tbody > tr > td {
+    border: 0;
+}
+
 /** views/pagination.php ======================================================= */
 .pagination-container > div {
     margin-bottom: 15px;
@@ -247,16 +256,6 @@ ul.list-group li {list-style: none;}
 
 .page-container span.pull-left {
     margin-right: 10px;
-}
-
-/** post.php ========================================================== */
-#contentPost table {
-    border: 1px solid #E5E5E5;
-    background-color: #FFFFFF;
-}
-
-#contentPost table > tbody > tr > td {
-    border: 0;
 }
 
 /**

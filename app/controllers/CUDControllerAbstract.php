@@ -5,6 +5,8 @@
 
 namespace SoftnCMS\controllers;
 
+use SoftnCMS\util\Arrays;
+
 /**
  * Class CUDControllerAbstract
  * @author Nicolás Marulanda P.
@@ -15,7 +17,15 @@ abstract class CUDControllerAbstract extends ControllerAbstract {
     
     public abstract function update($id);
     
-    public abstract function delete($id);
+    public function delete($id){
+        $isCallAJAX   = Arrays::get($_POST, 'deleteAJAX');
+        
+        if (empty($isCallAJAX)) {
+            $this->index();
+        } else {
+            ViewController::singleViewDirectory('messages');
+        }
+    }
     
     protected abstract function form();
     

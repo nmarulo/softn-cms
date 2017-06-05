@@ -1,4 +1,5 @@
 var idMessages = '';
+var asideMenuUl = '';
 
 (function () {
 	setVars();
@@ -7,6 +8,7 @@ var idMessages = '';
 
 function setVars() {
 	idMessages = '#messages';
+	asideMenuUl = $('.sn-menu');
 }
 
 function registerEvents() {
@@ -14,16 +16,12 @@ function registerEvents() {
 		removeMessagesTimeOut(idMessages);
 	}
 	
-	$('.sn-menu').on('hide.bs.collapse', function (e) {
-		var add = 'up';
-		var remove = 'down';
-		
-		if ($(this).hasClass('glyphicon-chevron-up')) {
-			add = 'down';
-			remove = 'up';
-		}
-		
-		changeGlyphicon(e.target, add, remove);
+	asideMenuUl.on('hide.bs.collapse', function (e) {
+		changeGlyphicon(e.target);
+	});
+	
+	asideMenuUl.on('show.bs.collapse', function (e) {
+		changeGlyphicon(e.target);
 	});
 	
 	var collapse = $(document).find('.page-container').data('collapse');
@@ -40,11 +38,17 @@ function registerEvents() {
  * Método que cambia la clase "glyphicon-chevron-up" por "glyphicon-chevron-down" y viceversa.
  * Solo cambia la palabra final, por ejemplo, cambia "up" por "down" de "glyphicon-chevron-up"
  * @param collapse Identificador del elemento.
- * @param add
- * @param remove
  */
-function changeGlyphicon(collapse, add, remove) {
+function changeGlyphicon(collapse) {
+	var add = 'up';
+	var remove = 'down';
 	var span = $(collapse).closest('li').children(':first').children(':last');
+	
+	if (span.hasClass('glyphicon-chevron-up')) {
+		add = 'down';
+		remove = 'up';
+	}
+	
 	span.removeClass('glyphicon-chevron-' + remove);
 	span.addClass('glyphicon-chevron-' + add);
 }
