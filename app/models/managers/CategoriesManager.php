@@ -40,6 +40,62 @@ class CategoriesManager extends CRUDManagerAbstract {
     
     /**
      * @param Category $object
+     *
+     * @return bool
+     */
+    public function create($object) {
+        $object = $this->checkName($object);
+        
+        return parent::create($object);
+    }
+    
+    /**
+     * @param Category $object
+     *
+     * @return Category
+     */
+    private function checkName($object) {
+        $name    = $object->getCategoryName();
+        $id      = $object->getId();
+        $newName = $name;
+        $num     = 0;
+        
+        while ($this->nameExists($newName, $id)) {
+            $newName = $name . ++$num;
+        }
+        
+        $object->setCategoryName($newName);
+        
+        return $object;
+    }
+    
+    /**
+     * @param string $name
+     * @param int    $id
+     *
+     * @return bool
+     */
+    private function nameExists($name, $id) {
+        parent::parameterQuery(self::CATEGORY_NAME, $name, \PDO::PARAM_STR);
+        $result = parent::searchBy(self::CATEGORY_NAME);
+        
+        //Si el "id" es el mismo, estamos actualizando.
+        return $result !== FALSE && $result->getId() != $id;
+    }
+    
+    /**
+     * @param Category $object
+     *
+     * @return bool
+     */
+    public function update($object) {
+        $object = $this->checkName($object);
+        
+        return parent::update($object);
+    }
+    
+    /**
+     * @param Category $object
      */
     protected function addParameterQuery($object) {
         parent::parameterQuery(self::CATEGORY_COUNT, $object->getCategoryCount(), \PDO::PARAM_INT);

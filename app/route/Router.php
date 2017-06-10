@@ -125,9 +125,7 @@ class Router {
     }
     
     private function setDirectoryView() {
-        $controller = strtolower($this->route->getController());
-        $directory  = $this->route->getDirectoryController();
-        
-        ViewController::setDirectory($directory . DIRECTORY_SEPARATOR . $controller);
+        ViewController::setDirectoryVIEW($this->route->getDirectoryController());
+        ViewController::setDirectoryCONTROLLER($this->route->getDirectoryViewController());
     }
 }

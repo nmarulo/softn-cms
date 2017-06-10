@@ -45,6 +45,18 @@ class OptionsManager extends CRUDManagerAbstract {
     }
     
     /**
+     * @param Option $option
+     *
+     * @return bool
+     */
+    public function update($option) {
+        //No es necesario agregar el "parameterQuery".
+        //El "OPTION_NAME" se agregara al llamar a "addParameterQuery".
+        
+        return parent::updateData($option, self::OPTION_NAME);
+    }
+    
+    /**
      * @param Option $object
      */
     protected function addParameterQuery($object) {
@@ -65,4 +77,5 @@ class OptionsManager extends CRUDManagerAbstract {
         
         return $option;
     }
+    
 }

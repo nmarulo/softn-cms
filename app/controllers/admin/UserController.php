@@ -53,7 +53,7 @@ class UserController extends CUDControllerAbstract {
         }
         
         if ($showForm) {
-            ViewController::sendViewData('users', new User());
+            ViewController::sendViewData('user', new User());
             ViewController::sendViewData('title', 'Publicar nuevo usuario');
             ViewController::view('form');
         }

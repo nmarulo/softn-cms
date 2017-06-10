@@ -101,7 +101,7 @@ class Sanitize {
      * @return string
      */
     public static function url($value) {
-        return trim(filter_var($value, FILTER_SANITIZE_URL), '/');
+        return trim(filter_var($value, FILTER_SANITIZE_URL), '/') . '/';
     }
     
     /**

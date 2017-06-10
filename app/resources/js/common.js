@@ -8,10 +8,12 @@ var asideMenuUl = '';
 
 function setVars() {
 	idMessages = '#messages';
-	asideMenuUl = $('.sn-menu');
+	asideMenuUl = $('.menu-content');
 }
 
 function registerEvents() {
+	menuCollapse();
+	
 	if ($(document).find(idMessages).length > 0) {
 		removeMessagesTimeOut(idMessages);
 	}
@@ -24,14 +26,18 @@ function registerEvents() {
 		changeGlyphicon(e.target);
 	});
 	
-	var collapse = $(document).find('.page-container').data('collapse');
+	//Comprueba si hay errores en la estructura de bootstrap
+	//javascript:(function(){var s=document.createElement("script");s.onload=function(){bootlint.showLintReportForCurrentDocument([]);};s.src="https://maxcdn.bootstrapcdn.com/bootlint/latest/bootlint.min.js";document.body.appendChild(s)})();
+}
+
+function menuCollapse() {
+	var collapse = $(document).find('.page-container').data('menu-collapse-id');
+	
 	if (collapse !== undefined) {
+		collapse = '#' + collapse;
 		$(collapse).addClass('in');
 		changeGlyphicon(collapse, 'up', 'down');
 	}
-	
-	//Comprueba si hay errores en la estructura de bootstrap
-	//javascript:(function(){var s=document.createElement("script");s.onload=function(){bootlint.showLintReportForCurrentDocument([]);};s.src="https://maxcdn.bootstrapcdn.com/bootlint/latest/bootlint.min.js";document.body.appendChild(s)})();
 }
 
 /**

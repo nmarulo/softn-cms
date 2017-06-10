@@ -15,14 +15,14 @@ $urlUserCreate  = $urlUser . 'create/';
 $urlOption      = $urlAdmin . 'option/';
 ?>
 
-<aside class="sn-menu-content">
-    <ul class="sn-menu">
+<aside>
+    <ul class="menu-content">
         <li>
             <a href="<?php echo $urlAdmin; ?>"><i class="fa fa-tachometer" aria-hidden="true"></i> Información</a>
         </li>
         <li>
             <a data-toggle="collapse" href="#post"><span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> Entradas <span class="pull-right glyphicon glyphicon-chevron-down"></span></a>
-            <ul id="post" class="sn-submenu collapse">
+            <ul id="post" class="submenu-content collapse">
                 <li>
                     <a href="<?php echo $urlPost; ?>"><span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> Entradas</a>
                 </li>
@@ -43,7 +43,7 @@ $urlOption      = $urlAdmin . 'option/';
         <li>
             <a data-toggle="collapse" href="#user"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Usuarios <span class="pull-right glyphicon glyphicon-chevron-down"></span>
             </a>
-            <ul id="user" class="sn-submenu collapse">
+            <ul id="user" class="submenu-content collapse">
                 <li>
                     <a href="<?php echo $urlUser; ?>"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Usuarios</a>
                 </li>

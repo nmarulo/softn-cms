@@ -15,7 +15,10 @@ use SoftnCMS\util\Arrays;
 class ViewController {
     
     /** @var string Nombre del directorio de la vista del controlador. */
-    private static $DIRECTORY = '';
+    private static $DIRECTORY_CONTROLLER = '';
+    
+    /** @var string Nombre del directorio de las vistas. */
+    private static $DIRECTORY_VIEW = '';
     
     /** @var array Lista de datos a enviar a la vista. */
     private static $VIEW_DATA = [];
@@ -30,12 +33,19 @@ class ViewController {
     private static $VIEW_STYLES = [];
     
     /**
+     * @param string $directoryView
+     */
+    public static function setDirectoryVIEW($directoryView) {
+        self::$DIRECTORY_VIEW = $directoryView;
+    }
+    
+    /**
      * Método que establece el nombre del directorio de la vista del controlador.
      *
      * @param string $directory
      */
-    public static function setDirectory($directory) {
-        self::$DIRECTORY = $directory;
+    public static function setDirectoryCONTROLLER($directory) {
+        self::$DIRECTORY_CONTROLLER = $directory;
     }
     
     /**
@@ -45,7 +55,7 @@ class ViewController {
      */
     public static function view($fileName) {
         self::setViewContent($fileName);
-        self::includeView(VIEWS . 'index.php');
+        self::includeView(VIEWS . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'index.php');
         self::$VIEW_DATA = [];
     }
     
@@ -55,16 +65,24 @@ class ViewController {
      * @param string $fileName
      */
     private static function setViewContent($fileName) {
-        self::$VIEW_CONTENT = VIEWS . self::$DIRECTORY . DIRECTORY_SEPARATOR . $fileName . '.php';
+    }
+    
+    private static function getDirectoryMethod() {
     }
     
     /**
      * Método que incluye la ruta.
      *
      * @param string $path Ruta del fichero.
+     *
+     * @return bool|mixed
      */
     private static function includeView($path) {
-        require $path;
+        if (file_exists($path)) {
+            require $path;
+        }
+        
+        return FALSE;
     }
     
     /**
@@ -73,7 +91,6 @@ class ViewController {
      * @param $fileName
      */
     public static function singleView($fileName) {
-        self::singleViewDirectory($fileName, self::$DIRECTORY);
     }
     
     /**
@@ -105,21 +122,21 @@ class ViewController {
      * Método que incluye el encabezado común de la vista.
      */
     public static function header() {
-        self::includeView(VIEWS . 'header.php');
+        self::includeView(VIEWS . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'header.php');
     }
     
     /**
      * Método que incluye el pie de pagina común de la vista.
      */
     public static function footer() {
-        self::includeView(VIEWS . 'footer.php');
+        self::includeView(VIEWS . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'footer.php');
     }
     
     /**
      * Método que incluye la barra lateral común de la vista.
      */
     public static function sidebar() {
-        self::includeView(VIEWS . 'sidebar.php');
+        self::includeView(VIEWS . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'sidebar.php');
     }
     
     /**

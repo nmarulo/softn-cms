@@ -26,6 +26,62 @@ class TermsManager extends CRUDManagerAbstract {
     
     /**
      * @param Term $object
+     *
+     * @return bool
+     */
+    public function update($object) {
+        $object = $this->checkName($object);
+        
+        return parent::update($object);
+    }
+    
+    /**
+     * @param Term $object
+     *
+     * @return Term
+     */
+    private function checkName($object) {
+        $name    = $object->getTermName();
+        $id      = $object->getId();
+        $newName = $name;
+        $num     = 0;
+        
+        while ($this->nameExists($newName, $id)) {
+            $newName = $name . ++$num;
+        }
+        
+        $object->setTermName($newName);
+        
+        return $object;
+    }
+    
+    /**
+     * @param string $name
+     * @param int $id
+     *
+     * @return bool
+     */
+    private function nameExists($name, $id) {
+        parent::parameterQuery(self::TERM_NAME, $name, \PDO::PARAM_STR);
+        $result = parent::searchBy(self::TERM_NAME);
+        
+        //Si el "id" es el mismo, estamos actualizando.
+        return $result !== FALSE && $result->getId() != $id;
+    }
+    
+    /**
+     * @param Term $object
+     *
+     * @return bool
+     */
+    public function create($object) {
+        $object = $this->checkName($object);
+        
+        return parent::create($object);
+    }
+    
+    /**
+     * @param Term $object
      */
     protected function addParameterQuery($object) {
         parent::parameterQuery(self::TERM_NAME, $object->getTermName(), \PDO::PARAM_STR);

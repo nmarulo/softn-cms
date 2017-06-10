@@ -18,11 +18,11 @@ class Route {
     private $directoryController;
     
     /**
-     * @var string Identifica el directorio de la vista.
+     * @var string Nombre del directorio de las vistas del controlador.
      *             Si no es del tema, el directorio corresponde a las carpetas
      *             dentro de "views".
      */
-    private $directoryView;
+    private $directoryViewController;
     
     /** @var string */
     private $controller;
@@ -37,11 +37,11 @@ class Route {
      * Route constructor.
      */
     public function __construct() {
-        $this->directoryController = 'theme';
-        $this->directoryView       = 'theme';
-        $this->controller          = 'Index';
-        $this->method              = 'index';
-        $this->parameter           = '';
+        $this->directoryController     = 'theme';
+        $this->directoryViewController = 'theme';
+        $this->controller              = 'Index';
+        $this->method                  = 'index';
+        $this->parameter               = '';
     }
     
     /**
@@ -103,15 +103,15 @@ class Route {
     /**
      * @return string
      */
-    public function getDirectoryView() {
-        return $this->directoryView;
+    public function getDirectoryViewController() {
+        return $this->directoryViewController;
     }
     
     /**
-     * @param string $directoryView
+     * @param string $directoryViewController
      */
-    public function setDirectoryView($directoryView) {
-        $this->directoryView = $directoryView;
+    public function setDirectoryViewController($directoryViewController) {
+        $this->directoryViewController = $directoryViewController;
     }
     
 }

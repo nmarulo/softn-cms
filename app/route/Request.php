@@ -39,7 +39,7 @@ class Request {
         $urlGet = Arrays::get($_GET, URL_GET);
         
         if ($urlGet != FALSE) {
-            $this->urlGet     = Sanitize::url($urlGet);
+            $this->urlGet     = trim(Sanitize::url($urlGet), '/');
             $this->urlExplode = explode('/', $this->urlGet);
         }
     }
@@ -101,8 +101,7 @@ class Request {
     
     private function setDirectoryView() {
         $directoryView       = strtolower($this->route->getController());
-        $directoryController = $this->route->getDirectoryController();
-        $this->route->setDirectoryView($directoryController . DIRECTORY_SEPARATOR . $directoryView);
+        $this->route->setDirectoryViewController($directoryView);
     }
     
     public function getRoute() {

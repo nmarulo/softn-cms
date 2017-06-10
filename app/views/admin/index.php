@@ -10,9 +10,9 @@ ViewController::registerStyleRoute('app/vendor/twbs/bootstrap/dist/css/bootstrap
 ViewController::registerStyleRoute('app/vendor/fortawesome/font-awesome/css/font-awesome.min');
 ViewController::registerStyle('style');
 $optionsManager = new \SoftnCMS\models\managers\OptionsManager();
-$siteTitle      = $optionsManager->searchByName(OPTION_TITLE)->getOptionValue();
+$siteTitle      = $optionsManager->searchByName(OPTION_TITLE)
+                                 ->getOptionValue();
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -32,7 +32,7 @@ $siteTitle      = $optionsManager->searchByName(OPTION_TITLE)->getOptionValue();
         <?php ViewController::header(); ?>
         <div class="container-fluid">
             <div class="row clearfix">
-                <div class="sn-menu-content col-sm-3 col-md-2">
+                <div class="menu-container col-sm-3 col-md-2">
                     <?php ViewController::sidebar(); ?>
                 </div>
                 <div class="col-sm-9 col-md-10">

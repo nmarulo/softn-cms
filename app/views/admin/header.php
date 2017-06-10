@@ -1,3 +1,16 @@
+<?php
+use SoftnCMS\models\managers\OptionsManager;
+
+$optionsManager    = new OptionsManager();
+$siteUrl           = $optionsManager->searchByName(OPTION_SITE_URL)
+                                    ->getOptionValue();
+$urlAdmin          = $siteUrl . 'admin/';
+$urlPostCreate     = $urlAdmin . 'post/create';
+$urlCategoryCreate = $urlAdmin . 'category/create';
+$urlTermCreate     = $urlAdmin . 'term/create';
+$siteTitle         = $optionsManager->searchByName(OPTION_TITLE)
+                                    ->getOptionValue();
+?>
 <header>
     <nav class="navbar navbar-custom">
         <div class="container-fluid">
@@ -8,7 +21,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="">SoftN</a>
+                <a class="navbar-brand" href="<?php echo $urlAdmin; ?>"><?php echo $siteTitle; ?></a>
             </div>
             <div class="collapse navbar-collapse" id="navbarHeader">
                 <ul class="nav navbar-nav">
@@ -18,10 +31,10 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Entrada</a></li>
+                            <li><a href="<?php echo $urlPostCreate; ?>">Entrada</a></li>
                             <li><a href="#">Pagina</a></li>
-                            <li><a href="#">Categoría</a></li>
-                            <li><a href="#">Etiqueta</a></li>
+                            <li><a href="<?php echo $urlCategoryCreate; ?>">Categoría</a></li>
+                            <li><a href="<?php echo $urlTermCreate; ?>">Etiqueta</a></li>
                         </ul>
                     </li>
                 </ul>

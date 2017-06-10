@@ -7,15 +7,15 @@ use SoftnCMS\models\managers\PostsTermsManager;
 ViewController::registerScript('form');
 $title                = ViewController::getViewData('title');
 $post                 = ViewController::getViewData('post');
-$method               = ViewController::getViewData('method');
 $categories           = ViewController::getViewData('categories');
 $terms                = ViewController::getViewData('terms');
 $selectedCategoriesId = ViewController::getViewData('selectedCategoriesId');
 $selectedTermsId      = ViewController::getViewData('selectedTermsId');
+$method               = ViewController::getViewData('method');
 $isUpdate             = $method == PostsManager::FORM_UPDATE;
 $linkPost             = ViewController::getViewData('linkPost');
 ?>
-<div class="page-container">
+<div class="page-container" data-menu-collapse-id="post">
     <div>
         <h1><?php echo $title; ?></h1>
     </div>
