@@ -28,7 +28,7 @@ $urlUpdateUser     = $urlAdmin . 'user/update/' . $idUser;
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="<?php echo $urlAdmin; ?>"><?php echo $siteTitle; ?></a>
+                <a class="navbar-brand" href="<?php echo $siteUrl; ?>"><?php echo $siteTitle; ?></a>
             </div>
             <div class="collapse navbar-collapse" id="navbarHeader">
                 <ul class="nav navbar-nav">
