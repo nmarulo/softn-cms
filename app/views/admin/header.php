@@ -16,7 +16,7 @@ $siteTitle         = $optionsManager->searchByName(OPTION_TITLE)
 $urlLogout         = $siteUrl . 'login/logout';
 $nameUser          = $userManager->searchById($idUser)
                                  ->getUserName();
-$urlUpdateUser     = $siteUrl . 'user/update/' . $idUser;
+$urlUpdateUser     = $urlAdmin . 'user/update/' . $idUser;
 ?>
 <header>
     <nav class="navbar navbar-custom">

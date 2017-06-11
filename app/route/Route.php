@@ -20,9 +20,14 @@ class Route {
     /**
      * @var string Nombre del directorio de las vistas del controlador.
      *             Si no es del tema, el directorio corresponde a las carpetas
-     *             dentro de "views".
+     *             dentro de "views/{$directoryViews}" o "themes/{$directoryViews}".
      */
-    private $directoryViewController;
+    private $directoryViewsController;
+    
+    /**
+     * @var string Nombre del directorio de las vistas. "views" o "themes".
+     */
+    private $directoryViews;
     
     private $viewPath;
     
@@ -39,12 +44,27 @@ class Route {
      * Route constructor.
      */
     public function __construct() {
-        $this->directoryController     = 'theme';
-        $this->directoryViewController = 'theme';
-        $this->controller              = 'Index';
-        $this->method                  = 'index';
-        $this->parameter               = '';
-        $this->viewPath = VIEWS;
+        $this->directoryController      = 'theme';
+        $this->directoryViews           = 'default';
+        $this->directoryViewsController = 'index';
+        $this->controller               = 'Index';
+        $this->method                   = 'index';
+        $this->parameter                = '';
+        $this->viewPath                 = VIEWS;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getDirectoryViews() {
+        return $this->directoryViews;
+    }
+    
+    /**
+     * @param string $directoryViews
+     */
+    public function setDirectoryViews($directoryViews) {
+        $this->directoryViews = $directoryViews;
     }
     
     /**
@@ -106,15 +126,15 @@ class Route {
     /**
      * @return string
      */
-    public function getDirectoryViewController() {
-        return $this->directoryViewController;
+    public function getDirectoryViewsController() {
+        return $this->directoryViewsController;
     }
     
     /**
-     * @param string $directoryViewController
+     * @param string $directoryViewsController
      */
-    public function setDirectoryViewController($directoryViewController) {
-        $this->directoryViewController = $directoryViewController;
+    public function setDirectoryViewsController($directoryViewsController) {
+        $this->directoryViewsController = $directoryViewsController;
     }
     
     /**

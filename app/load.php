@@ -20,7 +20,7 @@ $router = new Router();
 $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     $route               = $router->getRoute();
     $directoryController = $route->getDirectoryController();
-    $directoryView       = $route->getDirectoryViewController();
+    $directoryView       = $route->getDirectoryViewsController();
     $optionsManager      = new OptionsManager();
     
     if ($directoryController == 'admin' && !LoginManager::isLogin()) {

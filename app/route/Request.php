@@ -104,15 +104,18 @@ class Request {
     }
     
     private function setDirectoryView() {
-        if ($this->route->getDirectoryController() === 'theme') {
-            $optionsManager = new OptionsManager();
-            $directoryView  = $optionsManager->searchByName(OPTION_THEME)
-                                             ->getOptionValue();
+        $directoryViewController = strtolower($this->route->getController());
+        $directoryView = $this->route->getDirectoryController();
+        
+        if ($directoryView === 'theme') {
+            $optionsManager          = new OptionsManager();
+            $directoryView = $optionsManager->searchByName(OPTION_THEME)
+                                                      ->getOptionValue();
             $this->route->setViewPath(THEMES);
-        } else {
-            $directoryView = strtolower($this->route->getController());
         }
-        $this->route->setDirectoryViewController($directoryView);
+        
+        $this->route->setDirectoryViews($directoryView);
+        $this->route->setDirectoryViewsController($directoryViewController);
     }
     
     public function getRoute() {
