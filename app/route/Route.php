@@ -24,6 +24,8 @@ class Route {
      */
     private $directoryViewController;
     
+    private $viewPath;
+    
     /** @var string */
     private $controller;
     
@@ -42,6 +44,7 @@ class Route {
         $this->controller              = 'Index';
         $this->method                  = 'index';
         $this->parameter               = '';
+        $this->viewPath = VIEWS;
     }
     
     /**
@@ -112,6 +115,20 @@ class Route {
      */
     public function setDirectoryViewController($directoryViewController) {
         $this->directoryViewController = $directoryViewController;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getViewPath() {
+        return $this->viewPath;
+    }
+    
+    /**
+     * @param string $viewPath
+     */
+    public function setViewPath($viewPath) {
+        $this->viewPath = $viewPath;
     }
     
 }

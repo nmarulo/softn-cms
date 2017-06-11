@@ -8,8 +8,8 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
-use SoftnCMS\models\ManagerAbstract;
 use SoftnCMS\models\managers\CategoriesManager;
+use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsCategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
@@ -18,21 +18,14 @@ use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\PostCategory;
 use SoftnCMS\models\tables\PostTerm;
-use SoftnCMS\models\tables\Term;
 use SoftnCMS\util\Arrays;
-use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
 use SoftnCMS\util\form\builders\InputHtmlBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputListIntegerBuilder;
 use SoftnCMS\util\form\Form;
-use SoftnCMS\util\form\InputAlphabetic;
-use SoftnCMS\util\form\InputListInteger;
-use SoftnCMS\util\form\inputs\builders\InputNumberBuilder;
-use SoftnCMS\util\form\inputs\builders\InputTextBuilder;
 use SoftnCMS\util\Messages;
-use SoftnCMS\util\Pagination;
 use SoftnCMS\util\Util;
 
 /**
@@ -98,8 +91,7 @@ class PostController extends CUDControllerAbstract {
         $post->setPostStatus(Arrays::get($inputs, PostsManager::POST_STATUS));
         $post->setCommentStatus(Arrays::get($inputs, PostsManager::COMMENT_STATUS));
         $post->setPostContents(Arrays::get($inputs, PostsManager::POST_CONTENTS));
-        //TODO: temporalmente establecido al id 1.
-        $post->setUserID(1);
+        $post->setUserID(LoginManager::getSession());
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $post->setCommentCount(0);
@@ -187,7 +179,7 @@ class PostController extends CUDControllerAbstract {
     private function getSelectedTermsId($postId) {
         $postsTermsManager = new PostsTermsManager();
         $postTerms         = $postsTermsManager->searchAllByPostId($postId); //Etiquetas actuales
-        $selectedTermsId   = array_map(function($value) {
+        $selectedTermsId   = array_map(function(PostTerm $value) {
             return $value->getTermID();
         }, $postTerms);
         
@@ -245,7 +237,7 @@ class PostController extends CUDControllerAbstract {
     private function getSelectedCategoriesId($postId) {
         $postsCategoriesManager = new PostsCategoriesManager();
         $postCategories         = $postsCategoriesManager->searchAllByPostId($postId); //Categorías actuales
-        $selectedCategoriesId   = array_map(function($value) {
+        $selectedCategoriesId   = array_map(function(PostCategory $value) {
             return $value->getCategoryID();
         }, $postCategories);
         

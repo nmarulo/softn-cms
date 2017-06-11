@@ -14,7 +14,9 @@ use SoftnCMS\util\MySQL;
  */
 abstract class ManagerAbstract {
     
-    const ID = 'ID';
+    const ID          = 'ID';
+    
+    const FORM_SUBMIT = 'form_submit';
     
     /** @var array */
     protected $prepare;
@@ -95,9 +97,9 @@ abstract class ManagerAbstract {
         $objects = [];
         $result  = $this->select($query);
         
-        foreach ($result as $value) {
+        array_walk($result, function($value) use (&$objects){
             $objects[] = $this->buildObjectTable($value);
-        }
+        });
         
         return $objects;
     }
@@ -130,14 +132,14 @@ abstract class ManagerAbstract {
         if (empty($filters)) {
             return $this->readData();
         }
-    
+        
         $limit = Arrays::get($filters, 'limit');
-    
+        
         $query = 'SELECT * ';
         $query .= 'FROM ' . $this->getTableWithPrefix();
         $query .= ' ORDER BY ID DESC';
         $query .= $limit === FALSE ? '' : " LIMIT $limit";
-    
+        
         return $this->readData($query);
     }
     

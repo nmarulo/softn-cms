@@ -45,6 +45,13 @@ class Router {
         ];
     }
     
+    /**
+     * @return Route
+     */
+    public function getRoute() {
+        return $this->route;
+    }
+    
     public function setEvent($event, $callback) {
         $this->events[$event] = $callback;
     }
@@ -127,5 +134,6 @@ class Router {
     private function setDirectoryView() {
         ViewController::setDirectoryVIEW($this->route->getDirectoryController());
         ViewController::setDirectoryCONTROLLER($this->route->getDirectoryViewController());
+        ViewController::setViewPATH($this->route->getViewPath());
     }
 }

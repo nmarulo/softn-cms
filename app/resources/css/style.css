@@ -157,6 +157,10 @@ h2 .label {
     border-color: #3C763D;
 }
 
+#messages .alert-warning {
+    border-color: #8a6d3b;
+}
+
 /** views/ .php ========================================================== */
 /* install.php - login.php */
 #install,

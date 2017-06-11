@@ -8,9 +8,7 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
-use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\managers\UsersManager;
-use SoftnCMS\models\tables\Term;
 use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
@@ -18,7 +16,6 @@ use SoftnCMS\util\form\builders\InputEmailBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputUrlBuilder;
 use SoftnCMS\util\form\Form;
-use SoftnCMS\util\form\inputs\builders\InputNumberBuilder;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Util;
 
@@ -66,7 +63,18 @@ class UserController extends CUDControllerAbstract {
             return FALSE;
         }
         
-        //TODO: encriptar contraseñas.
+        $pass  = Arrays::get($inputs, UsersManager::USER_PASSWORD);
+        $passR = Arrays::get($inputs, UsersManager::USER_PASSWORD_REWRITE);
+        
+        if (empty($pass) || empty($passR)) {
+            $pass = NULL;
+        } else {
+            if ($pass != $passR) {
+                return FALSE;
+            }
+            
+            $pass = Util::encrypt($pass, LOGGED_KEY);
+        }
         
         $user = new User();
         $user->setId(Arrays::get($inputs, UsersManager::ID));
@@ -76,7 +84,7 @@ class UserController extends CUDControllerAbstract {
         $user->setUserRegistered(NULL);
         $user->setUserRol(Arrays::get($inputs, UsersManager::USER_ROL));
         $user->setUserUrl(Arrays::get($inputs, UsersManager::USER_URL));
-        $user->setUserPassword(Arrays::get($inputs, UsersManager::USER_PASSWORD));
+        $user->setUserPassword($pass);
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $user->setUserRegistered(Util::dateNow());

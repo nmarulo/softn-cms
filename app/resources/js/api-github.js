@@ -1,5 +1,5 @@
 (function () {
-	setDataGitHub();
+	// setDataGitHub();
 })();
 
 function setDataGitHub() {

@@ -8,7 +8,6 @@ namespace SoftnCMS\models\managers;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\PostTerm;
 use SoftnCMS\util\Arrays;
-use SoftnCMS\util\MySQL;
 
 /**
  * Class PostsTermsManager

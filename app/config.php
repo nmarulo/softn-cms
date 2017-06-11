@@ -28,7 +28,7 @@ define('DB_PREFIX', 'sn_');
 /** Tipo de base de datos. */
 define('DB_TYPE', 'mysql');
 
-define('DEBUG', FALSE);
+define('DEBUG', TRUE);
 
 // Claves SALTED
 define('LOGGED_KEY', '5GLhueRQNTmlo8nY6XusgNN1JDSnQWRKsGiQTkjU0QuD9IVf9SdtmPrwDxc6irBs');

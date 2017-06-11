@@ -38,4 +38,27 @@ class Util {
         
         return FALSE;
     }
+    
+    /**
+     * Método que realiza el HASH al valor pasado por parámetro.
+     *
+     * @param string $value
+     * @param string $saltedKey
+     *
+     * @return string
+     */
+    public static function encrypt($value, $saltedKey) {
+        return hash('sha256', $value . $saltedKey);
+    }
+    
+    /**
+     * Método para redireccionar a la pagina de inicio.
+     *
+     * @param string $siteUrl
+     * @param string $route
+     */
+    public static function redirect($siteUrl, $route = '') {
+        header('Location: ' . $siteUrl . $route);
+        exit();
+    }
 }

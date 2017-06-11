@@ -32,6 +32,15 @@ class ViewController {
     /** @var array Lista de nombre de los estilos. */
     private static $VIEW_STYLES = [];
     
+    private static $VIEW_PATH   = '';
+    
+    /**
+     * @param string $viewPath
+     */
+    public static function setViewPATH($viewPath) {
+        self::$VIEW_PATH = $viewPath;
+    }
+    
     /**
      * @param string $directoryView
      */
@@ -55,7 +64,7 @@ class ViewController {
      */
     public static function view($fileName) {
         self::setViewContent($fileName);
-        self::includeView(VIEWS . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'index.php');
+        self::includeView(self::$VIEW_PATH . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'index.php');
         self::$VIEW_DATA = [];
     }
     
@@ -65,9 +74,11 @@ class ViewController {
      * @param string $fileName
      */
     private static function setViewContent($fileName) {
+        self::$VIEW_CONTENT = self::$VIEW_PATH . self::getDirectoryMethod() . $fileName . '.php';
     }
     
     private static function getDirectoryMethod() {
+        return self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . self::$DIRECTORY_CONTROLLER . DIRECTORY_SEPARATOR;
     }
     
     /**
@@ -91,6 +102,7 @@ class ViewController {
      * @param $fileName
      */
     public static function singleView($fileName) {
+        self::singleViewDirectory($fileName, self::getDirectoryMethod());
     }
     
     /**
@@ -105,7 +117,7 @@ class ViewController {
             $directory .= DIRECTORY_SEPARATOR;
         }
         
-        self::includeView(VIEWS . $directory . $fileName . '.php');
+        self::includeView(self::$VIEW_PATH . $directory . $fileName . '.php');
     }
     
     /**
@@ -122,21 +134,21 @@ class ViewController {
      * Método que incluye el encabezado común de la vista.
      */
     public static function header() {
-        self::includeView(VIEWS . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'header.php');
+        self::includeView(self::$VIEW_PATH . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'header.php');
     }
     
     /**
      * Método que incluye el pie de pagina común de la vista.
      */
     public static function footer() {
-        self::includeView(VIEWS . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'footer.php');
+        self::includeView(self::$VIEW_PATH . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'footer.php');
     }
     
     /**
      * Método que incluye la barra lateral común de la vista.
      */
     public static function sidebar() {
-        self::includeView(VIEWS . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'sidebar.php');
+        self::includeView(self::$VIEW_PATH . self::$DIRECTORY_VIEW . DIRECTORY_SEPARATOR . 'sidebar.php');
     }
     
     /**

@@ -15,17 +15,24 @@ class Messages {
     
     const TYPE_SUCCESS = 'success';
     
+    const TYPE_WARNING = 'warning';
+    
     private static $messages = [];
     
     public static function addMessage($message, $typeMessage) {
-        self::$messages[] = [
+        self::$messages[] = self::add($message, $typeMessage);
+    }
+    
+    private static function add($message, $typeMessage){
+        return [
             'message'     => $message,
             'typeMessage' => $typeMessage,
         ];
     }
     
     public static function getMessages() {
-        $messages       = self::$messages;
+        $sessionMessages = self::getSessionMessages();
+        $messages       = array_merge($sessionMessages, self::$messages);
         self::$messages = [];
         
         return $messages;
@@ -37,5 +44,24 @@ class Messages {
     
     public static function getTypeMessage($value) {
         return Arrays::get($value, 'typeMessage');
+    }
+    
+    public static function addSessionMessage($message, $typeMessage) {
+        if (!isset($_SESSION[SESSION_MESSAGES])) {
+            $_SESSION[SESSION_MESSAGES] = [];
+        }
+        
+        $_SESSION[SESSION_MESSAGES][] = self::add($message, $typeMessage);
+    }
+    
+    private static function getSessionMessages(){
+        $messages = [];
+    
+        if (isset($_SESSION[SESSION_MESSAGES])) {
+            $messages = $_SESSION[SESSION_MESSAGES];
+            unset($_SESSION[SESSION_MESSAGES]);
+        }
+        
+        return $messages;
     }
 }

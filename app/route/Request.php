@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\rute;
 
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\Sanitize;
@@ -45,14 +46,17 @@ class Request {
     }
     
     private function setRoute() {
+        $url = $this->urlExplode;
+        $url = $this->setRuteDirectoryController($url);
+        
         if (count($this->urlExplode) > 0) {
-            $url = $this->urlExplode;
-            $url = $this->setRuteDirectoryController($url);
             $this->setRuteController(Arrays::get($url, 0));
             $this->setRuteMethod(Arrays::get($url, 1));
             $this->setRuteParameter(Arrays::get($url, 2));
             $this->setDirectoryView();
         }
+        
+        $this->setDirectoryView();
     }
     
     private function setRuteDirectoryController($url) {
@@ -100,7 +104,14 @@ class Request {
     }
     
     private function setDirectoryView() {
-        $directoryView       = strtolower($this->route->getController());
+        if ($this->route->getDirectoryController() === 'theme') {
+            $optionsManager = new OptionsManager();
+            $directoryView  = $optionsManager->searchByName(OPTION_THEME)
+                                             ->getOptionValue();
+            $this->route->setViewPath(THEMES);
+        } else {
+            $directoryView = strtolower($this->route->getController());
+        }
         $this->route->setDirectoryViewController($directoryView);
     }
     

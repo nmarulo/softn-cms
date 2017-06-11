@@ -8,7 +8,6 @@ namespace SoftnCMS\models\managers;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
-use SoftnCMS\util\MySQL;
 
 /**
  * Class UsersManager
@@ -34,6 +33,8 @@ class UsersManager extends CRUDManagerAbstract {
     
     const USER_URL              = 'user_url';
     
+    const USER_REMEMBER_ME      = 'user_remember_me';
+    
     public function delete($id) {
         if (empty($this->countPosts($id))) {
             return parent::delete($id);
@@ -42,7 +43,7 @@ class UsersManager extends CRUDManagerAbstract {
         return FALSE;
     }
     
-    public function countPosts($id){
+    public function countPosts($id) {
         //TODO: crear una columna en la tabla con el numero de posts.
         parent::parameterQuery(self::ID, $id, \PDO::PARAM_INT);
         $query  = 'SELECT COUNT(*) AS COUNT ';
@@ -56,12 +57,60 @@ class UsersManager extends CRUDManagerAbstract {
         $query  .= ')';
         $result = parent::select($query);
         $result = Arrays::get($result, 0);
-    
+        
         if ($result === FALSE) {
             return 0;
         }
-    
+        
         return Arrays::get($result, 'COUNT');
+    }
+    
+    /**
+     * @param User $object
+     *
+     * @return bool
+     */
+    public function create($object) {
+        if ($this->canCreate($object)) {
+            return parent::create($object);
+        }
+        
+        return FALSE;
+    }
+    
+    /**
+     * @param User $object
+     *
+     * @return bool
+     */
+    private function canCreate($object) {
+        if ($this->searchByLogin($object) === FALSE && $this->searchByEmail($object) === FALSE) {
+            return TRUE;
+        }
+        
+        return FALSE;
+    }
+    
+    /**
+     * @param User $user
+     *
+     * @return bool|User
+     */
+    public function searchByLogin($user) {
+        parent::parameterQuery(self::USER_LOGIN, $user->getUserLogin(), \PDO::PARAM_STR);
+        
+        return parent::searchBy(self::USER_LOGIN);
+    }
+    
+    /**
+     * @param User $user
+     *
+     * @return bool|User
+     */
+    public function searchByEmail($user) {
+        parent::parameterQuery(self::USER_EMAIL, $user->getUserEmail(), \PDO::PARAM_STR);
+        
+        return parent::searchBy(self::USER_EMAIL);
     }
     
     /**
@@ -91,6 +140,7 @@ class UsersManager extends CRUDManagerAbstract {
         $user->setUserName(Arrays::get($result, self::USER_NAME));
         $user->setUserLogin(Arrays::get($result, self::USER_LOGIN));
         $user->setUserEmail(Arrays::get($result, self::USER_EMAIL));
+        $user->setUserPassword(Arrays::get($result, self::USER_PASSWORD));
         
         return $user;
     }

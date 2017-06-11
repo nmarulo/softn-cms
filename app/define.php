@@ -8,6 +8,7 @@ define('VERSION', '0.4-alfa');
 
 /** Nombre del indice para el identificador del usuario en $_SESSION */
 define('SESSION_USER', 'usernameID');
+define('SESSION_MESSAGES', 'sessionMessages');
 
 /** Nombre del indice para el identificador del usuario en $_COOKIE */
 define('COOKIE_USER_REMEMBER', 'userRememberMe');
