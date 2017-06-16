@@ -127,7 +127,7 @@ class UsersManager extends CRUDManagerAbstract {
             $param = self::ID . "_$userId";
             parent::parameterQuery($param, $userId, \PDO::PARAM_INT);
         
-            return self::ID . ' = :' . $param;
+            return self::ID . " = :$param";
         }, $usersId);
         
         $query = 'SELECT * ';

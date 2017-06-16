@@ -6,9 +6,9 @@
 namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\CRUDManagerAbstract;
+use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\Term;
 use SoftnCMS\util\Arrays;
-use SoftnCMS\util\MySQL;
 
 /**
  * Class TermsManager
@@ -57,7 +57,7 @@ class TermsManager extends CRUDManagerAbstract {
     
     /**
      * @param string $name
-     * @param int $id
+     * @param int    $id
      *
      * @return bool
      */
@@ -86,6 +86,41 @@ class TermsManager extends CRUDManagerAbstract {
      * @return array
      */
     public function searchByPosts($posts) {
+        $postsId = array_map(function(Post $post) {
+            return $post->getId();
+        }, $posts);
+        
+        $where = array_map(function($postId) {
+            $columnPostId = PostsTermsManager::POST_ID;
+            $param        = $columnPostId . "_$postId";
+            parent::parameterQuery($param, $postId, \PDO::PARAM_INT);
+            
+            return "$columnPostId = :$param";
+        }, $postsId);
+        
+        $tablePostsTerms = parent::getTableWithPrefix(PostsTermsManager::TABLE);
+        $query           = 'SELECT * ';
+        $query           .= 'FROM ' . parent::getTableWithPrefix();
+        $query           .= ' WHERE ' . self::ID . ' IN ';
+        $query           .= '(SELECT ' . PostsTermsManager::TERM_ID;
+        $query           .= " FROM $tablePostsTerms ";
+        $query           .= 'WHERE ' . implode(' OR ', $where);
+        $query           .= ')';
+        
+        return parent::readData($query);
+    }
+    
+    public function searchByPostId($postId) {
+        $columnPostId    = PostsTermsManager::POST_ID;
+        $tablePostsTerms = parent::getTableWithPrefix(PostsTermsManager::TABLE);
+        $query           = 'SELECT * ';
+        $query           .= 'FROM ' . parent::getTableWithPrefix();
+        $query           .= ' WHERE ' . self::ID . ' IN ';
+        $query           .= '(SELECT ' . PostsTermsManager::TERM_ID;
+        $query           .= " FROM $tablePostsTerms ";
+        $query           .= "WHERE $columnPostId = :$columnPostId)";
+        $this->parameterQuery($columnPostId, $postId, \PDO::PARAM_INT);
+        
         return parent::readData($query);
     }
     

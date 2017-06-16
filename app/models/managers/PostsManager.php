@@ -41,6 +41,52 @@ class PostsManager extends CRUDManagerAbstract {
         parent::__construct();
     }
     
+    public function searchByCategoryId($categoryId) {
+        $columnCategoryId     = PostsCategoriesManager::CATEGORY_ID;
+        $tablePostsCategories = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
+        $query                = 'SELECT * ';
+        $query                .= 'FROM ' . parent::getTableWithPrefix();
+        $query                .= ' WHERE ' . self::ID . ' IN ';
+        $query                .= '(SELECT ' . PostsCategoriesManager::POST_ID;
+        $query                .= " FROM $tablePostsCategories ";
+        $query                .= "WHERE $columnCategoryId = :$columnCategoryId)";
+        $this->parameterQuery($columnCategoryId, $categoryId, \PDO::PARAM_INT);
+        
+        return parent::readData($query);
+    }
+    
+    public function searchByTermId($termId) {
+        $columnTermId = PostsTermsManager::TERM_ID;
+        $query        = 'SELECT * ';
+        $query        .= 'FROM ' . parent::getTableWithPrefix();
+        $query        .= ' WHERE ' . self::ID . ' IN ';
+        $query        .= '(SELECT ' . PostsTermsManager::POST_ID;
+        $query        .= ' FROM ' . parent::getTableWithPrefix(PostsTermsManager::TABLE);
+        $query        .= " WHERE $columnTermId = :$columnTermId)";
+        $this->parameterQuery($columnTermId, $termId, \PDO::PARAM_INT);
+        
+        return parent::readData($query);
+    }
+    
+    public function searchByUserId($userId) {
+        parent::parameterQuery(self::USER_ID, $userId, \PDO::PARAM_INT);
+        
+        return parent::searchAllBy(self::USER_ID);
+    }
+    
+    public function searchByCommentId($commentId) {
+        $columnCommentId = CommentsManager::ID;
+        $query           = 'SELECT * ';
+        $query           .= 'FROM ' . parent::getTableWithPrefix();
+        $query           .= ' WHERE ' . self::ID . ' IN ';
+        $query           .= '(SELECT ' . CommentsManager::POST_ID;
+        $query           .= ' FROM ' . parent::getTableWithPrefix(CommentsManager::TABLE);
+        $query           .= " WHERE $columnCommentId = :$columnCommentId)";
+        parent::parameterQuery($columnCommentId, $commentId, \PDO::PARAM_INT);
+        
+        return Arrays::get(parent::readData($query), 0);
+    }
+    
     /**
      * @param Post $object
      */

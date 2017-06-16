@@ -8,6 +8,7 @@ namespace SoftnCMS\models\managers;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Post;
+use SoftnCMS\models\tables\PostCategory;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\MySQL;
 
@@ -26,15 +27,15 @@ class CategoriesManager extends CRUDManagerAbstract {
     const CATEGORY_COUNT       = 'category_count';
     
     public function searchByPostId($postId) {
-        $table                = parent::getTableWithPrefix(self::TABLE);
+        $columnPostId         = PostsCategoriesManager::POST_ID;
         $tablePostsCategories = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
         $query                = 'SELECT * ';
-        $query                .= "FROM $table ";
-        $query                .= 'WHERE id IN (';
-        $query                .= 'SELECT category_ID ';
-        $query                .= "FROM $tablePostsCategories ";
-        $query                .= 'WHERE post_ID = :post_ID)';
-        $this->parameterQuery(PostsCategoriesManager::POST_ID, $postId, \PDO::PARAM_INT);
+        $query                .= 'FROM ' . parent::getTableWithPrefix();
+        $query                .= ' WHERE ' . self::ID . ' IN ';
+        $query                .= '(SELECT ' . PostsCategoriesManager::CATEGORY_ID;
+        $query                .= " FROM $tablePostsCategories ";
+        $query                .= "WHERE $columnPostId = :$columnPostId)";
+        $this->parameterQuery($columnPostId, $postId, \PDO::PARAM_INT);
         
         return parent::readData($query);
     }
@@ -97,27 +98,31 @@ class CategoriesManager extends CRUDManagerAbstract {
     
     /**
      * @param array $posts
+     *
      * @return array
      */
     public function searchByPosts($posts) {
-        $postId = array_map(function(Post $post) {
+        $postsId = array_map(function(Post $post) {
             return $post->getId();
         }, $posts);
         
+        $where = array_map(function($postId) {
+            $columnPostId = PostsCategoriesManager::POST_ID;
+            $param        = $columnPostId . "_$postId";
+            parent::parameterQuery($param, $postId, \PDO::PARAM_INT);
+            
+            return "$columnPostId = :$param";
+        }, $postsId);
         
+        $tablePostsTerms = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
+        $query           = 'SELECT * ';
+        $query           .= 'FROM ' . parent::getTableWithPrefix();
+        $query           .= ' WHERE ' . self::ID . ' IN ';
+        $query           .= '(SELECT ' . PostsCategoriesManager::CATEGORY_ID;
+        $query           .= " FROM $tablePostsTerms ";
+        $query           .= 'WHERE ' . implode(' OR ', $where);
+        $query           .= ')';
         
-        $where = array_map(function($userId) {
-            $param = self::ID . "_$userId";
-            parent::parameterQuery($param, $userId, \PDO::PARAM_INT);
-        
-            return self::ID . ' = :' . $param;
-        }, $postId);
-    
-        $query = 'SELECT * ';
-        $query .= 'FROM ' . parent::getTableWithPrefix();
-        $query .= ' WHERE ';
-        $query .= implode(" OR ", $where);
-    
         return parent::readData($query);
     }
     

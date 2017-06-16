@@ -31,6 +31,12 @@ class CommentsManager extends CRUDManagerAbstract {
     
     const POST_ID              = 'post_ID';
     
+    public function searchByPostId($postId) {
+        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
+        
+        return parent::searchAllBy(self::POST_ID);
+    }
+    
     /**
      * @param Comment $object
      */
