@@ -81,6 +81,15 @@ class TermsManager extends CRUDManagerAbstract {
     }
     
     /**
+     * @param array $posts
+     *
+     * @return array
+     */
+    public function searchByPosts($posts) {
+        return parent::readData($query);
+    }
+    
+    /**
      * @param Term $object
      */
     protected function addParameterQuery($object) {

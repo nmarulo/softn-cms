@@ -274,8 +274,9 @@ class Pagination {
         $route      = $this->route->getDirectoryController();
         $id         = $this->route->getParameter();
         $controller = $controller == 'index' ? '' : "$controller/$id";
+        $route      = $route == 'theme' ? '' : "$route/";
         
-        return $this->siteUrl . "$route/$controller";
+        return $this->siteUrl . $route . $controller;
     }
     
     /**

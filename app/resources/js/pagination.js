@@ -29,7 +29,7 @@ function reloadData(url, dataPaged) {
 		$('#data-container').html(data);
 	};
 	
-	callAjax(url + 'reloadAJAX', 'POST', dataPaged, callback);
+	callAjax(url + 'reloadAJAX', 'GET', dataPaged, callback);
 	
 	return true;
 }

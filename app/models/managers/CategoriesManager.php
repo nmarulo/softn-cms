@@ -7,6 +7,7 @@ namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Category;
+use SoftnCMS\models\tables\Post;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\MySQL;
 
@@ -92,6 +93,32 @@ class CategoriesManager extends CRUDManagerAbstract {
         $object = $this->checkName($object);
         
         return parent::update($object);
+    }
+    
+    /**
+     * @param array $posts
+     * @return array
+     */
+    public function searchByPosts($posts) {
+        $postId = array_map(function(Post $post) {
+            return $post->getId();
+        }, $posts);
+        
+        
+        
+        $where = array_map(function($userId) {
+            $param = self::ID . "_$userId";
+            parent::parameterQuery($param, $userId, \PDO::PARAM_INT);
+        
+            return self::ID . ' = :' . $param;
+        }, $postId);
+    
+        $query = 'SELECT * ';
+        $query .= 'FROM ' . parent::getTableWithPrefix();
+        $query .= ' WHERE ';
+        $query .= implode(" OR ", $where);
+    
+        return parent::readData($query);
     }
     
     /**

@@ -6,6 +6,7 @@
 namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\CRUDManagerAbstract;
+use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
 
@@ -111,6 +112,30 @@ class UsersManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::USER_EMAIL, $user->getUserEmail(), \PDO::PARAM_STR);
         
         return parent::searchBy(self::USER_EMAIL);
+    }
+    
+    /**
+     * @param array $posts
+     *
+     * @return array
+     */
+    public function searchByPosts($posts) {
+        $usersId = array_map(function(Post $post) {
+            return $post->getUserID();
+        }, $posts);
+        $where = array_map(function($userId) {
+            $param = self::ID . "_$userId";
+            parent::parameterQuery($param, $userId, \PDO::PARAM_INT);
+        
+            return self::ID . ' = :' . $param;
+        }, $usersId);
+        
+        $query = 'SELECT * ';
+        $query .= 'FROM ' . parent::getTableWithPrefix();
+        $query .= ' WHERE ';
+        $query .= implode(" OR ", $where);
+        
+        return parent::readData($query);
     }
     
     /**

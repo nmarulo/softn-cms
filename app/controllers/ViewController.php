@@ -34,20 +34,12 @@ class ViewController {
     
     private static $VIEW_PATH     = '';
     
-    private static $IS_VIEW_THEME = FALSE;
     
     /**
      * @param string $viewPath
      */
     public static function setViewPath($viewPath) {
         self::$VIEW_PATH = $viewPath;
-    }
-    
-    /**
-     * @param bool $isViewTheme
-     */
-    public static function setIsViewTheme($isViewTheme) {
-        self::$IS_VIEW_THEME = $isViewTheme;
     }
     
     /**
@@ -128,6 +120,10 @@ class ViewController {
      */
     public static function singleView($fileName) {
         self::singleViewDirectory($fileName, self::$DIRECTORY_VIEWS, self::$DIRECTORY_VIEWS_CONTROLLER);
+    }
+    
+    public static function singleViewDirectoryViews($fileName){
+        self::singleViewDirectory($fileName, self::$DIRECTORY_VIEWS, '');
     }
     
     /**
