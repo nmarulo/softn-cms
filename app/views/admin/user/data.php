@@ -43,7 +43,7 @@ ViewController::singleViewDirectory('pagination'); ?>
                 <td><?php echo $user->getUserEmail(); ?></td>
                 <td><?php echo $user->getUserRol(); ?></td>
                 <td><?php echo $user->getUserRegistered(); ?></td>
-                <td>0</td>
+                <td><?php echo $user->getUserPostCount(); ?></td>
             </tr>
         <?php } ?>
         </tbody>

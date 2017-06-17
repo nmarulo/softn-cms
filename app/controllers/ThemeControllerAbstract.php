@@ -1,29 +1,26 @@
 <?php
 /**
- * ControllerAbstract.php
+ * ThemeControllerAbstract.php
  */
 
 namespace SoftnCMS\controllers;
 
 use SoftnCMS\models\managers\OptionsManager;
-use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\Pagination;
 
 /**
- * Class ControllerAbstract
+ * Class ThemeControllerAbstract
  * @author Nicolás Marulanda P.
  */
-abstract class ControllerAbstract {
+abstract class ThemeControllerAbstract {
     
-    public abstract function index();
-    
-    public function reloadAJAX() {
-        $this->read();
-        ViewController::singleView('data');
+    public function index($id) {
+        $this->read($id);
+        ViewController::view('index');
     }
     
-    protected abstract function read();
+    protected abstract function read($id);
     
     protected function pagination($count) {
         $optionsManager = new OptionsManager();
@@ -49,5 +46,4 @@ abstract class ControllerAbstract {
         
         return FALSE;
     }
-    
 }

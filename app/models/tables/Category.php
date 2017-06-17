@@ -20,7 +20,7 @@ class Category extends TableAbstract {
     private $categoryDescription;
     
     /** @var int */
-    private $categoryCount;
+    private $categoryPostCount;
     
     /**
      * @return string
@@ -53,15 +53,15 @@ class Category extends TableAbstract {
     /**
      * @return int
      */
-    public function getCategoryCount() {
-        return $this->categoryCount;
+    public function getCategoryPostCount() {
+        return $this->categoryPostCount;
     }
     
     /**
-     * @param int $categoryCount
+     * @param int $categoryPostCount
      */
-    public function setCategoryCount($categoryCount) {
-        $this->categoryCount = $categoryCount;
+    public function setCategoryPostCount($categoryPostCount) {
+        $this->categoryPostCount = $categoryPostCount;
     }
     
 }

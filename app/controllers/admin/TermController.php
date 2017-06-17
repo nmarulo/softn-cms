@@ -62,12 +62,12 @@ class TermController extends CUDControllerAbstract {
         
         $term = new Term();
         $term->setId(Arrays::get($inputs, TermsManager::ID));
-        $term->setTermCount(NULL);
+        $term->setTermPostCount(NULL);
         $term->setTermDescription(Arrays::get($inputs, TermsManager::TERM_DESCRIPTION));
         $term->setTermName(Arrays::get($inputs, TermsManager::TERM_NAME));
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
-            $term->setTermCount(0);
+            $term->setTermPostCount(0);
         }
         
         return ['term' => $term];

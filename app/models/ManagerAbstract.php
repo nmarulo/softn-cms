@@ -109,6 +109,10 @@ abstract class ManagerAbstract {
         $result = $mySQL->select($query, $this->prepare);
         $this->closeConnection($mySQL);
         
+        if(empty($result)){
+            return [];
+        }
+        
         return $result;
     }
     
@@ -120,6 +124,12 @@ abstract class ManagerAbstract {
         $this->prepare = [];
     }
     
+    /**
+     * @param $result
+     *
+     * @return null
+     * @throws \Exception
+     */
     protected function buildObjectTable($result) {
         if (empty($result) || !is_array($result)) {
             throw new \Exception('Error');
@@ -128,6 +138,11 @@ abstract class ManagerAbstract {
         return NULL;
     }
     
+    /**
+     * @param array $filters
+     *
+     * @return array
+     */
     public function read($filters = []) {
         if (empty($filters)) {
             return $this->readData();
@@ -143,6 +158,9 @@ abstract class ManagerAbstract {
         return $this->readData($query);
     }
     
+    /**
+     * @return bool|int
+     */
     public function count() {
         $query  = 'SELECT COUNT(*) AS COUNT ';
         $query  .= 'FROM ' . $this->getTableWithPrefix();

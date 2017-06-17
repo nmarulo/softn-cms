@@ -30,6 +30,7 @@ class TermTemplate extends Template {
      * @param bool $initRelationShip
      */
     public function __construct(Term $term = NULL, $initRelationShip = FALSE) {
+        parent::__construct();
         $this->term  = $term;
         $this->posts = [];
         

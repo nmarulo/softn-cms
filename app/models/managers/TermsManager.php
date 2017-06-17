@@ -22,17 +22,17 @@ class TermsManager extends CRUDManagerAbstract {
     
     const TERM_DESCRIPTION = 'term_description';
     
-    const TERM_COUNT       = 'term_count';
+    const TERM_POST_COUNT  = 'term_post_count';
     
     /**
      * @param Term $object
      *
      * @return bool
      */
-    public function update($object) {
+    public function create($object) {
         $object = $this->checkName($object);
         
-        return parent::update($object);
+        return parent::create($object);
     }
     
     /**
@@ -67,17 +67,6 @@ class TermsManager extends CRUDManagerAbstract {
         
         //Si el "id" es el mismo, estamos actualizando.
         return $result !== FALSE && $result->getId() != $id;
-    }
-    
-    /**
-     * @param Term $object
-     *
-     * @return bool
-     */
-    public function create($object) {
-        $object = $this->checkName($object);
-        
-        return parent::create($object);
     }
     
     /**
@@ -124,13 +113,31 @@ class TermsManager extends CRUDManagerAbstract {
         return parent::readData($query);
     }
     
+    public function updateCount($termId, $num) {
+        $term = $this->searchById($termId);
+        $term->setTermPostCount($term->getTermPostCount() + $num);
+        
+        return $this->update($term);
+    }
+    
+    /**
+     * @param Term $object
+     *
+     * @return bool
+     */
+    public function update($object) {
+        $object = $this->checkName($object);
+        
+        return parent::update($object);
+    }
+    
     /**
      * @param Term $object
      */
     protected function addParameterQuery($object) {
         parent::parameterQuery(self::TERM_NAME, $object->getTermName(), \PDO::PARAM_STR);
         parent::parameterQuery(self::TERM_DESCRIPTION, $object->getTermDescription(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::TERM_COUNT, $object->getTermCount(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::TERM_POST_COUNT, $object->getTermPostCount(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {
@@ -143,7 +150,7 @@ class TermsManager extends CRUDManagerAbstract {
         $term->setId(Arrays::get($result, self::ID));
         $term->setTermName(Arrays::get($result, self::TERM_NAME));
         $term->setTermDescription(Arrays::get($result, self::TERM_DESCRIPTION));
-        $term->setTermCount(Arrays::get($result, self::TERM_COUNT));
+        $term->setTermPostCount(Arrays::get($result, self::TERM_POST_COUNT));
         
         return $term;
     }

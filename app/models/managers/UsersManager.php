@@ -36,34 +36,21 @@ class UsersManager extends CRUDManagerAbstract {
     
     const USER_REMEMBER_ME      = 'user_remember_me';
     
+    const USER_POST_COUNT       = 'user_post_count';
+    
+    /**
+     * @param int $id
+     *
+     * @return bool
+     */
     public function delete($id) {
-        if (empty($this->countPosts($id))) {
+        $user = $this->searchById($id);
+        
+        if ($user->getUserPostCount() == 0) {
             return parent::delete($id);
         }
         
         return FALSE;
-    }
-    
-    public function countPosts($id) {
-        //TODO: crear una columna en la tabla con el numero de posts.
-        parent::parameterQuery(self::ID, $id, \PDO::PARAM_INT);
-        $query  = 'SELECT COUNT(*) AS COUNT ';
-        $query  .= 'FROM ' . parent::getTableWithPrefix();
-        $query  .= ' WHERE ' . self::ID;
-        $query  .= ' IN (';
-        $query  .= 'SELECT ' . PostsManager::USER_ID;
-        $query  .= ' FROM ' . parent::getTableWithPrefix(PostsManager::TABLE);
-        $query  .= ' WHERE ' . PostsManager::USER_ID;
-        $query  .= ' = :' . self::ID;
-        $query  .= ')';
-        $result = parent::select($query);
-        $result = Arrays::get($result, 0);
-        
-        if ($result === FALSE) {
-            return 0;
-        }
-        
-        return Arrays::get($result, 'COUNT');
     }
     
     /**
@@ -115,27 +102,35 @@ class UsersManager extends CRUDManagerAbstract {
     }
     
     /**
-     * @param array $posts
+     * @param $userId
+     * @param $num
      *
-     * @return array
+     * @return bool
      */
-    public function searchByPosts($posts) {
-        $usersId = array_map(function(Post $post) {
-            return $post->getUserID();
-        }, $posts);
-        $where = array_map(function($userId) {
-            $param = self::ID . "_$userId";
-            parent::parameterQuery($param, $userId, \PDO::PARAM_INT);
+    public function updatePostCount($userId, $num) {
+        $user = $this->searchById($userId);
+        $user->setUserPostCount($user->getUserPostCount() + $num);
         
-            return self::ID . " = :$param";
-        }, $usersId);
-        
+        return parent::update($user);
+    }
+    
+    /**
+     * @param int $postId
+     *
+     * @return User
+     */
+    public function searchByPostId($postId) {
+        $columnPostId = PostsManager::ID;
+        parent::parameterQuery($columnPostId, $postId, \PDO::PARAM_INT);
         $query = 'SELECT * ';
         $query .= 'FROM ' . parent::getTableWithPrefix();
-        $query .= ' WHERE ';
-        $query .= implode(" OR ", $where);
+        $query .= ' WHERE ' . self::ID;
+        $query .= ' IN ';
+        $query .= '(SELECT ' . PostsManager::USER_ID;
+        $query .= ' FROM ' . parent::getTableWithPrefix(PostsManager::TABLE);
+        $query .= " WHERE $columnPostId = :$columnPostId)";
         
-        return parent::readData($query);
+        return Arrays::get(parent::readData($query), 0);
     }
     
     /**
@@ -149,12 +144,18 @@ class UsersManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::USER_REGISTERED, $object->getUserRegistered(), \PDO::PARAM_STR);
         parent::parameterQuery(self::USER_ROL, $object->getUserRol(), \PDO::PARAM_INT);
         parent::parameterQuery(self::USER_URL, $object->getUserUrl(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::USER_POST_COUNT, $object->getUserPostCount(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {
         return self::TABLE;
     }
     
+    /**
+     * @param $result
+     *
+     * @return User
+     */
     protected function buildObjectTable($result) {
         parent::buildObjectTable($result);
         $user = new User();
@@ -166,6 +167,7 @@ class UsersManager extends CRUDManagerAbstract {
         $user->setUserLogin(Arrays::get($result, self::USER_LOGIN));
         $user->setUserEmail(Arrays::get($result, self::USER_EMAIL));
         $user->setUserPassword(Arrays::get($result, self::USER_PASSWORD));
+        $user->setUserPostCount(Arrays::get($result, self::USER_POST_COUNT));
         
         return $user;
     }

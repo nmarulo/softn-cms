@@ -20,7 +20,7 @@ class Term extends TableAbstract {
     private $termDescription;
     
     /** @var int */
-    private $termCount;
+    private $termPostCount;
     
     /**
      * @return string
@@ -53,15 +53,15 @@ class Term extends TableAbstract {
     /**
      * @return int
      */
-    public function getTermCount() {
-        return $this->termCount;
+    public function getTermPostCount() {
+        return $this->termPostCount;
     }
     
     /**
-     * @param int $termCount
+     * @param int $termPostCount
      */
-    public function setTermCount($termCount) {
-        $this->termCount = $termCount;
+    public function setTermPostCount($termPostCount) {
+        $this->termPostCount = $termPostCount;
     }
     
 }

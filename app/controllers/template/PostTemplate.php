@@ -44,6 +44,7 @@ class PostTemplate extends Template {
      * @param bool $initRelationship
      */
     public function __construct(Post $post = NULL, $initRelationship = FALSE) {
+        parent::__construct();
         $this->post               = $post;
         $this->categoriesTemplate = [];
         $this->termsTemplate      = [];

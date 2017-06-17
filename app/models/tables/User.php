@@ -34,6 +34,23 @@ class User extends TableAbstract {
     /** @var string */
     private $userUrl;
     
+    /** @var int */
+    private $userPostCount;
+    
+    /**
+     * @return int
+     */
+    public function getUserPostCount() {
+        return $this->userPostCount;
+    }
+    
+    /**
+     * @param int $userPostCount
+     */
+    public function setUserPostCount($userPostCount) {
+        $this->userPostCount = $userPostCount;
+    }
+    
     /**
      * @return string
      */

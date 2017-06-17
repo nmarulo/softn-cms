@@ -29,6 +29,7 @@ class CommentTemplate extends Template {
      * @param bool    $initRelationship
      */
     public function __construct(Comment $comment = NULL, $initRelationship = FALSE) {
+        parent::__construct();
         $this->comment = $comment;
         $this->post    = NULL;
         

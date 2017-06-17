@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
+use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
@@ -85,9 +86,11 @@ class UserController extends CUDControllerAbstract {
         $user->setUserRol(Arrays::get($inputs, UsersManager::USER_ROL));
         $user->setUserUrl(Arrays::get($inputs, UsersManager::USER_URL));
         $user->setUserPassword($pass);
+        $user->setUserPostCount(NULL);
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $user->setUserRegistered(Util::dateNow());
+            $user->setUserPostCount(0);
         }
         
         return ['user' => $user];
@@ -175,17 +178,20 @@ class UserController extends CUDControllerAbstract {
     }
     
     public function delete($id) {
-        $messages     = 'Error al borrar el usuario.';
-        $typeMessage  = Messages::TYPE_DANGER;
-        $usersManager = new UsersManager();
+        $messages    = 'Error al borrar el usuario.';
+        $typeMessage = Messages::TYPE_DANGER;
         
-        $result = $usersManager->delete($id);
-        
-        if ($result === FALSE) {
-            $messages = 'No se puede borrar un usuario con entradas publicadas.';
-        } elseif ($result === 1) {
-            $typeMessage = Messages::TYPE_SUCCESS;
-            $messages    = 'Usuario borrado correctamente.';
+        if ($id != LoginManager::getSession()) {
+            $usersManager = new UsersManager();
+            
+            $result = $usersManager->delete($id);
+            
+            if ($result === FALSE) {
+                $messages = 'No se puede borrar un usuario con entradas publicadas.';
+            } elseif ($result === 1) {
+                $typeMessage = Messages::TYPE_SUCCESS;
+                $messages    = 'Usuario borrado correctamente.';
+            }
         }
         
         Messages::addMessage($messages, $typeMessage);

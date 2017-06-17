@@ -30,6 +30,7 @@ class CategoryTemplate extends Template {
      * @param bool     $initRelationShip
      */
     public function __construct(Category $category = NULL, $initRelationShip = FALSE) {
+        parent::__construct();
         $this->category = $category;
         $this->posts    = [];
         

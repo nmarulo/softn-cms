@@ -1,23 +1,23 @@
 <?php
 use SoftnCMS\controllers\ViewController;
 
-$posts = ViewController::getViewData('posts');
+$postTemplate = ViewController::getViewData('post');
 ?>
 <main>
-    <?php foreach ($posts as $postTemplate) {
-        $siteUrl            = $postTemplate->getSiteUrl();
-        $urlPost            = $siteUrl . 'post/';
-        $urlCategory        = $siteUrl . 'category/';
-        $urlTerm            = $siteUrl . 'term/';
-        $urlUser            = $siteUrl . 'user/';
-        $post               = $postTemplate->getPost();
-        $user               = $postTemplate->getUserTemplate()
-                                           ->getUser();
-        $termsTemplate      = $postTemplate->getTermsTemplate();
-        $categoriesTemplate = $postTemplate->getCategoriesTemplate();
-        $postId             = $post->getId();
-        ?>
-        <article id="post-<?php echo $postId; ?>" class="bg-grey">
+    <?php
+    $siteUrl            = $postTemplate->getSiteUrl();
+    $urlPost            = $siteUrl . 'post/';
+    $urlCategory        = $siteUrl . 'category/';
+    $urlTerm            = $siteUrl . 'term/';
+    $urlUser            = $siteUrl . 'user/';
+    $post               = $postTemplate->getPost();
+    $user               = $postTemplate->getUserTemplate()
+                                       ->getUser();
+    $termsTemplate      = $postTemplate->getTermsTemplate();
+    $categoriesTemplate = $postTemplate->getCategoriesTemplate();
+    $postId             = $post->getId();
+    ?>
+    <article id="post-<?php echo $postId; ?>" class="bg-grey">
         <header class="clearfix">
             <div class="post-title clearfix">
                 <h2 class="h3">
@@ -54,7 +54,4 @@ $posts = ViewController::getViewData('posts');
             </p>
         </footer>
     </article>
-    <?php } ?>
 </main>
-<?php
-ViewController::singleViewDirectoryViews('pagination');

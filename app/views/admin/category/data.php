@@ -31,7 +31,7 @@ ViewController::singleViewDirectory('pagination'); ?>
                     <a class="btn-action-sm btn btn-danger" data-id="<?php echo $category->getId(); ?>" href="#" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></a>
                 </td>
                 <td><?php echo $category->getCategoryName(); ?></td>
-                <td><?php echo $category->getCategoryCount(); ?></td>
+                <td><?php echo $category->getCategoryPostCount(); ?></td>
             </tr>
         <?php } ?>
         </tbody>

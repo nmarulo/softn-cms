@@ -2,22 +2,26 @@
 use SoftnCMS\controllers\ViewController;
 
 $posts = ViewController::getViewData('posts');
+$user  = ViewController::getViewData('user');
 ?>
-<main>
-    <?php foreach ($posts as $postTemplate) {
-        $siteUrl            = $postTemplate->getSiteUrl();
-        $urlPost            = $siteUrl . 'post/';
-        $urlCategory        = $siteUrl . 'category/';
-        $urlTerm            = $siteUrl . 'term/';
-        $urlUser            = $siteUrl . 'user/';
-        $post               = $postTemplate->getPost();
-        $user               = $postTemplate->getUserTemplate()
-                                           ->getUser();
-        $termsTemplate      = $postTemplate->getTermsTemplate();
-        $categoriesTemplate = $postTemplate->getCategoriesTemplate();
-        $postId             = $post->getId();
-        ?>
-        <article id="post-<?php echo $postId; ?>" class="bg-grey">
+    <main>
+    <div class="alert alert-info clearfix">
+        <h2>Usuario: <?php echo $user->getUserName(); ?></h2>
+    </div>
+        <?php foreach ($posts as $postTemplate) {
+            $siteUrl            = $postTemplate->getSiteUrl();
+            $urlPost            = $siteUrl . 'post/';
+            $urlCategory        = $siteUrl . 'category/';
+            $urlTerm            = $siteUrl . 'term/';
+            $urlUser            = $siteUrl . 'user/';
+            $post               = $postTemplate->getPost();
+            $user               = $postTemplate->getUserTemplate()
+                                               ->getUser();
+            $termsTemplate      = $postTemplate->getTermsTemplate();
+            $categoriesTemplate = $postTemplate->getCategoriesTemplate();
+            $postId             = $post->getId();
+            ?>
+            <article id="post-<?php echo $postId; ?>" class="bg-grey">
         <header class="clearfix">
             <div class="post-title clearfix">
                 <h2 class="h3">
@@ -54,7 +58,7 @@ $posts = ViewController::getViewData('posts');
             </p>
         </footer>
     </article>
-    <?php } ?>
+        <?php } ?>
 </main>
 <?php
 ViewController::singleViewDirectoryViews('pagination');

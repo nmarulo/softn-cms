@@ -51,8 +51,14 @@ class Request {
         
         if (count($this->urlExplode) > 0) {
             $this->setRuteController(Arrays::get($url, 0));
-            $this->setRuteMethod(Arrays::get($url, 1));
-            $this->setRuteParameter(Arrays::get($url, 2));
+            $positionParam = 1;
+            
+            if ($this->route->getDirectoryController() != Route::DIRECTORY_THEME) {
+                $this->setRuteMethod(Arrays::get($url, 1));
+                $positionParam = 2;
+            }
+            
+            $this->setRuteParameter(Arrays::get($url, $positionParam));
             $this->setDirectoryView();
         }
         
@@ -62,14 +68,14 @@ class Request {
     private function setRuteDirectoryController($url) {
         $auxUrl       = $url;
         $urlDirectory = array_shift($url);
-        $directory    = 'theme';
+        $directory    = Route::DIRECTORY_THEME;
         
         switch ($urlDirectory) {
-            case 'admin':
-                $directory = 'admin';
+            case Route::DIRECTORY_ADMIN:
+                $directory = Route::DIRECTORY_ADMIN;
                 break;
-            case 'login':
-                $directory = 'login';
+            case Route::DIRECTORY_LOGIN:
+                $directory = Route::DIRECTORY_LOGIN;
                 break;
             default:
                 $url = $auxUrl;
@@ -105,12 +111,12 @@ class Request {
     
     private function setDirectoryView() {
         $directoryViewController = strtolower($this->route->getController());
-        $directoryView = $this->route->getDirectoryController();
+        $directoryView           = $this->route->getDirectoryController();
         
         if ($directoryView === 'theme') {
-            $optionsManager          = new OptionsManager();
-            $directoryView = $optionsManager->searchByName(OPTION_THEME)
-                                                      ->getOptionValue();
+            $optionsManager = new OptionsManager();
+            $directoryView  = $optionsManager->searchByName(OPTION_THEME)
+                                             ->getOptionValue();
             $this->route->setViewPath(THEMES);
         }
         

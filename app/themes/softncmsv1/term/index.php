@@ -2,8 +2,12 @@
 use SoftnCMS\controllers\ViewController;
 
 $posts = ViewController::getViewData('posts');
+$term  = ViewController::getViewData('term');
 ?>
 <main>
+    <div class="alert alert-info clearfix">
+        <h2>Etiqueta: <?php echo $term->getTermName(); ?></h2>
+    </div>
     <?php foreach ($posts as $postTemplate) {
         $siteUrl            = $postTemplate->getSiteUrl();
         $urlPost            = $siteUrl . 'post/';
@@ -17,7 +21,7 @@ $posts = ViewController::getViewData('posts');
         $categoriesTemplate = $postTemplate->getCategoriesTemplate();
         $postId             = $post->getId();
         ?>
-        <article id="post-<?php echo $postId; ?>" class="bg-grey">
+    <article id="post-<?php echo $postId; ?>" class="bg-grey">
         <header class="clearfix">
             <div class="post-title clearfix">
                 <h2 class="h3">
@@ -54,7 +58,7 @@ $posts = ViewController::getViewData('posts');
             </p>
         </footer>
     </article>
-    <?php } ?>
+        <?php } ?>
 </main>
 <?php
 ViewController::singleViewDirectoryViews('pagination');

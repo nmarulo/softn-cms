@@ -64,10 +64,10 @@ class CategoryController extends CUDControllerAbstract {
         $category->setId(Arrays::get($inputs, CategoriesManager::ID));
         $category->setCategoryName(Arrays::get($inputs, CategoriesManager::CATEGORY_NAME));
         $category->setCategoryDescription(Arrays::get($inputs, CategoriesManager::CATEGORY_DESCRIPTION));
-        $category->setCategoryCount(NULL);
+        $category->setCategoryPostCount(NULL);
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
-            $category->setCategoryCount(0);
+            $category->setCategoryPostCount(0);
         }
         
         return ['category' => $category];

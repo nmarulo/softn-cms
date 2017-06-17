@@ -24,7 +24,7 @@ class CategoriesManager extends CRUDManagerAbstract {
     
     const CATEGORY_DESCRIPTION = 'category_description';
     
-    const CATEGORY_COUNT       = 'category_count';
+    const CATEGORY_POST_COUNT  = 'category_post_count';
     
     public function searchByPostId($postId) {
         $columnPostId         = PostsCategoriesManager::POST_ID;
@@ -85,6 +85,13 @@ class CategoriesManager extends CRUDManagerAbstract {
         return $result !== FALSE && $result->getId() != $id;
     }
     
+    public function updateCount($categoryId, $num) {
+        $category = $this->searchById($categoryId);
+        $category->setCategoryPostCount($category->getCategoryPostCount() + $num);
+        
+        return $this->update($category);
+    }
+    
     /**
      * @param Category $object
      *
@@ -130,7 +137,7 @@ class CategoriesManager extends CRUDManagerAbstract {
      * @param Category $object
      */
     protected function addParameterQuery($object) {
-        parent::parameterQuery(self::CATEGORY_COUNT, $object->getCategoryCount(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::CATEGORY_POST_COUNT, $object->getCategoryPostCount(), \PDO::PARAM_INT);
         parent::parameterQuery(self::CATEGORY_NAME, $object->getCategoryName(), \PDO::PARAM_STR);
         parent::parameterQuery(self::CATEGORY_DESCRIPTION, $object->getCategoryDescription(), \PDO::PARAM_STR);
     }
@@ -143,7 +150,7 @@ class CategoriesManager extends CRUDManagerAbstract {
         parent::buildObjectTable($result);
         $category = new Category();
         $category->setId(Arrays::get($result, self::ID));
-        $category->setCategoryCount(Arrays::get($result, self::CATEGORY_COUNT));
+        $category->setCategoryPostCount(Arrays::get($result, self::CATEGORY_POST_COUNT));
         $category->setCategoryDescription(Arrays::get($result, self::CATEGORY_DESCRIPTION));
         $category->setCategoryName(Arrays::get($result, self::CATEGORY_NAME));
         

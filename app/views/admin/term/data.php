@@ -32,7 +32,7 @@ ViewController::singleViewDirectory('pagination');
                     <a class="btn-action-sm btn btn-danger" data-id="<?php echo $term->getId(); ?>" href="#" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></a>
                 </td>
                 <td><?php echo $term->getTermName(); ?></td>
-                <td><?php echo $term->getTermCount(); ?></td>
+                <td><?php echo $term->getTermPostCount(); ?></td>
             </tr>
         <?php } ?>
         </tbody>

@@ -15,9 +15,11 @@ use SoftnCMS\models\managers\PostsCategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\PostsTermsManager;
 use SoftnCMS\models\managers\TermsManager;
+use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\PostCategory;
 use SoftnCMS\models\tables\PostTerm;
+use SoftnCMS\models\tables\Term;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
@@ -47,17 +49,19 @@ class PostController extends CUDControllerAbstract {
                 $post = Arrays::get($form, 'post');
                 
                 if ($postsManager->create($post)) {
-                    $showForm    = FALSE;
-                    $messages    = 'Entrada publicada correctamente.';
-                    $typeMessage = Messages::TYPE_SUCCESS;
-                    $postId      = $postsManager->getLastInsertId();
-                    $terms       = Arrays::get($form, 'terms'); //Etiquetas nuevas
-                    $categories  = Arrays::get($form, 'categories'); //Categorías nuevas
+                    $usersManager   = new UsersManager();
+                    $optionsManager = new OptionsManager();
+                    $showForm       = FALSE;
+                    $messages       = 'Entrada publicada correctamente.';
+                    $typeMessage    = Messages::TYPE_SUCCESS;
+                    $postId         = $postsManager->getLastInsertId();
+                    $terms          = Arrays::get($form, 'terms'); //Etiquetas nuevas
+                    $categories     = Arrays::get($form, 'categories'); //Categorías nuevas
+                    $usersManager->updatePostCount($post->getUserID(), 1);
                     $this->createOrDeleteTerms($terms, $postId);
                     $this->createOrDeleteCategories($categories, $postId);
-                    Messages::addMessage($messages, $typeMessage);
-                    //TODO: temporalmente, hasta crear una redirección a la pagina "update".
-                    $this->index();
+                    Messages::addSessionMessage($messages, $typeMessage);
+                    Util::redirect($optionsManager->getSiteUrl() . 'admin/post');
                 }
             }
             
@@ -89,11 +93,12 @@ class PostController extends CUDControllerAbstract {
         $post->setPostUpdate($date);
         $post->setPostTitle(Arrays::get($inputs, PostsManager::POST_TITLE));
         $post->setPostStatus(Arrays::get($inputs, PostsManager::POST_STATUS));
-        $post->setCommentStatus(Arrays::get($inputs, PostsManager::COMMENT_STATUS));
+        $post->setCommentStatus(Arrays::get($inputs, PostsManager::POST_COMMENT_STATUS));
         $post->setPostContents(Arrays::get($inputs, PostsManager::POST_CONTENTS));
-        $post->setUserID(LoginManager::getSession());
+        $post->setUserID(NULL);
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+            $post->setUserID(LoginManager::getSession());
             $post->setCommentCount(0);
             $post->setPostDate($date);
         }
@@ -113,7 +118,7 @@ class PostController extends CUDControllerAbstract {
                                     ->build(),
             InputHtmlBuilder::init(PostsManager::POST_CONTENTS)
                             ->build(),
-            InputBooleanBuilder::init(PostsManager::COMMENT_STATUS)
+            InputBooleanBuilder::init(PostsManager::POST_COMMENT_STATUS)
                                ->build(),
             InputBooleanBuilder::init(PostsManager::POST_STATUS)
                                ->build(),
@@ -131,7 +136,7 @@ class PostController extends CUDControllerAbstract {
     private function createOrDeleteTerms($termsId, $postId) {
         $typeMessage       = Messages::TYPE_DANGER;
         $postsTermsManager = new PostsTermsManager();
-        $selectedTermsId   = $this->getSelectedTermsId($postId);
+        $currentTermsId    = $this->getCurrentTermsId($postId);
         
         if (empty($termsId)) {
             if ($postsTermsManager->deleteAllByPostId($postId) === FALSE) {
@@ -140,10 +145,11 @@ class PostController extends CUDControllerAbstract {
             }
             
         } else {
-            $numError = 0;
+            $termsManager = new TermsManager();
+            $numError     = 0;
             //Obtengo los identificadores de las nuevas etiquetas.
-            $newTerms = array_filter($termsId, function($value) use ($selectedTermsId) {
-                return !Arrays::valueExists($selectedTermsId, $value);
+            $newTerms = array_filter($termsId, function($termId) use ($currentTermsId) {
+                return !Arrays::valueExists($currentTermsId, $termId);
             });
             $newTerms = array_map(function($value) use ($postId) {
                 $object = new PostTerm();
@@ -154,18 +160,18 @@ class PostController extends CUDControllerAbstract {
             }, $newTerms);
             
             //Obtengo los identificadores de las etiquetas que no se han seleccionado.
-            $termsNotSelected = array_filter($selectedTermsId, function($value) use ($termsId) {
+            $termsIdNotSelected = array_filter($currentTermsId, function($value) use ($termsId) {
                 return !Arrays::valueExists($termsId, $value);
             });
             
-            array_walk($termsNotSelected, function($value) use ($postId, $postsTermsManager, &$numError) {
-                if ($postsTermsManager->deleteByPostAndTerm($postId, $value) === FALSE) {
+            array_walk($termsIdNotSelected, function($termId) use ($postId, $postsTermsManager, &$numError, $termsManager) {
+                if (!$postsTermsManager->deleteByPostAndTerm($postId, $termId) || !$termsManager->updateCount($termId, -1)) {
                     $numError++;
                 }
             });
             
-            array_walk($newTerms, function($value) use ($postsTermsManager, &$numError) {
-                if (!$postsTermsManager->create($value)) {
+            array_walk($newTerms, function(PostTerm $postTerm) use ($postsTermsManager, &$numError, $termsManager) {
+                if (!$postsTermsManager->create($postTerm) || !$termsManager->updateCount($postTerm->getTermID(), 1)) {
                     $numError++;
                 }
             });
@@ -176,20 +182,20 @@ class PostController extends CUDControllerAbstract {
         }
     }
     
-    private function getSelectedTermsId($postId) {
+    private function getCurrentTermsId($postId) {
         $postsTermsManager = new PostsTermsManager();
         $postTerms         = $postsTermsManager->searchAllByPostId($postId); //Etiquetas actuales
-        $selectedTermsId   = array_map(function(PostTerm $value) {
+        $currentTermsId    = array_map(function(PostTerm $value) {
             return $value->getTermID();
         }, $postTerms);
         
-        return $selectedTermsId;
+        return $currentTermsId;
     }
     
     private function createOrDeleteCategories($categoriesId, $postId) {
         $typeMessage            = Messages::TYPE_DANGER;
         $postsCategoriesManager = new PostsCategoriesManager();
-        $selectedCategoriesId   = $this->getSelectedCategoriesId($postId);
+        $currentCategoriesId    = $this->getCurrentCategoriesId($postId);
         
         if (empty($categoriesId)) {
             if ($postsCategoriesManager->deleteAllByPostId($postId) === FALSE) {
@@ -198,10 +204,11 @@ class PostController extends CUDControllerAbstract {
             }
             
         } else {
-            $numError = 0;
+            $categoriesManager = new CategoriesManager();
+            $numError          = 0;
             //Obtengo los identificadores de las nuevas categorías.
-            $newCategories = array_filter($categoriesId, function($value) use ($selectedCategoriesId) {
-                return !Arrays::valueExists($selectedCategoriesId, $value);
+            $newCategories = array_filter($categoriesId, function($value) use ($currentCategoriesId) {
+                return !Arrays::valueExists($currentCategoriesId, $value);
             });
             $newCategories = array_map(function($value) use ($postId) {
                 $object = new PostCategory();
@@ -212,18 +219,18 @@ class PostController extends CUDControllerAbstract {
             }, $newCategories);
             
             //Obtengo los identificadores de las categorías que no se han seleccionado.
-            $CategoriesNotSelected = array_filter($selectedCategoriesId, function($value) use ($categoriesId) {
+            $CategoriesIdNotSelected = array_filter($currentCategoriesId, function($value) use ($categoriesId) {
                 return !Arrays::valueExists($categoriesId, $value);
             });
             
-            array_walk($CategoriesNotSelected, function($value) use ($postId, $postsCategoriesManager, &$numError) {
-                if ($postsCategoriesManager->deleteByPostAndCategory($postId, $value) === FALSE) {
+            array_walk($CategoriesIdNotSelected, function($categoryId) use ($postId, $postsCategoriesManager, &$numError, $categoriesManager) {
+                if (!$postsCategoriesManager->deleteByPostAndCategory($postId, $categoryId) || !$categoriesManager->updateCount($categoryId, -1)) {
                     $numError++;
                 }
             });
             
-            array_walk($newCategories, function($value) use ($postsCategoriesManager, &$numError) {
-                if (!$postsCategoriesManager->create($value)) {
+            array_walk($newCategories, function(PostCategory $postCategory) use ($postsCategoriesManager, &$numError, $categoriesManager) {
+                if (!$postsCategoriesManager->create($postCategory) || !$categoriesManager->updateCount($postCategory->getCategoryID(), 1)) {
                     $numError++;
                 }
             });
@@ -234,32 +241,14 @@ class PostController extends CUDControllerAbstract {
         }
     }
     
-    private function getSelectedCategoriesId($postId) {
+    private function getCurrentCategoriesId($postId) {
         $postsCategoriesManager = new PostsCategoriesManager();
         $postCategories         = $postsCategoriesManager->searchAllByPostId($postId); //Categorías actuales
-        $selectedCategoriesId   = array_map(function(PostCategory $value) {
+        $CurrentCategoriesId    = array_map(function(PostCategory $value) {
             return $value->getCategoryID();
         }, $postCategories);
         
-        return $selectedCategoriesId;
-    }
-    
-    public function index() {
-        $this->read();
-        ViewController::view('index');
-    }
-    
-    protected function read() {
-        $filters      = [];
-        $postsManager = new PostsManager();
-        $count        = $postsManager->count();
-        $pagination   = parent::pagination($count);
-        
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('posts', $postsManager->read($filters));
+        return $CurrentCategoriesId;
     }
     
     private function sendViewCategoriesAndTerms() {
@@ -305,8 +294,8 @@ class PostController extends CUDControllerAbstract {
             
             $optionsManager       = new OptionsManager();
             $linkPost             = $optionsManager->getSiteUrl() . 'post/' . $id;
-            $selectedCategoriesId = $this->getSelectedCategoriesId($id);
-            $selectedTermsId      = $this->getSelectedTermsId($id);
+            $selectedCategoriesId = $this->getCurrentCategoriesId($id);
+            $selectedTermsId      = $this->getCurrentTermsId($id);
             $this->sendViewCategoriesAndTerms();
             ViewController::sendViewData('linkPost', $linkPost);
             ViewController::sendViewData('selectedCategoriesId', $selectedCategoriesId);
@@ -317,12 +306,33 @@ class PostController extends CUDControllerAbstract {
         }
     }
     
+    public function index() {
+        $this->read();
+        ViewController::view('index');
+    }
+    
+    protected function read() {
+        $filters      = [];
+        $postsManager = new PostsManager();
+        $count        = $postsManager->count();
+        $pagination   = parent::pagination($count);
+        
+        if ($pagination !== FALSE) {
+            $filters['limit'] = $pagination;
+        }
+        
+        ViewController::sendViewData('posts', $postsManager->read($filters));
+    }
+    
     public function delete($id) {
         $messages     = 'Error al borrar la entrada.';
         $typeMessage  = Messages::TYPE_DANGER;
         $postsManager = new PostsManager();
+        $usersManager = new UsersManager();
+        $user         = $usersManager->searchByPostId($id);
         
         if (!empty($postsManager->delete($id))) {
+            $usersManager->updatePostCount($user->getId(), -1);
             $messages    = 'Entrada borrada correctamente.';
             $typeMessage = Messages::TYPE_SUCCESS;
         }

@@ -30,6 +30,7 @@ class UserTemplate extends Template {
      * @param bool $initRelationship
      */
     public function __construct(User $user = NULL, $initRelationship = FALSE) {
+        parent::__construct();
         $this->user = $user;
         $this->post = [];
         
