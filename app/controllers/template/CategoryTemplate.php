@@ -43,7 +43,7 @@ class CategoryTemplate extends Template {
         $this->initPosts();
     }
     
-    private function initPosts() {
+    public function initPosts() {
         $postsManager = new PostsManager();
         $this->posts  = $postsManager->searchByCategoryId($this->category->getId());
         $this->posts  = array_map(function(Post $post) {

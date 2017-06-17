@@ -113,7 +113,7 @@ class TermsManager extends CRUDManagerAbstract {
         return parent::readData($query);
     }
     
-    public function updateCount($termId, $num) {
+    public function updatePostCount($termId, $num) {
         $term = $this->searchById($termId);
         $term->setTermPostCount($term->getTermPostCount() + $num);
         

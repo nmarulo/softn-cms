@@ -38,7 +38,7 @@ ViewController::singleViewDirectory('pagination'); ?>
                 </td>
                 <td><a href="#" target="_blank"><?php echo $post->getPostTitle(); ?></a></td>
                 <td><a href="#" target="_blank"><?php echo $post->getUserID(); ?></a></td>
-                <td><span class="badge"><?php echo $post->getCommentCount(); ?></span></td>
+                <td><span class="badge"><?php echo $post->getPostCommentCount(); ?></span></td>
                 <td><?php echo $post->getPostDate(); ?></td>
                 <td><?php echo $post->getPostStatus(); ?></td>
             </tr>

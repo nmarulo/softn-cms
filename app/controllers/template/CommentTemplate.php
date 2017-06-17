@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\template;
 use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\PostsManager;
+use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
 
 /**
@@ -22,6 +23,9 @@ class CommentTemplate extends Template {
     /** @var PostTemplate */
     private $post;
     
+    /** @var UserTemplate */
+    private $userTemplate;
+    
     /**
      * CommentTemplate constructor.
      *
@@ -30,8 +34,9 @@ class CommentTemplate extends Template {
      */
     public function __construct(Comment $comment = NULL, $initRelationship = FALSE) {
         parent::__construct();
-        $this->comment = $comment;
-        $this->post    = NULL;
+        $this->comment      = $comment;
+        $this->post         = NULL;
+        $this->userTemplate = NULL;
         
         if ($initRelationship) {
             $this->initRelationship();
@@ -40,9 +45,10 @@ class CommentTemplate extends Template {
     
     public function initRelationship() {
         $this->initPost();
+        $this->initUser();
     }
     
-    private function initPost() {
+    public function initPost() {
         $postsManager = new PostsManager();
         $post         = $postsManager->searchByCommentId($this->comment->getId());
         
@@ -51,6 +57,24 @@ class CommentTemplate extends Template {
         }
         
         $this->post = new PostTemplate($post);
+    }
+    
+    public function initUser() {
+        $usersManager = new UsersManager();
+        $user         = $usersManager->searchById($this->comment->getCommentUserID());
+        
+        //No lanza exception ya que un usuario no registrado puede comentar.
+        //TODO: agregar a la pagina de opciones.
+        if (!empty($user)) {
+            $this->userTemplate = new UserTemplate($user);
+        }
+    }
+    
+    /**
+     * @return UserTemplate
+     */
+    public function getUserTemplate() {
+        return $this->userTemplate;
     }
     
     /**

@@ -21,12 +21,6 @@ class PostsTermsManager extends CRUDManagerAbstract {
     
     const TERM_ID = 'term_ID';
     
-    public function searchAllByPostId($postId) {
-        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
-        
-        return parent::searchAllBy(self::POST_ID);
-    }
-    
     public function searchAllByTermId($termId) {
         parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
         
@@ -34,22 +28,67 @@ class PostsTermsManager extends CRUDManagerAbstract {
     }
     
     public function deleteAllByPostId($postId) {
+        $postsTerms = $this->searchAllByPostId($postId);
+        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
+        $result = parent::deleteBy();
+        
+        if ($result) {
+            array_walk($postsTerms, function(PostTerm $postTerm) {
+                $this->updateTermPostCount($postTerm->getTermID(), -1);
+            });
+        }
+        
+        return $result;
+    }
+    
+    public function searchAllByPostId($postId) {
         parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
         
-        return parent::deleteBy();
+        return parent::searchAllBy(self::POST_ID);
+    }
+    
+    private function updateTermPostCount($termId, $num) {
+        $termsManager = new TermsManager();
+        
+        return $termsManager->updatePostCount($termId, $num);
     }
     
     public function deleteAllByTermId($termId) {
         parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
+        $result = parent::deleteBy();
         
-        return parent::deleteBy();
+        if ($result) {
+            $this->updateTermPostCount($termId, -1);
+        }
+        
+        return $result;
+    }
+    
+    /**
+     * @param PostTerm $object
+     *
+     * @return bool
+     */
+    public function create($object) {
+        $result = parent::create($object);
+        
+        if ($result) {
+            $this->updateTermPostCount($object->getTermID(), 1);
+        }
+        
+        return $result;
     }
     
     public function deleteByPostAndTerm($postId, $termId) {
         parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
         parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
+        $result = parent::deleteBy();
         
-        return parent::deleteBy();
+        if ($result) {
+            $this->updateTermPostCount($termId, -1);
+        }
+        
+        return $result;
     }
     
     protected function buildObjectTable($result) {

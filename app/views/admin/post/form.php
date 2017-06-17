@@ -39,7 +39,7 @@ $linkPost             = ViewController::getViewData('linkPost');
                         <div class="panel-body">
                             <div class="checkbox">
                                 <label>
-                                    <input name="<?php echo PostsManager::POST_COMMENT_STATUS; ?>" type="checkbox" <?php echo $post->getCommentStatus() ? 'checked' : ''; ?>> Habilitar comentarios
+                                    <input name="<?php echo PostsManager::POST_COMMENT_STATUS; ?>" type="checkbox" <?php echo $post->getPostCommentStatus() ? 'checked' : ''; ?>> Habilitar comentarios
                                 </label>
                             </div>
                         </div>

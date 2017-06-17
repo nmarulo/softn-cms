@@ -62,7 +62,7 @@ class PostTemplate extends Template {
         $this->initComments();
     }
     
-    private function initUser() {
+    public function initUser() {
         $usersManager = new UsersManager();
         $user         = $usersManager->searchById($this->post->getUserID());
         
@@ -73,7 +73,7 @@ class PostTemplate extends Template {
         $this->userTemplate = new UserTemplate($user);
     }
     
-    private function initCategories() {
+    public function initCategories() {
         $categoriesManager        = new CategoriesManager();
         $this->categoriesTemplate = $categoriesManager->searchByPostId($this->post->getId());
         $this->categoriesTemplate = array_map(function(Category $category) {
@@ -81,7 +81,7 @@ class PostTemplate extends Template {
         }, $this->categoriesTemplate);
     }
     
-    private function initTerms() {
+    public function initTerms() {
         $termsManager        = new TermsManager();
         $this->termsTemplate = $termsManager->searchByPostId($this->post->getId());
         $this->termsTemplate = array_map(function(Term $term) {
@@ -89,7 +89,7 @@ class PostTemplate extends Template {
         }, $this->termsTemplate);
     }
     
-    private function initComments() {
+    public function initComments() {
         $commentsManager        = new CommentsManager();
         $this->commentsTemplate = $commentsManager->searchByPostId($this->post->getId());
         $this->commentsTemplate = array_map(function(Comment $comment) {

@@ -29,10 +29,10 @@ class Post extends TableAbstract {
     private $postContents;
     
     /** @var int */
-    private $commentStatus;
+    private $postCommentStatus;
     
     /** @var int */
-    private $commentCount;
+    private $postCommentCount;
     
     /** @var int */
     private $userID;
@@ -110,29 +110,29 @@ class Post extends TableAbstract {
     /**
      * @return int
      */
-    public function getCommentStatus() {
-        return $this->commentStatus;
+    public function getPostCommentStatus() {
+        return $this->postCommentStatus;
     }
     
     /**
-     * @param int $commentStatus
+     * @param int $postCommentStatus
      */
-    public function setCommentStatus($commentStatus) {
-        $this->commentStatus = $commentStatus;
+    public function setPostCommentStatus($postCommentStatus) {
+        $this->postCommentStatus = $postCommentStatus;
     }
     
     /**
      * @return int
      */
-    public function getCommentCount() {
-        return $this->commentCount;
+    public function getPostCommentCount() {
+        return $this->postCommentCount;
     }
     
     /**
-     * @param int $commentCount
+     * @param int $postCommentCount
      */
-    public function setCommentCount($commentCount) {
-        $this->commentCount = $commentCount;
+    public function setPostCommentCount($postCommentCount) {
+        $this->postCommentCount = $postCommentCount;
     }
     
     /**

@@ -17,7 +17,7 @@ class Comment extends TableAbstract {
     private $commentStatus;
     
     /** @var string */
-    private $commentAutor;
+    private $commentAuthor;
     
     /** @var string */
     private $commentAuthorEmail;
@@ -51,15 +51,15 @@ class Comment extends TableAbstract {
     /**
      * @return string
      */
-    public function getCommentAutor() {
-        return $this->commentAutor;
+    public function getCommentAuthor() {
+        return $this->commentAuthor;
     }
     
     /**
-     * @param string $commentAutor
+     * @param string $commentAuthor
      */
-    public function setCommentAutor($commentAutor) {
-        $this->commentAutor = $commentAutor;
+    public function setCommentAuthor($commentAuthor) {
+        $this->commentAuthor = $commentAuthor;
     }
     
     /**

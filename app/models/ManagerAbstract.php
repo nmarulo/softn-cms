@@ -59,10 +59,14 @@ abstract class ManagerAbstract {
         return Arrays::get($this->searchAllBy($parameter), 0);
     }
     
-    protected function searchAllBy($parameter) {
+    protected function searchAllBy($parameter, $orderBy = '') {
         $query = 'SELECT * ';
         $query .= 'FROM ' . $this->getTableWithPrefix($this->getTable());
         $query .= " WHERE $parameter = :$parameter";
+        
+        if (!empty($orderBy)) {
+            $query .= " ORDER BY $orderBy DESC";
+        }
         
         return $this->readData($query);
     }
@@ -91,13 +95,13 @@ abstract class ManagerAbstract {
         if (empty($query)) {
             $query = 'SELECT * ';
             $query .= 'FROM ' . $this->getTableWithPrefix($this->getTable());
-            $query .= ' ORDER BY ID DESC';
+            $query .= ' ORDER BY ' . self::ID . ' DESC';
         }
         
         $objects = [];
         $result  = $this->select($query);
         
-        array_walk($result, function($value) use (&$objects){
+        array_walk($result, function($value) use (&$objects) {
             $objects[] = $this->buildObjectTable($value);
         });
         
@@ -109,7 +113,7 @@ abstract class ManagerAbstract {
         $result = $mySQL->select($query, $this->prepare);
         $this->closeConnection($mySQL);
         
-        if(empty($result)){
+        if (empty($result)) {
             return [];
         }
         
@@ -152,8 +156,8 @@ abstract class ManagerAbstract {
         
         $query = 'SELECT * ';
         $query .= 'FROM ' . $this->getTableWithPrefix();
-        $query .= ' ORDER BY ID DESC';
-        $query .= $limit === FALSE ? '' : " LIMIT $limit";
+        $query .= ' ORDER BY ID DESC ';
+        $query .= $limit === FALSE ? '' : "LIMIT $limit";
         
         return $this->readData($query);
     }

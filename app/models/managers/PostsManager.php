@@ -7,6 +7,8 @@ namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Post;
+use SoftnCMS\models\tables\PostCategory;
+use SoftnCMS\models\tables\PostTerm;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\MySQL;
 
@@ -39,6 +41,32 @@ class PostsManager extends CRUDManagerAbstract {
      */
     public function __construct() {
         parent::__construct();
+    }
+    
+    public function delete($id) {
+        $usersManager           = new UsersManager();
+        $postsCategoriesManager = new PostsCategoriesManager();
+        $postsTermsManager      = new PostsTermsManager();
+        $postsCategories        = $postsCategoriesManager->searchAllByPostId($id);
+        $postsTerms             = $postsTermsManager->searchAllByPostId($id);
+        $user                   = $usersManager->searchByPostId($id);
+        $postsCategoriesManager->deleteAllByPostId($id);
+        $postsTermsManager->deleteAllByPostId($id);
+        $result = parent::delete($id);
+        
+        if ($result) {
+            $usersManager->updatePostCount($user->getId(), -1);
+        } else {
+            //En caso de fallar el borrado del post, vuelvo a crear la relaciones.
+            array_walk($postsCategories, function(PostCategory $postCategory) use ($postsCategoriesManager) {
+                $postsCategoriesManager->create($postCategory);
+            });
+            array_walk($postsTerms, function(PostTerm $postTerm) use ($postsTermsManager) {
+                $postsTermsManager->create($postTerm);
+            });
+        }
+        
+        return $result;
     }
     
     public function searchByCategoryId($categoryId, $filters = []) {
@@ -78,7 +106,7 @@ class PostsManager extends CRUDManagerAbstract {
         parent::parameterQuery($columnUserId, $userId, \PDO::PARAM_INT);
         
         if (empty($limit)) {
-            return parent::searchAllBy($columnUserId);
+            return parent::searchAllBy($columnUserId, self::ID);
         }
         
         $query = 'SELECT * ';
@@ -90,6 +118,11 @@ class PostsManager extends CRUDManagerAbstract {
         return parent::readData($query);
     }
     
+    /**
+     * @param $commentId
+     *
+     * @return bool|Post
+     */
     public function searchByCommentId($commentId) {
         $columnCommentId = CommentsManager::ID;
         $query           = 'SELECT * ';
@@ -103,6 +136,13 @@ class PostsManager extends CRUDManagerAbstract {
         return Arrays::get(parent::readData($query), 0);
     }
     
+    public function updateCommentCount($postId, $num) {
+        $post = $this->searchById($postId);
+        $post->setPostCommentCount($post->getPostCommentCount() + $num);
+        
+        return parent::update($post);
+    }
+    
     /**
      * @param Post $object
      */
@@ -112,8 +152,8 @@ class PostsManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::POST_DATE, $object->getPostDate(), \PDO::PARAM_STR);
         parent::parameterQuery(self::POST_UPDATE, $object->getPostUpdate(), \PDO::PARAM_STR);
         parent::parameterQuery(self::POST_CONTENTS, $object->getPostContents(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::POST_COMMENT_STATUS, $object->getCommentStatus(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::POST_COMMENT_COUNT, $object->getCommentCount(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::POST_COMMENT_STATUS, $object->getPostCommentStatus(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::POST_COMMENT_COUNT, $object->getPostCommentCount(), \PDO::PARAM_INT);
         parent::parameterQuery(self::USER_ID, $object->getUserID(), \PDO::PARAM_INT);
     }
     
@@ -126,8 +166,8 @@ class PostsManager extends CRUDManagerAbstract {
         $post = new Post();
         $post->setId(Arrays::get($result, self::ID));
         $post->setUserID(Arrays::get($result, self::USER_ID));
-        $post->setCommentCount(Arrays::get($result, self::POST_COMMENT_COUNT));
-        $post->setCommentStatus(Arrays::get($result, self::POST_COMMENT_STATUS));
+        $post->setPostCommentCount(Arrays::get($result, self::POST_COMMENT_COUNT));
+        $post->setPostCommentStatus(Arrays::get($result, self::POST_COMMENT_STATUS));
         $post->setPostContents(Arrays::get($result, self::POST_CONTENTS));
         $post->setPostUpdate(Arrays::get($result, self::POST_UPDATE));
         $post->setPostDate(Arrays::get($result, self::POST_DATE));

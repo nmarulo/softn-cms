@@ -34,7 +34,35 @@ class CommentsManager extends CRUDManagerAbstract {
     public function searchByPostId($postId) {
         parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
         
-        return parent::searchAllBy(self::POST_ID);
+        return parent::searchAllBy(self::POST_ID, self::ID);
+    }
+    
+    public function delete($id) {
+        $postsManager = new PostsManager();
+        $post         = $postsManager->searchByCommentId($id);
+        $result       = parent::delete($id);
+        
+        if ($result) {
+            $postsManager->updateCommentCount($post->getId(), -1);
+        }
+        
+        return $result;
+    }
+    
+    /**
+     * @param Comment $object
+     *
+     * @return bool
+     */
+    public function create($object) {
+        $result = parent::create($object);
+        
+        if ($result) {
+            $postsManager = new PostsManager();
+            $postsManager->updateCommentCount($object->getPostID(), 1);
+        }
+        
+        return $result;
     }
     
     /**
@@ -42,7 +70,7 @@ class CommentsManager extends CRUDManagerAbstract {
      */
     protected function addParameterQuery($object) {
         parent::parameterQuery(self::COMMENT_STATUS, $object->getCommentStatus(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::COMMENT_AUTHOR, $object->getCommentAutor(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::COMMENT_AUTHOR, $object->getCommentAuthor(), \PDO::PARAM_STR);
         parent::parameterQuery(self::COMMENT_AUTHOR_EMAIL, $object->getCommentAuthorEmail(), \PDO::PARAM_STR);
         parent::parameterQuery(self::COMMENT_CONTENTS, $object->getCommentContents(), \PDO::PARAM_STR);
         parent::parameterQuery(self::COMMENT_DATE, $object->getCommentDate(), \PDO::PARAM_STR);
@@ -64,7 +92,7 @@ class CommentsManager extends CRUDManagerAbstract {
         $comment->setCommentContents(Arrays::get($result, self::COMMENT_CONTENTS));
         $comment->setCommentAuthorEmail(Arrays::get($result, self::COMMENT_AUTHOR_EMAIL));
         $comment->setCommentStatus(Arrays::get($result, self::COMMENT_STATUS));
-        $comment->setCommentAutor(Arrays::get($result, self::COMMENT_AUTHOR));
+        $comment->setCommentAuthor(Arrays::get($result, self::COMMENT_AUTHOR));
         
         return $comment;
     }

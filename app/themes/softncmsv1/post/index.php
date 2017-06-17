@@ -1,22 +1,20 @@
 <?php
 use SoftnCMS\controllers\ViewController;
 
-$postTemplate = ViewController::getViewData('post');
+$postTemplate       = ViewController::getViewData('post');
+$siteUrl            = $postTemplate->getSiteUrl();
+$urlPost            = $siteUrl . 'post/';
+$urlCategory        = $siteUrl . 'category/';
+$urlTerm            = $siteUrl . 'term/';
+$urlUser            = $siteUrl . 'user/';
+$post               = $postTemplate->getPost();
+$user               = $postTemplate->getUserTemplate()
+                                   ->getUser();
+$termsTemplate      = $postTemplate->getTermsTemplate();
+$categoriesTemplate = $postTemplate->getCategoriesTemplate();
+$postId             = $post->getId();
 ?>
 <main>
-    <?php
-    $siteUrl            = $postTemplate->getSiteUrl();
-    $urlPost            = $siteUrl . 'post/';
-    $urlCategory        = $siteUrl . 'category/';
-    $urlTerm            = $siteUrl . 'term/';
-    $urlUser            = $siteUrl . 'user/';
-    $post               = $postTemplate->getPost();
-    $user               = $postTemplate->getUserTemplate()
-                                       ->getUser();
-    $termsTemplate      = $postTemplate->getTermsTemplate();
-    $categoriesTemplate = $postTemplate->getCategoriesTemplate();
-    $postId             = $post->getId();
-    ?>
     <article id="post-<?php echo $postId; ?>" class="bg-grey">
         <header class="clearfix">
             <div class="post-title clearfix">
@@ -54,4 +52,8 @@ $postTemplate = ViewController::getViewData('post');
             </p>
         </footer>
     </article>
+    <?php
+    ViewController::sendViewData('post', $postTemplate);
+    ViewController::singleView('comments');
+    ?>
 </main>

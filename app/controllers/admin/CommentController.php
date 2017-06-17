@@ -67,7 +67,7 @@ class CommentController extends CUDControllerAbstract {
         $comment  = new Comment();
         $comment->setId(Arrays::get($inputs, CommentsManager::ID));
         $comment->setPostID(Arrays::get($inputs, CommentsManager::POST_ID));
-        $comment->setCommentAutor(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR));
+        $comment->setCommentAuthor(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR));
         $comment->setCommentStatus(Arrays::get($inputs, CommentsManager::COMMENT_STATUS));
         $comment->setCommentAuthorEmail(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR_EMAIL));
         $comment->setCommentContents(Arrays::get($inputs, CommentsManager::COMMENT_CONTENTS));

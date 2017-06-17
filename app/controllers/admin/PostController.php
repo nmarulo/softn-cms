@@ -88,18 +88,18 @@ class PostController extends CUDControllerAbstract {
         $terms      = Arrays::get($inputs, PostsTermsManager::TERM_ID);
         $categories = Arrays::get($inputs, PostsCategoriesManager::CATEGORY_ID);
         $post->setId(Arrays::get($inputs, PostsManager::ID));
-        $post->setCommentCount(NULL);
+        $post->setPostCommentCount(NULL);
         $post->setPostDate(NULL);
         $post->setPostUpdate($date);
         $post->setPostTitle(Arrays::get($inputs, PostsManager::POST_TITLE));
         $post->setPostStatus(Arrays::get($inputs, PostsManager::POST_STATUS));
-        $post->setCommentStatus(Arrays::get($inputs, PostsManager::POST_COMMENT_STATUS));
+        $post->setPostCommentStatus(Arrays::get($inputs, PostsManager::POST_COMMENT_STATUS));
         $post->setPostContents(Arrays::get($inputs, PostsManager::POST_CONTENTS));
         $post->setUserID(NULL);
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $post->setUserID(LoginManager::getSession());
-            $post->setCommentCount(0);
+            $post->setPostCommentCount(0);
             $post->setPostDate($date);
         }
         
@@ -145,7 +145,6 @@ class PostController extends CUDControllerAbstract {
             }
             
         } else {
-            $termsManager = new TermsManager();
             $numError     = 0;
             //Obtengo los identificadores de las nuevas etiquetas.
             $newTerms = array_filter($termsId, function($termId) use ($currentTermsId) {
@@ -164,14 +163,14 @@ class PostController extends CUDControllerAbstract {
                 return !Arrays::valueExists($termsId, $value);
             });
             
-            array_walk($termsIdNotSelected, function($termId) use ($postId, $postsTermsManager, &$numError, $termsManager) {
-                if (!$postsTermsManager->deleteByPostAndTerm($postId, $termId) || !$termsManager->updateCount($termId, -1)) {
+            array_walk($termsIdNotSelected, function($termId) use ($postId, $postsTermsManager, &$numError) {
+                if (!$postsTermsManager->deleteByPostAndTerm($postId, $termId)) {
                     $numError++;
                 }
             });
             
-            array_walk($newTerms, function(PostTerm $postTerm) use ($postsTermsManager, &$numError, $termsManager) {
-                if (!$postsTermsManager->create($postTerm) || !$termsManager->updateCount($postTerm->getTermID(), 1)) {
+            array_walk($newTerms, function(PostTerm $postTerm) use ($postsTermsManager, &$numError) {
+                if (!$postsTermsManager->create($postTerm)) {
                     $numError++;
                 }
             });
@@ -223,14 +222,14 @@ class PostController extends CUDControllerAbstract {
                 return !Arrays::valueExists($categoriesId, $value);
             });
             
-            array_walk($CategoriesIdNotSelected, function($categoryId) use ($postId, $postsCategoriesManager, &$numError, $categoriesManager) {
-                if (!$postsCategoriesManager->deleteByPostAndCategory($postId, $categoryId) || !$categoriesManager->updateCount($categoryId, -1)) {
+            array_walk($CategoriesIdNotSelected, function($categoryId) use ($postId, $postsCategoriesManager, &$numError) {
+                if (!$postsCategoriesManager->deleteByPostAndCategory($postId, $categoryId)) {
                     $numError++;
                 }
             });
             
-            array_walk($newCategories, function(PostCategory $postCategory) use ($postsCategoriesManager, &$numError, $categoriesManager) {
-                if (!$postsCategoriesManager->create($postCategory) || !$categoriesManager->updateCount($postCategory->getCategoryID(), 1)) {
+            array_walk($newCategories, function(PostCategory $postCategory) use ($postsCategoriesManager, &$numError) {
+                if (!$postsCategoriesManager->create($postCategory)) {
                     $numError++;
                 }
             });
@@ -328,11 +327,8 @@ class PostController extends CUDControllerAbstract {
         $messages     = 'Error al borrar la entrada.';
         $typeMessage  = Messages::TYPE_DANGER;
         $postsManager = new PostsManager();
-        $usersManager = new UsersManager();
-        $user         = $usersManager->searchByPostId($id);
         
         if (!empty($postsManager->delete($id))) {
-            $usersManager->updatePostCount($user->getId(), -1);
             $messages    = 'Entrada borrada correctamente.';
             $typeMessage = Messages::TYPE_SUCCESS;
         }

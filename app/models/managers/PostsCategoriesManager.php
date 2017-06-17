@@ -21,10 +21,25 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
     
     const CATEGORY_ID = 'category_ID';
     
-    public function searchAllByPostId($postId) {
-        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
+    /**
+     * @param PostCategory $object
+     *
+     * @return bool
+     */
+    public function create($object) {
+        $result = parent::create($object);
         
-        return parent::searchAllBy(self::POST_ID);
+        if ($result) {
+            $this->updateCategoryPostCount($object->getCategoryID(), 1);
+        }
+        
+        return $result;
+    }
+    
+    private function updateCategoryPostCount($categoryId, $num) {
+        $categoriesManager = new CategoriesManager();
+        
+        return $categoriesManager->updatePostCount($categoryId, $num);
     }
     
     public function searchAllByCategoryId($categoryId) {
@@ -34,22 +49,46 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
     }
     
     public function deleteAllByPostId($postId) {
+        $postsCategories = $this->searchAllByPostId($postId);
+        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
+        $result = parent::deleteBy();
+        
+        if ($result) {
+            array_walk($postsCategories, function(PostCategory $postCategory) {
+                $this->updateCategoryPostCount($postCategory->getCategoryID(), -1);
+            });
+        }
+        
+        return $result;
+    }
+    
+    public function searchAllByPostId($postId) {
         parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
         
-        return parent::deleteBy();
+        return parent::searchAllBy(self::POST_ID);
     }
     
     public function deleteAllByCategoryId($categoryId) {
         parent::parameterQuery(self::CATEGORY_ID, $categoryId, \PDO::PARAM_INT);
+        $result = parent::deleteBy();
         
-        return parent::deleteBy();
+        if ($result) {
+            $this->updateCategoryPostCount($categoryId, -1);
+        }
+        
+        return $result;
     }
     
     public function deleteByPostAndCategory($postId, $categoryId) {
         parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
         parent::parameterQuery(self::CATEGORY_ID, $categoryId, \PDO::PARAM_INT);
+        $result = parent::deleteBy();
         
-        return parent::deleteBy();
+        if ($result) {
+            $this->updateCategoryPostCount($categoryId, -1);
+        }
+        
+        return $result;
     }
     
     /**

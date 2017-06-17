@@ -85,7 +85,7 @@ class CategoriesManager extends CRUDManagerAbstract {
         return $result !== FALSE && $result->getId() != $id;
     }
     
-    public function updateCount($categoryId, $num) {
+    public function updatePostCount($categoryId, $num) {
         $category = $this->searchById($categoryId);
         $category->setCategoryPostCount($category->getCategoryPostCount() + $num);
         
