@@ -1,0 +1,6 @@
+.idea
+app/vendor/
+*.mwb*
+test-*
+*.vpp*
+*.vux

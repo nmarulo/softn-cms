@@ -8,7 +8,7 @@
  * - Tiempo de vencimiento de las cookies.
  */
 /** Nombre de la base de datos */
-define('DB_NAME', 'softn_cms');
+define('DB_NAME', 'softn_cms_test');
 
 /** Usuario de la base de datos */
 define('DB_USER', 'root');
@@ -28,12 +28,12 @@ define('DB_PREFIX', 'sn_');
 /** Tipo de base de datos. */
 define('DB_TYPE', 'mysql');
 
-/** Determina si los errores deberían ser impresos en pantalla. */
-define('APP_DEBUG', \FALSE);
+define('DEBUG', TRUE);
 
 // Claves SALTED
 define('LOGGED_KEY', '5GLhueRQNTmlo8nY6XusgNN1JDSnQWRKsGiQTkjU0QuD9IVf9SdtmPrwDxc6irBs');
 define('COOKIE_KEY', 'bydiGj9QAG0Nh9RpzGjmPKtTTiUI6PI3iivDP9nEyoTQMtaqnmN7GxR8xXYci5dw');
 //define('SALTED_KEY',    '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
 define('TOKEN_KEY', '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
+//strtotime('+30 days')
 define('COOKIE_EXPIRE', strtotime('+30 days'));

@@ -1,197 +1,201 @@
 <?php
-
 /**
- * Modulo controlador: Pagina de usuarios del panel de administración.
+ * UserController.php
  */
+
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\controllers\BaseController;
-use SoftnCMS\controllers\Form;
-use SoftnCMS\controllers\Messages;
-use SoftnCMS\controllers\Pagination;
-use SoftnCMS\controllers\Router;
-use SoftnCMS\controllers\Token;
-use SoftnCMS\helpers\ArrayHelp;
-use SoftnCMS\helpers\form\builders\InputAlphabeticBuilder;
-use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
-use SoftnCMS\helpers\form\builders\InputEmailBuilder;
-use SoftnCMS\helpers\form\builders\InputIntegerBuilder;
-use SoftnCMS\helpers\form\builders\InputUrlBuilder;
-use SoftnCMS\helpers\Helps;
-use SoftnCMS\models\admin\template\Template;
-use SoftnCMS\models\admin\User;
-use SoftnCMS\models\admin\Users;
-use SoftnCMS\models\admin\UserInsert;
-use SoftnCMS\models\admin\UserDelete;
-use SoftnCMS\models\admin\UserUpdate;
+use SoftnCMS\controllers\CUDControllerAbstract;
+use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\CRUDManagerAbstract;
+use SoftnCMS\models\managers\LoginManager;
+use SoftnCMS\models\managers\UsersManager;
+use SoftnCMS\models\tables\User;
+use SoftnCMS\util\Arrays;
+use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\util\form\builders\InputEmailBuilder;
+use SoftnCMS\util\form\builders\InputIntegerBuilder;
+use SoftnCMS\util\form\builders\InputUrlBuilder;
+use SoftnCMS\util\form\Form;
+use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
 
 /**
- * Clase UserController de la pagina de usuarios del panel de administración.
+ * Class UserController
  * @author Nicolás Marulanda P.
  */
-class UserController extends BaseController {
+class UserController extends CUDControllerAbstract {
     
-    /**
-     * Método llamado por la función INDEX.
-     *
-     * @param array $data Lista de argumentos.
-     *
-     * @return array
-     */
-    protected function dataIndex($data) {
-        $output     = [];
-        $countData  = Users::count();
-        $pagination = new Pagination(ArrayHelp::get($data, 'paged'), $countData);
-        $limit      = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
-        $users      = Users::selectByLimit($limit);
-        Template::setPagination($pagination);
+    public function create() {
+        $showForm = TRUE;
         
-        if ($users !== \FALSE) {
-            $output = $users->getAll();
-        }
-        
-        return [
-            'users' => $output,
-        ];
-    }
-    
-    /**
-     * Método llamado por la función INSERT.
-     * @return array
-     */
-    protected function dataInsert() {
-        if (Form::submit('publish')) {
-            $dataInput = $this->getDataInput();
+        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+            $form        = $this->form();
+            $messages    = 'Error al publicar el usuario.';
+            $typeMessage = Messages::TYPE_DANGER;
             
-            if ($dataInput !== FALSE && $dataInput['userPass'] == $dataInput['userPassR']) {
-                $insert = new UserInsert($dataInput['userLogin'], $dataInput['userName'], $dataInput['userEmail'], $dataInput['userPass'], $dataInput['userRol'], $dataInput['userUrl']);
+            if (!empty($form)) {
+                $usersManager = new UsersManager();
+                $user         = Arrays::get($form, 'user');
                 
-                if ($insert->insert()) {
-                    Messages::addSuccess('Usuario registrado correctamente.');
-                    //Si es correcto se muestra el USER en la pagina de edición.
-                    Helps::redirectRoute('update/' . $insert->getLastInsertId());
+                if ($usersManager->create($user)) {
+                    $showForm    = FALSE;
+                    $messages    = 'Usuario creado correctamente.';
+                    $typeMessage = Messages::TYPE_SUCCESS;
+                    Messages::addMessage($messages, $typeMessage);
+                    $this->index();
                 }
             }
-            Messages::addError('Error al registrar el usuario.');
+            
+            Messages::addMessage($messages, $typeMessage);
         }
         
-        return [
-            //Datos por defecto a mostrar en el formulario.
-            'user' => User::defaultInstance(),
-        ];
+        if ($showForm) {
+            ViewController::sendViewData('user', new User());
+            ViewController::sendViewData('title', 'Publicar nuevo usuario');
+            ViewController::view('form');
+        }
     }
     
-    /**
-     * Método que obtiene los datos de los campos INPUT del formulario.
-     * @return array|bool
-     */
-    protected function getDataInput() {
-        if (Token::check()) {
-            /*
-             * Si "GetDataInput" es llamado desde la función "insert"
-             * sera obligatorio los campos de las contraseñas.
-             */
-            $isRequire = Router::getRequest()
-                               ->getMethod() == 'insert';
-            
-            Form::setINPUT([
-                InputAlphanumericBuilder::init('userLogin')
-                                        ->setAccents(FALSE)
-                                        ->setWithoutSpace(TRUE)
-                                        ->setReplaceSpace('')
-                                        ->build(),
-                InputAlphabeticBuilder::init('userName')
-                                      ->build(),
-                InputEmailBuilder::init('userEmail')
-                                 ->build(),
-                InputAlphanumericBuilder::init('userPass')
-                                        ->setRequire($isRequire)
-                                        ->setAccents(FALSE)
-                                        ->build(),
-                InputAlphanumericBuilder::init('userPassR')
-                                        ->setRequire($isRequire)
-                                        ->setAccents(FALSE)
-                                        ->build(),
-                InputIntegerBuilder::init('userRol')
-                                   ->setRequire(FALSE)
-                                   ->build(),
-                InputUrlBuilder::init('userUrl')
-                               ->setRequire(FALSE)
-                               ->build(),
-            ]);
-            
-            return Form::inputFilter();
+    protected function form() {
+        $inputs = $this->filterInputs();
+        
+        if (empty($inputs)) {
+            return FALSE;
         }
         
-        return FALSE;
-    }
-    
-    /**
-     * Método llamado por la función UPDATE.
-     *
-     * @param array $data Lista de argumentos.
-     *
-     * @return array
-     */
-    protected function dataUpdate($data) {
-        $user = User::selectByID(ArrayHelp::get($data, 'id'));
+        $pass  = Arrays::get($inputs, UsersManager::USER_PASSWORD);
+        $passR = Arrays::get($inputs, UsersManager::USER_PASSWORD_REWRITE);
         
-        //En caso de que no exista.
-        if (empty($user)) {
-            Messages::addError('Error. El usuario no existe.');
-            Helps::redirectRoute();
-        }
-        
-        if (Form::submit('update')) {
-            $dataInput = $this->getDataInput();
-            
-            if ($dataInput === FALSE || $dataInput['userPass'] != $dataInput['userPassR']) {
-                Messages::addError('Error al actualizar el usuario.');
-            } else {
-                $update = new UserUpdate($user, $dataInput['userLogin'], $dataInput['userName'], $dataInput['userEmail'], $dataInput['userPass'], $dataInput['userRol'], $dataInput['userUrl']);
-                
-                //Si ocurre un error la función "$update->update()" retorna FALSE.
-                if ($update->update()) {
-                    Messages::addSuccess('Usuario actualizado correctamente.');
-                    $user = $update->getDataUpdate();
-                } else {
-                    Messages::addError('Error al actualizar el usuario.');
-                }
-            }
-        }
-        
-        return [
-            //Instancia USER
-            'user' => $user,
-        ];
-    }
-    
-    /**
-     * Método llamado por la función DELETE.
-     *
-     * @param array $data Lista de argumentos.
-     */
-    protected function dataDelete($data) {
-        /*
-         * Ya que este método no tiene modulo vista propio
-         * se carga el modulo vista INDEX, asi que se retornan los datos
-         * para esta vista.
-         */
-        
-        $output = FALSE;
-        
-        if (Token::check()) {
-            $delete = new UserDelete($data['id']);
-            $output = $delete->delete();
-        }
-        
-        if ($output) {
-            Messages::addSuccess('Usuario borrado correctamente.');
-        } elseif ($output === 0) {
-            Messages::addWarning('El usuario no existe.');
+        if (empty($pass) || empty($passR)) {
+            $pass = NULL;
         } else {
-            Messages::addError('Error al borrar el usuario.');
+            if ($pass != $passR) {
+                return FALSE;
+            }
+            
+            $pass = Util::encrypt($pass, LOGGED_KEY);
         }
+        
+        $user = new User();
+        $user->setId(Arrays::get($inputs, UsersManager::ID));
+        $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
+        $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
+        $user->setUserName(Arrays::get($inputs, UsersManager::USER_NAME));
+        $user->setUserRegistered(NULL);
+        $user->setUserRol(Arrays::get($inputs, UsersManager::USER_ROL));
+        $user->setUserUrl(Arrays::get($inputs, UsersManager::USER_URL));
+        $user->setUserPassword($pass);
+        $user->setUserPostCount(NULL);
+        
+        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+            $user->setUserRegistered(Util::dateNow());
+            $user->setUserPostCount(0);
+        }
+        
+        return ['user' => $user];
+    }
+    
+    protected function filterInputs() {
+        $isCreate = Form::submit(CRUDManagerAbstract::FORM_CREATE);
+        
+        Form::setINPUT([
+            InputIntegerBuilder::init(UsersManager::ID)
+                               ->build(),
+            InputEmailBuilder::init(UsersManager::USER_EMAIL)
+                             ->build(),
+            InputAlphanumericBuilder::init(UsersManager::USER_LOGIN)
+                                    ->setAccents(FALSE)
+                                    ->setWithoutSpace(TRUE)
+                                    ->setReplaceSpace('')
+                                    ->build(),
+            InputAlphanumericBuilder::init(UsersManager::USER_NAME)
+                                    ->build(),
+            InputIntegerBuilder::init(UsersManager::USER_ROL)
+                               ->build(),
+            InputUrlBuilder::init(UsersManager::USER_URL)
+                           ->setRequire(FALSE)
+                           ->build(),
+            InputAlphanumericBuilder::init(UsersManager::USER_PASSWORD)
+                                    ->setRequire($isCreate)
+                                    ->build(),
+            InputAlphanumericBuilder::init(UsersManager::USER_PASSWORD_REWRITE)
+                                    ->setRequire($isCreate)
+                                    ->build(),
+        ]);
+        
+        return Form::inputFilter();
+    }
+    
+    public function index() {
+        $this->read();
+        ViewController::view('index');
+    }
+    
+    protected function read() {
+        $filters      = [];
+        $usersManager = new UsersManager();
+        $count        = $usersManager->count();
+        $pagination   = parent::pagination($count);
+        
+        if ($pagination !== FALSE) {
+            $filters['limit'] = $pagination;
+        }
+        
+        ViewController::sendViewData('users', $usersManager->read($filters));
+    }
+    
+    public function update($id) {
+        $typeMessage  = Messages::TYPE_DANGER;
+        $messages     = 'El usuario no existe.';
+        $usersManager = new UsersManager();
+        $user         = $usersManager->searchById($id);
+        
+        if (empty($user)) {
+            Messages::addMessage($messages, $typeMessage);
+            $this->index();
+        } else {
+            if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+                $messages = 'Error al actualizar el usuario.';
+                $form     = $this->form();
+                
+                if (!empty($form)) {
+                    $user = Arrays::get($form, 'user');
+                    
+                    if ($usersManager->update($user)) {
+                        $messages    = 'Usuario actualizado correctamente.';
+                        $typeMessage = Messages::TYPE_SUCCESS;
+                    }
+                }
+                
+                Messages::addMessage($messages, $typeMessage);
+            }
+            
+            ViewController::sendViewData('user', $user);
+            ViewController::sendViewData('title', 'Actualizar usuario');
+            ViewController::view('form');
+        }
+    }
+    
+    public function delete($id) {
+        $messages    = 'Error al borrar el usuario.';
+        $typeMessage = Messages::TYPE_DANGER;
+        
+        if ($id != LoginManager::getSession()) {
+            $usersManager = new UsersManager();
+            
+            $result = $usersManager->delete($id);
+            
+            if ($result === FALSE) {
+                $messages = 'No se puede borrar un usuario con entradas publicadas.';
+            } elseif ($result === 1) {
+                $typeMessage = Messages::TYPE_SUCCESS;
+                $messages    = 'Usuario borrado correctamente.';
+            }
+        }
+        
+        Messages::addMessage($messages, $typeMessage);
+        parent::delete($id);
     }
     
 }

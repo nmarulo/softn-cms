@@ -1,101 +1,56 @@
-<div id="index" class="sn-content col-sm-9 col-md-10"><!-- Informacion - Contenido -->
-    <div id="snwrap"><!-- #snwarp -->
-        <div id="header" class="clearfix">
-            <h1>Información general</h1>
-        </div>
-        <div id="content"><!-- #content -->
+<?php
+use SoftnCMS\controllers\ViewController;
+
+ViewController::registerScript('jquery-3.2.1');
+ViewController::registerScript('common');
+ViewController::registerScriptRoute('app/vendor/twbs/bootstrap/dist/js/bootstrap');
+ViewController::registerScriptRoute('app/vendor/tinymce/tinymce/tinymce');
+ViewController::registerStyle('normalize');
+ViewController::registerStyleRoute('app/vendor/twbs/bootstrap/dist/css/bootstrap');
+ViewController::registerStyleRoute('app/vendor/fortawesome/font-awesome/css/font-awesome.min');
+ViewController::registerStyle('style');
+$optionsManager = new \SoftnCMS\models\managers\OptionsManager();
+$siteTitle      = $optionsManager->searchByName(OPTION_TITLE)
+                                 ->getOptionValue();
+?>
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title><?php echo $siteTitle; ?></title>
+        <?php ViewController::includeStyles(); ?>
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <?php ViewController::header(); ?>
+        <div class="container-fluid">
             <div class="row clearfix">
-                <div id="content-left" class="col-sm-6">
-                    <div class="panel panel-primary"><!-- Estadisticas Generales -->
-                        <div class="panel-heading">Estadisticas Generales</div>
-                        <div class="panel-body">
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <span class="badge"><?php echo $data['count']['post']; ?></span>
-                                    <a href="<?php $data['template']::getUrlPost(); ?>">Publicaciones</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="badge"><?php echo $data['count']['page']; ?></span>
-                                    <a href="<?php $data['template']::getUrlAdmin(); ?>">Paginas</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="badge"><?php echo $data['count']['comment']; ?></span>
-                                    <a href="<?php $data['template']::getUrlComment(); ?>">Comentarios</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="badge"><?php echo $data['count']['category']; ?></span>
-                                    <a href="<?php $data['template']::getUrlCategory(); ?>">Categorias</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <span class="badge"><?php echo $data['count']['user']; ?></span>
-                                    <a href="<?php $data['template']::getUrlUser(); ?>">Usuarios</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div><!-- Fin - Estadisticas Generales -->
-                    <div class="panel panel-primary"><!-- Categorias -->
-                        <div class="panel-heading">Noticias de SoftN CMS</div>
-                        <div class="panel-body">
-                            <!-- Nav tabs -->
-                            <ul class="nav nav-tabs" role="tablist">
-                                <li role="presentation"><a href="#master" aria-controls="master" role="tab" data-toggle="tab">Master</a></li>
-                                <li role="presentation" class="active"><a href="#develop" aria-controls="develop" role="tab" data-toggle="tab">Develop</a></li>
-                            </ul>
-                            <!-- Tab panes -->
-                            <div class="tab-content">
-                                <div role="tabpanel" class="tab-pane" id="master">
-                                    <p>Ultima actualización: <?php echo $data['github']['master']['lastUpdate']; ?> <a href="https://github.com/nmarulo/softn-cms" target="_blank">GitHub</a></p>
-                                    <ul class="list-group">
-                                        <?php foreach ($data['github']['master']['entry'] as $value) { ?>
-                                            <li class="list-group-item">
-                                                <a href="<?php echo $value['authorUri']; ?>" target="_blank"><span class="label label-success"><?php echo $value['authorName']; ?></span></a> 
-                                                <a href="<?php echo $value['linkHref']; ?>" target="_blank"><?php echo $value['title']; ?></a>
-                                            </li>
-                                        <?php } ?>
-                                    </ul>
-                                </div>
-                                <div role="tabpanel" class="tab-pane active" id="develop">
-                                    <p>Ultima actualización: <?php echo $data['github']['develop']['lastUpdate']; ?> <a href="https://github.com/nmarulo/softn-cms" target="_blank">GitHub</a></p>
-                                    <ul class="list-group">
-                                        <?php foreach ($data['github']['develop']['entry'] as $value) { ?>
-                                            <li class="list-group-item">
-                                                <a href="<?php echo $value['authorUri']; ?>" target="_blank"><span class="label label-success"><?php echo $value['authorName']; ?></span></a> 
-                                                <a href="<?php echo $value['linkHref']; ?>" target="_blank"><?php echo $value['title']; ?></a>
-                                            </li>
-                                        <?php } ?>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- Fin - Categorias -->
+                <div class="menu-container col-sm-3 col-md-2">
+                    <?php ViewController::sidebar(); ?>
                 </div>
-                <div id="content-right" class="col-sm-6">
-                    <div class="panel panel-primary"><!-- Publicaciones - Entradas -->
-                        <div class="panel-heading">Publicaciones</div>
-                        <div class="panel-body">
-                            <ul class="list-group">
-                                <?php foreach ($data['lastPosts'] as $post) { ?>
-                                    <li class="list-group-item clearfix">
-                                        <span class="pull-left"><?php echo $post->getPostDate(); ?></span><a href="<?php $post->getUrl(); ?>"><?php echo $post->getPostTitle(); ?></a>
-                                    </li>
-                                <?php } ?>
-                            </ul>
-                        </div>
-                    </div><!-- Fin - Publicaciones - Entradas -->
-                    <div class="panel panel-primary"><!-- comentarios -->
-                        <div class="panel-heading">Comentarios</div>
-                        <div class="panel-body">
-                            <ul class="list-group">
-                                <?php foreach ($data['lastComments'] as $value) { ?>
-                                    <li class="list-group-item clearfix">
-                                        <span class="pull-left"><?php echo $value->getCommentDate(); ?></span><a href='#'><?php echo $value->getCommentContents(); ?></a>
-                                    </li>
-                                <?php } ?>
-                            </ul>
-                        </div>
-                    </div><!-- Fin - comentarios -->
+                <div class="col-sm-9 col-md-10">
+                    <?php ViewController::content(); ?>
                 </div>
             </div>
-        </div><!-- #content -->
-    </div><!-- #snwarp -->
-</div><!-- Fin - Informacion - Contenido -->
+        </div>
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-sm-3 col-md-2"></div>
+                <div class="col-sm-9 col-md-10">
+                    <?php ViewController::footer(); ?>
+                </div>
+            </div>
+        </div>
+        <?php
+        ViewController::singleViewDirectory('messages');
+        ViewController::includeScripts();
+        ?>
+    </body>
+</html>

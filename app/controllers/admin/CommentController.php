@@ -1,189 +1,170 @@
 <?php
-
 /**
- * Modulo controlador: Pagina de comentarios del panel de administración.
+ * CommentController.php
  */
 
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\controllers\BaseController;
-use SoftnCMS\controllers\Form;
-use SoftnCMS\controllers\Messages;
-use SoftnCMS\controllers\Pagination;
-use SoftnCMS\controllers\Sanitize;
-use SoftnCMS\controllers\Token;
-use SoftnCMS\helpers\ArrayHelp;
-use SoftnCMS\helpers\form\builders\InputAlphanumericBuilder;
-use SoftnCMS\helpers\form\builders\InputBooleanBuilder;
-use SoftnCMS\helpers\form\builders\InputEmailBuilder;
-use SoftnCMS\helpers\form\builders\InputHtmlBuilder;
-use SoftnCMS\helpers\form\builders\InputIntegerBuilder;
-use SoftnCMS\helpers\Helps;
-use SoftnCMS\models\admin\Comments;
-use SoftnCMS\models\admin\Comment;
-use SoftnCMS\models\admin\CommentUpdate;
-use SoftnCMS\models\admin\CommentInsert;
-use SoftnCMS\models\admin\CommentDelete;
-use SoftnCMS\models\admin\template\Template;
-use SoftnCMS\models\Login;
+use SoftnCMS\controllers\CUDControllerAbstract;
+use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\CRUDManagerAbstract;
+use SoftnCMS\models\managers\CommentsManager;
+use SoftnCMS\models\tables\Comment;
+use SoftnCMS\util\Arrays;
+use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\util\form\builders\InputBooleanBuilder;
+use SoftnCMS\util\form\builders\InputEmailBuilder;
+use SoftnCMS\util\form\builders\InputHtmlBuilder;
+use SoftnCMS\util\form\builders\InputIntegerBuilder;
+use SoftnCMS\util\form\Form;
+use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
 
 /**
- * Clase CommentController de la pagina de comentarios del panel de administración.
+ * Class CommentController
  * @author Nicolás Marulanda P.
  */
-class CommentController extends BaseController {
+class CommentController extends CUDControllerAbstract {
     
-    /**
-     * Método llamado por la función INDEX.
-     *
-     * @param array $data Lista de argumentos.
-     *
-     * @return array
-     */
-    protected function dataIndex($data) {
-        $output     = [];
-        $countData  = Comments::count();
-        $pagination = new Pagination(ArrayHelp::get($data, 'paged'), $countData);
-        $limit      = $pagination->getBeginRow() . ',' . $pagination->getRowCount();
-        $comments   = Comments::selectByLimit($limit);
-        Template::setPagination($pagination);
+    public function create() {
+        $showForm = TRUE;
         
-        if ($comments !== \FALSE) {
-            $output = $comments->getAll();
-        }
-        
-        foreach ($output as $value) {
-            $contents = Sanitize::clearTags($value->getCommentContents());
+        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+            $form        = $this->form();
+            $messages    = 'Error al publicar la .';
+            $typeMessage = Messages::TYPE_DANGER;
             
-            if (isset($contents{30})) {
-                $contents = substr($contents, 0, 30) . ' [...]';
-            }
-            $value->setCommentContents($contents);
-        }
-        
-        return [
-            'comments' => $output,
-        ];
-    }
-    
-    /**
-     * Método llamado por la función INSERT.
-     * @return array
-     */
-    protected function dataInsert() {
-        if (Form::submit('publish')) {
-            $dataInput = $this->getDataInput();
-            
-            if ($dataInput !== FALSE) {
-                $insert = new CommentInsert($dataInput['commentAuthor'], $dataInput['commentAuthorEmail'], $dataInput['commentStatus'], $dataInput['commentContents'], $dataInput['postID'], Login::getSession());
+            if (!empty($form)) {
+                $commentsManager = new CommentsManager();
+                $comment         = Arrays::get($form, 'comment');
                 
-                if ($insert->insert()) {
-                    Messages::addSuccess('Comentario publicado correctamente.');
-                    //Si es correcto se muestra el comentario en la pagina de edición.
-                    Helps::redirectRoute('update/' . $insert->getLastInsertId());
+                if ($commentsManager->create($comment)) {
+                    $showForm    = FALSE;
+                    $messages    = 'Comentario publicado correctamente.';
+                    $typeMessage = Messages::TYPE_SUCCESS;
+                    Messages::addMessage($messages, $typeMessage);
+                    $this->index();
                 }
             }
-            Messages::addError('Error al publicar el comentario');
-        }
-        
-        return [
-            //Datos por defecto a mostrar en el formulario.
-            'comment' => Comment::defaultInstance(),
-        ];
-    }
-    
-    /**
-     * Método que obtiene los datos de los campos INPUT del formulario.
-     * @return array|bool
-     */
-    protected function getDataInput() {
-        if (Token::check()) {
-            Form::setINPUT([
-                InputAlphanumericBuilder::init('commentAuthor')
-                                        ->build(),
-                InputEmailBuilder::init('commentAuthorEmail')
-                                 ->build(),
-                InputIntegerBuilder::init('postID')
-                                   ->build(),
-                InputBooleanBuilder::init('commentStatus')
-                                   ->build(),
-                InputHtmlBuilder::init('commentContents')
-                                ->build(),
-            ]);
             
-            return Form::inputFilter();
+            Messages::addMessage($messages, $typeMessage);
         }
         
-        return FALSE;
+        if ($showForm) {
+            ViewController::sendViewData('comment', new Comment());
+            ViewController::sendViewData('title', 'Publicar nuevo comentario');
+            ViewController::view('form');
+        }
     }
     
-    /**
-     * Método llamado por la función UPDATE.
-     *
-     * @param array $data Lista de argumentos.
-     *
-     * @return array
-     */
-    protected function dataUpdate($data) {
-        $comment = Comment::selectByID(ArrayHelp::get($data, 'id'));
+    protected function form() {
+        $inputs = $this->filterInputs();
         
-        //En caso de que no exista.
+        if (empty($inputs)) {
+            return FALSE;
+        }
+        
+        $comment  = new Comment();
+        $comment->setId(Arrays::get($inputs, CommentsManager::ID));
+        $comment->setPostID(Arrays::get($inputs, CommentsManager::POST_ID));
+        $comment->setCommentAuthor(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR));
+        $comment->setCommentStatus(Arrays::get($inputs, CommentsManager::COMMENT_STATUS));
+        $comment->setCommentAuthorEmail(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR_EMAIL));
+        $comment->setCommentContents(Arrays::get($inputs, CommentsManager::COMMENT_CONTENTS));
+        $comment->setCommentDate(NULL);
+        $comment->setCommentUserID(Arrays::get($inputs, CommentsManager::COMMENT_USER_ID));
+        
+        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+            $comment->setCommentDate(Util::dateNow());
+        }
+        
+        return ['comment' => $comment];
+    }
+    
+    protected function filterInputs() {
+        Form::setINPUT([
+            InputIntegerBuilder::init(CommentsManager::ID)
+                               ->build(),
+            InputIntegerBuilder::init(CommentsManager::POST_ID)
+                               ->build(),
+            InputAlphanumericBuilder::init(CommentsManager::COMMENT_AUTHOR)
+                                    ->build(),
+            InputBooleanBuilder::init(CommentsManager::COMMENT_STATUS)
+                               ->build(),
+            InputEmailBuilder::init(CommentsManager::COMMENT_AUTHOR_EMAIL)
+                             ->setRequire(FALSE)
+                             ->build(),
+            InputHtmlBuilder::init(CommentsManager::COMMENT_CONTENTS)
+                            ->build(),
+            InputIntegerBuilder::init(CommentsManager::COMMENT_USER_ID)
+                               ->build(),
+        ]);
+        
+        return Form::inputFilter();
+    }
+    
+    public function index() {
+        $this->read();
+        ViewController::view('index');
+    }
+    
+    protected function read() {
+        $filters         = [];
+        $commentsManager = new CommentsManager();
+        $count           = $commentsManager->count();
+        $pagination      = parent::pagination($count);
+        
+        if ($pagination !== FALSE) {
+            $filters['limit'] = $pagination;
+        }
+        
+        ViewController::sendViewData('comments', $commentsManager->read($filters));
+    }
+    
+    public function update($id) {
+        $typeMessage     = Messages::TYPE_DANGER;
+        $messages        = 'El comentario no existe.';
+        $commentsManager = new CommentsManager();
+        $comment         = $commentsManager->searchById($id);
+        
         if (empty($comment)) {
-            Messages::addError('Error. El comentario no existe.');
-            Helps::redirectRoute();
-        }
-        
-        if (Form::submit('update')) {
-            $dataInput = $this->getDataInput();
-            
-            if ($dataInput === FALSE) {
-                Messages::addError('Error al actualizar el comentario.');
-            } else {
-                $update = new CommentUpdate($comment, $dataInput['commentAuthor'], $dataInput['commentAuthorEmail'], $dataInput['commentStatus'], $dataInput['commentContents']);
+            Messages::addMessage($messages, $typeMessage);
+            $this->index();
+        } else {
+            if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+                $messages = 'Error al actualizar el comentario.';
+                $form     = $this->form();
                 
-                //Si ocurre un error la función "$update->update()" retorna FALSE.
-                if ($update->update()) {
-                    Messages::addSuccess('Comentario actualizado correctamente.');
-                    $comment = $update->getDataUpdate();
-                } else {
-                    Messages::addError('Error al actualizar el comentario.');
+                if (!empty($form)) {
+                    $comment = Arrays::get($form, 'comment');
+                    
+                    if ($commentsManager->update($comment)) {
+                        $messages    = ' actualizada correctamente.';
+                        $typeMessage = Messages::TYPE_SUCCESS;
+                    }
                 }
+                
+                Messages::addMessage($messages, $typeMessage);
             }
+            
+            ViewController::sendViewData('comment', $comment);
+            ViewController::sendViewData('title', 'Actualizar comentario');
+            ViewController::view('form');
         }
-        
-        return [
-            //Instancia Comment
-            'comment' => $comment,
-        ];
     }
     
-    /**
-     * Método llamado por la función DELETE.
-     *
-     * @param array $data Lista de argumentos.
-     */
-    protected function dataDelete($data) {
-        /*
-         * Ya que este método no tiene modulo vista propio
-         * se carga el modulo vista INDEX, asi que se retornan los datos
-         * para esta vista.
-         */
+    public function delete($id) {
+        $messages        = 'Error al borrar el comentario.';
+        $typeMessage     = Messages::TYPE_DANGER;
+        $commentsManager = new CommentsManager();
         
-        $output = FALSE;
-        
-        if (Token::check()) {
-            $delete = new CommentDelete($data['id']);
-            $output = $delete->delete();
+        if (!empty($commentsManager->delete($id))) {
+            $messages    = 'Comentario borrado correctamente.';
+            $typeMessage = Messages::TYPE_SUCCESS;
         }
         
-        if ($output) {
-            Messages::addSuccess('Comentario borrado correctamente.');
-        } elseif ($output === 0) {
-            Messages::addWarning('El comentario no existe.');
-        } else {
-            Messages::addError('Error al borrar el comentario.');
-        }
-        
+        Messages::addMessage($messages, $typeMessage);
+        parent::delete($id);
     }
     
 }

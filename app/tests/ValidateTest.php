@@ -5,7 +5,7 @@
 
 namespace SoftnCMS\tests;
 
-use SoftnCMS\controllers\Validate;
+use SoftnCMS\util\Validate;
 
 class ValidateTest extends \PHPUnit_Framework_TestCase {
     

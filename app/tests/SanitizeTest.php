@@ -5,7 +5,7 @@
 
 namespace SoftnCMS\tests;
 
-use SoftnCMS\controllers\Sanitize;
+use SoftnCMS\util\Sanitize;
 
 class SanitizeTest extends \PHPUnit_Framework_TestCase {
     

@@ -1,0 +1,303 @@
+/* BOOTSTRAP ================================= */
+.alert,
+.panel,
+.list-group-item {
+    border: 0;
+}
+
+.panel,
+.dropdown-menu {
+    box-shadow: none;
+}
+
+.input-group-addon,
+.btn,
+.input-lg,
+.form-control,
+.alert,
+.panel,
+.panel-heading,
+.dropdown-menu {
+    border-radius: 0;
+}
+
+.panel-heading {
+    font-size: 2em;
+    padding: 20px 30px;
+}
+
+.pagination > li > a,
+.pagination > li > span,
+.form-control,
+.input-group-addon {
+    border: 1px solid #DDDDDD;
+}
+
+/* COMÚN ================================= */
+body {
+    -moz-white-space: pre-wrap; /* css-3 */
+    -webkit-white-space: pre-wrap; /* css-3 */
+    white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+    /*white-space: -pre-wrap; !* Opera 4-6 *!*/
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+    -ms-word-wrap: break-word;
+    color: #727272;
+    background-color: #EBEBF7;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #002745;
+}
+
+nav ul.pagination {
+    margin: 0;
+}
+
+td.options {
+    width: 70px;
+}
+
+.navbar-custom {
+    border-radius: 0;
+    background-color: #21252A;
+    margin-bottom: 0;
+}
+
+.navbar-custom .navbar-toggle .icon-bar {
+    background-color: #FFFFFF;
+}
+
+.navbar-custom .navbar-toggle:hover,
+.navbar-custom .navbar-toggle:focus {
+    background-color: #252A30;
+}
+
+.navbar-custom .navbar-nav > li > a:hover,
+.navbar-custom .navbar-nav > li > a:focus,
+.navbar-custom .navbar-nav > .open > a,
+.navbar-custom .navbar-nav > .open > a:hover,
+.navbar-custom .navbar-nav > .open > a:focus,
+.navbar-custom .navbar-nav .open .dropdown-menu > li > a:hover,
+.navbar-custom .navbar-nav .open .dropdown-menu > li > a:focus {
+    color: #FFFFFF;
+    background-color: #252A30;
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-nav > li > a,
+.navbar-custom .navbar-nav .open .dropdown-menu > li > a {
+    color: #7E8A99;
+}
+
+.navbar-custom .dropdown-menu .divider {
+    background-color: #7E8A99;
+}
+
+h2 a.btn-action-sm,
+h2 button.btn-action-sm,
+.panel-heading a.btn-action-sm,
+.panel-heading button.btn-action-sm {
+    font-size: 14px;
+}
+
+a.btn-action-sm,
+button.btn-action-sm {
+    font-size: 0.8em;
+    padding: 0 5px;
+}
+
+.panel .panel-heading .label,
+h2 .label {
+    font-size: 0.46em;
+}
+
+#data-container table {
+    border: 1px solid #E5E5E5;
+    background-color: #FFFFFF;
+}
+
+#data-container table > tbody > tr > td {
+    border: 0;
+}
+
+/** views/pagination.php ======================================================= */
+.pagination-container > div {
+    margin-bottom: 15px;
+}
+
+/** views/messages.php ========================================================== */
+#messages {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+    outline: 0;
+}
+
+#messages .messages-content {
+    margin: 5px auto;
+}
+
+#messages .alert {
+    margin-bottom: 0;
+}
+
+#messages .alert {
+    border-left: 4px solid transparent;
+}
+
+#messages .alert-danger {
+    border-color: #A94442;
+}
+
+#messages .alert-success {
+    border-color: #3C763D;
+}
+
+#messages .alert-warning {
+    border-color: #8a6d3b;
+}
+
+/** views/ .php ========================================================== */
+/* install.php - login.php */
+#install,
+#login {
+    margin-top: 100px;
+    width: 600px;
+}
+
+/** menus.php ==================================================================== */
+[data-page="menus"] h2 a.label {
+    font-size: 45%;
+}
+
+/** ============================================================================
+ * admin-menu.php =========================================================== 
+ * ========================================================================== */
+.menu-container {
+    padding: 0;
+    color: #647080;
+    background-color: #21252A;
+}
+
+.menu-container:before {
+    content: '';
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: inherit;
+    z-index: -1;
+    background-color: inherit;
+}
+
+.submenu-content,
+.menu-content {
+    margin: 0;
+    padding: 0;
+}
+
+.menu-content li {
+    display: block;
+    position: relative;
+    width: 100%;
+    list-style: none;
+}
+
+.menu-content > li {
+    border-top: 1px solid #252A30;
+    background-color: #252A30;
+}
+
+.menu-content li a {
+    color: #7E8A99;
+    padding: 11px 25px 11px 15px;
+    text-decoration: none;
+    width: 100%;
+    display: table;
+}
+
+.menu-content > li > a {
+    font-weight: 600;
+}
+
+.sidebar-submenu li a {
+    color: #647080;
+}
+
+.menu-content li a:hover,
+.submenu-content li a:hover {
+    color: #B7BEC6;
+}
+
+.submenu-content {
+    background-color: #181B1F;
+}
+
+/*.sn-menu h3 a{color: #fff;}
+#sn-menu a{text-decoration: none;}
+ul.list-group li {list-style: none;}
+#sn-menu ul li:hover{background-color: #BCE8F2;}
+#sn-menu ul ul.list-group{margin: 0;}
+#sn-menu ul ul.list-group li{background-color: #EBEBE5; border-radius: 0;}
+#sn-menu ul ul.list-group li:hover{background-color: #EBEBF7;}
+#sn-menu ul ul.list-group li.list-group-item:last-child{border-bottom: none;}*/
+
+/** ============================================================================
+ * Bloque derecho (Contenido) General ================================= 
+ * ========================================================================== */
+.page-container {
+    padding: 0 15px;
+    margin-bottom: 20px;
+}
+
+.page-container .list-group {
+    margin-bottom: 0;
+}
+
+.page-container span.pull-left {
+    margin-right: 10px;
+}
+
+/**
+ *
+ * */
+.btn-nostyle {
+    display: inline-block;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 0px solid transparent;
+}
+
+.btn-nostyle.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: .65;
+}
+
+.list-untyped {
+    list-style-type: none;
+}
+
+ul.list-untyped:first-child {
+    padding-left: 0;
+}

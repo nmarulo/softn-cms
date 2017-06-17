@@ -1,210 +1,233 @@
 <?php
-
 /**
- * Modulo controlador: Presenta los módulos vista correspondientes.
+ * ViewController.php
  */
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\helpers\Helps;
-use SoftnCMS\models\admin\Option;
+use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\util\Arrays;
 
 /**
- * Clase CategoryController presenta los módulos vista correspondientes.
+ * Class ViewController
  * @author Nicolás Marulanda P.
  */
 class ViewController {
     
-    /** @var Request Instancia Request. */
-    private $request;
+    /** @var string Nombre del directorio de la vista del controlador. */
+    private static $DIRECTORY_VIEWS_CONTROLLER = '';
     
-    /** @var array Datos enviados al modulo. */
-    private $data;
+    /** @var string Nombre del directorio de las vistas. */
+    private static $DIRECTORY_VIEWS = '';
     
-    /** @var string Ruta del modulo vista. */
-    private $nameView;
+    /** @var array Lista de datos a enviar a la vista. */
+    private static $VIEW_DATA = [];
     
-    /** @var string Nombre de la ruta correspondiente al método con las vistas. */
-    private $nameMethodViews;
+    /** @var string Contenido principal de la vista. */
+    private static $VIEW_CONTENT = '';
     
-    /** @var string Nombre del tema actual */
-    private $nameTheme;
+    /** @var array Lista de nombre de los scripts. */
+    private static $VIEW_SCRIPTS = [];
+    
+    /** @var array Lista de nombre de los estilos. */
+    private static $VIEW_STYLES   = [];
+    
+    private static $VIEW_PATH     = '';
+    
     
     /**
-     * Constructor.
-     *
-     * @param Request $request Instancia Request
-     * @param array   $data    Datos enviados al modulo.
+     * @param string $viewPath
      */
-    public function __construct(Request $request, $data) {
-        $this->request         = $request;
-        $this->data            = $data;
-        $this->nameTheme       = '';
-        $this->nameMethodViews = '';
-        $this->methodViews();
-        $this->getNameView();
+    public static function setViewPath($viewPath) {
+        self::$VIEW_PATH = $viewPath;
     }
     
     /**
-     * Método que establece el nombre del método con las vistas correspondientes.
+     * @param string $directoryViews
      */
-    private function methodViews() {
-        $this->nameMethodViews = $this->getKeyRouter();
+    public static function setDirectoryViews($directoryViews) {
+        self::$DIRECTORY_VIEWS = $directoryViews;
+    }
+    
+    /**
+     * Método que establece el nombre del directorio de la vista del controlador.
+     *
+     * @param string $directoryViewsController
+     */
+    public static function setDirectoryViewsController($directoryViewsController) {
+        self::$DIRECTORY_VIEWS_CONTROLLER = $directoryViewsController;
+    }
+    
+    /**
+     * Método que incluye la vista completa.
+     *
+     * @param string $fileName Nombre de la vista.
+     */
+    public static function view($fileName) {
+        self::setViewContent($fileName);
+        self::includeView(self::getDirectoryPathViews('index'));
+        self::$VIEW_DATA = [];
+    }
+    
+    /**
+     * Método que establece el contenido principal de la vista.
+     *
+     * @param string $fileName
+     */
+    private static function setViewContent($fileName) {
+        self::$VIEW_CONTENT = self::getDirectoryPathViewController($fileName);
+    }
+    
+    private static function getDirectoryPathViewController($fileName) {
+        return self::getDirectoryPath($fileName, self::$DIRECTORY_VIEWS, self::$DIRECTORY_VIEWS_CONTROLLER);
+    }
+    
+    private static function getDirectoryPath($fileName, $viewsDirectory, $directory) {
+        if (!empty($directory)) {
+            $directory .= DIRECTORY_SEPARATOR;
+        }
         
-        if ($this->nameMethodViews == 'default') {
-            $this->nameMethodViews = 'theme';
+        if (!empty($viewsDirectory)) {
+            $viewsDirectory .= DIRECTORY_SEPARATOR;
+        }
+        
+        return self::$VIEW_PATH . $viewsDirectory . $directory . $fileName . '.php';
+    }
+    
+    /**
+     * Método que incluye la ruta.
+     *
+     * @param string $path Ruta del fichero.
+     *
+     * @return bool|mixed
+     */
+    private static function includeView($path) {
+        if (file_exists($path)) {
+            require $path;
+        }
+        
+        return FALSE;
+    }
+    
+    private static function getDirectoryPathViews($fileName) {
+        return self::getDirectoryPath($fileName, self::$DIRECTORY_VIEWS, '');
+    }
+    
+    /**
+     * Método que incluye únicamente la vista indicada del directorio actual.
+     *
+     * @param $fileName
+     */
+    public static function singleView($fileName) {
+        self::singleViewDirectory($fileName, self::$DIRECTORY_VIEWS, self::$DIRECTORY_VIEWS_CONTROLLER);
+    }
+    
+    public static function singleViewDirectoryViews($fileName){
+        self::singleViewDirectory($fileName, self::$DIRECTORY_VIEWS, '');
+    }
+    
+    /**
+     * Método que incluye únicamente la vista indicada,
+     * con la posibilidad de indicar un directorio diferente.
+     *
+     * @param string $fileName
+     * @param string $viewsDirectory
+     * @param string $directory
+     */
+    public static function singleViewDirectory($fileName, $viewsDirectory = '', $directory = '') {
+        self::includeView(self::getDirectoryPath($fileName, $viewsDirectory, $directory));
+    }
+    
+    /**
+     * Método que establece los datos a enviar a la vista.
+     *
+     * @param string $key  Indice.
+     * @param mixed  $data Datos.
+     */
+    public static function sendViewData($key, $data) {
+        self::$VIEW_DATA[$key] = $data;
+    }
+    
+    /**
+     * Método que incluye el encabezado común de la vista.
+     */
+    public static function header() {
+        self::includeView(self::getDirectoryPathViews('header'));
+    }
+    
+    /**
+     * Método que incluye el pie de pagina común de la vista.
+     */
+    public static function footer() {
+        self::includeView(self::getDirectoryPathViews('footer'));
+    }
+    
+    /**
+     * Método que incluye la barra lateral común de la vista.
+     */
+    public static function sidebar() {
+        self::includeView(self::getDirectoryPathViews('sidebar'));
+    }
+    
+    /**
+     * Método que incluye el contenido de la vista.
+     */
+    public static function content() {
+        self::includeView(self::$VIEW_CONTENT);
+    }
+    
+    /**
+     * Método que obtiene los datos enviados a la vista.
+     *
+     * @param int|string $key
+     *
+     * @return bool|mixed
+     */
+    public static function getViewData($key) {
+        //TODO: Mostrar un mensaje si el indice no existe.
+        return Arrays::get(self::$VIEW_DATA, $key);
+    }
+    
+    /**
+     * Método que incluye el nombre del script js.
+     */
+    public static function includeScripts() {
+        $optionsManager = new OptionsManager();
+        $baseUrl        = $optionsManager->getSiteUrl();
+        
+        foreach (self::$VIEW_SCRIPTS as $script) {
+            $script = $baseUrl . $script;
+            echo "<script src='$script.js' type='text/javascript'></script>";
         }
     }
     
-    /**
-     * Método que obtiene el indice de la función "Router::getRoutes()"
-     * de la pagina actual.
-     * @return string
-     */
-    private function getKeyRouter() {
-        $controller = strtolower($this->request->getController());
+    public static function includeStyles() {
+        $optionsManager = new OptionsManager();
+        $baseUrl        = $optionsManager->getSiteUrl();
         
-        //Obtiene el indice de la ruta.
-        //Comprueba si el nombre controlador es una rutas
-        $key = array_search($controller, Router::getRoutes(), TRUE);
-        if (empty($key)) {
-            //de lo contrario comprueba el nombre de la ruta según REQUEST
-            $key = array_search($this->request->getRoute(), Router::getRoutes(), TRUE);
-        }
-        
-        return $key;
-    }
-    
-    /**
-     * Método que establece el nombre del modelo vista a incluir
-     * según el método enviado por url.
-     */
-    private function getNameView() {
-        switch ($this->request->getMethod()) {
-            case 'delete':
-            case 'index':
-                $this->nameView = \strtolower($this->request->getController());
-                break;
-            case 'insert':
-            case 'update':
-                $this->nameView = \strtolower($this->request->getController()) . 'Form';
-                break;
+        foreach (self::$VIEW_STYLES as $style) {
+            $style = $baseUrl . $style;
+            echo "<link href='$style.css' rel='stylesheet' type='text/css'/>";
         }
     }
     
-    /**
-     * Método que muestra los módulos vista al usuario.
-     */
-    public function render() {
-        $key = $this->getKeyRouter();
-        //Obtiene el directorio correspondiente.
-        $view = Router::getViewPath()[Router::getVIEWS()[$key]];
-        //Si el indice de la ruta es "default" obtiene el nombre del tema actual.
-        if ($key == 'default') {
-            $this->nameTheme = Option::selectByName('optionTheme')
-                                     ->getOptionValue();
-            $view .= $this->nameTheme . DIRECTORY_SEPARATOR;
-        }
-        
-        $view .= $this->nameView . '.php';
-        
-        //En caso de error.
-        if (!\is_readable($view)) {
-            Helps::redirect();
-        }
-        
-        //Se obtiene los datos enviados a la vista.
-        if (\is_array($this->data)) {
-            \extract($this->data, EXTR_PREFIX_INVALID, 'softn');
-        }
-        
-        //Array con la ruta de los módulos vista a incluir.
-        $viewsRequire = \call_user_func([
-            $this,
-            $this->nameMethodViews,
-        ], $view);
-        
-        foreach ($viewsRequire as $value) {
-            require $value;
+    public static function registerScript($scriptName) {
+        self::registerScriptRoute("app/resources/js/$scriptName");
+    }
+    
+    public static function registerScriptRoute($scriptRute) {
+        if (Arrays::valueExists(self::$VIEW_SCRIPTS, $scriptRute) === FALSE) {
+            self::$VIEW_SCRIPTS[] = $scriptRute;
         }
     }
     
-    /**
-     * Método que obtiene los módulos vista del tema de la aplicación.
-     *
-     * @param string $view Ruta de modulo vista a incluir.
-     *
-     * @return array
-     */
-    private function theme($view) {
-        $path = \THEMES . $this->nameTheme . \DIRECTORY_SEPARATOR;
-        
-        return [
-            $path . 'header.php',
-            $view,
-            $path . 'footer.php',
-        ];
+    public static function registerStyle($styleName) {
+        self::registerStyleRoute("app/resources/css/$styleName");
     }
     
-    /**
-     * Método que obtiene los módulos vista del panel de administración.
-     *
-     * @param string $view Ruta de modulo vista a incluir.
-     *
-     * @return array
-     */
-    private function admin($view) {
-        return [
-            \VIEWS_ADMIN . 'header.php',
-            \VIEWS . 'messages.php',
-            \VIEWS_ADMIN . 'topbar.php',
-            \VIEWS_ADMIN . 'leftbar.php',
-            $view,
-            \VIEWS_ADMIN . 'footer.php',
-        ];
+    public static function registerStyleRoute($styleRute) {
+        if (Arrays::valueExists(self::$VIEW_STYLES, $styleRute) === FALSE) {
+            self::$VIEW_STYLES[] = $styleRute;
+        }
     }
-    
-    /**
-     * Método que obtiene los módulos vista de la pagina de registro.
-     *
-     * @param string $view Ruta de modulo vista a incluir.
-     *
-     * @return array
-     */
-    private function register($view) {
-        return $this->login($view);
-    }
-    
-    /**
-     * Método que obtiene los módulos vista de la pagina de login.
-     *
-     * @param string $view Ruta de modulo vista a incluir.
-     *
-     * @return array
-     */
-    private function login($view) {
-        return [
-            \VIEWS . 'headerLogin.php',
-            \VIEWS . 'messages.php',
-            $view,
-            \VIEWS . 'footerLogin.php',
-        ];
-    }
-    
-    /**
-     * Método que obtiene los módulos vista de la pagina de instalación.
-     *
-     * @param $view
-     *
-     * @return array
-     */
-    private function install($view) {
-        return [
-            //            \VIEWS_ADMIN . 'header.php',
-            \VIEWS . 'messages.php',
-            $view,
-            //            \VIEWS_ADMIN . 'footer.php',
-        ];
-    }
-    
 }
