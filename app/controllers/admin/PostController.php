@@ -19,7 +19,6 @@ use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\PostCategory;
 use SoftnCMS\models\tables\PostTerm;
-use SoftnCMS\models\tables\Term;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
@@ -145,7 +144,7 @@ class PostController extends CUDControllerAbstract {
             }
             
         } else {
-            $numError     = 0;
+            $numError = 0;
             //Obtengo los identificadores de las nuevas etiquetas.
             $newTerms = array_filter($termsId, function($termId) use ($currentTermsId) {
                 return !Arrays::valueExists($currentTermsId, $termId);
@@ -203,7 +202,6 @@ class PostController extends CUDControllerAbstract {
             }
             
         } else {
-            $categoriesManager = new CategoriesManager();
             $numError          = 0;
             //Obtengo los identificadores de las nuevas categorías.
             $newCategories = array_filter($categoriesId, function($value) use ($currentCategoriesId) {
@@ -267,8 +265,9 @@ class PostController extends CUDControllerAbstract {
         $post         = $postsManager->searchById($id);
         
         if (empty($post)) {
-            Messages::addMessage($messages, $typeMessage);
-            $this->index();
+            $optionsManager = new OptionsManager();
+            Messages::addSessionMessage($messages, $typeMessage);
+            Util::redirect($optionsManager->getSiteUrl() . 'admin/post');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $messages = 'Error al actualizar la entrada.';
@@ -305,9 +304,18 @@ class PostController extends CUDControllerAbstract {
         }
     }
     
-    public function index() {
-        $this->read();
-        ViewController::view('index');
+    public function delete($id) {
+        $messages     = 'Error al borrar la entrada.';
+        $typeMessage  = Messages::TYPE_DANGER;
+        $postsManager = new PostsManager();
+        
+        if (!empty($postsManager->delete($id))) {
+            $messages    = 'Entrada borrada correctamente.';
+            $typeMessage = Messages::TYPE_SUCCESS;
+        }
+        
+        Messages::addMessage($messages, $typeMessage);
+        parent::delete($id);
     }
     
     protected function read() {
@@ -321,20 +329,6 @@ class PostController extends CUDControllerAbstract {
         }
         
         ViewController::sendViewData('posts', $postsManager->read($filters));
-    }
-    
-    public function delete($id) {
-        $messages     = 'Error al borrar la entrada.';
-        $typeMessage  = Messages::TYPE_DANGER;
-        $postsManager = new PostsManager();
-        
-        if (!empty($postsManager->delete($id))) {
-            $messages    = 'Entrada borrada correctamente.';
-            $typeMessage = Messages::TYPE_SUCCESS;
-        }
-        
-        Messages::addMessage($messages, $typeMessage);
-        parent::delete($id);
     }
     
 }

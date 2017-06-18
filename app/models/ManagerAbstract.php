@@ -123,7 +123,7 @@ abstract class ManagerAbstract {
     /**
      * @param MySQL $connection
      */
-    protected function closeConnection($connection) {
+    protected function closeConnection(MySQL $connection) {
         $connection->close();
         $this->prepare = [];
     }

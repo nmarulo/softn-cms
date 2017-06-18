@@ -4,6 +4,7 @@ use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\models\managers\PostsCategoriesManager;
 use SoftnCMS\models\managers\PostsTermsManager;
+
 ViewController::registerScript('form');
 $title                = ViewController::getViewData('title');
 $post                 = ViewController::getViewData('post');

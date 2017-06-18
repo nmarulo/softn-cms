@@ -10,7 +10,6 @@ use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\PostCategory;
 use SoftnCMS\models\tables\PostTerm;
 use SoftnCMS\util\Arrays;
-use SoftnCMS\util\MySQL;
 
 /**
  * Class PostsManager

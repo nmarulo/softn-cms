@@ -9,6 +9,9 @@ use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CommentsManager;
+use SoftnCMS\models\managers\LoginManager;
+use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
@@ -31,7 +34,7 @@ class CommentController extends CUDControllerAbstract {
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $form        = $this->form();
-            $messages    = 'Error al publicar la .';
+            $messages    = 'Error al publicar el comentario.';
             $typeMessage = Messages::TYPE_DANGER;
             
             if (!empty($form)) {
@@ -42,8 +45,9 @@ class CommentController extends CUDControllerAbstract {
                     $showForm    = FALSE;
                     $messages    = 'Comentario publicado correctamente.';
                     $typeMessage = Messages::TYPE_SUCCESS;
-                    Messages::addMessage($messages, $typeMessage);
-                    $this->index();
+                    Messages::addSessionMessage($messages, $typeMessage);
+                    $optionsManager = new OptionsManager();
+                    Util::redirect($optionsManager->getSiteUrl() . 'admin/comment');
                 }
             }
             
@@ -51,7 +55,9 @@ class CommentController extends CUDControllerAbstract {
         }
         
         if ($showForm) {
-            ViewController::sendViewData('comment', new Comment());
+            $comment = new Comment();
+            $comment->setCommentUserID(LoginManager::getSession());
+            ViewController::sendViewData('comment', $comment);
             ViewController::sendViewData('title', 'Publicar nuevo comentario');
             ViewController::view('form');
         }
@@ -64,18 +70,30 @@ class CommentController extends CUDControllerAbstract {
             return FALSE;
         }
         
-        $comment  = new Comment();
+        $userId  = Arrays::get($inputs, CommentsManager::COMMENT_USER_ID);
+        $comment = new Comment();
         $comment->setId(Arrays::get($inputs, CommentsManager::ID));
-        $comment->setPostID(Arrays::get($inputs, CommentsManager::POST_ID));
-        $comment->setCommentAuthor(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR));
         $comment->setCommentStatus(Arrays::get($inputs, CommentsManager::COMMENT_STATUS));
-        $comment->setCommentAuthorEmail(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR_EMAIL));
         $comment->setCommentContents(Arrays::get($inputs, CommentsManager::COMMENT_CONTENTS));
+        $comment->setPostID(NULL);
+        $comment->setCommentAuthor(NULL);
+        $comment->setCommentAuthorEmail(NULL);
         $comment->setCommentDate(NULL);
-        $comment->setCommentUserID(Arrays::get($inputs, CommentsManager::COMMENT_USER_ID));
+        $comment->setCommentUserID(NULL);
+        
+        if (empty($userId)) {
+            $comment->setCommentAuthor(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR));
+            $comment->setCommentAuthorEmail(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR_EMAIL));
+        }
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+            $usersManager = new UsersManager();
+            $user         = $usersManager->searchById(LoginManager::getSession());
+            $comment->setCommentAuthor($user->getUserName());
+            $comment->setCommentAuthorEmail($user->getUserEmail());
+            $comment->setCommentUserID($user->getId());
             $comment->setCommentDate(Util::dateNow());
+            $comment->setPostID(Arrays::get($inputs, CommentsManager::POST_ID));
         }
         
         return ['comment' => $comment];
@@ -83,42 +101,25 @@ class CommentController extends CUDControllerAbstract {
     
     protected function filterInputs() {
         Form::setINPUT([
+            InputAlphanumericBuilder::init(CommentsManager::COMMENT_AUTHOR)
+                                    ->setRequire(FALSE)
+                                    ->build(),
+            InputEmailBuilder::init(CommentsManager::COMMENT_AUTHOR_EMAIL)
+                             ->setRequire(FALSE)
+                             ->build(),
+            InputIntegerBuilder::init(CommentsManager::COMMENT_USER_ID)
+                               ->build(),
             InputIntegerBuilder::init(CommentsManager::ID)
                                ->build(),
             InputIntegerBuilder::init(CommentsManager::POST_ID)
                                ->build(),
-            InputAlphanumericBuilder::init(CommentsManager::COMMENT_AUTHOR)
-                                    ->build(),
             InputBooleanBuilder::init(CommentsManager::COMMENT_STATUS)
                                ->build(),
-            InputEmailBuilder::init(CommentsManager::COMMENT_AUTHOR_EMAIL)
-                             ->setRequire(FALSE)
-                             ->build(),
             InputHtmlBuilder::init(CommentsManager::COMMENT_CONTENTS)
                             ->build(),
-            InputIntegerBuilder::init(CommentsManager::COMMENT_USER_ID)
-                               ->build(),
         ]);
         
         return Form::inputFilter();
-    }
-    
-    public function index() {
-        $this->read();
-        ViewController::view('index');
-    }
-    
-    protected function read() {
-        $filters         = [];
-        $commentsManager = new CommentsManager();
-        $count           = $commentsManager->count();
-        $pagination      = parent::pagination($count);
-        
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('comments', $commentsManager->read($filters));
     }
     
     public function update($id) {
@@ -128,8 +129,9 @@ class CommentController extends CUDControllerAbstract {
         $comment         = $commentsManager->searchById($id);
         
         if (empty($comment)) {
-            Messages::addMessage($messages, $typeMessage);
-            $this->index();
+            $optionsManager = new OptionsManager();
+            Messages::addSessionMessage($messages, $typeMessage);
+            Util::redirect($optionsManager->getSiteUrl() . 'admin/comment');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $messages = 'Error al actualizar el comentario.';
@@ -139,8 +141,9 @@ class CommentController extends CUDControllerAbstract {
                     $comment = Arrays::get($form, 'comment');
                     
                     if ($commentsManager->update($comment)) {
-                        $messages    = ' actualizada correctamente.';
+                        $messages    = 'Comentario actualizado correctamente.';
                         $typeMessage = Messages::TYPE_SUCCESS;
+                        $comment     = $commentsManager->searchById($comment->getId());
                     }
                 }
                 
@@ -165,6 +168,19 @@ class CommentController extends CUDControllerAbstract {
         
         Messages::addMessage($messages, $typeMessage);
         parent::delete($id);
+    }
+    
+    protected function read() {
+        $filters         = [];
+        $commentsManager = new CommentsManager();
+        $count           = $commentsManager->count();
+        $pagination      = parent::pagination($count);
+        
+        if ($pagination !== FALSE) {
+            $filters['limit'] = $pagination;
+        }
+        
+        ViewController::sendViewData('comments', $commentsManager->read($filters));
     }
     
 }

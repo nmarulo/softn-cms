@@ -6,7 +6,6 @@
 namespace SoftnCMS\controllers;
 
 use SoftnCMS\models\managers\OptionsManager;
-use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\Pagination;
 
@@ -16,14 +15,17 @@ use SoftnCMS\util\Pagination;
  */
 abstract class ControllerAbstract {
     
-    public abstract function index();
+    public function index() {
+        $this->read();
+        ViewController::view('index');
+    }
+    
+    protected abstract function read();
     
     public function reloadAJAX() {
         $this->read();
         ViewController::singleView('data');
     }
-    
-    protected abstract function read();
     
     protected function pagination($count) {
         $optionsManager = new OptionsManager();

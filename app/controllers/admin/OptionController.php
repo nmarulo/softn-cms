@@ -6,7 +6,6 @@
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\controllers\ControllerAbstract;
-use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\OptionsManager;
@@ -28,8 +27,7 @@ class OptionController extends ControllerAbstract {
     
     public function index() {
         $this->update();
-        $this->read();
-        ViewController::view('index');
+        parent::index();
     }
     
     private function update() {

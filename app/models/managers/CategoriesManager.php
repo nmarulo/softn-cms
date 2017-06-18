@@ -8,9 +8,7 @@ namespace SoftnCMS\models\managers;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Post;
-use SoftnCMS\models\tables\PostCategory;
 use SoftnCMS\util\Arrays;
-use SoftnCMS\util\MySQL;
 
 /**
  * Class CategoriesManager

@@ -9,12 +9,14 @@ use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CategoriesManager;
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Category;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
 
 /**
  * Class CategoryController
@@ -35,11 +37,12 @@ class CategoryController extends CUDControllerAbstract {
                 $category          = Arrays::get($form, 'category');
                 
                 if ($categoriesManager->create($category)) {
-                    $showForm    = FALSE;
-                    $messages    = 'Categoría publicada correctamente.';
-                    $typeMessage = Messages::TYPE_SUCCESS;
-                    Messages::addMessage($messages, $typeMessage);
-                    $this->index();
+                    $showForm       = FALSE;
+                    $messages       = 'Categoría publicada correctamente.';
+                    $typeMessage    = Messages::TYPE_SUCCESS;
+                    $optionsManager = new OptionsManager();
+                    Messages::addSessionMessage($messages, $typeMessage);
+                    Util::redirect($optionsManager->getSiteUrl() . 'admin/category');
                 }
             }
             
@@ -87,24 +90,6 @@ class CategoryController extends CUDControllerAbstract {
         return Form::inputFilter();
     }
     
-    public function index() {
-        $this->read();
-        ViewController::view('index');
-    }
-    
-    protected function read() {
-        $filters           = [];
-        $categoriesManager = new CategoriesManager();
-        $count             = $categoriesManager->count();
-        $pagination        = parent::pagination($count);
-        
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('categories', $categoriesManager->read($filters));
-    }
-    
     public function update($id) {
         $typeMessage       = Messages::TYPE_DANGER;
         $messages          = 'La categoría no existe.';
@@ -112,8 +97,9 @@ class CategoryController extends CUDControllerAbstract {
         $category          = $categoriesManager->searchById($id);
         
         if (empty($category)) {
-            Messages::addMessage($messages, $typeMessage);
-            $this->index();
+            $optionsManager = new OptionsManager();
+            Messages::addSessionMessage($messages, $typeMessage);
+            Util::redirect($optionsManager->getSiteUrl() . 'admin/category');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $messages = 'Error al actualizar la categoría.';
@@ -149,6 +135,19 @@ class CategoryController extends CUDControllerAbstract {
         
         Messages::addMessage($messages, $typeMessage);
         parent::delete($id);
+    }
+    
+    protected function read() {
+        $filters           = [];
+        $categoriesManager = new CategoriesManager();
+        $count             = $categoriesManager->count();
+        $pagination        = parent::pagination($count);
+        
+        if ($pagination !== FALSE) {
+            $filters['limit'] = $pagination;
+        }
+        
+        ViewController::sendViewData('categories', $categoriesManager->read($filters));
     }
     
 }

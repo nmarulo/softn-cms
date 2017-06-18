@@ -21,7 +21,7 @@ class LoginManager {
      */
     public static function login($user, $rememberMe) {
         $usersManager = new UsersManager();
-        $searchUser   = $usersManager->searchByLogin($user);
+        $searchUser   = $usersManager->searchByLogin($user->getUserLogin());
         
         if ($searchUser === FALSE || $user->getUserPassword() != $searchUser->getUserPassword()) {
             return FALSE;

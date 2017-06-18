@@ -6,7 +6,7 @@
 namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\CRUDManagerAbstract;
-use SoftnCMS\models\tables\Post;
+use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
 
@@ -80,12 +80,12 @@ class UsersManager extends CRUDManagerAbstract {
     }
     
     /**
-     * @param User $user
+     * @param string $userLogin
      *
      * @return bool|User
      */
-    public function searchByLogin($user) {
-        parent::parameterQuery(self::USER_LOGIN, $user->getUserLogin(), \PDO::PARAM_STR);
+    public function searchByLogin($userLogin) {
+        parent::parameterQuery(self::USER_LOGIN, $userLogin, \PDO::PARAM_STR);
         
         return parent::searchBy(self::USER_LOGIN);
     }
@@ -170,6 +170,28 @@ class UsersManager extends CRUDManagerAbstract {
         $user->setUserPostCount(Arrays::get($result, self::USER_POST_COUNT));
         
         return $user;
+    }
+    
+    /**
+     * @param User $object
+     *
+     * @return bool
+     */
+    public function update($object) {
+        $result = parent::update($object);
+        
+        if($result){
+            $commentsManager = new CommentsManager();
+            $comments = $commentsManager->searchByUserId($object->getId());
+            //TODO: Una mejor opción seria solo guardar los datos para usuario no registrados, y asi no tener que actualizar los datos de los usuarios registrados.
+            array_walk($comments, function(Comment $comment) use ($commentsManager, $object){
+                $comment->setCommentAuthor($object->getUserName());
+                $comment->setCommentAuthorEmail($object->getUserEmail());
+                $commentsManager->update($comment);
+            });
+        }
+        
+        return $result;
     }
     
 }

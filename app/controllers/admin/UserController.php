@@ -9,6 +9,7 @@ use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LoginManager;
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
@@ -42,8 +43,9 @@ class UserController extends CUDControllerAbstract {
                     $showForm    = FALSE;
                     $messages    = 'Usuario creado correctamente.';
                     $typeMessage = Messages::TYPE_SUCCESS;
-                    Messages::addMessage($messages, $typeMessage);
-                    $this->index();
+                    Messages::addSessionMessage($messages, $typeMessage);
+                    $optionsManager = new OptionsManager();
+                    Util::redirect($optionsManager->getSiteUrl() . 'admin/user');
                 }
             }
             
@@ -127,24 +129,6 @@ class UserController extends CUDControllerAbstract {
         return Form::inputFilter();
     }
     
-    public function index() {
-        $this->read();
-        ViewController::view('index');
-    }
-    
-    protected function read() {
-        $filters      = [];
-        $usersManager = new UsersManager();
-        $count        = $usersManager->count();
-        $pagination   = parent::pagination($count);
-        
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('users', $usersManager->read($filters));
-    }
-    
     public function update($id) {
         $typeMessage  = Messages::TYPE_DANGER;
         $messages     = 'El usuario no existe.';
@@ -152,8 +136,9 @@ class UserController extends CUDControllerAbstract {
         $user         = $usersManager->searchById($id);
         
         if (empty($user)) {
-            Messages::addMessage($messages, $typeMessage);
-            $this->index();
+            $optionsManager = new OptionsManager();
+            Messages::addSessionMessage($messages, $typeMessage);
+            Util::redirect($optionsManager->getSiteUrl() . 'admin/user');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $messages = 'Error al actualizar el usuario.';
@@ -196,6 +181,19 @@ class UserController extends CUDControllerAbstract {
         
         Messages::addMessage($messages, $typeMessage);
         parent::delete($id);
+    }
+    
+    protected function read() {
+        $filters      = [];
+        $usersManager = new UsersManager();
+        $count        = $usersManager->count();
+        $pagination   = parent::pagination($count);
+        
+        if ($pagination !== FALSE) {
+            $filters['limit'] = $pagination;
+        }
+        
+        ViewController::sendViewData('users', $usersManager->read($filters));
     }
     
 }

@@ -9,8 +9,6 @@ use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
-use SoftnCMS\helpers\ArrayHelp;
-use SoftnCMS\models\Login;
 
 /**
  * Clase Token para autentificar formularios.

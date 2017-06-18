@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\tables\Term;
 use SoftnCMS\util\Arrays;
@@ -15,6 +16,7 @@ use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
 
 /**
  * Class TermController
@@ -38,8 +40,9 @@ class TermController extends CUDControllerAbstract {
                     $showForm    = FALSE;
                     $messages    = 'Etiqueta publicada correctamente.';
                     $typeMessage = Messages::TYPE_SUCCESS;
-                    Messages::addMessage($messages, $typeMessage);
-                    $this->index();
+                    Messages::addSessionMessage($messages, $typeMessage);
+                    $optionsManager = new OptionsManager();
+                    Util::redirect($optionsManager->getSiteUrl() . 'admin/term');
                 }
             }
             
@@ -87,24 +90,6 @@ class TermController extends CUDControllerAbstract {
         return Form::inputFilter();
     }
     
-    public function index() {
-        $this->read();
-        ViewController::view('index');
-    }
-    
-    protected function read() {
-        $filters      = [];
-        $termsManager = new TermsManager();
-        $count        = $termsManager->count();
-        $pagination   = parent::pagination($count);
-        
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('terms', $termsManager->read($filters));
-    }
-    
     public function update($id) {
         $typeMessage  = Messages::TYPE_DANGER;
         $messages     = 'La etiqueta no existe.';
@@ -112,8 +97,9 @@ class TermController extends CUDControllerAbstract {
         $term         = $termsManager->searchById($id);
         
         if (empty($term)) {
-            Messages::addMessage($messages, $typeMessage);
-            $this->index();
+            $optionsManager = new OptionsManager();
+            Messages::addSessionMessage($messages, $typeMessage);
+            Util::redirect($optionsManager->getSiteUrl() . 'admin/term');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $messages = 'Error al actualizar la etiqueta.';
@@ -149,6 +135,19 @@ class TermController extends CUDControllerAbstract {
         
         Messages::addMessage($messages, $typeMessage);
         parent::delete($id);
+    }
+    
+    protected function read() {
+        $filters      = [];
+        $termsManager = new TermsManager();
+        $count        = $termsManager->count();
+        $pagination   = parent::pagination($count);
+        
+        if ($pagination !== FALSE) {
+            $filters['limit'] = $pagination;
+        }
+        
+        ViewController::sendViewData('terms', $termsManager->read($filters));
     }
     
 }

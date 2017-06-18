@@ -8,10 +8,7 @@ namespace SoftnCMS\controllers\theme;
 use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\template\PostTemplate;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
-use SoftnCMS\models\managers\TermsManager;
-use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\util\Escape;
 

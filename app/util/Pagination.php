@@ -8,7 +8,6 @@
 
 namespace SoftnCMS\util;
 
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\rute\Request;
 
