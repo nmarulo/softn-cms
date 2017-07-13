@@ -18,6 +18,7 @@ use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputUrlBuilder;
 use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
 
 /**
  * Class OptionController
@@ -108,6 +109,7 @@ class OptionController extends ControllerAbstract {
         //        $optionMenu        = $optionsManager->searchByName(OPTION_);
         $optionEmailAdmin = $optionsManager->searchByName(OPTION_EMAIL_ADMIN);
         
+        ViewController::sendViewData('listThemes', Util::getFilesAndDirectories(THEMES));
         ViewController::sendViewData('optionTitle', $optionTitle);
         ViewController::sendViewData('optionDescription', $optionDescription);
         ViewController::sendViewData('optionPaged', $optionPaged);

@@ -8,7 +8,8 @@ $optionSiteUrl     = ViewController::getViewData('optionSiteUrl');
 $optionTheme       = ViewController::getViewData('optionTheme');
 $optionMenu        = ViewController::getViewData('optionMenu');
 $optionEmailAdmin  = ViewController::getViewData('optionEmailAdmin');
-
+$listThemes        = ViewController::getViewData('listThemes');
+$currentThemeName  = $optionTheme->getOptionValue();
 ?>
 
 <div class="page-container">
@@ -50,7 +51,19 @@ $optionEmailAdmin  = ViewController::getViewData('optionEmailAdmin');
             <div class="form-group">
                 <label class="col-sm-2 control-label">Seleccionar plantilla</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="<?php echo $optionTheme->getOptionName(); ?>" value="<?php echo $optionTheme->getOptionValue(); ?>">
+                    <select class="form-control" name="<?php echo $optionTheme->getOptionName(); ?>">
+                        <?php
+                        array_walk($listThemes, function($themeName) use ($currentThemeName) {
+                            $selected = '';
+                            
+                            if($themeName == $currentThemeName){
+                                $selected = 'selected';
+                            }
+    
+                            echo "<option value='$themeName' $selected>$themeName</option>";
+                        });
+                        ?>
+                    </select>
                 </div>
             </div>
             <div class="form-group">

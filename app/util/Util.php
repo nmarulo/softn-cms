@@ -17,9 +17,9 @@ class Util {
     
     private static $PATTERN_NUMBER       = '0-9';
     
-    private static $PATTER_ACCENTS = 'áéíóúÁÉÍÓÚ';
+    private static $PATTER_ACCENTS       = 'áéíóúÁÉÍÓÚ';
     
-    public static function getPatternAccents(){
+    public static function getPatternAccents() {
         return self::$PATTER_ACCENTS;
     }
     
@@ -100,5 +100,13 @@ class Util {
     public static function redirect($siteUrl, $route = '') {
         header('Location: ' . $siteUrl . $route);
         exit();
+    }
+    
+    public static function getFilesAndDirectories($directory, $filter = [
+        '..',
+        '.',
+        'index.php',
+    ]) {
+        return array_diff(scandir($directory), $filter);
     }
 }
