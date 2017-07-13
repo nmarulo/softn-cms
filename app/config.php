@@ -8,7 +8,7 @@
  * - Tiempo de vencimiento de las cookies.
  */
 /** Nombre de la base de datos */
-define('DB_NAME', 'softn_cms_test');
+define('DB_NAME', 'softn_cms');
 
 /** Usuario de la base de datos */
 define('DB_USER', 'root');
@@ -28,12 +28,11 @@ define('DB_PREFIX', 'sn_');
 /** Tipo de base de datos. */
 define('DB_TYPE', 'mysql');
 
-define('DEBUG', TRUE);
+define('DEBUG', FALSE);
 
 // Claves SALTED
-define('LOGGED_KEY', '5GLhueRQNTmlo8nY6XusgNN1JDSnQWRKsGiQTkjU0QuD9IVf9SdtmPrwDxc6irBs');
-define('COOKIE_KEY', 'bydiGj9QAG0Nh9RpzGjmPKtTTiUI6PI3iivDP9nEyoTQMtaqnmN7GxR8xXYci5dw');
-//define('SALTED_KEY',    '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
-define('TOKEN_KEY', '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
-//strtotime('+30 days')
-define('COOKIE_EXPIRE', strtotime('+30 days'));
+define('LOGGED_KEY', 'mpk9wqPbH5Whs70UVHT1FBU7N0U8UDgz4IMmUYP0vCesrnmcPs1afABSNYUf4liN');
+define('COOKIE_KEY', 'aUCsFocHG1UwNw5m65yccrFvaOgfCUHTDYPpOHXgfjXrwxboKzr5wa60Uw07xmuR');
+define('SALTED_KEY', '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
+define('TOKEN_KEY', 'gpGxsPteaomtXPILXkn2JCFMoVtXxY52eYo06DIidbUUclji6kLryRCMD9HkWVnw');
+define('COOKIE_EXPIRE', strtotime('+30 days'));//strtotime('+30 days')

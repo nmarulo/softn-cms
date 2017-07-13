@@ -23,11 +23,17 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     $directoryView       = $route->getDirectoryViewsController();
     $optionsManager      = new OptionsManager();
     
-    if ($directoryController == 'admin' && !LoginManager::isLogin()) {
-        Messages::addSessionMessage('Debes iniciar sesión.', Messages::TYPE_WARNING);
+    if (defined('INSTALL') || $directoryController == 'install') {
+        $siteUrl = $optionsManager->getSiteUrl($router);
+        
+        if (file_exists(ABSPATH . 'config.php')) {
+            Util::redirect($siteUrl);
+        } elseif ($directoryController != 'install') {
+            Util::redirect($siteUrl . 'install');
+        }
+    } elseif ($directoryController == 'admin' && !LoginManager::isLogin()){Messages::addSessionMessage('Debes iniciar sesión.', Messages::TYPE_WARNING);
         Util::redirect($optionsManager->getSiteUrl(), 'login');
-    } elseif ($directoryController == 'login' && $directoryView == 'index' && LoginManager::isLogin()) {
-        Util::redirect($optionsManager->getSiteUrl(), 'admin');
+    } elseif ($directoryController == 'login' && $directoryView == 'index' && LoginManager::isLogin()){Util::redirect($optionsManager->getSiteUrl(), 'admin');
     }
 });
 

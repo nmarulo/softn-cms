@@ -72,7 +72,7 @@ class UsersManager extends CRUDManagerAbstract {
      * @return bool
      */
     private function canCreate($object) {
-        if ($this->searchByLogin($object) === FALSE && $this->searchByEmail($object) === FALSE) {
+        if ($this->searchByLogin($object->getUserLogin()) === FALSE && $this->searchByEmail($object->getUserEmail()) === FALSE) {
             return TRUE;
         }
         
@@ -91,12 +91,12 @@ class UsersManager extends CRUDManagerAbstract {
     }
     
     /**
-     * @param User $user
+     * @param string $userEmail
      *
      * @return bool|User
      */
-    public function searchByEmail($user) {
-        parent::parameterQuery(self::USER_EMAIL, $user->getUserEmail(), \PDO::PARAM_STR);
+    public function searchByEmail($userEmail) {
+        parent::parameterQuery(self::USER_EMAIL, $userEmail, \PDO::PARAM_STR);
         
         return parent::searchBy(self::USER_EMAIL);
     }

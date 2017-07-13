@@ -5,17 +5,21 @@
 
 namespace SoftnCMS\util\form\inputs\types;
 
+use SoftnCMS\util\form\inputs\InputTextInterface;
+
 /**
  * Class InputText
  * @author Nicolás Marulanda P.
  */
-abstract class InputText extends InputCommon {
+abstract class InputText extends InputCommon implements InputTextInterface {
     
     protected $accents;
     
     protected $withoutSpace;
     
     protected $replaceSpace;
+    
+    protected $specialChar;
     
     /**
      * InputText constructor.
@@ -25,6 +29,21 @@ abstract class InputText extends InputCommon {
         $this->accents      = TRUE;
         $this->withoutSpace = FALSE;
         $this->replaceSpace = '-';
+        $this->specialChar  = FALSE;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isSpecialChar() {
+        return $this->specialChar;
+    }
+    
+    /**
+     * @param bool $specialChar
+     */
+    public function setSpecialChar($specialChar) {
+        $this->specialChar = $specialChar;
     }
     
     /**

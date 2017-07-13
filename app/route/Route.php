@@ -11,11 +11,13 @@ namespace SoftnCMS\route;
  */
 class Route {
     
-    const DIRECTORY_ADMIN = 'admin';
+    const DIRECTORY_ADMIN   = 'admin';
     
-    const DIRECTORY_LOGIN = 'login';
+    const DIRECTORY_LOGIN   = 'login';
     
-    const DIRECTORY_THEME = 'theme';
+    const DIRECTORY_INSTALL = 'install';
+    
+    const DIRECTORY_THEME   = 'theme';
     
     /**
      * @var string Identifica el directorio del controlador,

@@ -72,10 +72,9 @@ class Request {
         
         switch ($urlDirectory) {
             case Route::DIRECTORY_ADMIN:
-                $directory = Route::DIRECTORY_ADMIN;
-                break;
             case Route::DIRECTORY_LOGIN:
-                $directory = Route::DIRECTORY_LOGIN;
+            case Route::DIRECTORY_INSTALL:
+                $directory = $urlDirectory;
                 break;
             default:
                 $url = $auxUrl;
@@ -115,13 +114,23 @@ class Request {
         
         if ($directoryView === 'theme') {
             $optionsManager = new OptionsManager();
-            $directoryView  = $optionsManager->searchByName(OPTION_THEME)
-                                             ->getOptionValue();
+            //TODO: Conflicto en el proceso de instalación.
+            if (!defined('INSTALL')) {
+                $directoryView = $optionsManager->searchByName(OPTION_THEME)
+                                                ->getOptionValue();
+            }
             $this->route->setViewPath(THEMES);
         }
         
         $this->route->setDirectoryViews($directoryView);
         $this->route->setDirectoryViewsController($directoryViewController);
+    }
+    
+    /**
+     * @return string
+     */
+    public function getUrlGet() {
+        return $this->urlGet;
     }
     
     public function getRoute() {

@@ -8,9 +8,6 @@ ViewController::registerStyle('normalize');
 ViewController::registerStyleRoute('app/vendor/twbs/bootstrap/dist/css/bootstrap');
 ViewController::registerStyleRoute('app/vendor/fortawesome/font-awesome/css/font-awesome.min');
 ViewController::registerStyle('style');
-$optionsManager = new \SoftnCMS\models\managers\OptionsManager();
-$siteTitle      = $optionsManager->searchByName(OPTION_TITLE)
-                                 ->getOptionValue();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -18,7 +15,7 @@ $siteTitle      = $optionsManager->searchByName(OPTION_TITLE)
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title><?php echo $siteTitle; ?></title>
+        <title>Proceso de instalación</title>
         <?php ViewController::includeStyles(); ?>
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

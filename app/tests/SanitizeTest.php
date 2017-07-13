@@ -23,6 +23,7 @@ class SanitizeTest extends \PHPUnit_Framework_TestCase {
     
     public function testAlphabetic() {
         $this->assertEquals('', Sanitize::alphabetic(''));
+        $this->assertEquals('á', Sanitize::alphabetic('á'));
         $this->assertEquals('áéíóúÁÉÍÓÚ', Sanitize::alphabetic('áéíóúÁÉÍÓÚ'));
         $this->assertEquals('a-b-c-d-é-f', Sanitize::alphabetic('   a  b c d é     f   ', TRUE, TRUE));
         $this->assertEquals('abcéí', Sanitize::alphabetic('a<%><¡/\|*:.;,!-+>[]{}bcé#í123+'));

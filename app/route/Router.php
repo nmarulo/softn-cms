@@ -46,6 +46,13 @@ class Router {
     }
     
     /**
+     * @return Request
+     */
+    public function getRequest() {
+        return $this->request;
+    }
+    
+    /**
      * @return Route
      */
     public function getRoute() {

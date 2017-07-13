@@ -23,9 +23,9 @@ class InputAlphanumeric extends InputText {
     }
     
     public function filter() {
-        $output = Sanitize::alphanumeric($this->value, $this->accents, $this->withoutSpace, $this->replaceSpace);
+        $output = Sanitize::alphanumeric($this->value, $this->accents, $this->withoutSpace, $this->replaceSpace, $this->specialChar);
         
-        if (!Validate::alphanumeric($output, $this->lenMax, $this->accents, $this->lenStrict)) {
+        if (!Validate::alphanumeric($output, $this->lenMax, $this->accents, $this->lenStrict, $this->specialChar)) {
             $output = '';
         }
         

@@ -19,17 +19,25 @@ class Validate {
      * @param bool     $accents   [Opcional]   Acentos.
      * @param bool     $lenStrict [Opcional] Longitud máxima estricta, es decir, que la longitud debe ser exactamente
      *                            la longitud máxima.
+     * @param bool     $specialChar
      *
      * @return bool
      */
-    public static function alphanumeric($value, $length, $accents = TRUE, $lenStrict = FALSE) {
-        $pattern = 'áéíóúÁÉÍÓÚ';
-        
-        if (!$accents) {
-            $pattern = '';
+    public static function alphanumeric($value, $length, $accents = TRUE, $lenStrict = FALSE, $specialChar = FALSE) {
+        return self::filter($value, Util::getPatternAlphanumeric(), $length, $accents, $lenStrict, $specialChar);
+    }
+    
+    private static function filter($value, $pattern, $length, $accents, $lenStrict, $specialChar) {
+        if ($accents) {
+            $pattern .= Util::getPatternAccents();
         }
         
-        $pattern = '/^[a-zA-Z' . $pattern . '0-9\s]+$/';
+        if ($specialChar) {
+            $pattern .= Util::getPatternSpecialChar();
+        }
+        
+        $pattern = '/^[' . $pattern . ']+$/';
+        
         if (!is_string($value) || !preg_match($pattern, $value) || !self::length($value, $length, $lenStrict)) {
             return FALSE;
         }
@@ -61,23 +69,12 @@ class Validate {
      * @param bool|int $length
      * @param bool     $accents
      * @param bool     $lenStrict
+     * @param bool     $specialChar
      *
      * @return bool
      */
-    public static function alphabetic($value, $length, $accents = TRUE, $lenStrict = FALSE) {
-        $pattern = 'áéíóúÁÉÍÓÚ';
-        
-        if (!$accents) {
-            $pattern = '';
-        }
-        
-        $pattern = '/^[a-zA-Z' . $pattern . '0-9\s]+$/';
-        
-        if (!is_string($value) || !preg_match($pattern, $value) || !self::length($value, $length, $lenStrict)) {
-            return FALSE;
-        }
-        
-        return TRUE;
+    public static function alphabetic($value, $length, $accents = TRUE, $lenStrict = FALSE, $specialChar = FALSE) {
+        return self::filter($value, Util::getPatternAlphabetic(), $length, $accents, $lenStrict, $specialChar);
     }
     
     /**

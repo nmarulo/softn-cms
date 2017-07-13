@@ -5,14 +5,14 @@
 
 namespace SoftnCMS\util\form\inputs\builders;
 
-use SoftnCMS\util\form\inputs\InputCommonInterface;
+use SoftnCMS\util\form\inputs\InputTextInterface;
 use SoftnCMS\util\form\inputs\types\InputText;
 
 /**
  * Class InputTextBuilder
  * @author Nicolás Marulanda P.
  */
-abstract class InputTextBuilder extends InputCommonBuilder implements InputCommonInterface {
+abstract class InputTextBuilder extends InputCommonBuilder implements InputTextInterface {
     
     /**
      * @var InputText
@@ -58,6 +58,17 @@ abstract class InputTextBuilder extends InputCommonBuilder implements InputCommo
      */
     public function setReplaceSpace($replaceSpace) {
         $this->input->setReplaceSpace($replaceSpace);
+        
+        return $this;
+    }
+    
+    /**
+     * @param $specialChar
+     *
+     * @return $this
+     */
+    public function setSpecialChar($specialChar) {
+        $this->input->setSpecialChar($specialChar);
         
         return $this;
     }

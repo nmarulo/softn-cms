@@ -7,7 +7,9 @@ namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Option;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\Sanitize;
 
 /**
  * Class OptionsManager
@@ -21,13 +23,38 @@ class OptionsManager extends CRUDManagerAbstract {
     
     const OPTION_VALUE = 'option_value';
     
-    public function getSiteUrl() {
-        //TODO: temporalmente.
-        $siteUrl       = "http://localhost/softn-cms/";
-        $optionSiteUrl = $this->searchByName(OPTION_SITE_URL);
+    public function getSiteUrl($router = NULL) {
+        $siteUrl = '';
         
-        if ($optionSiteUrl !== FALSE) {
-            $siteUrl = $optionSiteUrl->getOptionValue();
+        if (!defined('INSTALL')) {
+            $optionSiteUrl = $this->searchByName(OPTION_SITE_URL);
+            
+            if ($optionSiteUrl !== FALSE) {
+                $siteUrl = $optionSiteUrl->getOptionValue();
+            }
+        }
+        
+        if (empty($siteUrl)) {
+            
+            if (empty($router)) {
+                $router = new Router();
+            }
+            
+            $host       = $_SERVER['HTTP_HOST'];// localhost
+            $scheme     = $_SERVER['REQUEST_SCHEME'];// http
+            $uriCurrent = $_SERVER['REQUEST_URI'];// /softn-cms/install
+            $uri        = $uriCurrent;
+            $url        = $scheme . '://' . $host;
+            $urlGet     = $router->getRequest()
+                                 ->getUrlGet();
+            
+            if (!empty($urlGet)) {
+                $strPos = strpos($uriCurrent, $urlGet);
+                //Para obtener la uri raíz de la pagina.
+                $uri = substr($uriCurrent, 0, $strPos);// /softn-cms/
+            }
+            
+            $siteUrl = Sanitize::url($url . $uri);
         }
         
         return $siteUrl;

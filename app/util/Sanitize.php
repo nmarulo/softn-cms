@@ -11,8 +11,6 @@ namespace SoftnCMS\util;
  */
 class Sanitize {
     
-    private static $PATTERN = 'a-zA-Z\s';
-    
     /**
      * Método que filtra valores alfanuméricos.
      *
@@ -20,21 +18,28 @@ class Sanitize {
      * @param bool   $accents      [Opcional] Acentos.
      * @param bool   $withoutSpace [Opcional] Sin espacios
      * @param string $replaceSpace [Opcional] Carácter por el cual se reemplazaran los espacios.
+     * @param bool   $specialChar
      *
      * @return mixed|string
      */
-    public static function alphanumeric($value, $accents = TRUE, $withoutSpace = FALSE, $replaceSpace = '-') {
-        $pattern = 'áéíóúÁÉÍÓÚ';
-        
-        if (!$accents) {
-            $pattern = '';
+    public static function alphanumeric($value, $accents = TRUE, $withoutSpace = FALSE, $replaceSpace = '-', $specialChar = FALSE) {
+        return self::filter($value, Util::getPatternAlphanumeric(), $accents, $withoutSpace, $replaceSpace, $specialChar);
+    }
+    
+    private static function filter($value, $pattern, $accents, $withoutSpace, $replaceSpace, $specialChar) {
+        if ($accents) {
+            $pattern .= Util::getPatternAccents();
         }
         
-        //Reemplaza lo que no (indicado con ^) este dentro de $pattern
-        $pattern = '/[^0-9' . $pattern . self::$PATTERN . ']/';
-        $output  = preg_replace($pattern, '', $value);
-        $output  = preg_replace('/[\¡]/', '', $output);
-        $output  = self::clearSpace($output);
+        if($specialChar){
+            $pattern .= Util::getPatternSpecialChar();
+        }
+        
+        $output = preg_replace([
+            '/[^' . $pattern . ']+/',
+            '/[¡]+/',
+        ], '', $value);
+        $output = self::clearSpace($output);
         
         if ($withoutSpace) {
             $output = str_replace(' ', $replaceSpace, $output);
@@ -72,25 +77,12 @@ class Sanitize {
      * @param bool   $accents      [Opcional] Acentos.
      * @param bool   $withoutSpace [Opcional] Sin espacios
      * @param string $replaceSpace [Opcional] Carácter por el cual se reemplazaran los espacios.
+     * @param bool   $specialChar
      *
      * @return mixed|string
      */
-    public static function alphabetic($value, $accents = TRUE, $withoutSpace = FALSE, $replaceSpace = '-') {
-        $pattern = 'áéíóúÁÉÍÓÚ';
-        
-        if (!$accents) {
-            $pattern = '';
-        }
-        
-        $output = preg_replace('/[^' . $pattern . self::$PATTERN . ']/', '', $value);
-        $output = preg_replace('/[\¡]/', '', $output);
-        $output = self::clearSpace($output);
-        
-        if ($withoutSpace) {
-            $output = str_replace(' ', $replaceSpace, $output);
-        }
-        
-        return $output;
+    public static function alphabetic($value, $accents = TRUE, $withoutSpace = FALSE, $replaceSpace = '-', $specialChar = FALSE) {
+        return self::filter($value, Util::getPatternAlphabetic(), $accents, $withoutSpace, $replaceSpace, $specialChar);
     }
     
     /**

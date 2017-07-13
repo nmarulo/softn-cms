@@ -43,6 +43,9 @@ define('THEMES', ABSPATH . 'themes' . DIRECTORY_SEPARATOR);
 /** Directorio de los temas de la aplicación. */
 define('APP_THEMES', 'app' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR);
 
+define('REPLACE_SQL_SITE_URL', '#{SITE_URL}');
+define('REPLACE_SQL_PREFIX', '#{PREFIX}');
+
 define('OPTION_TITLE', 'optionTitle');
 define('OPTION_DESCRIPTION', 'optionDescription');
 define('OPTION_PAGED', 'optionPaged');
