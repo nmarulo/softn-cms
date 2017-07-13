@@ -136,7 +136,6 @@ class InstallManager {
         }
         
         $scriptSQL = file_get_contents($fileScriptSQL);
-        
         $scriptSQL = str_replace(REPLACE_SQL_SITE_URL, URL_WEB, $scriptSQL);
         $scriptSQL = str_replace(REPLACE_SQL_PREFIX, DB_PREFIX, $scriptSQL);
         

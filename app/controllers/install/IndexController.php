@@ -5,7 +5,6 @@
 
 namespace SoftnCMS\controllers\install;
 
-use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\ManagerAbstract;
 use SoftnCMS\models\managers\InstallManager;

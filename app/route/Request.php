@@ -59,7 +59,6 @@ class Request {
             }
             
             $this->setRuteParameter(Arrays::get($url, $positionParam));
-            $this->setDirectoryView();
         }
         
         $this->setDirectoryView();
@@ -114,11 +113,12 @@ class Request {
         
         if ($directoryView === 'theme') {
             $optionsManager = new OptionsManager();
-            //TODO: Conflicto en el proceso de instalación.
+            
             if (!defined('INSTALL')) {
                 $directoryView = $optionsManager->searchByName(OPTION_THEME)
                                                 ->getOptionValue();
             }
+            
             $this->route->setViewPath(THEMES);
         }
         
