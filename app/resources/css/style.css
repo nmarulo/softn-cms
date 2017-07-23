@@ -33,6 +33,10 @@
     border: 1px solid #DDDDDD;
 }
 
+ul.list-unstyled > li > ul.list-unstyled{
+    padding-left: 50px;
+}
+
 /* COMÚN ================================= */
 body {
     -moz-white-space: pre-wrap; /* css-3 */
@@ -55,7 +59,7 @@ nav ul.pagination {
 }
 
 td.options {
-    width: 70px;
+    width: 95px;
 }
 
 .navbar-custom {

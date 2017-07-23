@@ -44,9 +44,9 @@ abstract class ManagerAbstract {
      * @param mixed  $value
      * @param int    $dataType
      */
-    protected function parameterQuery($parameter, $value, $dataType) {
+    protected function parameterQuery($parameter, $value, $dataType, $column = '') {
         if (!is_null($value)) {
-            $this->prepare[] = MySQL::prepareStatement($parameter, $value, $dataType);
+            $this->prepare[] = MySQL::prepareStatement($parameter, $value, $dataType, $column);
         }
     }
     
@@ -169,7 +169,6 @@ abstract class ManagerAbstract {
         $query  = 'SELECT COUNT(*) AS COUNT ';
         $query  .= 'FROM ' . $this->getTableWithPrefix();
         $result = $this->select($query);
-        
         $result = Arrays::get($result, 0);
         
         if ($result === FALSE) {

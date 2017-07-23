@@ -1,4 +1,6 @@
 <?php
+
+use SoftnCMS\models\tables\User;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 
@@ -32,11 +34,11 @@ ViewController::singleViewDirectory('pagination'); ?>
             </tr>
         </tfoot>
         <tbody>
-        <?php foreach ($users as $user) { ?>
+        <?php array_walk($users, function(User $user) use ($siteUrlUpdate) { ?>
             <tr>
                 <td class="options">
                     <a class="btn-action-sm btn btn-primary" href="<?php echo $siteUrlUpdate . $user->getId(); ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
-                    <a class="btn-action-sm btn btn-danger" data-id="<?php echo $user->getId(); ?>" href="#" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                    <button class="btn-action-sm btn btn-danger" data-id="<?php echo $user->getId(); ?>" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button>
                 </td>
                 <td><?php echo $user->getUserLogin(); ?></td>
                 <td><?php echo $user->getUserName(); ?></td>
@@ -45,7 +47,7 @@ ViewController::singleViewDirectory('pagination'); ?>
                 <td><?php echo $user->getUserRegistered(); ?></td>
                 <td><?php echo $user->getUserPostCount(); ?></td>
             </tr>
-        <?php } ?>
+        <?php }); ?>
         </tbody>
     </table>
 </div>

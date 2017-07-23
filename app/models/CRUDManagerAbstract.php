@@ -99,9 +99,9 @@ abstract class CRUDManagerAbstract extends ManagerAbstract {
         return $this->deleteBy();
     }
     
-    protected function deleteBy() {
+    protected function deleteBy($logicalOperator = 'AND') {
         $mySQL  = new MySQL();
-        $result = $mySQL->delete(parent::getTableWithPrefix(), $this->prepare);
+        $result = $mySQL->deleteConditional(parent::getTableWithPrefix(), $this->prepare, $logicalOperator);
         parent::closeConnection($mySQL);
         
         return $result;

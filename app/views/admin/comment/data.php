@@ -1,4 +1,6 @@
 <?php
+
+use SoftnCMS\models\tables\Comment;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 
@@ -30,11 +32,11 @@ ViewController::singleViewDirectory('pagination'); ?>
             </tr>
         </tfoot>
         <tbody>
-        <?php foreach ($comments as $comment) { ?>
+        <?php array_walk($comments, function(Comment $comment) use ($siteUrlUpdate) { ?>
             <tr>
                 <td class="options">
                     <a class="btn-action-sm btn btn-primary" href="<?php echo $siteUrlUpdate . $comment->getId(); ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
-                    <a class="btn-action-sm btn btn-danger" data-id="<?php echo $comment->getId(); ?>" href="#" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                    <button class="btn-action-sm btn btn-danger" data-id="<?php echo $comment->getId(); ?>" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button>
                 </td>
                 <td><?php echo $comment->getCommentAuthor(); ?></td>
                 <td><?php echo $comment->getCommentContents(); ?></td>
@@ -42,7 +44,7 @@ ViewController::singleViewDirectory('pagination'); ?>
                 <td><?php echo $comment->getPostID(); ?></td>
                 <td><?php echo $comment->getCommentDate(); ?></td>
             </tr>
-        <?php } ?>
+        <?php }); ?>
         </tbody>
     </table>
 </div>

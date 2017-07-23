@@ -23,13 +23,3 @@
 		}
 	});
 })();
-
-function reloadData(url, dataPaged) {
-	var callback = function (data) {
-		$('#data-container').html(data);
-	};
-	
-	callAjax(url + 'reloadAJAX', 'GET', dataPaged, callback);
-	
-	return true;
-}

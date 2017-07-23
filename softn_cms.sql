@@ -174,11 +174,11 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}sidebars` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#{PREFIX}menus` (
     `ID` INT NOT NULL AUTO_INCREMENT,
-    `menu_name` VARCHAR(60) NOT NULL,
-    `menu_url` VARCHAR(100) NULL,
-    `menu_sub` MEDIUMINT NOT NULL COMMENT 'Identificador del elemento padre, si se da el caso',
-    `menu_position` INT NOT NULL COMMENT 'Indica la posición del menu',
     `menu_title` VARCHAR(60) NOT NULL,
+    `menu_url` VARCHAR(100) NULL,
+    `menu_sub` INT NOT NULL COMMENT 'Identificador del elemento padre, si se da el caso',
+    `menu_position` INT NOT NULL COMMENT 'Indica la posición del menu',
+    `menu_total_children` INT NOT NULL,
     PRIMARY KEY (`ID`))
     ENGINE = InnoDB;
 

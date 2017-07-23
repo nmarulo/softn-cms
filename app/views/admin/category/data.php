@@ -1,4 +1,6 @@
 <?php
+
+use SoftnCMS\models\tables\Category;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 
@@ -24,16 +26,16 @@ ViewController::singleViewDirectory('pagination'); ?>
             </tr>
         </tfoot>
         <tbody>
-        <?php foreach ($categories as $category) { ?>
+        <?php array_walk($categories, function(Category $category) use ($siteUrlUpdate) { ?>
             <tr>
                 <td class="options">
                     <a class="btn-action-sm btn btn-primary" href="<?php echo $siteUrlUpdate . $category->getId(); ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
-                    <a class="btn-action-sm btn btn-danger" data-id="<?php echo $category->getId(); ?>" href="#" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                    <button class="btn-action-sm btn btn-danger" data-id="<?php echo $category->getId(); ?>" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button>
                 </td>
                 <td><?php echo $category->getCategoryName(); ?></td>
                 <td><?php echo $category->getCategoryPostCount(); ?></td>
             </tr>
-        <?php } ?>
+        <?php }); ?>
         </tbody>
     </table>
 </div>

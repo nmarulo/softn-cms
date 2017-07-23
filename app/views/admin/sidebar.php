@@ -13,6 +13,7 @@ $urlComment     = $urlAdmin . 'comment/';
 $urlUser        = $urlAdmin . 'user/';
 $urlUserCreate  = $urlUser . 'create/';
 $urlOption      = $urlAdmin . 'option/';
+$urlMenu        = $urlAdmin . 'menu/';
 ?>
 
 <aside>
@@ -36,6 +37,9 @@ $urlOption      = $urlAdmin . 'option/';
                     <a href="<?php echo $urlTerm; ?>"><span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Etiquetas</a>
                 </li>
             </ul>
+        </li>
+        <li>
+            <a href="<?php echo $urlMenu; ?>"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> Menus</a>
         </li>
         <li>
             <a href="<?php echo $urlComment; ?>"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> Comentarios</a>

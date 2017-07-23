@@ -117,3 +117,13 @@ function callAjax(url, method, data, callback, parseJSON) {
 		console.log('ERROR: ' + textStatus);
 	});
 }
+
+function reloadData(url, data) {
+	var callback = function (data) {
+		$('#data-container').html(data);
+	};
+	
+	callAjax(url + 'reloadAJAX', 'GET', data, callback);
+	
+	return true;
+}

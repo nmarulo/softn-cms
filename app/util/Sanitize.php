@@ -31,15 +31,13 @@ class Sanitize {
             $pattern .= Util::getPatternAccents();
         }
         
-        if($specialChar){
+        if ($specialChar) {
             $pattern .= Util::getPatternSpecialChar();
         }
         
-        $output = preg_replace([
-            '/[^' . $pattern . ']+/',
-            '/[¡]+/',
-        ], '', $value);
-        $output = self::clearSpace($output);
+        $pattern = '/[^' . $pattern . ']+/';
+        $output  = preg_replace($pattern, '', $value);
+        $output  = self::clearSpace($output);
         
         if ($withoutSpace) {
             $output = str_replace(' ', $replaceSpace, $output);

@@ -14,9 +14,6 @@ use SoftnCMS\models\TableAbstract;
 class Menu extends TableAbstract {
     
     /** @var string */
-    private $menuName;
-    
-    /** @var string */
     private $menuUrl;
     
     /** @var int */
@@ -28,18 +25,21 @@ class Menu extends TableAbstract {
     /** @var string */
     private $menuTitle;
     
+    /** @var int */
+    private $menuTotalChildren;
+    
     /**
-     * @return string
+     * @return int
      */
-    public function getMenuName() {
-        return $this->menuName;
+    public function getMenuTotalChildren() {
+        return $this->menuTotalChildren;
     }
     
     /**
-     * @param string $menuName
+     * @param int $menuTotalChildren
      */
-    public function setMenuName($menuName) {
-        $this->menuName = $menuName;
+    public function setMenuTotalChildren($menuTotalChildren) {
+        $this->menuTotalChildren = $menuTotalChildren;
     }
     
     /**

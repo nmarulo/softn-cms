@@ -57,11 +57,12 @@ class MySQL {
      *
      * @return array
      */
-    public static function prepareStatement($parameter, $value, $dataType) {
+    public static function prepareStatement($parameter, $value, $dataType, $column = '') {
         return [
             'parameter' => $parameter,
             'value'     => $value,
             'dataType'  => $dataType,
+            'column'    => $column,
         ];
     }
     
@@ -104,7 +105,7 @@ class MySQL {
             
             return $this->prepareObject->execute();
         } catch (\PDOException $ex) {
-            if(DEBUG){
+            if (DEBUG) {
                 Messages::addMessage($ex->getMessage(), Messages::TYPE_DANGER);
             }
             
@@ -133,7 +134,7 @@ class MySQL {
                     $error = \TRUE;
                 }
             } catch (\PDOException $ex) {
-                if(DEBUG) {
+                if (DEBUG) {
                     Messages::addMessage($ex->getMessage(), Messages::TYPE_DANGER);
                 }
                 
@@ -220,22 +221,31 @@ class MySQL {
      *
      * @return bool Si es \TRUE la consulta se ejecuto correctamente.
      */
-    public function delete($table, $parameterQuery) {
+    public function deleteConditional($table, $parameterQuery, $logicalOperator) {
         $values = array_map(function($value) {
-            return $value['parameter'] . ' = :' . $value['parameter'];
+            $column = Arrays::get($value, 'column');
+            $param  = Arrays::get($value, 'parameter');
+            $column = empty($column) ? $param : $column;
+            
+            return $column . ' = :' . $param;
         }, $parameterQuery);
         
         $query = 'DELETE ';
         $query .= "FROM $table ";
         $query .= 'WHERE ';
         //En caso de enviar mas de un dato en el "$parameterQuery".
-        $query       .= implode(' AND ', $values);
-        $this->query = $query;
+        $query       .= implode(' ' . $logicalOperator . ' ', $values);
         
+        return $this->delete($query, $parameterQuery);
+    }
+    
+    public function delete($query, $parameterQuery){
+        $this->query = $query;
+    
         if ($this->execute($query, $parameterQuery)) {
             return $this->prepareObject->rowCount();
         }
-        
+    
         return \FALSE;
     }
     
