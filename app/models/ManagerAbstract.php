@@ -43,6 +43,7 @@ abstract class ManagerAbstract {
      * @param string $parameter
      * @param mixed  $value
      * @param int    $dataType
+     * @param string $column
      */
     protected function parameterQuery($parameter, $value, $dataType, $column = '') {
         if (!is_null($value)) {
@@ -59,10 +60,15 @@ abstract class ManagerAbstract {
         return Arrays::get($this->searchAllBy($parameter), 0);
     }
     
+    /**
+     * @param string $parameter
+     * @param string $orderBy
+     *
+     * @return array
+     */
     protected function searchAllBy($parameter, $orderBy = '') {
-        $query = 'SELECT * ';
-        $query .= 'FROM ' . $this->getTableWithPrefix($this->getTable());
-        $query .= " WHERE $parameter = :$parameter";
+        $table = $this->getTableWithPrefix();
+        $query = sprintf('SELECT * FROM %1$s WHERE %2$s = :%2$s', $table, $parameter);
         
         if (!empty($orderBy)) {
             $query .= " ORDER BY $orderBy DESC";
@@ -91,16 +97,14 @@ abstract class ManagerAbstract {
      *
      * @return array
      */
-    protected function readData($query = "") {
+    protected function readData($query = '') {
         if (empty($query)) {
-            $query = 'SELECT * ';
-            $query .= 'FROM ' . $this->getTableWithPrefix($this->getTable());
-            $query .= ' ORDER BY ' . self::ID . ' DESC';
+            $table = $this->getTableWithPrefix();
+            $query = sprintf('SELECT * FROM %1$s ORDER BY %2$s DESC', $table, self::ID);
         }
         
         $objects = [];
         $result  = $this->select($query);
-        
         array_walk($result, function($value) use (&$objects) {
             $objects[] = $this->buildObjectTable($value);
         });
@@ -153,11 +157,9 @@ abstract class ManagerAbstract {
         }
         
         $limit = Arrays::get($filters, 'limit');
-        
-        $query = 'SELECT * ';
-        $query .= 'FROM ' . $this->getTableWithPrefix();
-        $query .= ' ORDER BY ID DESC ';
-        $query .= $limit === FALSE ? '' : "LIMIT $limit";
+        $table = $this->getTableWithPrefix();
+        $query = sprintf('SELECT * FROM %1$s ORDER BY %2$s DESC', $table, self::ID);
+        $query .= $limit === FALSE ? '' : " LIMIT $limit";
         
         return $this->readData($query);
     }
@@ -166,16 +168,13 @@ abstract class ManagerAbstract {
      * @return bool|int
      */
     public function count() {
-        $query  = 'SELECT COUNT(*) AS COUNT ';
-        $query  .= 'FROM ' . $this->getTableWithPrefix();
+        $table  = $this->getTableWithPrefix();
+        $query  = sprintf('SELECT COUNT(*) AS COUNT FROM %s', $table);
         $result = $this->select($query);
         $result = Arrays::get($result, 0);
+        $result = Arrays::get($result, 'COUNT');
         
-        if ($result === FALSE) {
-            return 0;
-        }
-        
-        return Arrays::get($result, 'COUNT');
+        return $result === FALSE ? 0 : $result;
     }
     
 }

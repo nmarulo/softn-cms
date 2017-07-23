@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\models\managers;
 
+use phpDocumentor\Reflection\Types\Self_;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Menu;
 use SoftnCMS\util\Arrays;
@@ -54,16 +55,13 @@ class MenusManager extends CRUDManagerAbstract {
         $orderBy = 'ORDER BY ' . self::MENU_SUB . ' ASC ';
         
         if ($menuSub == self::MENU_SUB_PARENT) {
-            $orderBy = 'ORDER BY ID DESC ';
+            $orderBy = 'ORDER BY ' . self::ID . ' DESC ';
         }
         
-        $query = 'SELECT * ';
-        $query .= 'FROM ' . $this->getTableWithPrefix();
-        $query .= " WHERE $columnMenuSub = :$columnMenuSub ";
-        $query .= $orderBy;
+        $query = sprintf('SELECT * FROM %1$s WHERE %2$s = :%2$s %3$s', parent::getTableWithPrefix(), $columnMenuSub, $orderBy);
         
         if (!empty($limit)) {
-            $query .= "LIMIT $limit";
+            $query .= " LIMIT $limit";
         }
         
         return parent::readData($query);
@@ -238,17 +236,12 @@ class MenusManager extends CRUDManagerAbstract {
     public function count() {
         $columnMenuSub = self::MENU_SUB;
         parent::parameterQuery($columnMenuSub, self::MENU_SUB_PARENT, \PDO::PARAM_INT);
-        $query  = 'SELECT COUNT(*) AS COUNT ';
-        $query  .= 'FROM ' . $this->getTableWithPrefix();
-        $query  .= " WHERE $columnMenuSub = :$columnMenuSub";
+        $query  = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s', parent::getTableWithPrefix(), $columnMenuSub);
         $result = parent::select($query);
         $result = Arrays::get($result, 0);
+        $result = Arrays::get($result, 'COUNT');
         
-        if ($result === FALSE) {
-            return 0;
-        }
-        
-        return Arrays::get($result, 'COUNT');
+        return $result === FALSE ? 0 : $result;
     }
     
     /**
@@ -276,26 +269,15 @@ class MenusManager extends CRUDManagerAbstract {
     }
     
     private function getLastPosition($parentMenuId) {
-        $query = 'SELECT ';
-        $query .= self::MENU_POSITION;
-        $query .= ' AS POSITION FROM ';
-        $query .= parent::getTableWithPrefix();
-        $query .= ' WHERE ';
-        $query .= self::MENU_SUB;
-        $query .= ' = :';
-        $query .= self::MENU_SUB;
-        $query .= ' ORDER BY ';
-        $query .= self::MENU_POSITION;
-        $query .= ' DESC LIMIT 1';
+        $query = 'SELECT %1$s AS POSITION FROM %2$s WHERE %3$s = :%3$s ORDER BY %1$s DESC LIMIT 1';
+        
+        $query = sprintf($query, self::MENU_POSITION, parent::getTableWithPrefix(), self::MENU_SUB);
         parent::parameterQuery(self::MENU_SUB, $parentMenuId, \PDO::PARAM_INT);
         $result = parent::select($query);
         $result = Arrays::get($result, 0);
+        $result = Arrays::get($result, 'POSITION');
         
-        if ($result === FALSE) {
-            return 0;
-        }
-        
-        return Arrays::get($result, 'POSITION');
+        return $result === FALSE ? 0 : $result;
     }
     
     /**

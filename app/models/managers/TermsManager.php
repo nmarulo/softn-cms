@@ -88,27 +88,18 @@ class TermsManager extends CRUDManagerAbstract {
         }, $postsId);
         
         $tablePostsTerms = parent::getTableWithPrefix(PostsTermsManager::TABLE);
-        $query           = 'SELECT * ';
-        $query           .= 'FROM ' . parent::getTableWithPrefix();
-        $query           .= ' WHERE ' . self::ID . ' IN ';
-        $query           .= '(SELECT ' . PostsTermsManager::TERM_ID;
-        $query           .= " FROM $tablePostsTerms ";
-        $query           .= 'WHERE ' . implode(' OR ', $where);
-        $query           .= ')';
+        $strWhere        = implode(' OR ', $where);
+        $query           = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s)';
+        $query           = sprintf($query, parent::getTableWithPrefix(), self::ID, PostsTermsManager::TERM_ID, $tablePostsTerms, $strWhere);
         
         return parent::readData($query);
     }
     
     public function searchByPostId($postId) {
-        $columnPostId    = PostsTermsManager::POST_ID;
         $tablePostsTerms = parent::getTableWithPrefix(PostsTermsManager::TABLE);
-        $query           = 'SELECT * ';
-        $query           .= 'FROM ' . parent::getTableWithPrefix();
-        $query           .= ' WHERE ' . self::ID . ' IN ';
-        $query           .= '(SELECT ' . PostsTermsManager::TERM_ID;
-        $query           .= " FROM $tablePostsTerms ";
-        $query           .= "WHERE $columnPostId = :$columnPostId)";
-        $this->parameterQuery($columnPostId, $postId, \PDO::PARAM_INT);
+        $query           = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s)';
+        $query           = sprintf($query, parent::getTableWithPrefix(), self::ID, PostsTermsManager::TERM_ID, $tablePostsTerms, PostsTermsManager::POST_ID);
+        $this->parameterQuery(PostsTermsManager::POST_ID, $postId, \PDO::PARAM_INT);
         
         return parent::readData($query);
     }

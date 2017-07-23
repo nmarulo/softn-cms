@@ -70,49 +70,36 @@ class PostsManager extends CRUDManagerAbstract {
     
     public function searchByCategoryId($categoryId, $filters = []) {
         $limit                = Arrays::get($filters, 'limit');
-        $columnCategoryId     = PostsCategoriesManager::CATEGORY_ID;
         $tablePostsCategories = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
-        $query                = 'SELECT * ';
-        $query                .= 'FROM ' . parent::getTableWithPrefix();
-        $query                .= ' WHERE ' . self::ID . ' IN ';
-        $query                .= '(SELECT ' . PostsCategoriesManager::POST_ID;
-        $query                .= " FROM $tablePostsCategories ";
-        $query                .= "WHERE $columnCategoryId = :$columnCategoryId) ORDER BY ID DESC ";
-        $query                .= $limit === FALSE ? '' : "LIMIT $limit";
-        $this->parameterQuery($columnCategoryId, $categoryId, \PDO::PARAM_INT);
+        $query                = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s) ORDER BY %2$s DESC';
+        $query                = sprintf($query, parent::getTableWithPrefix(), self::ID, PostsCategoriesManager::POST_ID, $tablePostsCategories, PostsCategoriesManager::CATEGORY_ID);
+        $query                .= $limit === FALSE ? '' : " LIMIT $limit";
+        $this->parameterQuery(PostsCategoriesManager::CATEGORY_ID, $categoryId, \PDO::PARAM_INT);
         
         return parent::readData($query);
     }
     
     public function searchByTermId($termId, $filters = []) {
-        $limit        = Arrays::get($filters, 'limit');
-        $columnTermId = PostsTermsManager::TERM_ID;
-        $query        = 'SELECT * ';
-        $query        .= 'FROM ' . parent::getTableWithPrefix();
-        $query        .= ' WHERE ' . self::ID . ' IN ';
-        $query        .= '(SELECT ' . PostsTermsManager::POST_ID;
-        $query        .= ' FROM ' . parent::getTableWithPrefix(PostsTermsManager::TABLE);
-        $query        .= " WHERE $columnTermId = :$columnTermId) ORDER BY ID DESC ";
-        $query        .= $limit === FALSE ? '' : "LIMIT $limit";
-        $this->parameterQuery($columnTermId, $termId, \PDO::PARAM_INT);
+        $limit           = Arrays::get($filters, 'limit');
+        $tablePostsTerms = parent::getTableWithPrefix(PostsTermsManager::TABLE);
+        $query           = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s) ORDER BY %2$s DESC';
+        $query           = sprintf($query, parent::getTableWithPrefix(), self::ID, PostsTermsManager::POST_ID, $tablePostsTerms, PostsTermsManager::TERM_ID);
+        $query           .= $limit === FALSE ? '' : "LIMIT $limit";
+        $this->parameterQuery(PostsTermsManager::TERM_ID, $termId, \PDO::PARAM_INT);
         
         return parent::readData($query);
     }
     
     public function searchByUserId($userId, $filters = []) {
-        $limit        = Arrays::get($filters, 'limit');
-        $columnUserId = self::USER_ID;
-        parent::parameterQuery($columnUserId, $userId, \PDO::PARAM_INT);
+        $limit = Arrays::get($filters, 'limit');
+        parent::parameterQuery(self::USER_ID, $userId, \PDO::PARAM_INT);
         
         if (empty($limit)) {
-            return parent::searchAllBy($columnUserId, self::ID);
+            return parent::searchAllBy(self::USER_ID, self::ID);
         }
         
-        $query = 'SELECT * ';
-        $query .= 'FROM ' . $this->getTableWithPrefix();
-        $query .= " WHERE $columnUserId = :$columnUserId ";
-        $query .= 'ORDER BY ID DESC ';
-        $query .= "LIMIT $limit";
+        $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s ORDER BY %3$s DESC LIMIT %4$s';
+        $query = sprintf($query, parent::getTableWithPrefix(), self::USER_ID, self::ID, $limit);
         
         return parent::readData($query);
     }
@@ -123,14 +110,10 @@ class PostsManager extends CRUDManagerAbstract {
      * @return bool|Post
      */
     public function searchByCommentId($commentId) {
-        $columnCommentId = CommentsManager::ID;
-        $query           = 'SELECT * ';
-        $query           .= 'FROM ' . parent::getTableWithPrefix();
-        $query           .= ' WHERE ' . self::ID . ' IN ';
-        $query           .= '(SELECT ' . CommentsManager::POST_ID;
-        $query           .= ' FROM ' . parent::getTableWithPrefix(CommentsManager::TABLE);
-        $query           .= " WHERE $columnCommentId = :$columnCommentId)";
-        parent::parameterQuery($columnCommentId, $commentId, \PDO::PARAM_INT);
+        $tableComments = parent::getTableWithPrefix(CommentsManager::TABLE);
+        $query         = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s)';
+        $query         = sprintf($query, parent::getTableWithPrefix(), self::ID, CommentsManager::POST_ID, $tableComments, CommentsManager::ID);
+        parent::parameterQuery(CommentsManager::ID, $commentId, \PDO::PARAM_INT);
         
         return Arrays::get(parent::readData($query), 0);
     }

@@ -122,15 +122,33 @@ class UsersManager extends CRUDManagerAbstract {
     public function searchByPostId($postId) {
         $columnPostId = PostsManager::ID;
         parent::parameterQuery($columnPostId, $postId, \PDO::PARAM_INT);
-        $query = 'SELECT * ';
-        $query .= 'FROM ' . parent::getTableWithPrefix();
-        $query .= ' WHERE ' . self::ID;
-        $query .= ' IN ';
-        $query .= '(SELECT ' . PostsManager::USER_ID;
-        $query .= ' FROM ' . parent::getTableWithPrefix(PostsManager::TABLE);
-        $query .= " WHERE $columnPostId = :$columnPostId)";
+        $tablePosts = parent::getTableWithPrefix(PostsManager::TABLE);
+        $query      = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s)';
+        $query      = sprintf($query, parent::getTableWithPrefix(), self::ID, PostsManager::USER_ID, $tablePosts, PostsManager::ID);
         
         return Arrays::get(parent::readData($query), 0);
+    }
+    
+    /**
+     * @param User $object
+     *
+     * @return bool
+     */
+    public function update($object) {
+        $result = parent::update($object);
+        
+        if ($result) {
+            $commentsManager = new CommentsManager();
+            $comments        = $commentsManager->searchByUserId($object->getId());
+            //TODO: Una mejor opción seria solo guardar los datos para usuario no registrados, y asi no tener que actualizar los datos de los usuarios registrados.
+            array_walk($comments, function(Comment $comment) use ($commentsManager, $object) {
+                $comment->setCommentAuthor($object->getUserName());
+                $comment->setCommentAuthorEmail($object->getUserEmail());
+                $commentsManager->update($comment);
+            });
+        }
+        
+        return $result;
     }
     
     /**
@@ -170,28 +188,6 @@ class UsersManager extends CRUDManagerAbstract {
         $user->setUserPostCount(Arrays::get($result, self::USER_POST_COUNT));
         
         return $user;
-    }
-    
-    /**
-     * @param User $object
-     *
-     * @return bool
-     */
-    public function update($object) {
-        $result = parent::update($object);
-        
-        if($result){
-            $commentsManager = new CommentsManager();
-            $comments = $commentsManager->searchByUserId($object->getId());
-            //TODO: Una mejor opción seria solo guardar los datos para usuario no registrados, y asi no tener que actualizar los datos de los usuarios registrados.
-            array_walk($comments, function(Comment $comment) use ($commentsManager, $object){
-                $comment->setCommentAuthor($object->getUserName());
-                $comment->setCommentAuthorEmail($object->getUserEmail());
-                $commentsManager->update($comment);
-            });
-        }
-        
-        return $result;
     }
     
 }

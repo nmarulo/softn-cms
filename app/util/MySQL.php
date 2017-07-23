@@ -26,7 +26,7 @@ class MySQL {
     public function __construct() {
         //Establecer conexión con la base de datos
         try {
-            $strConnection = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
+            $strConnection = sprintf('mysql:host=%1$s;dbname=%2$s;charset=%3$s', DB_HOST, DB_NAME, DB_CHARSET);
             //Conexión con la base de datos. PDO Object.
             $this->connection = new \PDO($strConnection, DB_USER, DB_PASSWORD);
             $this->connection->setAttribute(\PDO::ATTR_EMULATE_PREPARES, FALSE);
@@ -76,7 +76,7 @@ class MySQL {
      * @return array|bool|mixed|\PDOStatement
      */
     public function select($query, $parameterQuery = []) {
-        $output      = \FALSE;
+        $output      = FALSE;
         $this->query = $query;
         
         if ($this->execute($query, $parameterQuery)) {
@@ -169,13 +169,9 @@ class MySQL {
             return ':' . $value['parameter'];
         }, $parameterQuery);
         
-        $query       = 'INSERT ';
-        $query       .= "INTO $table ";
-        $query       .= '(';
-        $query       .= implode(', ', $fields);
-        $query       .= ') VALUES (';
-        $query       .= implode(', ', $values);
-        $query       .= ')';
+        $strFields   = implode(', ', $fields);
+        $strValues   = implode(', ', $values);
+        $query       = sprintf('INSERT INTO %1$s (%2$s) VALUES (%3$s)', $table, $strFields, $strValues);
         $this->query = $query;
         
         return $this->execute($query, $parameterQuery);
@@ -199,12 +195,8 @@ class MySQL {
             return $value['parameter'] . ' = :' . $value['parameter'];
         }, $fields);
         
-        $query       = 'UPDATE ';
-        $query       .= $table;
-        $query       .= ' SET ';
-        $query       .= implode(', ', $fields);
-        $query       .= ' WHERE ';
-        $query       .= "$column = :$column";
+        $strFields   = implode(', ', $fields);
+        $query       = sprintf('UPDATE %1$s SET %2$s WHERE %3$s = :%3$s', $table, $strFields, $column);
         $this->query = $query;
         
         return $this->execute($query, $parameterQuery);
@@ -230,23 +222,21 @@ class MySQL {
             return $column . ' = :' . $param;
         }, $parameterQuery);
         
-        $query = 'DELETE ';
-        $query .= "FROM $table ";
-        $query .= 'WHERE ';
         //En caso de enviar mas de un dato en el "$parameterQuery".
-        $query       .= implode(' ' . $logicalOperator . ' ', $values);
+        $strValues = implode(' ' . $logicalOperator . ' ', $values);
+        $query     = sprintf('DELETE FROM %1$s WHERE %2$s', $table, $strValues);
         
         return $this->delete($query, $parameterQuery);
     }
     
-    public function delete($query, $parameterQuery){
+    public function delete($query, $parameterQuery) {
         $this->query = $query;
-    
+        
         if ($this->execute($query, $parameterQuery)) {
             return $this->prepareObject->rowCount();
         }
-    
-        return \FALSE;
+        
+        return FALSE;
     }
     
     /**

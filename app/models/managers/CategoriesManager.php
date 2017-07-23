@@ -27,12 +27,9 @@ class CategoriesManager extends CRUDManagerAbstract {
     public function searchByPostId($postId) {
         $columnPostId         = PostsCategoriesManager::POST_ID;
         $tablePostsCategories = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
-        $query                = 'SELECT * ';
-        $query                .= 'FROM ' . parent::getTableWithPrefix();
-        $query                .= ' WHERE ' . self::ID . ' IN ';
-        $query                .= '(SELECT ' . PostsCategoriesManager::CATEGORY_ID;
-        $query                .= " FROM $tablePostsCategories ";
-        $query                .= "WHERE $columnPostId = :$columnPostId)";
+        $table                = parent::getTableWithPrefix();
+        $query                = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s)';
+        $query                = sprintf($query, $table, self::ID, PostsCategoriesManager::CATEGORY_ID, $tablePostsCategories, $columnPostId);
         $this->parameterQuery($columnPostId, $postId, \PDO::PARAM_INT);
         
         return parent::readData($query);
@@ -119,14 +116,11 @@ class CategoriesManager extends CRUDManagerAbstract {
             return "$columnPostId = :$param";
         }, $postsId);
         
+        $strWhere        = implode(' OR ', $where);
         $tablePostsTerms = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
-        $query           = 'SELECT * ';
-        $query           .= 'FROM ' . parent::getTableWithPrefix();
-        $query           .= ' WHERE ' . self::ID . ' IN ';
-        $query           .= '(SELECT ' . PostsCategoriesManager::CATEGORY_ID;
-        $query           .= " FROM $tablePostsTerms ";
-        $query           .= 'WHERE ' . implode(' OR ', $where);
-        $query           .= ')';
+        $table           = parent::getTableWithPrefix();
+        $query           = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s)';
+        $query           = sprintf($query, $table, self::ID, PostsCategoriesManager::CATEGORY_ID, $tablePostsTerms, $strWhere);
         
         return parent::readData($query);
     }
