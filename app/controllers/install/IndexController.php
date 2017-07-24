@@ -30,14 +30,11 @@ class IndexController {
                 $installManager = new InstallManager();
                 
                 if ($installManager->checkConnection($form) && $installManager->createFileConfig($form)) {
-                    $message = 'El proceso de instalación se completo correctamente.';
-                    
                     if ($installManager->createTables()) {
-                        Messages::addSessionMessage($message, Messages::TYPE_SUCCESS);
+                        Messages::addSuccess('El proceso de instalación se completo correctamente.', TRUE);
                         Util::redirect(Arrays::get($form, InstallManager::INSTALL_SITE_URL) . 'login');
                     } else {
-                        $message = 'Error al crear las tablas de la base de datos.';
-                        Messages::addSessionMessage($message, Messages::TYPE_DANGER);
+                        Messages::addDanger('Error al crear las tablas de la base de datos.');
                     }
                 }
             }

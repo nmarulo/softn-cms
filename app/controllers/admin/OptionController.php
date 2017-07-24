@@ -34,11 +34,11 @@ class OptionController extends ControllerAbstract {
     private function update() {
         if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
             $optionsManager = new OptionsManager();
-            $message        = 'Error al actualizar.';
-            $typeMessage    = Messages::TYPE_DANGER;
             $form           = $this->form();
             
-            if (!empty($form)) {
+            if (empty($form)) {
+                Messages::addDanger('Error en los campos de las opciones.');
+            } else {
                 $options  = Arrays::get($form, 'options');
                 $numError = 0;
                 
@@ -49,12 +49,11 @@ class OptionController extends ControllerAbstract {
                 });
                 
                 if ($numError === 0) {
-                    $message     = 'Actualizado correctamente.';
-                    $typeMessage = Messages::TYPE_SUCCESS;
+                    Messages::addSuccess('Actualizado correctamente.');
+                } else {
+                    Messages::addDanger('Error al actualizar.');
                 }
             }
-            
-            Messages::addMessage($message, $typeMessage);
         }
     }
     

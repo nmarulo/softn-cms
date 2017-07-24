@@ -88,13 +88,11 @@ class MenusManager extends CRUDManagerAbstract {
         
         if ($parentMenuId != self::MENU_SUB_PARENT) {
             if (!$this->updateParentsChildren($parentMenuId, -count($menuIdList))) {
-                $message = 'Error al actualizar el numero de hijos de los menus.';
-                Messages::addSessionMessage($message, Messages::TYPE_DANGER);
+                Messages::addDanger('Error al actualizar el numero de hijos de los menus.', TRUE);
             }
             
             if (!$this->updatePositions($parentMenuId)) {
-                $message = 'Error al actualizar las posiciones de los menus.';
-                Messages::addSessionMessage($message, Messages::TYPE_DANGER);
+                Messages::addDanger('Error al actualizar las posiciones de los menus.', TRUE);
             }
         }
         
@@ -174,8 +172,7 @@ class MenusManager extends CRUDManagerAbstract {
         
         if ($currentMenu->getMenuSub() == self::MENU_SUB_PARENT && $parentMenuId != self::MENU_SUB_PARENT) {
             if (!$this->updateParentsChildren($parentMenuId, $object->getMenuTotalChildren() + 1)) {
-                $message = 'Error al actualizar el numero de hijos de los menus.';
-                Messages::addSessionMessage($message, Messages::TYPE_DANGER);
+                Messages::addDanger('Error al actualizar el numero de hijos de los menus.', TRUE);
             }
         }
         
@@ -256,8 +253,7 @@ class MenusManager extends CRUDManagerAbstract {
         
         if ($parentMenuId != self::MENU_SUB_PARENT) {
             if (!$this->updateParentsChildren($parentMenuId, 1)) {
-                $message = 'Error al actualizar el numero de hijos de los menus.';
-                Messages::addSessionMessage($message, Messages::TYPE_DANGER);
+                Messages::addDanger('Error al actualizar el numero de hijos de los menus.', TRUE);
                 
                 return FALSE;
             }

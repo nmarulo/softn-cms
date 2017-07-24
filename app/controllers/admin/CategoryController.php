@@ -25,35 +25,26 @@ use SoftnCMS\util\Util;
 class CategoryController extends CUDControllerAbstract {
     
     public function create() {
-        $showForm = TRUE;
-        
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
-            $form        = $this->form();
-            $messages    = 'Error al publicar la categoría.';
-            $typeMessage = Messages::TYPE_DANGER;
+            $form = $this->form();
             
             if (!empty($form)) {
                 $categoriesManager = new CategoriesManager();
                 $category          = Arrays::get($form, 'category');
                 
                 if ($categoriesManager->create($category)) {
-                    $showForm       = FALSE;
-                    $messages       = 'Categoría publicada correctamente.';
-                    $typeMessage    = Messages::TYPE_SUCCESS;
                     $optionsManager = new OptionsManager();
-                    Messages::addSessionMessage($messages, $typeMessage);
+                    Messages::addSuccess('Categoría publicada correctamente.', TRUE);
                     Util::redirect($optionsManager->getSiteUrl() . 'admin/category');
                 }
             }
             
-            Messages::addMessage($messages, $typeMessage);
+            Messages::addDanger('Error al publicar la categoría.');
         }
         
-        if ($showForm) {
-            ViewController::sendViewData('category', new Category());
-            ViewController::sendViewData('title', 'Publicar nueva categoría');
-            ViewController::view('form');
-        }
+        ViewController::sendViewData('category', new Category());
+        ViewController::sendViewData('title', 'Publicar nueva categoría');
+        ViewController::view('form');
     }
     
     protected function form() {
@@ -91,30 +82,28 @@ class CategoryController extends CUDControllerAbstract {
     }
     
     public function update($id) {
-        $typeMessage       = Messages::TYPE_DANGER;
-        $messages          = 'La categoría no existe.';
         $categoriesManager = new CategoriesManager();
         $category          = $categoriesManager->searchById($id);
         
         if (empty($category)) {
             $optionsManager = new OptionsManager();
-            Messages::addSessionMessage($messages, $typeMessage);
+            Messages::addDanger('La categoría no existe.', TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/category');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
-                $messages = 'Error al actualizar la categoría.';
-                $form     = $this->form();
+                $form = $this->form();
                 
-                if (!empty($form)) {
+                if (empty($form)) {
+                    Messages::addDanger('Error en los campos de la categoría.');
+                } else {
                     $category = Arrays::get($form, 'category');
                     
                     if ($categoriesManager->update($category)) {
-                        $messages    = 'Categoría actualizada correctamente.';
-                        $typeMessage = Messages::TYPE_SUCCESS;
+                        Messages::addSuccess('Categoría actualizada correctamente.');
+                    } else {
+                        Messages::addDanger('Error al actualizar la categoría.');
                     }
                 }
-                
-                Messages::addMessage($messages, $typeMessage);
             }
             
             ViewController::sendViewData('category', $category);
@@ -124,16 +113,14 @@ class CategoryController extends CUDControllerAbstract {
     }
     
     public function delete($id) {
-        $messages          = 'Error al borrar la categoría.';
-        $typeMessage       = Messages::TYPE_DANGER;
         $categoriesManager = new CategoriesManager();
         
-        if (!empty($categoriesManager->delete($id))) {
-            $messages    = 'Categoría borrada correctamente.';
-            $typeMessage = Messages::TYPE_SUCCESS;
+        if (empty($categoriesManager->delete($id))) {
+            Messages::addDanger('Error al borrar la categoría.');
+        } else {
+            Messages::addSuccess('Categoría borrada correctamente.');
         }
         
-        Messages::addMessage($messages, $typeMessage);
         parent::delete($id);
     }
     

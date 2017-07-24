@@ -29,7 +29,7 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
     public function create($object) {
         $result = parent::create($object);
         
-        if ($result) {
+        if (!empty($result)) {
             $this->updateCategoryPostCount($object->getCategoryID(), 1);
         }
         
@@ -53,7 +53,7 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
         $result = parent::deleteBy();
         
-        if ($result) {
+        if (!empty($result)) {
             array_walk($postsCategories, function(PostCategory $postCategory) {
                 $this->updateCategoryPostCount($postCategory->getCategoryID(), -1);
             });
@@ -72,7 +72,7 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::CATEGORY_ID, $categoryId, \PDO::PARAM_INT);
         $result = parent::deleteBy();
         
-        if ($result) {
+        if (!empty($result)) {
             $this->updateCategoryPostCount($categoryId, -1);
         }
         
@@ -84,7 +84,7 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::CATEGORY_ID, $categoryId, \PDO::PARAM_INT);
         $result = parent::deleteBy();
         
-        if ($result) {
+        if (!empty($result)) {
             $this->updateCategoryPostCount($categoryId, -1);
         }
         

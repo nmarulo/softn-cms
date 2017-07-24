@@ -117,11 +117,7 @@ abstract class ManagerAbstract {
         $result = $mySQL->select($query, $this->prepare);
         $this->closeConnection($mySQL);
         
-        if (empty($result)) {
-            return [];
-        }
-        
-        return $result;
+        return empty($result) ? [] : $result;
     }
     
     /**

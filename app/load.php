@@ -31,9 +31,11 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
         } elseif ($directoryController != 'install') {
             Util::redirect($siteUrl . 'install');
         }
-    } elseif ($directoryController == 'admin' && !LoginManager::isLogin()){Messages::addSessionMessage('Debes iniciar sesión.', Messages::TYPE_WARNING);
+    } elseif ($directoryController == 'admin' && !LoginManager::isLogin()) {
+        Messages::addWarning('Debes iniciar sesión.', TRUE);
         Util::redirect($optionsManager->getSiteUrl(), 'login');
-    } elseif ($directoryController == 'login' && $directoryView == 'index' && LoginManager::isLogin()){Util::redirect($optionsManager->getSiteUrl(), 'admin');
+    } elseif ($directoryController == 'login' && $directoryView == 'index' && LoginManager::isLogin()) {
+        Util::redirect($optionsManager->getSiteUrl(), 'admin');
     }
 });
 

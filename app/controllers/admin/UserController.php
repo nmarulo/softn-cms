@@ -28,35 +28,26 @@ use SoftnCMS\util\Util;
 class UserController extends CUDControllerAbstract {
     
     public function create() {
-        $showForm = TRUE;
-        
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
-            $form        = $this->form();
-            $messages    = 'Error al publicar el usuario.';
-            $typeMessage = Messages::TYPE_DANGER;
+            $form = $this->form();
             
             if (!empty($form)) {
                 $usersManager = new UsersManager();
                 $user         = Arrays::get($form, 'user');
                 
                 if ($usersManager->create($user)) {
-                    $showForm    = FALSE;
-                    $messages    = 'Usuario creado correctamente.';
-                    $typeMessage = Messages::TYPE_SUCCESS;
-                    Messages::addSessionMessage($messages, $typeMessage);
+                    Messages::addSuccess('Usuario creado correctamente.', TRUE);
                     $optionsManager = new OptionsManager();
                     Util::redirect($optionsManager->getSiteUrl() . 'admin/user');
                 }
             }
             
-            Messages::addMessage($messages, $typeMessage);
+            Messages::addDanger('Error al publicar el usuario.');
         }
         
-        if ($showForm) {
-            ViewController::sendViewData('user', new User());
-            ViewController::sendViewData('title', 'Publicar nuevo usuario');
-            ViewController::view('form');
-        }
+        ViewController::sendViewData('user', new User());
+        ViewController::sendViewData('title', 'Publicar nuevo usuario');
+        ViewController::view('form');
     }
     
     protected function form() {
@@ -130,30 +121,28 @@ class UserController extends CUDControllerAbstract {
     }
     
     public function update($id) {
-        $typeMessage  = Messages::TYPE_DANGER;
-        $messages     = 'El usuario no existe.';
         $usersManager = new UsersManager();
         $user         = $usersManager->searchById($id);
         
         if (empty($user)) {
             $optionsManager = new OptionsManager();
-            Messages::addSessionMessage($messages, $typeMessage);
+            Messages::addDanger('El usuario no existe.', TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/user');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
-                $messages = 'Error al actualizar el usuario.';
-                $form     = $this->form();
+                $form = $this->form();
                 
-                if (!empty($form)) {
+                if (empty($form)) {
+                    Messages::addDanger('Error en los campos del usuario.');
+                } else {
                     $user = Arrays::get($form, 'user');
                     
                     if ($usersManager->update($user)) {
-                        $messages    = 'Usuario actualizado correctamente.';
-                        $typeMessage = Messages::TYPE_SUCCESS;
+                        Messages::addSuccess('Usuario actualizado correctamente.');
+                    } else {
+                        Messages::addDanger('Error al actualizar el usuario.');
                     }
                 }
-                
-                Messages::addMessage($messages, $typeMessage);
             }
             
             ViewController::sendViewData('user', $user);
@@ -163,23 +152,21 @@ class UserController extends CUDControllerAbstract {
     }
     
     public function delete($id) {
-        $messages    = 'Error al borrar el usuario.';
-        $typeMessage = Messages::TYPE_DANGER;
-        
-        if ($id != LoginManager::getSession()) {
+        if ($id == LoginManager::getSession()) {
+            Messages::addDanger('No puedes eliminar este usuario.');
+        } else {
             $usersManager = new UsersManager();
-            
-            $result = $usersManager->delete($id);
+            $result       = $usersManager->delete($id);
             
             if ($result === FALSE) {
-                $messages = 'No se puede borrar un usuario con entradas publicadas.';
-            } elseif ($result === 1) {
-                $typeMessage = Messages::TYPE_SUCCESS;
-                $messages    = 'Usuario borrado correctamente.';
+                Messages::addDanger('No se puede borrar un usuario con entradas publicadas.');
+            } elseif ($result == 0) {
+                Messages::addDanger('Error al borrar el usuario.');
+            } elseif ($result > 0) {
+                Messages::addSuccess('Usuario borrado correctamente.');
             }
         }
         
-        Messages::addMessage($messages, $typeMessage);
         parent::delete($id);
     }
     

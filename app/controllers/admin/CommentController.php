@@ -30,37 +30,28 @@ use SoftnCMS\util\Util;
 class CommentController extends CUDControllerAbstract {
     
     public function create() {
-        $showForm = TRUE;
-        
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
-            $form        = $this->form();
-            $messages    = 'Error al publicar el comentario.';
-            $typeMessage = Messages::TYPE_DANGER;
+            $form = $this->form();
             
             if (!empty($form)) {
                 $commentsManager = new CommentsManager();
                 $comment         = Arrays::get($form, 'comment');
                 
                 if ($commentsManager->create($comment)) {
-                    $showForm    = FALSE;
-                    $messages    = 'Comentario publicado correctamente.';
-                    $typeMessage = Messages::TYPE_SUCCESS;
-                    Messages::addSessionMessage($messages, $typeMessage);
+                    Messages::addSuccess('Comentario publicado correctamente.', TRUE);
                     $optionsManager = new OptionsManager();
                     Util::redirect($optionsManager->getSiteUrl() . 'admin/comment');
                 }
             }
             
-            Messages::addMessage($messages, $typeMessage);
+            Messages::addDanger('Error al publicar el comentario.');
         }
         
-        if ($showForm) {
-            $comment = new Comment();
-            $comment->setCommentUserID(LoginManager::getSession());
-            ViewController::sendViewData('comment', $comment);
-            ViewController::sendViewData('title', 'Publicar nuevo comentario');
-            ViewController::view('form');
-        }
+        $comment = new Comment();
+        $comment->setCommentUserID(LoginManager::getSession());
+        ViewController::sendViewData('comment', $comment);
+        ViewController::sendViewData('title', 'Publicar nuevo comentario');
+        ViewController::view('form');
     }
     
     protected function form() {
@@ -123,31 +114,29 @@ class CommentController extends CUDControllerAbstract {
     }
     
     public function update($id) {
-        $typeMessage     = Messages::TYPE_DANGER;
-        $messages        = 'El comentario no existe.';
         $commentsManager = new CommentsManager();
         $comment         = $commentsManager->searchById($id);
         
         if (empty($comment)) {
             $optionsManager = new OptionsManager();
-            Messages::addSessionMessage($messages, $typeMessage);
+            Messages::addDanger('El comentario no existe.', TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/comment');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
-                $messages = 'Error al actualizar el comentario.';
-                $form     = $this->form();
+                $form = $this->form();
                 
-                if (!empty($form)) {
+                if (empty($form)) {
+                    Messages::addDanger('Error en los campos del comentario.');
+                } else {
                     $comment = Arrays::get($form, 'comment');
                     
                     if ($commentsManager->update($comment)) {
-                        $messages    = 'Comentario actualizado correctamente.';
-                        $typeMessage = Messages::TYPE_SUCCESS;
-                        $comment     = $commentsManager->searchById($comment->getId());
+                        Messages::addSuccess('Comentario actualizado correctamente.');
+                        $comment = $commentsManager->searchById($comment->getId());
+                    } else {
+                        Messages::addDanger('Error al actualizar el comentario.');
                     }
                 }
-                
-                Messages::addMessage($messages, $typeMessage);
             }
             
             ViewController::sendViewData('comment', $comment);
@@ -157,16 +146,14 @@ class CommentController extends CUDControllerAbstract {
     }
     
     public function delete($id) {
-        $messages        = 'Error al borrar el comentario.';
-        $typeMessage     = Messages::TYPE_DANGER;
         $commentsManager = new CommentsManager();
         
-        if (!empty($commentsManager->delete($id))) {
-            $messages    = 'Comentario borrado correctamente.';
-            $typeMessage = Messages::TYPE_SUCCESS;
+        if (empty($commentsManager->delete($id))) {
+            Messages::addDanger('Error al borrar el comentario.');
+        } else {
+            Messages::addSuccess('Comentario borrado correctamente.');
         }
         
-        Messages::addMessage($messages, $typeMessage);
         parent::delete($id);
     }
     

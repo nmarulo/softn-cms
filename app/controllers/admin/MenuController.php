@@ -30,18 +30,14 @@ class MenuController extends CUDControllerAbstract {
         $parentMenuId = Arrays::get($_GET, 'parentMenu');
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
-            $messages    = 'Error al publicar el menu.';
-            $typeMessage = Messages::TYPE_DANGER;
-            $form        = $this->form();
+            $form = $this->form();
             
             if (!empty($form)) {
                 $menu = Arrays::get($form, 'menu');
                 
                 if ($menusManager->create($menu)) {
-                    $messages       = 'Menu publicado correctamente.';
-                    $typeMessage    = Messages::TYPE_SUCCESS;
                     $optionsManager = new OptionsManager();
-                    Messages::addSessionMessage($messages, $typeMessage);
+                    Messages::addSuccess('Menu publicado correctamente.', TRUE);
                     $siteUrlRedirect = $optionsManager->getSiteUrl() . 'admin/menu';
                     $parentMenuId    = $menu->getMenuSub();
                     
@@ -57,17 +53,15 @@ class MenuController extends CUDControllerAbstract {
                 }
             }
             
-            Messages::addMessage($messages, $typeMessage);
+            Messages::addDanger('Error al publicar el menu.');
         }
         
         if (empty($parentMenuId)) {
             ViewController::sendViewData('parentMenus', $menusManager->searchAllParent());
         } else {
             if (empty($menusManager->searchById($parentMenuId))) {
-                $message        = 'El menu padre no existe.';
-                $typeMessage    = Messages::TYPE_DANGER;
                 $optionsManager = new OptionsManager();
-                Messages::addSessionMessage($message, $typeMessage);
+                Messages::addDanger('El menu padre no existe.', TRUE);
                 Util::redirect($optionsManager->getSiteUrl() . 'admin/menu');
             }
             
@@ -114,31 +108,29 @@ class MenuController extends CUDControllerAbstract {
     }
     
     public function update($id) {
-        $message      = 'El menu no existe.';
-        $typeMessage  = Messages::TYPE_DANGER;
         $menusManager = new MenusManager();
         $menu         = $menusManager->searchById($id);
         
         if (empty($menu)) {
             $optionsManager = new OptionsManager();
-            Messages::addSessionMessage($message, $typeMessage);
+            Messages::addDanger('El menu no existe.', TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/menu');
-        }
-        
-        if (Form::submit(MenusManager::FORM_UPDATE)) {
-            $message = 'Error al actualizar el menu.';
-            $form    = $this->form();
-            
-            if (!empty($form)) {
-                $menu = Arrays::get($form, 'menu');
+        } else {
+            if (Form::submit(MenusManager::FORM_UPDATE)) {
+                $form = $this->form();
                 
-                if ($menusManager->update($menu)) {
-                    $message     = 'Menu actualizado correctamente.';
-                    $typeMessage = Messages::TYPE_SUCCESS;
+                if (empty($form)) {
+                    Messages::addDanger('Error en los campos del menu.');
+                } else {
+                    $menu = Arrays::get($form, 'menu');
+                    
+                    if ($menusManager->update($menu)) {
+                        Messages::addSuccess('Menu actualizado correctamente.');
+                    } else {
+                        Messages::addDanger('Error al actualizar el menu.');
+                    }
                 }
             }
-            
-            Messages::addMessage($message, $typeMessage);
         }
         
         $parentMenuId = $menu->getMenuSub();
@@ -167,15 +159,13 @@ class MenuController extends CUDControllerAbstract {
     }
     
     public function edit($id) {
-        $message        = 'El menu no existe.';
-        $typeMessage    = Messages::TYPE_DANGER;
         $optionsManager = new OptionsManager();
         $menusManager   = new MenusManager();
         $menu           = $menusManager->searchById($id);
         
         if (empty($menu)) {
             $optionsManager = new OptionsManager();
-            Messages::addSessionMessage($message, $typeMessage);
+            Messages::addDanger('El menu no existe.', TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/menu');
         }
         
@@ -186,16 +176,14 @@ class MenuController extends CUDControllerAbstract {
     }
     
     public function delete($id) {
-        $messages     = 'Error al borrar el menu.';
-        $typeMessage  = Messages::TYPE_DANGER;
         $menusManager = new MenusManager();
         
-        if (!empty($menusManager->delete($id))) {
-            $messages    = 'Menu borrado correctamente.';
-            $typeMessage = Messages::TYPE_SUCCESS;
+        if (empty($menusManager->delete($id))) {
+            Messages::addDanger('Error al borrar el menu.');
+        } else {
+            Messages::addSuccess('Menu borrado correctamente.');
         }
         
-        Messages::addMessage($messages, $typeMessage);
         parent::delete($id);
     }
     

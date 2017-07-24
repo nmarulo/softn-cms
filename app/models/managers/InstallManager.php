@@ -43,7 +43,7 @@ class InstallManager {
         try {
             $this->connection = new \PDO($dsn, $dbUser, $dbPass);
         } catch (\PDOException $pdoEx) {
-            Messages::addMessage('Error al establecer la conexión con la base de datos.', Messages::TYPE_DANGER);
+            Messages::addDanger('Error al establecer la conexión con la base de datos.');
             $result = FALSE;
         }
         
@@ -53,7 +53,7 @@ class InstallManager {
     public function createFileConfig($dataInput) {
         //Compruebo si puedo escribir en la carpeta donde están los archivo
         if (!is_writable(ABSPATH)) {
-            Messages::addMessage('No es posible escribir en el directorio ' . ABSPATH . '.', Messages::TYPE_DANGER);
+            Messages::addDanger('No es posible escribir en el directorio ' . ABSPATH . '.');
             
             return FALSE;
         }

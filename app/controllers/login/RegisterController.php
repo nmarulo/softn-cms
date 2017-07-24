@@ -32,24 +32,20 @@ class RegisterController extends ControllerAbstract {
     
     private function register() {
         if (Form::submit(ManagerAbstract::FORM_SUBMIT)) {
-            $message     = 'Error al registrar el usuario.';
-            $typeMessage = Messages::TYPE_DANGER;
-            $form        = $this->form();
+            $form = $this->form();
             
             if (!empty($form)) {
                 $usersManager = new UsersManager();
                 $user         = Arrays::get($form, 'user');
                 
                 if ($usersManager->create($user)) {
-                    $message        = 'Usuario registrado correctamente.';
-                    $typeMessage    = Messages::TYPE_SUCCESS;
                     $optionsManager = new OptionsManager();
-                    Messages::addSessionMessage($message, $typeMessage);
+                    Messages::addSuccess('Usuario registrado correctamente.', TRUE);
                     Util::redirect($optionsManager->getSiteUrl(), 'login');
                 }
             }
             
-            Messages::addMessage($message, $typeMessage);
+            Messages::addDanger('Error al registrar el usuario.');
         }
     }
     
@@ -100,8 +96,7 @@ class RegisterController extends ControllerAbstract {
     
     protected function read() {
         $optionsManager = new OptionsManager();
-        $siteUrl        = $optionsManager->searchByName(OPTION_SITE_URL)
-                                         ->getOptionValue();
+        $siteUrl        = $optionsManager->getSiteUrl();
         $urlLogin       = $siteUrl . 'login';
         ViewController::sendViewData('siteUrl', $siteUrl);
         ViewController::sendViewData('urlLogin', $urlLogin);

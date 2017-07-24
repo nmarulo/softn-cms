@@ -66,8 +66,7 @@ class Form {
             $value = $data->filter();
             
             if ($value === '' && $data->isRequire()) {
-                Messages::addMessage('El campo "' . $data->getName() . '" es obligatorio.', Messages::TYPE_DANGER);
-                
+                Messages::addDanger('El campo "' . $data->getName() . '" es obligatorio.');
                 $error  = TRUE;
                 $output = FALSE;
             } else {

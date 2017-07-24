@@ -25,35 +25,26 @@ use SoftnCMS\util\Util;
 class TermController extends CUDControllerAbstract {
     
     public function create() {
-        $showForm = TRUE;
-        
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
-            $form        = $this->form();
-            $messages    = 'Error al publicar la etiqueta.';
-            $typeMessage = Messages::TYPE_DANGER;
+            $form = $this->form();
             
             if (!empty($form)) {
                 $termsManager = new TermsManager();
                 $term         = Arrays::get($form, 'term');
                 
                 if ($termsManager->create($term)) {
-                    $showForm    = FALSE;
-                    $messages    = 'Etiqueta publicada correctamente.';
-                    $typeMessage = Messages::TYPE_SUCCESS;
-                    Messages::addSessionMessage($messages, $typeMessage);
+                    Messages::addSuccess('Etiqueta publicada correctamente.', TRUE);
                     $optionsManager = new OptionsManager();
                     Util::redirect($optionsManager->getSiteUrl() . 'admin/term');
                 }
             }
             
-            Messages::addMessage($messages, $typeMessage);
+            Messages::addDanger('Error al publicar la etiqueta.');
         }
         
-        if ($showForm) {
-            ViewController::sendViewData('term', new Term());
-            ViewController::sendViewData('title', 'Publicar nueva etiqueta');
-            ViewController::view('form');
-        }
+        ViewController::sendViewData('term', new Term());
+        ViewController::sendViewData('title', 'Publicar nueva etiqueta');
+        ViewController::view('form');
     }
     
     protected function form() {
@@ -91,30 +82,29 @@ class TermController extends CUDControllerAbstract {
     }
     
     public function update($id) {
-        $typeMessage  = Messages::TYPE_DANGER;
-        $messages     = 'La etiqueta no existe.';
         $termsManager = new TermsManager();
         $term         = $termsManager->searchById($id);
         
         if (empty($term)) {
             $optionsManager = new OptionsManager();
-            Messages::addSessionMessage($messages, $typeMessage);
+            Messages::addDanger('La etiqueta no existe.', TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/term');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
-                $messages = 'Error al actualizar la etiqueta.';
-                $form     = $this->form();
+                $form = $this->form();
                 
-                if (!empty($form)) {
+                if (empty($form)) {
+                    Messages::addDanger('Error en los campos de la etiqueta.');
+                } else {
                     $term = Arrays::get($form, 'term');
                     
                     if ($termsManager->update($term)) {
-                        $messages    = 'Etiqueta actualizada correctamente.';
-                        $typeMessage = Messages::TYPE_SUCCESS;
+                        Messages::addSuccess('Etiqueta actualizada correctamente.');
+                    } else {
+                        Messages::addDanger('Error al actualizar la etiqueta.');
                     }
                 }
                 
-                Messages::addMessage($messages, $typeMessage);
             }
             
             ViewController::sendViewData('term', $term);
@@ -124,16 +114,14 @@ class TermController extends CUDControllerAbstract {
     }
     
     public function delete($id) {
-        $messages     = 'Error al borrar la etiqueta.';
-        $typeMessage  = Messages::TYPE_DANGER;
         $termsManager = new TermsManager();
         
-        if (!empty($termsManager->delete($id))) {
-            $messages    = 'Etiqueta borrada correctamente.';
-            $typeMessage = Messages::TYPE_SUCCESS;
+        if (empty($termsManager->delete($id))) {
+            Messages::addDanger('Error al borrar la etiqueta.');
+        } else {
+            Messages::addSuccess('Etiqueta borrada correctamente.');
         }
         
-        Messages::addMessage($messages, $typeMessage);
         parent::delete($id);
     }
     

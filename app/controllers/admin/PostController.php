@@ -36,12 +36,8 @@ use SoftnCMS\util\Util;
 class PostController extends CUDControllerAbstract {
     
     public function create() {
-        $showForm = TRUE;
-        
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $postsManager = new PostsManager();
-            $messages     = 'Error al publicar la entrada.';
-            $typeMessage  = Messages::TYPE_DANGER;
             $form         = $this->form();
             
             if (!empty($form)) {
@@ -50,29 +46,24 @@ class PostController extends CUDControllerAbstract {
                 if ($postsManager->create($post)) {
                     $usersManager   = new UsersManager();
                     $optionsManager = new OptionsManager();
-                    $showForm       = FALSE;
-                    $messages       = 'Entrada publicada correctamente.';
-                    $typeMessage    = Messages::TYPE_SUCCESS;
                     $postId         = $postsManager->getLastInsertId();
                     $terms          = Arrays::get($form, 'terms'); //Etiquetas nuevas
                     $categories     = Arrays::get($form, 'categories'); //Categorías nuevas
                     $usersManager->updatePostCount($post->getUserID(), 1);
                     $this->createOrDeleteTerms($terms, $postId);
                     $this->createOrDeleteCategories($categories, $postId);
-                    Messages::addSessionMessage($messages, $typeMessage);
+                    Messages::addSuccess('Entrada publicada correctamente.', TRUE);
                     Util::redirect($optionsManager->getSiteUrl() . 'admin/post');
                 }
             }
             
-            Messages::addMessage($messages, $typeMessage);
+            Messages::addDanger('Error al publicar la entrada.');
         }
         
-        if ($showForm) {
-            $this->sendViewCategoriesAndTerms();
-            ViewController::sendViewData('post', new Post());
-            ViewController::sendViewData('title', 'Publicar nueva entrada');
-            ViewController::view('form');
-        }
+        $this->sendViewCategoriesAndTerms();
+        ViewController::sendViewData('post', new Post());
+        ViewController::sendViewData('title', 'Publicar nueva entrada');
+        ViewController::view('form');
     }
     
     protected function form() {
@@ -133,16 +124,13 @@ class PostController extends CUDControllerAbstract {
     }
     
     private function createOrDeleteTerms($termsId, $postId) {
-        $typeMessage       = Messages::TYPE_DANGER;
         $postsTermsManager = new PostsTermsManager();
         $currentTermsId    = $this->getCurrentTermsId($postId);
         
         if (empty($termsId)) {
             if ($postsTermsManager->deleteAllByPostId($postId) === FALSE) {
-                $message = 'Error al borrar las etiquetas.';
-                Messages::addMessage($message, $typeMessage);
+                Messages::addDanger('Error al borrar las etiquetas.');
             }
-            
         } else {
             $numError = 0;
             //Obtengo los identificadores de las nuevas etiquetas.
@@ -175,7 +163,7 @@ class PostController extends CUDControllerAbstract {
             });
             
             if ($numError > 0) {
-                Messages::addMessage('Error al actualizar las etiquetas.', Messages::TYPE_DANGER);
+                Messages::addDanger('Error al actualizar las etiquetas.');
             }
         }
     }
@@ -191,18 +179,15 @@ class PostController extends CUDControllerAbstract {
     }
     
     private function createOrDeleteCategories($categoriesId, $postId) {
-        $typeMessage            = Messages::TYPE_DANGER;
         $postsCategoriesManager = new PostsCategoriesManager();
         $currentCategoriesId    = $this->getCurrentCategoriesId($postId);
         
         if (empty($categoriesId)) {
             if ($postsCategoriesManager->deleteAllByPostId($postId) === FALSE) {
-                $message = 'Error al borrar las categorías.';
-                Messages::addMessage($message, $typeMessage);
+                Messages::addDanger('Error al borrar las categorías.');
             }
-            
         } else {
-            $numError          = 0;
+            $numError = 0;
             //Obtengo los identificadores de las nuevas categorías.
             $newCategories = array_filter($categoriesId, function($value) use ($currentCategoriesId) {
                 return !Arrays::valueExists($currentCategoriesId, $value);
@@ -233,7 +218,7 @@ class PostController extends CUDControllerAbstract {
             });
             
             if ($numError > 0) {
-                Messages::addMessage('Error al actualizar las categorías.', Messages::TYPE_DANGER);
+                Messages::addDanger('Error al actualizar las categorías.');
             }
         }
     }
@@ -259,35 +244,34 @@ class PostController extends CUDControllerAbstract {
     }
     
     public function update($id) {
-        $typeMessage  = Messages::TYPE_DANGER;
-        $messages     = 'La entrada no existe.';
         $postsManager = new PostsManager();
         $post         = $postsManager->searchById($id);
         
         if (empty($post)) {
             $optionsManager = new OptionsManager();
-            Messages::addSessionMessage($messages, $typeMessage);
+            Messages::addDanger('La entrada no existe.', TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/post');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
-                $messages = 'Error al actualizar la entrada.';
-                $form     = $this->form();
+                $form = $this->form();
                 
-                if (!empty($form)) {
+                if (empty($form)) {
+                    Messages::addDanger('Error en los campos de la entrada.');
+                } else {
                     $post = Arrays::get($form, 'post');
                     
                     if ($postsManager->update($post)) {
-                        $post        = $postsManager->searchById($id);
-                        $messages    = 'Entrada actualizada correctamente.';
-                        $typeMessage = Messages::TYPE_SUCCESS;
-                        $terms       = Arrays::get($form, 'terms'); //Etiquetas nuevas
-                        $categories  = Arrays::get($form, 'categories'); //Categorías nuevas
+                        $post       = $postsManager->searchById($id);
+                        $terms      = Arrays::get($form, 'terms'); //Etiquetas nuevas
+                        $categories = Arrays::get($form, 'categories'); //Categorías nuevas
                         $this->createOrDeleteTerms($terms, $id);
                         $this->createOrDeleteCategories($categories, $id);
+                        Messages::addSuccess('Entrada actualizada correctamente.');
+                    } else {
+                        Messages::addDanger('Error al actualizar la entrada.');
                     }
                 }
                 
-                Messages::addMessage($messages, $typeMessage);
             }
             
             $optionsManager       = new OptionsManager();
@@ -305,16 +289,14 @@ class PostController extends CUDControllerAbstract {
     }
     
     public function delete($id) {
-        $messages     = 'Error al borrar la entrada.';
-        $typeMessage  = Messages::TYPE_DANGER;
         $postsManager = new PostsManager();
         
-        if (!empty($postsManager->delete($id))) {
-            $messages    = 'Entrada borrada correctamente.';
-            $typeMessage = Messages::TYPE_SUCCESS;
+        if (empty($postsManager->delete($id))) {
+            Messages::addSuccess('Error al borrar la entrada.');
+        } else {
+            Messages::addSuccess('Entrada borrada correctamente.');
         }
         
-        Messages::addMessage($messages, $typeMessage);
         parent::delete($id);
     }
     

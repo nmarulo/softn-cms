@@ -98,19 +98,18 @@ class MySQL {
         $this->prepareObject = $this->connection->prepare($query);
         
         if (!$this->bindValue($parameterQuery)) {
-            return \FALSE;
+            return FALSE;
         }
         
         try {
-            
             return $this->prepareObject->execute();
         } catch (\PDOException $ex) {
             if (DEBUG) {
-                Messages::addMessage($ex->getMessage(), Messages::TYPE_DANGER);
+                Messages::addDanger($ex->getMessage());
             }
-            
-            return FALSE;
         }
+        
+        return FALSE;
     }
     
     /**
@@ -135,7 +134,7 @@ class MySQL {
                 }
             } catch (\PDOException $ex) {
                 if (DEBUG) {
-                    Messages::addMessage($ex->getMessage(), Messages::TYPE_DANGER);
+                    Messages::addDanger($ex->getMessage());
                 }
                 
                 $error = \TRUE;

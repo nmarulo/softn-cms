@@ -33,24 +33,20 @@ class IndexController extends ControllerAbstract {
     
     private function login() {
         if (Form::submit(ManagerAbstract::FORM_SUBMIT)) {
-            $message     = 'Usuario o/y contraseña incorrecto(s).';
-            $typeMessage = Messages::TYPE_DANGER;
-            $form        = $this->form();
+            $form = $this->form();
             
             if (!empty($form)) {
                 $user       = Arrays::get($form, 'user');
                 $rememberMe = Arrays::get($form, 'rememberMe');
                 
                 if (LoginManager::login($user, $rememberMe)) {
-                    $message        = 'Inicio de sesión correcto.';
-                    $typeMessage    = Messages::TYPE_SUCCESS;
                     $optionsManager = new OptionsManager();
-                    Messages::addSessionMessage($message, $typeMessage);
+                    Messages::addSuccess('Inicio de sesión correcto.', TRUE);
                     Util::redirect($optionsManager->getSiteUrl(), 'admin');
                 }
             }
             
-            Messages::addMessage($message, $typeMessage);
+            Messages::addDanger('Usuario o/y contraseña incorrecto(s).');
         }
     }
     
@@ -92,8 +88,7 @@ class IndexController extends ControllerAbstract {
     
     protected function read() {
         $optionsManager = new OptionsManager();
-        $siteUrl        = $optionsManager->searchByName(OPTION_SITE_URL)
-                                         ->getOptionValue();
+        $siteUrl        = $optionsManager->getSiteUrl();
         $urlRegister    = $siteUrl . 'login/register';
         ViewController::sendViewData('siteUrl', $siteUrl);
         ViewController::sendViewData('urlRegister', $urlRegister);

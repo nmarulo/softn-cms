@@ -32,7 +32,7 @@ class PostsTermsManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
         $result = parent::deleteBy();
         
-        if ($result) {
+        if (!empty($result)) {
             array_walk($postsTerms, function(PostTerm $postTerm) {
                 $this->updateTermPostCount($postTerm->getTermID(), -1);
             });
@@ -57,7 +57,7 @@ class PostsTermsManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
         $result = parent::deleteBy();
         
-        if ($result) {
+        if (!empty($result)) {
             $this->updateTermPostCount($termId, -1);
         }
         
@@ -72,7 +72,7 @@ class PostsTermsManager extends CRUDManagerAbstract {
     public function create($object) {
         $result = parent::create($object);
         
-        if ($result) {
+        if (!empty($result)) {
             $this->updateTermPostCount($object->getTermID(), 1);
         }
         
@@ -84,7 +84,7 @@ class PostsTermsManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
         $result = parent::deleteBy();
         
-        if ($result) {
+        if (!empty($result)) {
             $this->updateTermPostCount($termId, -1);
         }
         
