@@ -1,13 +1,10 @@
 <?php
 
-use SoftnCMS\models\tables\User;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\tables\User;
 
-$users          = ViewController::getViewData('users');
-$optionsManager = new OptionsManager();
-$siteUrl        = $optionsManager->getSiteUrl();
-$siteUrlUpdate  = $siteUrl . 'admin/user/update/';
+$users         = ViewController::getViewData('users');
+$siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/user/update/';
 ViewController::singleViewDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">

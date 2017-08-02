@@ -1,10 +1,9 @@
 <?php
 
-use SoftnCMS\models\tables\Menu;
 use SoftnCMS\controllers\ViewController;
 
 ViewController::registerScript('delete-data');
-$siteUrl       = ViewController::getViewData('siteUrl');
+$siteUrl       = \SoftnCMS\rute\Router::getSiteURL();
 $siteUrlUpdate = $siteUrl . 'admin/menu/update/';
 $siteUrlCreate = $siteUrl . 'admin/menu/create/?parentMenu=';
 $siteUrlMenu   = $siteUrl . 'admin/menu/';

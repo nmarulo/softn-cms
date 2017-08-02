@@ -1,19 +1,16 @@
 <?php
-use SoftnCMS\models\managers\OptionsManager;
 
-$optionsManager = new OptionsManager();
-$siteUrl        = $optionsManager->searchByName(OPTION_SITE_URL)
-                                 ->getOptionValue();
-$urlAdmin       = $siteUrl . 'admin/';
-$urlPost        = $urlAdmin . 'post/';
-$urlPostCreate  = $urlPost . 'create/';
-$urlCategory    = $urlAdmin . 'category/';
-$urlTerm        = $urlAdmin . 'term/';
-$urlComment     = $urlAdmin . 'comment/';
-$urlUser        = $urlAdmin . 'user/';
-$urlUserCreate  = $urlUser . 'create/';
-$urlOption      = $urlAdmin . 'option/';
-$urlMenu        = $urlAdmin . 'menu/';
+$siteUrl       = \SoftnCMS\rute\Router::getSiteURL();
+$urlAdmin      = $siteUrl . 'admin/';
+$urlPost       = $urlAdmin . 'post/';
+$urlPostCreate = $urlPost . 'create/';
+$urlCategory   = $urlAdmin . 'category/';
+$urlTerm       = $urlAdmin . 'term/';
+$urlComment    = $urlAdmin . 'comment/';
+$urlUser       = $urlAdmin . 'user/';
+$urlUserCreate = $urlUser . 'create/';
+$urlOption     = $urlAdmin . 'option/';
+$urlMenu       = $urlAdmin . 'menu/';
 ?>
 
 <aside>

@@ -1,9 +1,10 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\UsersManager;
 
 $urlLogin = ViewController::getViewData('urlLogin');
-$siteUrl  = ViewController::getViewData('siteUrl');
+$siteUrl  = \SoftnCMS\rute\Router::getSiteURL();
 ?>
 <div id="login" class="page-container center-block">
     <div class="panel panel-default clearfix">

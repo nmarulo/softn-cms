@@ -10,6 +10,7 @@ use SoftnCMS\models\tables\Option;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\Sanitize;
+use SoftnCMS\util\Util;
 
 /**
  * Class OptionsManager
@@ -40,21 +41,9 @@ class OptionsManager extends CRUDManagerAbstract {
                 $router = new Router();
             }
             
-            $host       = $_SERVER['HTTP_HOST'];// localhost
-            $scheme     = $_SERVER['REQUEST_SCHEME'];// http
-            $uriCurrent = $_SERVER['REQUEST_URI'];// /softn-cms/install
-            $uri        = $uriCurrent;
-            $url        = $scheme . '://' . $host;
-            $urlGet     = $router->getRequest()
-                                 ->getUrlGet();
-            
-            if (!empty($urlGet)) {
-                $strPos = strpos($uriCurrent, $urlGet);
-                //Para obtener la uri raíz de la pagina.
-                $uri = substr($uriCurrent, 0, $strPos);// /softn-cms/
-            }
-            
-            $siteUrl = Sanitize::url($url . $uri);
+            $urlGet = $router->getRequest()
+                             ->getUrlGet();
+            $siteUrl = Util::getUrl($urlGet);
         }
         
         return $siteUrl;

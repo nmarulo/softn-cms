@@ -2,12 +2,9 @@
 
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\OptionsManager;
 
-$posts          = ViewController::getViewData('posts');
-$optionsManager = new OptionsManager();
-$siteUrl        = $optionsManager->getSiteUrl();
-$siteUrlUpdate  = $siteUrl . 'admin/post/update/';
+$posts         = ViewController::getViewData('posts');
+$siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/post/update/';
 ViewController::singleViewDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">

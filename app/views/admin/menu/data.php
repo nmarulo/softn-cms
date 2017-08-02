@@ -1,10 +1,10 @@
 <?php
 
-use SoftnCMS\models\tables\Menu;
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\tables\Menu;
 
 $menus         = ViewController::getViewData('menus');
-$siteUrl       = ViewController::getViewData('siteUrl');
+$siteUrl       = \SoftnCMS\rute\Router::getSiteURL();
 $siteUrlUpdate = $siteUrl . 'admin/menu/update/';
 $siteUrlEdit   = $siteUrl . 'admin/menu/edit/';
 ViewController::singleViewDirectory('pagination'); ?>

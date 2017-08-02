@@ -1,4 +1,5 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
 
 $pagination = ViewController::getViewData('pagination');
@@ -31,15 +32,13 @@ if (!empty($pagination)) {
             <ul class="pagination clearfix">
                 <?php
                 $output .= $outLeftArrow;
-
-                foreach ($dataPaged as $value) {
+                array_walk($dataPaged, function($value) use (&$output) {
                     $active = $value['active'] ? 'class="active"' : '';
                     $output .= "<li ${active}>";
                     $output .= "<a data-paged='$value[dataPaged]' href='#'>";
                     $output .= "$value[page]</a>";
                     $output .= '</li>';
-                }
-
+                });
                 $output .= $outRightArrow;
 
                 echo $output;

@@ -1,13 +1,12 @@
 <?php
 
-use SoftnCMS\models\tables\Term;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\tables\Term;
 
 $terms          = ViewController::getViewData('terms');
 $optionsManager = new OptionsManager();
-$siteUrl        = $optionsManager->getSiteUrl();
-$siteUrlUpdate  = $siteUrl . 'admin/term/update/';
+$siteUrlUpdate  = \SoftnCMS\rute\Router::getSiteURL() . 'admin/term/update/';
 ViewController::singleViewDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">

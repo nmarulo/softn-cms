@@ -1,4 +1,5 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\ManagerAbstract;
 use SoftnCMS\models\managers\InstallManager;

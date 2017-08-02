@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\tables\Menu;
 
-$siteUrl       = ViewController::getViewData('siteUrl');
+$siteUrl       = \SoftnCMS\rute\Router::getSiteURL();
 $siteUrlUpdate = $siteUrl . 'admin/menu/update/';
 $siteUrlCreate = $siteUrl . 'admin/menu/create/?parentMenu=';
 $subMenu       = ViewController::getViewData('subMenu');
@@ -26,35 +26,35 @@ $subMenuId     = $subMenu->getId();
                     </button>
                     <?php echo $subMenu->getMenuTitle(); ?>
                 </div>
-<!--                <div class="pull-right">-->
-<!--                    <ul class="list-inline">-->
-<!--                        <li>-->
-<!--                            <button class="btn btn-success">-->
-<!--                                <span class="glyphicon glyphicon-arrow-up"></span>-->
-<!--                            </button>-->
-<!--                        </li>-->
-<!--                        <li>-->
-<!--                            <button class="btn btn-danger">-->
-<!--                                <span class="glyphicon glyphicon-arrow-down"></span>-->
-<!--                            </button>-->
-<!--                        </li>-->
-<!--                        <li>-->
-<!--                            <span class="badge">--><?php //echo $subMenu->getMenuPosition(); ?><!--</span>-->
-<!--                        </li>-->
-<!--                        <li>-->
-<!--                            <button class="btn btn-success">-->
-<!--                                <span class="glyphicon glyphicon-arrow-up"></span>-->
-<!--                                <span class="glyphicon glyphicon-arrow-up"></span>-->
-<!--                            </button>-->
-<!--                        </li>-->
-<!--                        <li>-->
-<!--                            <button class="btn btn-danger">-->
-<!--                                <span class="glyphicon glyphicon-arrow-down"></span>-->
-<!--                                <span class="glyphicon glyphicon-arrow-down"></span>-->
-<!--                            </button>-->
-<!--                        </li>-->
-<!--                    </ul>-->
-<!--                </div>-->
+                <!--                <div class="pull-right">-->
+                <!--                    <ul class="list-inline">-->
+                <!--                        <li>-->
+                <!--                            <button class="btn btn-success">-->
+                <!--                                <span class="glyphicon glyphicon-arrow-up"></span>-->
+                <!--                            </button>-->
+                <!--                        </li>-->
+                <!--                        <li>-->
+                <!--                            <button class="btn btn-danger">-->
+                <!--                                <span class="glyphicon glyphicon-arrow-down"></span>-->
+                <!--                            </button>-->
+                <!--                        </li>-->
+                <!--                        <li>-->
+                <!--                            <span class="badge">--><?php //echo $subMenu->getMenuPosition(); ?><!--</span>-->
+                <!--                        </li>-->
+                <!--                        <li>-->
+                <!--                            <button class="btn btn-success">-->
+                <!--                                <span class="glyphicon glyphicon-arrow-up"></span>-->
+                <!--                                <span class="glyphicon glyphicon-arrow-up"></span>-->
+                <!--                            </button>-->
+                <!--                        </li>-->
+                <!--                        <li>-->
+                <!--                            <button class="btn btn-danger">-->
+                <!--                                <span class="glyphicon glyphicon-arrow-down"></span>-->
+                <!--                                <span class="glyphicon glyphicon-arrow-down"></span>-->
+                <!--                            </button>-->
+                <!--                        </li>-->
+                <!--                    </ul>-->
+                <!--                </div>-->
             </div>
         </div>
     </div>

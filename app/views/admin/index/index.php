@@ -1,6 +1,8 @@
 <?php
+
+use SoftnCMS\models\tables\Comment;
+use SoftnCMS\models\tables\Post;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\OptionsManager;
 
 ViewController::registerScript('api-github');
 $countPosts      = ViewController::getViewData('countPosts');
@@ -11,8 +13,7 @@ $countTerms      = ViewController::getViewData('countTerms');
 $countUsers      = ViewController::getViewData('countUsers');
 $posts           = ViewController::getViewData('posts');
 $comments        = ViewController::getViewData('comments');
-$optionsManager  = new OptionsManager();
-$siteUrl         = $optionsManager->getSiteUrl() . "admin/index/";
+$siteUrl         = \SoftnCMS\rute\Router::getSiteURL() . "admin/index/";
 ?>
 <div class="page-container" data-url="<?php echo $siteUrl; ?>">
     <div>
@@ -58,12 +59,13 @@ $siteUrl         = $optionsManager->getSiteUrl() . "admin/index/";
                 <div class="panel-heading">Publicaciones</div>
                 <div class="panel-body">
                     <ul class="list-group">
-                        <?php foreach ($posts as $post) { ?>
+                        <?php
+                        array_walk($posts, function(Post $post) { ?>
                             <li class="list-group-item clearfix">
-                            <span class="pull-left"><?php echo $post->getPostDate(); ?></span>
-                            <span><?php echo $post->getPostTitle(); ?></span>
-                        </li>
-                        <?php } ?>
+                                <span class="pull-left"><?php echo $post->getPostDate(); ?></span>
+                                <span><?php echo $post->getPostTitle(); ?></span>
+                            </li>
+                        <?php }); ?>
                     </ul>
                 </div>
             </div>
@@ -71,12 +73,12 @@ $siteUrl         = $optionsManager->getSiteUrl() . "admin/index/";
                 <div class="panel-heading">Comentarios</div>
                 <div class="panel-body">
                     <ul class="list-group">
-                        <?php foreach ($comments as $comment) { ?>
+                        <?php array_walk($comments, function(Comment $comment) { ?>
                             <li class="list-group-item clearfix">
-                            <span class="pull-left"><?php echo $comment->getCommentDate(); ?></span>
-                            <span><?php echo $comment->getCommentContents(); ?></span>
-                        </li>
-                        <?php } ?>
+                                <span class="pull-left"><?php echo $comment->getCommentDate(); ?></span>
+                                <span><?php echo $comment->getCommentContents(); ?></span>
+                            </li>
+                        <?php }); ?>
                     </ul>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 <?php
 
-use SoftnCMS\models\tables\Menu;
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\tables\Menu;
 
 $subMenus = ViewController::getViewData('subMenus');
 ?>

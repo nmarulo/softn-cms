@@ -1,11 +1,10 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\OptionsManager;
 
 ViewController::registerScript('pagination');
 ViewController::registerScript('delete-data');
-$optionsManager = new OptionsManager();
-$siteUrl        = $optionsManager->getSiteUrl() . "admin/comment/";
+$siteUrl = \SoftnCMS\rute\Router::getSiteURL() . "admin/comment/";
 ?>
 <div class="page-container" data-url="<?php echo $siteUrl; ?>">
     <div>

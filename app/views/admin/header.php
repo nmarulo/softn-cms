@@ -1,12 +1,11 @@
 <?php
-use SoftnCMS\models\managers\OptionsManager;
+
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\UsersManager;
 
 $idUser            = LoginManager::getSession();
-$optionsManager    = new OptionsManager();
 $userManager       = new UsersManager();
-$siteUrl           = $optionsManager->getSiteUrl();
+$siteUrl           = \SoftnCMS\rute\Router::getSiteURL();
 $urlAdmin          = $siteUrl . 'admin/';
 $urlPostCreate     = $urlAdmin . 'post/create';
 $urlCategoryCreate = $urlAdmin . 'category/create';

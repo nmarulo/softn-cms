@@ -6,6 +6,7 @@
 namespace SoftnCMS\rute;
 
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
 
@@ -23,6 +24,12 @@ class Router {
     
     const EVENT_ERROR              = 4;
     
+    /** @var string */
+    private static $SITE_URL;
+    
+    /** @var string */
+    private static $CURRENT_DIRECTORY;
+    
     /** @var Request */
     private $request;
     
@@ -36,13 +43,29 @@ class Router {
      * Router constructor.
      */
     public function __construct() {
-        $this->request = new Request();
-        $this->route   = $this->request->getRoute();
-        $this->events  = [
+        $this->request  = new Request();
+        $this->route    = $this->request->getRoute();
+        $this->events   = [
             self::EVENT_ERROR => function() {
                 throw new \Exception('Error');
             },
         ];
+        $optionsManager = new OptionsManager();
+        self::$SITE_URL = $optionsManager->getSiteUrl($this);
+    }
+    
+    /**
+     * @return string
+     */
+    public static function getSiteURL() {
+        return self::$SITE_URL;
+    }
+    
+    /**
+     * @return string
+     */
+    public static function getCurrentDirectory() {
+        return self::$CURRENT_DIRECTORY;
     }
     
     /**
@@ -105,6 +128,9 @@ class Router {
         }
     }
     
+    /**
+     * @return mixed
+     */
     private function instanceController() {
         $controllerName      = $this->route->getController();
         $controllerName      .= 'Controller';
@@ -121,6 +147,11 @@ class Router {
         return new $controller();
     }
     
+    /**
+     * @param $instanceController
+     *
+     * @return string
+     */
     private function getMethod($instanceController) {
         $method = $this->route->getMethod();
         
@@ -132,6 +163,9 @@ class Router {
         return $method;
     }
     
+    /**
+     * @return array
+     */
     private function getParameter() {
         $parameter = $this->route->getParameter();
         
@@ -139,6 +173,7 @@ class Router {
     }
     
     private function setDirectoryView() {
+        self::$CURRENT_DIRECTORY = $this->route->getDirectoryController();
         ViewController::setDirectoryViews($this->route->getDirectoryViews());
         ViewController::setDirectoryViewsController($this->route->getDirectoryViewsController());
         ViewController::setViewPath($this->route->getViewPath());

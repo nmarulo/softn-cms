@@ -1,13 +1,10 @@
 <?php
 
-use SoftnCMS\models\tables\Category;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\tables\Category;
 
-$categories     = ViewController::getViewData('categories');
-$optionsManager = new OptionsManager();
-$siteUrl        = $optionsManager->getSiteUrl();
-$siteUrlUpdate  = $siteUrl . 'admin/category/update/';
+$categories    = ViewController::getViewData('categories');
+$siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/category/update/';
 ViewController::singleViewDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">

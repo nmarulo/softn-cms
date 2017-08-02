@@ -1,13 +1,12 @@
 <?php
 
-use SoftnCMS\models\tables\Comment;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\tables\Comment;
 
 $comments       = ViewController::getViewData('comments');
 $optionsManager = new OptionsManager();
-$siteUrl        = $optionsManager->getSiteUrl();
-$siteUrlUpdate  = $siteUrl . 'admin/comment/update/';
+$siteUrlUpdate  = \SoftnCMS\rute\Router::getSiteURL() . 'admin/comment/update/';
 ViewController::singleViewDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
