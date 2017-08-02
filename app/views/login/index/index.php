@@ -1,44 +1,51 @@
 <?php
-use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\UsersManager;
 
-$siteUrl     = ViewController::getViewData('siteUrl');
-$urlRegister = ViewController::getViewData('urlRegister');
+use SoftnCMS\models\managers\UsersManager;
+use SoftnCMS\util\HTML;
+
 ?>
 <div id="login" class="page-container center-block">
     <div class="panel panel-default clearfix">
         <div class="panel-body">
             <div id="logo-SoftN">
-                <img class="center-block" src="<?php echo $siteUrl; ?>app/resources/img/softn.png" alt="CMS - SoftN"/>
+                <?php HTML::image('softn.png', 'CMS - SoftN', 'CMS - SoftN', ['class' => 'center-block']); ?>
             </div>
             <hr/>
             <form role="form" method="post">
                 <div class="form-group">
                     <label class="control-label">Usuario:</label>
-                    <input type="text" class="form-control" name="<?php echo UsersManager::USER_LOGIN; ?>" placeholder="Usuario" autofocus="autofocus">
+                    <?php HTML::input(UsersManager::USER_LOGIN, '', 'text', [
+                        'class'       => 'form-control',
+                        'placeholder' => 'Usuario',
+                        'autofocus'   => TRUE,
+                    ]); ?>
                 </div>
                 <div class="form-group">
                     <label class="control-label">Contraseña:</label>
-                    <input type="password" class="form-control" name="<?php echo UsersManager::USER_PASSWORD; ?>" placeholder="Contraseña">
+                    <?php HTML::input(UsersManager::USER_PASSWORD, '', 'password', [
+                        'class'       => 'form-control',
+                        'placeholder' => 'Contraseña',
+                    ]); ?>
                 </div>
                 <div class="form-group">
                     <div class="checkbox">
                         <label>
-                            <input class="" type="checkbox" name="<?php echo UsersManager::USER_REMEMBER_ME; ?>"> Mantener la sesión iniciada
+                            <?php HTML::input(UsersManager::USER_REMEMBER_ME, '', 'checkbox'); ?>
+                            Mantener la sesión iniciada
                         </label>
                     </div>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary" name="<?php echo UsersManager::FORM_SUBMIT; ?>" value="<?php echo UsersManager::FORM_SUBMIT; ?>">Conectar</button>
+                    <?php HTML::button(UsersManager::FORM_SUBMIT, UsersManager::FORM_SUBMIT, 'Conectar', 'submit', ['class' => 'btn btn-primary']) ?>
                 </div>
             </form>
             <hr/>
-            <a href="<?php echo $urlRegister; ?>" class="btn btn-success btn-block">Registro</a>
+            <?php HTML::link('register', 'login', '', 'Registro', ['class' => 'btn btn-success btn-block']); ?>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-body">
-            <a href="<?php echo $siteUrl; ?>">Volver a la pagina principal.</a>
+            <?php HTML::link('', '', '', '<span class="glyphicon glyphicon-arrow-left"></span> Volver a la pagina principal'); ?>
         </div>
     </div>
 </div>
