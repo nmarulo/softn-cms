@@ -1,15 +1,19 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\tables\Menu;
 
 $optionTitle       = ViewController::getViewData('optionTitle');
 $optionDescription = ViewController::getViewData('optionDescription');
 $optionPaged       = ViewController::getViewData('optionPaged');
 $optionSiteUrl     = ViewController::getViewData('optionSiteUrl');
 $optionTheme       = ViewController::getViewData('optionTheme');
+$menuList          = ViewController::getViewData('menuList');
 $optionMenu        = ViewController::getViewData('optionMenu');
 $optionEmailAdmin  = ViewController::getViewData('optionEmailAdmin');
 $listThemes        = ViewController::getViewData('listThemes');
 $currentThemeName  = $optionTheme->getOptionValue();
+$currentMenuId     = $optionMenu->getOptionValue();
 ?>
 
 <div class="page-container">
@@ -43,6 +47,25 @@ $currentThemeName  = $optionTheme->getOptionValue();
                 </div>
             </div>
             <div class="form-group">
+                <label class="col-sm-2 control-label">Menu</label>
+                <div class="col-sm-10">
+                    <select class="form-control" name="<?php echo $optionMenu->getOptionName(); ?>">
+                        <?php
+                        array_walk($menuList, function(Menu $menu) use ($currentMenuId) {
+                            $selected = '';
+                            $menuId   = $menu->getId();
+    
+                            if ($menuId == $currentMenuId) {
+                                $selected = 'selected';
+                            }
+    
+                            echo "<option value='$menuId' $selected>" . $menu->getMenuTitle() . '</option>';
+                        });
+                        ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
                 <label class="col-sm-2 control-label">Paginación</label>
                 <div class="col-sm-10">
                     <input type="number" class="form-control" name="<?php echo $optionPaged->getOptionName(); ?>" min="1" value="<?php echo $optionPaged->getOptionValue(); ?>">
@@ -55,8 +78,8 @@ $currentThemeName  = $optionTheme->getOptionValue();
                         <?php
                         array_walk($listThemes, function($themeName) use ($currentThemeName) {
                             $selected = '';
-                            
-                            if($themeName == $currentThemeName){
+    
+                            if ($themeName == $currentThemeName) {
                                 $selected = 'selected';
                             }
     

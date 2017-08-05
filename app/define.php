@@ -52,3 +52,4 @@ define('OPTION_PAGED', 'optionPaged');
 define('OPTION_SITE_URL', 'optionSiteUrl');
 define('OPTION_THEME', 'optionTheme');
 define('OPTION_EMAIL_ADMIN', 'optionEmailAdmin');
+define('OPTION_MENU', 'optionMenu');

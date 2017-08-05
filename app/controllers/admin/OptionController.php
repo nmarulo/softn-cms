@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
+use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Option;
 use SoftnCMS\util\Arrays;
@@ -64,13 +65,14 @@ class OptionController extends ControllerAbstract {
             return FALSE;
         }
         
-        $options = array_map(function($key, $value) {
+        $inputKeys = array_keys($inputs);
+        $options   = array_map(function($key, $value) {
             $option = new Option();
             $option->setOptionName($key);
             $option->setOptionValue($value);
             
             return $option;
-        }, array_keys($inputs), $inputs);
+        }, $inputKeys, $inputs);
         
         return ['options' => $options];
     }
@@ -90,24 +92,27 @@ class OptionController extends ControllerAbstract {
                                ->build(),
             InputAlphanumericBuilder::init(OPTION_THEME)
                                     ->build(),
-            //            InputAlphanumericBuilder::init('optionMenu')
-            //                                    ->setRequire(FALSE)
-            //                                    ->build(),
+            InputIntegerBuilder::init(OPTION_MENU)
+                               ->build(),
         ]);
         
         return Form::inputFilter();
     }
     
     protected function read() {
+        $menusManager      = new MenusManager();
         $optionsManager    = new OptionsManager();
         $optionTitle       = $optionsManager->searchByName(OPTION_TITLE);
         $optionDescription = $optionsManager->searchByName(OPTION_DESCRIPTION);
         $optionPaged       = $optionsManager->searchByName(OPTION_PAGED);
         $optionSiteUrl     = $optionsManager->searchByName(OPTION_SITE_URL);
         $optionTheme       = $optionsManager->searchByName(OPTION_THEME);
-        //        $optionMenu        = $optionsManager->searchByName(OPTION_);
-        $optionEmailAdmin = $optionsManager->searchByName(OPTION_EMAIL_ADMIN);
+        $optionMenu        = $optionsManager->searchByName(OPTION_MENU);
+        $optionEmailAdmin  = $optionsManager->searchByName(OPTION_EMAIL_ADMIN);
+        $menuList          = $menusManager->searchAllParent();
         
+        ViewController::sendViewData('menuList', $menuList);
+        ViewController::sendViewData('optionMenu', $optionMenu);
         ViewController::sendViewData('listThemes', Util::getFilesAndDirectories(THEMES));
         ViewController::sendViewData('optionTitle', $optionTitle);
         ViewController::sendViewData('optionDescription', $optionDescription);
