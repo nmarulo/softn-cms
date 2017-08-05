@@ -5,7 +5,6 @@
 
 namespace SoftnCMS\models\managers;
 
-use phpDocumentor\Reflection\Types\Self_;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Menu;
 use SoftnCMS\util\Arrays;
@@ -134,6 +133,7 @@ class MenusManager extends CRUDManagerAbstract {
      * Método que actualiza el numero de hijos de los menus de forma ascendente.
      *
      * @param int $parentMenuId
+     * @param int $num
      *
      * @return bool
      */
@@ -196,12 +196,10 @@ class MenusManager extends CRUDManagerAbstract {
                 $notError = FALSE;
             } else {
                 $position = $menu->getMenuPosition();
+                $menu->setMenuPosition($i + 1);
                 
-                if ($position != $i + 1) {
-                    $menu->setMenuPosition($i + 1);
-                    if (!$this->update($menu)) {
-                        $notError = FALSE;
-                    }
+                if ($position != $i + 1 && !$this->update($menu)) {
+                    $notError = FALSE;
                 }
             }
         }

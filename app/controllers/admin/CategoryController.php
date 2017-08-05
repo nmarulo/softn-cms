@@ -11,6 +11,7 @@ use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Category;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
@@ -33,9 +34,8 @@ class CategoryController extends CUDControllerAbstract {
                 $category          = Arrays::get($form, 'category');
                 
                 if ($categoriesManager->create($category)) {
-                    $optionsManager = new OptionsManager();
                     Messages::addSuccess('Categoría publicada correctamente.', TRUE);
-                    Util::redirect($optionsManager->getSiteUrl() . 'admin/category');
+                    Util::redirect(Router::getSiteURL() . 'admin/category');
                 }
             }
             

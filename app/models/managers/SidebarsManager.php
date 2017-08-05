@@ -8,6 +8,7 @@ namespace SoftnCMS\models\managers;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Sidebar;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\Messages;
 
 /**
  * Class SidebarsManager
@@ -22,6 +23,60 @@ class SidebarsManager extends CRUDManagerAbstract {
     const SIDEBAR_CONTENTS = 'sidebar_contents';
     
     const SIDEBAR_POSITION = 'sidebar_position';
+    
+    /**
+     * @param Sidebar $object
+     *
+     * @return bool
+     */
+    public function create($object) {
+        $object->setSidebarPosition($this->count() + 1);
+        
+        return parent::create($object);
+    }
+    
+    public function delete($id) {
+        if (!parent::delete($id)) {
+            return FALSE;
+        }
+        
+        if (!$this->updatePositions()) {
+            Messages::addDanger('Error al actualizar las posiciones de las barras laterales.');
+        }
+        
+        return TRUE;
+    }
+    
+    private function updatePositions() {
+        $sidebars = $this->read();
+        
+        $len      = count($sidebars);
+        $notError = TRUE;
+        
+        for ($i = 0; $i < $len && $notError; ++$i) {
+            $sidebar = Arrays::get($sidebars, $i);
+            
+            if (empty($sidebar)) {
+                $notError = FALSE;
+            } else {
+                $position = $sidebar->getSidebarPosition();
+                $sidebar->setSidebarPosition($i + 1);
+                
+                if ($position != $i + 1 && !$this->update($sidebar)) {
+                    $notError = FALSE;
+                }
+            }
+        }
+        
+        return $notError;
+    }
+    
+    public function read($filters = []) {
+        $table = $this->getTableWithPrefix();
+        $query = sprintf('SELECT * FROM %1$s ORDER BY %2$s ASC', $table, self::SIDEBAR_POSITION);
+        
+        return parent::readData($query);
+    }
     
     /**
      * @param Sidebar $object

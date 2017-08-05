@@ -162,7 +162,7 @@ CREATE INDEX `fk_categories_posts_id` ON `#{PREFIX}posts_categories` (`post_ID` 
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#{PREFIX}sidebars` (
     `ID` INT NOT NULL AUTO_INCREMENT,
-    `sidebar_title` VARCHAR(60) NOT NULL,
+    `sidebar_title` VARCHAR(60) NULL,
     `sidebar_contents` LONGTEXT NULL,
     `sidebar_position` SMALLINT(2) NOT NULL COMMENT 'Establece la posición en la que se mostrara el contenido',
     PRIMARY KEY (`ID`))
