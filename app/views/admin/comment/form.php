@@ -17,14 +17,14 @@ $showAuthorAndEmail = empty($comment->getCommentUserID());
     </div>
     <div>
         <div class="row clearfix">
-            <form role="form" method="post">
+            <form method="post">
                 <div id="content-left" class="col-sm-9">
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <?php if ($showAuthorAndEmail) { ?>
                                 <div class="form-group">
                                 <label class="control-label">Autor</label>
-                                <input type="text" class="form-control input-lg" name="<?php echo CommentsManager::COMMENT_AUTHOR; ?>" value="<?php echo $comment->getCommentAuthor(); ?>">
+                                <input class="form-control input-lg" name="<?php echo CommentsManager::COMMENT_AUTHOR; ?>" value="<?php echo $comment->getCommentAuthor(); ?>">
                             </div>
                                 <div class="form-group">
                                 <label class="control-label">Correo electrónico</label>
@@ -35,12 +35,12 @@ $showAuthorAndEmail = empty($comment->getCommentUserID());
                             if ($isUpdate) { ?>
                                 <div class="form-group">
                                     <label class="control-label">Fecha de publicación</label>
-                                    <input type="text" class="form-control input-lg" value="<?php echo $comment->getCommentDate(); ?>" disabled>
+                                    <input class="form-control input-lg" value="<?php echo $comment->getCommentDate(); ?>" disabled>
                                 </div>
                             <?php } ?>
                             <div class="form-group">
                                 <label class="control-label">Entrada</label>
-                                <input type="text" class="form-control input-lg" name="<?php echo CommentsManager::POST_ID; ?>" value="<?php echo $comment->getPostID(); ?>" <?php echo $disabledPostId; ?>>
+                                <input class="form-control input-lg" name="<?php echo CommentsManager::POST_ID; ?>" value="<?php echo $comment->getPostID(); ?>" <?php echo $disabledPostId; ?>>
                             </div>
                             <div class="form-group form-inline checkbox">
                                 <label class="control-label">
@@ -59,15 +59,16 @@ $showAuthorAndEmail = empty($comment->getCommentUserID());
                         <div class="panel-heading">Publicación</div>
                         <div class="panel-body">
                             <?php if ($isUpdate) { ?>
-                                <button class="btn btn-primary btn-block" type="submit" name="<?php echo CommentsManager::FORM_UPDATE; ?>" value="<?php echo CommentsManager::FORM_UPDATE; ?>">Actualizar</button>
+                                <button class="btn btn-primary btn-block" name="<?php echo CommentsManager::FORM_UPDATE; ?>" value="<?php echo CommentsManager::FORM_UPDATE; ?>">Actualizar</button>
                             <?php } else { ?>
-                                <button class="btn btn-primary btn-block" type="submit" name="<?php echo CommentsManager::FORM_CREATE; ?>" value="<?php echo CommentsManager::FORM_CREATE; ?>">Publicar</button>
+                                <button class="btn btn-primary btn-block" name="<?php echo CommentsManager::FORM_CREATE; ?>" value="<?php echo CommentsManager::FORM_CREATE; ?>">Publicar</button>
                             <?php } ?>
                         </div>
                     </div>
                 </div>
                 <input type="hidden" name="<?php echo CommentsManager::ID; ?>" value="<?php echo $comment->getId(); ?>"/>
                 <input type="hidden" name="<?php echo CommentsManager::COMMENT_USER_ID; ?>" value="<?php echo $comment->getCommentUserID(); ?>"/>
+                <?php \SoftnCMS\util\Token::formField(); ?>
             </form>
         </div>
     </div>

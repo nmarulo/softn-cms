@@ -63,7 +63,7 @@ class SidebarController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputIntegerBuilder::init(SidebarsManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(SidebarsManager::SIDEBAR_TITLE)

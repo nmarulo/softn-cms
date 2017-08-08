@@ -43,7 +43,7 @@ class PostController extends ThemeControllerAbstract {
                 $comment         = Arrays::get($form, 'comment');
                 
                 if ($commentsManager->create($comment)) {
-                    //mensaje
+                    //TODO: mensaje
                 }
             }
         }
@@ -78,7 +78,7 @@ class PostController extends ThemeControllerAbstract {
     private function filterInputs() {
         $isRequire = !LoginManager::isLogin();
         
-        Form::setINPUT([
+        Form::setInput([
             InputAlphanumericBuilder::init(CommentsManager::COMMENT_AUTHOR)
                                     ->setRequire($isRequire)
                                     ->build(),

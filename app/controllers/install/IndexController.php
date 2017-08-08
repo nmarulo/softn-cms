@@ -59,7 +59,7 @@ class IndexController {
     }
     
     private function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputUrlBuilder::init(InstallManager::INSTALL_SITE_URL)
                            ->build(),
             InputAlphanumericBuilder::init(InstallManager::INSTALL_DB_NAME)

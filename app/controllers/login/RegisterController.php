@@ -77,7 +77,7 @@ class RegisterController extends ControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputAlphanumericBuilder::init(UsersManager::USER_LOGIN)
                                     ->setAccents(FALSE)
                                     ->setWithoutSpace(TRUE)

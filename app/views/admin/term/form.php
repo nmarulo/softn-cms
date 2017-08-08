@@ -16,7 +16,7 @@ $isUpdate = $method == TermsManager::FORM_UPDATE;
             <div id="content-left" class="col-sm-9">
                 <div class="form-group">
                     <label class="control-label">Nombre</label>
-                    <input class="form-control" type="text" name="<?php echo TermsManager::TERM_NAME; ?>" placeholder="Escribe el título" value="<?php echo $term->getTermName(); ?>">
+                    <input class="form-control" name="<?php echo TermsManager::TERM_NAME; ?>" placeholder="Escribe el título" value="<?php echo $term->getTermName(); ?>">
                 </div>
                 <div class="form-group">
                     <label class="control-label">Descripción</label>
@@ -28,14 +28,15 @@ $isUpdate = $method == TermsManager::FORM_UPDATE;
                     <div class="panel-heading">Publicación</div>
                     <div class="panel-body">
                         <?php if ($isUpdate) { ?>
-                            <button class="btn btn-primary btn-block" type="submit" name="<?php echo TermsManager::FORM_UPDATE; ?>" value="<?php echo TermsManager::FORM_UPDATE; ?>">Actualizar</button>
+                            <button class="btn btn-primary btn-block" name="<?php echo TermsManager::FORM_UPDATE; ?>" value="<?php echo TermsManager::FORM_UPDATE; ?>">Actualizar</button>
                         <?php } else { ?>
-                            <button class="btn btn-primary btn-block" type="submit" name="<?php echo TermsManager::FORM_CREATE; ?>" value="<?php echo TermsManager::FORM_CREATE; ?>">Publicar</button>
+                            <button class="btn btn-primary btn-block" name="<?php echo TermsManager::FORM_CREATE; ?>" value="<?php echo TermsManager::FORM_CREATE; ?>">Publicar</button>
                         <?php } ?>
                     </div>
                 </div>
             </div>
             <input type="hidden" name="<?php echo TermsManager::ID; ?>" value="<?php echo $term->getId(); ?>"/>
+            <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>
 </div>

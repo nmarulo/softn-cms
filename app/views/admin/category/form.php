@@ -12,11 +12,11 @@ $isUpdate = $method == CategoriesManager::FORM_UPDATE;
         <h1><?php echo $title; ?></h1>
     </div>
     <div>
-        <form role="form" method="post">
+        <form method="post">
             <div id="content-left" class="col-sm-9">
                 <div class="form-group">
                     <label class="control-label">Nombre</label>
-                    <input class="form-control" type="text" name="<?php echo CategoriesManager::CATEGORY_NAME; ?>" placeholder="Escribe el título" value="<?php echo $category->getCategoryName(); ?>">
+                    <input class="form-control" name="<?php echo CategoriesManager::CATEGORY_NAME; ?>" placeholder="Escribe el título" value="<?php echo $category->getCategoryName(); ?>">
                 </div>
                 <div class="form-group">
                     <label class="control-label">Descripción</label>
@@ -28,14 +28,15 @@ $isUpdate = $method == CategoriesManager::FORM_UPDATE;
                     <div class="panel-heading">Publicación</div>
                     <div class="panel-body">
                         <?php if ($isUpdate) { ?>
-                            <button class="btn btn-primary btn-block" type="submit" name="<?php echo CategoriesManager::FORM_UPDATE; ?>" value="<?php echo CategoriesManager::FORM_UPDATE; ?>">Actualizar</button>
+                            <button class="btn btn-primary btn-block" name="<?php echo CategoriesManager::FORM_UPDATE; ?>" value="<?php echo CategoriesManager::FORM_UPDATE; ?>">Actualizar</button>
                         <?php } else { ?>
-                            <button class="btn btn-primary btn-block" type="submit" name="<?php echo CategoriesManager::FORM_CREATE; ?>" value="<?php echo CategoriesManager::FORM_CREATE; ?>">Publicar</button>
+                            <button class="btn btn-primary btn-block" name="<?php echo CategoriesManager::FORM_CREATE; ?>" value="<?php echo CategoriesManager::FORM_CREATE; ?>">Publicar</button>
                         <?php } ?>
                     </div>
                 </div>
             </div>
             <input type="hidden" name="<?php echo CategoriesManager::ID; ?>" value="<?php echo $category->getId(); ?>"/>
+            <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>
 </div>

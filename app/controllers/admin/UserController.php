@@ -92,7 +92,7 @@ class UserController extends CUDControllerAbstract {
     protected function filterInputs() {
         $isCreate = Form::submit(CRUDManagerAbstract::FORM_CREATE);
         
-        Form::setINPUT([
+        Form::setInput([
             InputIntegerBuilder::init(UsersManager::ID)
                                ->build(),
             InputEmailBuilder::init(UsersManager::USER_EMAIL)

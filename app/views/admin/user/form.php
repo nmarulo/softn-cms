@@ -16,13 +16,13 @@ $isUpdate = $method == UsersManager::FORM_UPDATE;
             <div class="form-group">
                 <label class="col-sm-2 control-label">Usuario</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="<?php echo UsersManager::USER_LOGIN; ?>" value="<?php echo $user->getUserLogin(); ?>">
+                    <input class="form-control" name="<?php echo UsersManager::USER_LOGIN; ?>" value="<?php echo $user->getUserLogin(); ?>">
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Nombre</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="<?php echo UsersManager::USER_NAME; ?>" value="<?php echo $user->getUserName(); ?>">
+                    <input class="form-control" name="<?php echo UsersManager::USER_NAME; ?>" value="<?php echo $user->getUserName(); ?>">
                 </div>
             </div>
             <div class="form-group">
@@ -58,13 +58,14 @@ $isUpdate = $method == UsersManager::FORM_UPDATE;
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <?php if ($isUpdate) { ?>
-                        <button class="btn btn-primary" type="submit" name="<?php echo UsersManager::FORM_UPDATE; ?>" value="<?php echo UsersManager::FORM_UPDATE; ?>">Actualizar usuario</button>
+                        <button class="btn btn-primary" name="<?php echo UsersManager::FORM_UPDATE; ?>" value="<?php echo UsersManager::FORM_UPDATE; ?>">Actualizar usuario</button>
                     <?php } else { ?>
-                        <button class="btn btn-primary" type="submit" name="<?php echo UsersManager::FORM_CREATE; ?>" value="<?php echo UsersManager::FORM_CREATE; ?>">Agregar usuario</button>
+                        <button class="btn btn-primary" name="<?php echo UsersManager::FORM_CREATE; ?>" value="<?php echo UsersManager::FORM_CREATE; ?>">Agregar usuario</button>
                     <?php } ?>
                 </div>
             </div>
             <input type="hidden" name="<?php echo UsersManager::ID; ?>" value="<?php echo $user->getId(); ?>"/>
+            <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>
 </div>

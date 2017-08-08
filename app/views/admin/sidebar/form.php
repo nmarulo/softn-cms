@@ -16,7 +16,7 @@ $isUpdate = $method == SidebarsManager::FORM_UPDATE;
             <div id="content-left" class="col-sm-9">
                 <div class="form-group">
                     <label class="control-label">Titulo</label>
-                    <input class="form-control" type="text" name="<?php echo SidebarsManager::SIDEBAR_TITLE; ?>" placeholder="Escribe el título" value="<?php echo $sidebar->getSidebarTitle(); ?>">
+                    <input class="form-control" name="<?php echo SidebarsManager::SIDEBAR_TITLE; ?>" placeholder="Escribe el título" value="<?php echo $sidebar->getSidebarTitle(); ?>">
                 </div>
                 <div class="form-group">
                     <label class="control-label">Descripción</label>
@@ -28,14 +28,15 @@ $isUpdate = $method == SidebarsManager::FORM_UPDATE;
                     <div class="panel-heading">Publicación</div>
                     <div class="panel-body">
                         <?php if ($isUpdate) { ?>
-                            <button class="btn btn-primary btn-block" type="submit" name="<?php echo SidebarsManager::FORM_UPDATE; ?>" value="<?php echo SidebarsManager::FORM_UPDATE; ?>">Actualizar</button>
+                            <button class="btn btn-primary btn-block" name="<?php echo SidebarsManager::FORM_UPDATE; ?>" value="<?php echo SidebarsManager::FORM_UPDATE; ?>">Actualizar</button>
                         <?php } else { ?>
-                            <button class="btn btn-primary btn-block" type="submit" name="<?php echo SidebarsManager::FORM_CREATE; ?>" value="<?php echo SidebarsManager::FORM_CREATE; ?>">Publicar</button>
+                            <button class="btn btn-primary btn-block" name="<?php echo SidebarsManager::FORM_CREATE; ?>" value="<?php echo SidebarsManager::FORM_CREATE; ?>">Publicar</button>
                         <?php } ?>
                     </div>
                 </div>
             </div>
             <input type="hidden" name="<?php echo SidebarsManager::ID; ?>" value="<?php echo $sidebar->getId(); ?>"/>
+            <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>
 </div>

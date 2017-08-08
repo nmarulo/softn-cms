@@ -78,7 +78,7 @@ class OptionController extends ControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputAlphabeticBuilder::init(OPTION_TITLE)
                                   ->build(),
             InputAlphabeticBuilder::init(OPTION_DESCRIPTION)

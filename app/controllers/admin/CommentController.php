@@ -91,7 +91,7 @@ class CommentController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputAlphanumericBuilder::init(CommentsManager::COMMENT_AUTHOR)
                                     ->setRequire(FALSE)
                                     ->build(),

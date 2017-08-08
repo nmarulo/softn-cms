@@ -68,7 +68,7 @@ class TermController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputIntegerBuilder::init(TermsManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(TermsManager::TERM_NAME)

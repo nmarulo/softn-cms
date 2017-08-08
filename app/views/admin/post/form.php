@@ -1,9 +1,12 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\models\managers\PostsCategoriesManager;
 use SoftnCMS\models\managers\PostsTermsManager;
+use SoftnCMS\models\tables\Term;
+use SoftnCMS\models\tables\Category;
 
 ViewController::registerScript('form');
 $title                = ViewController::getViewData('title');
@@ -22,10 +25,10 @@ $linkPost             = ViewController::getViewData('linkPost');
     </div>
     <div>
         <div class="row clearfix">
-            <form role="form" method="post">
+            <form method="post">
                 <div class="col-sm-9">
                     <div class="form-group">
-                        <input type="text" class="form-control input-lg" name="<?php echo PostsManager::POST_TITLE; ?>" placeholder="Escribe el título" value="<?php echo $post->getPostTitle(); ?>">
+                        <input class="form-control input-lg" name="<?php echo PostsManager::POST_TITLE; ?>" placeholder="Escribe el título" value="<?php echo $post->getPostTitle(); ?>">
                     </div>
                     <?php if ($isUpdate) { ?>
                         <div class="form-group">
@@ -60,9 +63,9 @@ $linkPost             = ViewController::getViewData('linkPost');
                                         <span class="glyphicon glyphicon-time"></span>
                                         <?php echo $post->getPostUpdate(); ?></span>
                                 </p>
-                                <button class="btn btn-primary btn-block" type="submit" name="<?php echo PostsManager::FORM_UPDATE; ?>" value="<?php echo PostsManager::FORM_UPDATE; ?>">Actualizar</button>
+                                <button class="btn btn-primary btn-block" name="<?php echo PostsManager::FORM_UPDATE; ?>" value="<?php echo PostsManager::FORM_UPDATE; ?>">Actualizar</button>
                             <?php } else { ?>
-                                <button class="btn btn-primary btn-block" type="submit" name="<?php echo PostsManager::FORM_CREATE; ?>" value="<?php echo PostsManager::FORM_CREATE; ?>">Publicar</button>
+                                <button class="btn btn-primary btn-block" name="<?php echo PostsManager::FORM_CREATE; ?>" value="<?php echo PostsManager::FORM_CREATE; ?>">Publicar</button>
                             <?php } ?>
                         </div>
                     </div>
@@ -70,8 +73,7 @@ $linkPost             = ViewController::getViewData('linkPost');
                         <div class="panel-heading">Categorías</div>
                         <div class="panel-body">
                             <select name="<?php echo PostsCategoriesManager::CATEGORY_ID; ?>[]" multiple class="form-control">
-                                <?php
-                                foreach ($categories as $category) {
+                                <?php array_walk($categories, function(Category $category) use ($selectedCategoriesId) {
                                     $categoryID = $category->getID();
                                     $selected   = '';
     
@@ -80,8 +82,7 @@ $linkPost             = ViewController::getViewData('linkPost');
                                     }
     
                                     echo "<option value='$categoryID' $selected>" . $category->getCategoryName() . '</option>';
-                                }
-                                ?>
+                                }); ?>
                             </select>
                         </div>
                     </div>
@@ -89,8 +90,7 @@ $linkPost             = ViewController::getViewData('linkPost');
                         <div class="panel-heading">Etiquetas</div>
                         <div class="panel-body">
                             <select name="<?php echo PostsTermsManager::TERM_ID; ?>[]" multiple class="form-control">
-                                <?php
-                                foreach ($terms as $term) {
+                                <?php array_walk($terms, function(Term $term) use ($selectedTermsId) {
                                     $termID   = $term->getID();
                                     $selected = '';
     
@@ -99,14 +99,13 @@ $linkPost             = ViewController::getViewData('linkPost');
                                     }
     
                                     echo "<option value='$termID' $selected>" . $term->getTermName() . '</option>';
-                                }
-                                ?>
+                                }); ?>
                             </select>
                         </div>
                     </div>
                 </div>
                 <input type="hidden" name="<?php echo PostsManager::ID; ?>" value="<?php echo $post->getId(); ?>"/>
-                <!-- token -->
+                <?php \SoftnCMS\util\Token::formField(); ?>
             </form>
         </div>
     </div>

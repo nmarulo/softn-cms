@@ -68,7 +68,7 @@ class CategoryController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputIntegerBuilder::init(CategoriesManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(CategoriesManager::CATEGORY_NAME)

@@ -101,7 +101,7 @@ class PostController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputIntegerBuilder::init(PostsManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(PostsManager::POST_TITLE)

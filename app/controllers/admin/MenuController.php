@@ -92,7 +92,7 @@ class MenuController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputIntegerBuilder::init(MenusManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(MenusManager::MENU_TITLE)

@@ -13,10 +13,10 @@ $siteUrl  = \SoftnCMS\rute\Router::getSiteURL();
                 <img class="center-block" src="<?php echo $siteUrl; ?>app/resources/img/softn.png" alt="CMS - SoftN"/>
             </div>
             <hr/>
-            <form role="form" method="post">
+            <form method="post">
                 <div class="form-group">
                     <label class="control-label">Usuario:</label>
-                    <input type="text" class="form-control" name="<?php echo UsersManager::USER_LOGIN; ?>" placeholder="Usuario" autofocus="autofocus">
+                    <input class="form-control" name="<?php echo UsersManager::USER_LOGIN; ?>" placeholder="Usuario" autofocus>
                 </div>
                 <div class="form-group">
                     <label class="control-label">Contraseña:</label>
@@ -31,8 +31,9 @@ $siteUrl  = \SoftnCMS\rute\Router::getSiteURL();
                     <input type="email" class="form-control" name="<?php echo UsersManager::USER_EMAIL; ?>" placeholder="Correo electrónico">
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary" name="<?php echo UsersManager::FORM_SUBMIT; ?>" value="<?php echo UsersManager::FORM_SUBMIT; ?>">Registrar</button>
+                    <button class="btn btn-primary" name="<?php echo UsersManager::FORM_SUBMIT; ?>" value="<?php echo UsersManager::FORM_SUBMIT; ?>">Registrar</button>
                 </div>
+                <?php \SoftnCMS\util\Token::formField(); ?>
             </form>
         </div>
     </div>

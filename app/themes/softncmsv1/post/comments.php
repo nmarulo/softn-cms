@@ -1,4 +1,5 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\UsersManager;
@@ -60,14 +61,12 @@ if ($post->getPostCommentStatus()) {
         <h2>Publicar comentario</h2>
         <form method="post">
             <?php if (LoginManager::isLogin()) { ?>
-                <p>
-                    Conectado como <strong><?php echo $userSession->getUserName(); ?></strong>
-                </p>
+                <p>Conectado como <strong><?php echo $userSession->getUserName(); ?></strong></p>
                 <input type="hidden" name="<?php echo CommentsManager::COMMENT_USER_ID; ?>" value="<?php echo $userSession->getId(); ?>"/>
             <?php } else { ?>
                 <div class="form-group">
                     <label class="control-label">Nombre</label>
-                    <input type="text" class="form-control" name="<?php echo CommentsManager::COMMENT_AUTHOR; ?>"/>
+                    <input class="form-control" name="<?php echo CommentsManager::COMMENT_AUTHOR; ?>"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label">Correo electrónico</label>
@@ -79,11 +78,10 @@ if ($post->getPostCommentStatus()) {
                 <textarea class="form-control" name="<?php echo CommentsManager::COMMENT_CONTENTS; ?>" rows="5"></textarea>
             </div>
             <input type="hidden" name="<?php echo CommentsManager::POST_ID; ?>" value="<?php echo $post->getId(); ?>"/>
-            <button class="btn btn-primary" name="<?php echo CommentsManager::FORM_SUBMIT; ?>" value="<?php echo CommentsManager::FORM_SUBMIT; ?>" type="submit">Publicar</button>
+            <button class="btn btn-primary" name="<?php echo CommentsManager::FORM_SUBMIT; ?>" value="<?php echo CommentsManager::FORM_SUBMIT; ?>">Publicar</button>
+            <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>
-<?php } else {
-    ?>
+<?php } else { ?>
     <div class="alert alert-info">Los comentarios están cerrados.</div>
-<?php
-}
+<?php }

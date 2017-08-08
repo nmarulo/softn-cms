@@ -25,13 +25,13 @@ $currentMenuId     = $optionMenu->getOptionValue();
             <div class="form-group">
                 <label class="col-sm-2 control-label">Título del sitio</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="<?php echo $optionTitle->getOptionName(); ?>" value="<?php echo $optionTitle->getOptionValue(); ?>">
+                    <input class="form-control" name="<?php echo $optionTitle->getOptionName(); ?>" value="<?php echo $optionTitle->getOptionValue(); ?>">
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Descripción corta</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="<?php echo $optionDescription->getOptionName(); ?>" value="<?php echo $optionDescription->getOptionValue(); ?>">
+                    <input class="form-control" name="<?php echo $optionDescription->getOptionName(); ?>" value="<?php echo $optionDescription->getOptionValue(); ?>">
                 </div>
             </div>
             <div class="form-group">
@@ -50,8 +50,7 @@ $currentMenuId     = $optionMenu->getOptionValue();
                 <label class="col-sm-2 control-label">Menu</label>
                 <div class="col-sm-10">
                     <select class="form-control" name="<?php echo $optionMenu->getOptionName(); ?>">
-                        <?php
-                        array_walk($menuList, function(Menu $menu) use ($currentMenuId) {
+                        <?php array_walk($menuList, function(Menu $menu) use ($currentMenuId) {
                             $selected = '';
                             $menuId   = $menu->getId();
     
@@ -60,8 +59,7 @@ $currentMenuId     = $optionMenu->getOptionValue();
                             }
     
                             echo "<option value='$menuId' $selected>" . $menu->getMenuTitle() . '</option>';
-                        });
-                        ?>
+                        }); ?>
                     </select>
                 </div>
             </div>
@@ -75,8 +73,7 @@ $currentMenuId     = $optionMenu->getOptionValue();
                 <label class="col-sm-2 control-label">Seleccionar plantilla</label>
                 <div class="col-sm-10">
                     <select class="form-control" name="<?php echo $optionTheme->getOptionName(); ?>">
-                        <?php
-                        array_walk($listThemes, function($themeName) use ($currentThemeName) {
+                        <?php array_walk($listThemes, function($themeName) use ($currentThemeName) {
                             $selected = '';
     
                             if ($themeName == $currentThemeName) {
@@ -84,16 +81,16 @@ $currentMenuId     = $optionMenu->getOptionValue();
                             }
     
                             echo "<option value='$themeName' $selected>$themeName</option>";
-                        });
-                        ?>
+                        }); ?>
                     </select>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button class="btn btn-primary" type="submit" name="update" value="update">Guardar cambios</button>
+                    <button class="btn btn-primary" name="update" value="update">Guardar cambios</button>
                 </div>
             </div>
+            <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>
 </div>

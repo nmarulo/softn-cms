@@ -18,16 +18,18 @@ $isUpdate              = $method === MenusManager::FORM_UPDATE;
     
             if ($isUpdate && !empty($siteUrlEditParentMenu)) {
                 ?>
-                <a class="btn btn-primary" href="<?php echo $siteUrlEditParentMenu; ?>" title="Volver"><span class="glyphicon glyphicon-arrow-left"></span></a>
+                <a class="btn btn-primary" href="<?php echo $siteUrlEditParentMenu; ?>" title="Volver">
+                    <span class="glyphicon glyphicon-arrow-left"></span>
+                </a>
             <?php } ?>
         </h1>
     </div>
     <div>
-        <form role="form" method="post">
+        <form method="post">
             <div id="content-left" class="col-sm-9">
                 <div class="form-group">
                     <label class="control-label">Titulo</label>
-                    <input class="form-control" type="text" name="<?php echo MenusManager::MENU_TITLE; ?>" placeholder="Escribe el título" value="<?php echo $menu->getMenuTitle(); ?>">
+                    <input class="form-control" name="<?php echo MenusManager::MENU_TITLE; ?>" placeholder="Escribe el título" value="<?php echo $menu->getMenuTitle(); ?>">
                 </div>
                 <div class="form-group">
                     <label class="control-label">Enlace</label>
@@ -64,14 +66,15 @@ $isUpdate              = $method === MenusManager::FORM_UPDATE;
                     <div class="panel-heading">Publicación</div>
                     <div class="panel-body">
                         <?php if ($isUpdate) { ?>
-                            <button class="btn btn-primary btn-block" type="submit" name="<?php echo MenusManager::FORM_UPDATE; ?>" value="<?php echo MenusManager::FORM_UPDATE; ?>">Actualizar</button>
+                            <button class="btn btn-primary btn-block" name="<?php echo MenusManager::FORM_UPDATE; ?>" value="<?php echo MenusManager::FORM_UPDATE; ?>">Actualizar</button>
                         <?php } else { ?>
-                            <button class="btn btn-primary btn-block" type="submit" name="<?php echo MenusManager::FORM_CREATE; ?>" value="<?php echo MenusManager::FORM_CREATE; ?>">Publicar</button>
+                            <button class="btn btn-primary btn-block" name="<?php echo MenusManager::FORM_CREATE; ?>" value="<?php echo MenusManager::FORM_CREATE; ?>">Publicar</button>
                         <?php } ?>
                     </div>
                 </div>
             </div>
             <input type="hidden" name="<?php echo MenusManager::ID; ?>" value="<?php echo $menu->getId(); ?>"/>
+            <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>
 </div>
