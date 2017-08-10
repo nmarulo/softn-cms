@@ -61,5 +61,5 @@ $category = ViewController::getViewData('category');
         <?php } ?>
 </main>
 <?php
-ViewController::singleViewDirectoryViews('pagination');
+ViewController::singleRootView('pagination');
 

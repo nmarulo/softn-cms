@@ -5,7 +5,7 @@ use SoftnCMS\models\tables\Category;
 
 $categories    = ViewController::getViewData('categories');
 $siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/category/update/';
-ViewController::singleViewDirectory('pagination'); ?>
+ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -36,4 +36,4 @@ ViewController::singleViewDirectory('pagination'); ?>
         </tbody>
     </table>
 </div>
-<?php ViewController::singleViewDirectory('pagination');
+<?php ViewController::singleViewByDirectory('pagination');

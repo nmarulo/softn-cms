@@ -61,4 +61,4 @@ $term  = ViewController::getViewData('term');
         <?php } ?>
 </main>
 <?php
-ViewController::singleViewDirectoryViews('pagination');
+ViewController::singleRootView('pagination');

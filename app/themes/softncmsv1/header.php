@@ -4,5 +4,5 @@ use SoftnCMS\controllers\ViewController;
 
 ?>
 <header>
-<?php ViewController::singleViewDirectoryViews('menu'); ?>
+<?php ViewController::singleRootView('menu'); ?>
 </header>

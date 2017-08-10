@@ -57,4 +57,4 @@ $posts = ViewController::getViewData('posts');
     <?php } ?>
 </main>
 <?php
-ViewController::singleViewDirectoryViews('pagination');
+ViewController::singleRootView('pagination');

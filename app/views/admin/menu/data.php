@@ -7,7 +7,7 @@ $menus         = ViewController::getViewData('menus');
 $siteUrl       = \SoftnCMS\rute\Router::getSiteURL();
 $siteUrlUpdate = $siteUrl . 'admin/menu/update/';
 $siteUrlEdit   = $siteUrl . 'admin/menu/edit/';
-ViewController::singleViewDirectory('pagination'); ?>
+ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -39,4 +39,4 @@ ViewController::singleViewDirectory('pagination'); ?>
         </tbody>
     </table>
 </div>
-<?php ViewController::singleViewDirectory('pagination');
+<?php ViewController::singleViewByDirectory('pagination');

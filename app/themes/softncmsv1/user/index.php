@@ -61,4 +61,4 @@ $user  = ViewController::getViewData('user');
         <?php } ?>
 </main>
 <?php
-ViewController::singleViewDirectoryViews('pagination');
+ViewController::singleRootView('pagination');

@@ -29,7 +29,7 @@ ViewController::registerStyle('style');
             <?php ViewController::content(); ?>
         </div>
         <?php
-        ViewController::singleViewDirectory('messages');
+        ViewController::singleViewByDirectory('messages');
         ViewController::includeScripts();
         ?>
     </body>

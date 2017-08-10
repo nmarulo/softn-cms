@@ -11,39 +11,42 @@ namespace SoftnCMS\route;
  */
 class Route {
     
-    const DIRECTORY_ADMIN   = 'admin';
+    const CONTROLLER_DIRECTORY_NAME_ADMIN   = 'admin';
     
-    const DIRECTORY_LOGIN   = 'login';
+    const CONTROLLER_DIRECTORY_NAME_LOGIN   = 'login';
     
-    const DIRECTORY_INSTALL = 'install';
+    const CONTROLLER_DIRECTORY_NAME_INSTALL = 'install';
     
-    const DIRECTORY_THEME   = 'theme';
+    const CONTROLLER_DIRECTORY_NAME_THEME   = 'theme';
     
     /**
      * @var string Identifica el directorio del controlador,
      * en la carpeta "controllers".
      */
-    private $directoryController;
+    private $controllerDirectoryName;
     
     /**
      * @var string Nombre del directorio de las vistas del controlador.
      *             Si no es del tema, el directorio corresponde a las carpetas
      *             dentro de "views/{$directoryViews}" o "themes/{$directoryViews}".
      */
-    private $directoryViewsController;
+    private $directoryNameViewController;
     
     /**
-     * @var string Nombre del directorio de las vistas. "views" o "themes".
+     * @var string Nombre del directorio que contiene las vistas del controlador.
+     *             Ejemplo:
+     *                  /view/{$viewDirectoryName}
+     *                  /themes/{$viewDirectoryName}
      */
-    private $directoryViews;
+    private $viewDirectoryName;
     
     private $viewPath;
     
     /** @var string */
-    private $controller;
+    private $controllerName;
     
     /** @var string */
-    private $method;
+    private $methodName;
     
     /** @var int */
     private $parameter;
@@ -52,69 +55,69 @@ class Route {
      * Route constructor.
      */
     public function __construct() {
-        $this->directoryController      = 'theme';
-        $this->directoryViews           = 'default';
-        $this->directoryViewsController = 'index';
-        $this->controller               = 'Index';
-        $this->method                   = 'index';
-        $this->parameter                = '';
-        $this->viewPath                 = VIEWS;
+        $this->controllerDirectoryName     = 'theme';
+        $this->viewDirectoryName           = 'default';
+        $this->directoryNameViewController = 'index';
+        $this->controllerName              = 'Index';
+        $this->methodName                  = 'index';
+        $this->parameter                   = '';
+        $this->viewPath                    = VIEWS;
     }
     
     /**
      * @return string
      */
-    public function getDirectoryViews() {
-        return $this->directoryViews;
+    public function getViewDirectoryName() {
+        return $this->viewDirectoryName;
     }
     
     /**
-     * @param string $directoryViews
+     * @param string $viewDirectoryName
      */
-    public function setDirectoryViews($directoryViews) {
-        $this->directoryViews = $directoryViews;
-    }
-    
-    /**
-     * @return string
-     */
-    public function getDirectoryController() {
-        return $this->directoryController;
-    }
-    
-    /**
-     * @param string $directoryController
-     */
-    public function setDirectoryController($directoryController) {
-        $this->directoryController = $directoryController;
+    public function setViewDirectoryName($viewDirectoryName) {
+        $this->viewDirectoryName = $viewDirectoryName;
     }
     
     /**
      * @return string
      */
-    public function getController() {
-        return $this->controller;
+    public function getControllerDirectoryName() {
+        return $this->controllerDirectoryName;
     }
     
     /**
-     * @param string $controller
+     * @param string $controllerDirectoryName
      */
-    public function setController($controller) {
-        $this->controller = $controller;
+    public function setControllerDirectoryName($controllerDirectoryName) {
+        $this->controllerDirectoryName = $controllerDirectoryName;
     }
     
     /**
      * @return string
      */
-    public function getMethod() {
-        return $this->method;
+    public function getControllerName() {
+        return $this->controllerName;
     }
     
     /**
-     * @param string $method
+     * @param string $controllerName
      */
-    public function setMethod($method) {
-        $this->method = $method;
+    public function setControllerName($controllerName) {
+        $this->controllerName = $controllerName;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getMethodName() {
+        return $this->methodName;
+    }
+    
+    /**
+     * @param string $methodName
+     */
+    public function setMethodName($methodName) {
+        $this->methodName = $methodName;
     }
     
     /**
@@ -134,15 +137,15 @@ class Route {
     /**
      * @return string
      */
-    public function getDirectoryViewsController() {
-        return $this->directoryViewsController;
+    public function getDirectoryNameViewController() {
+        return $this->directoryNameViewController;
     }
     
     /**
-     * @param string $directoryViewsController
+     * @param string $directoryNameViewController
      */
-    public function setDirectoryViewsController($directoryViewsController) {
-        $this->directoryViewsController = $directoryViewsController;
+    public function setDirectoryNameViewController($directoryNameViewController) {
+        $this->directoryNameViewController = $directoryNameViewController;
     }
     
     /**

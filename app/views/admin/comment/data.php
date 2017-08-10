@@ -7,7 +7,7 @@ use SoftnCMS\models\tables\Comment;
 $comments       = ViewController::getViewData('comments');
 $optionsManager = new OptionsManager();
 $siteUrlUpdate  = \SoftnCMS\rute\Router::getSiteURL() . 'admin/comment/update/';
-ViewController::singleViewDirectory('pagination'); ?>
+ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -47,4 +47,4 @@ ViewController::singleViewDirectory('pagination'); ?>
         </tbody>
     </table>
 </div>
-<?php ViewController::singleViewDirectory('pagination');
+<?php ViewController::singleViewByDirectory('pagination');

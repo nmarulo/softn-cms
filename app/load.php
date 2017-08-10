@@ -19,8 +19,8 @@ session_start();
 $router = new Router();
 $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     $route               = $router->getRoute();
-    $directoryController = $route->getDirectoryController();
-    $directoryView       = $route->getDirectoryViewsController();
+    $directoryController = $route->getControllerDirectoryName();
+    $directoryView       = $route->getDirectoryNameViewController();
     $optionsManager      = new OptionsManager();
     
     if (defined('INSTALL') || $directoryController == 'install') {

@@ -23,7 +23,7 @@ abstract class CUDControllerAbstract extends ControllerAbstract {
         if (empty($isCallAJAX)) {
             $this->index();
         } else {
-            ViewController::singleViewDirectory('messages');
+            ViewController::singleViewByDirectory('messages');
         }
     }
     

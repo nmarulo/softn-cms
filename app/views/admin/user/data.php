@@ -5,7 +5,7 @@ use SoftnCMS\models\tables\User;
 
 $users         = ViewController::getViewData('users');
 $siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/user/update/';
-ViewController::singleViewDirectory('pagination'); ?>
+ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -48,4 +48,4 @@ ViewController::singleViewDirectory('pagination'); ?>
         </tbody>
     </table>
 </div>
-<?php ViewController::singleViewDirectory('pagination');
+<?php ViewController::singleViewByDirectory('pagination');

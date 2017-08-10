@@ -6,6 +6,8 @@
 namespace SoftnCMS\controllers;
 
 use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\route\Route;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 
 /**
@@ -14,26 +16,26 @@ use SoftnCMS\util\Arrays;
  */
 class ViewController {
     
-    /** @var string Nombre del directorio de la vista del controlador. */
+    /** @var string Nombre del directorio del controlador de la vista. */
     private static $DIRECTORY_VIEWS_CONTROLLER = '';
     
-    /** @var string Nombre del directorio de las vistas. */
+    /** @var string Nombre del directorio de la vista o del tema actual. */
     private static $DIRECTORY_VIEWS = '';
     
     /** @var array Lista de datos a enviar a la vista. */
     private static $VIEW_DATA = [];
     
-    /** @var string Contenido principal de la vista. */
-    private static $VIEW_CONTENT = '';
+    /** @var string Ruta de la vista del controlador a incluir. */
+    private static $CONTROLLER_VIEW_PATH = '';
     
     /** @var array Lista de nombre de los scripts. */
     private static $VIEW_SCRIPTS = [];
     
     /** @var array Lista de nombre de los estilos. */
-    private static $VIEW_STYLES   = [];
+    private static $VIEW_STYLES = [];
     
-    private static $VIEW_PATH     = '';
-    
+    /** @var string Ruta del directorio de las vistas. */
+    private static $VIEW_PATH = '';
     
     /**
      * @param string $viewPath
@@ -64,34 +66,28 @@ class ViewController {
      * @param string $fileName Nombre de la vista.
      */
     public static function view($fileName) {
-        self::setViewContent($fileName);
-        self::includeView(self::getDirectoryPathViews('index'));
+        self::$CONTROLLER_VIEW_PATH = self::getControllerViewPath($fileName);
+        self::includePath(self::getPathView('index'));
         self::$VIEW_DATA = [];
     }
     
-    /**
-     * Método que establece el contenido principal de la vista.
-     *
-     * @param string $fileName
-     */
-    private static function setViewContent($fileName) {
-        self::$VIEW_CONTENT = self::getDirectoryPathViewController($fileName);
+    private static function getControllerViewPath($fileName) {
+        return self::getPath($fileName, self::$DIRECTORY_VIEWS, self::$DIRECTORY_VIEWS_CONTROLLER);
     }
     
-    private static function getDirectoryPathViewController($fileName) {
-        return self::getDirectoryPath($fileName, self::$DIRECTORY_VIEWS, self::$DIRECTORY_VIEWS_CONTROLLER);
-    }
-    
-    private static function getDirectoryPath($fileName, $viewsDirectory, $directory) {
-        if (!empty($directory)) {
-            $directory .= DIRECTORY_SEPARATOR;
-        }
-        
-        if (!empty($viewsDirectory)) {
-            $viewsDirectory .= DIRECTORY_SEPARATOR;
-        }
+    private static function getPath($fileName, $viewsDirectory, $directory) {
+        $directory      = self::addDirectorySeparator($directory);
+        $viewsDirectory = self::addDirectorySeparator($viewsDirectory);
         
         return self::$VIEW_PATH . $viewsDirectory . $directory . $fileName . '.php';
+    }
+    
+    private static function addDirectorySeparator($value) {
+        if (empty($value)) {
+            return '';
+        }
+        
+        return $value . DIRECTORY_SEPARATOR;
     }
     
     /**
@@ -101,7 +97,7 @@ class ViewController {
      *
      * @return bool|mixed
      */
-    private static function includeView($path) {
+    private static function includePath($path) {
         if (file_exists($path)) {
             require $path;
         }
@@ -109,8 +105,8 @@ class ViewController {
         return FALSE;
     }
     
-    private static function getDirectoryPathViews($fileName) {
-        return self::getDirectoryPath($fileName, self::$DIRECTORY_VIEWS, '');
+    private static function getPathView($fileName) {
+        return self::getPath($fileName, self::$DIRECTORY_VIEWS, '');
     }
     
     /**
@@ -119,11 +115,7 @@ class ViewController {
      * @param $fileName
      */
     public static function singleView($fileName) {
-        self::singleViewDirectory($fileName, self::$DIRECTORY_VIEWS, self::$DIRECTORY_VIEWS_CONTROLLER);
-    }
-    
-    public static function singleViewDirectoryViews($fileName){
-        self::singleViewDirectory($fileName, self::$DIRECTORY_VIEWS, '');
+        self::singleViewByDirectory($fileName, self::$DIRECTORY_VIEWS, self::$DIRECTORY_VIEWS_CONTROLLER);
     }
     
     /**
@@ -131,11 +123,15 @@ class ViewController {
      * con la posibilidad de indicar un directorio diferente.
      *
      * @param string $fileName
-     * @param string $viewsDirectory
+     * @param string $viewDirectory
      * @param string $directory
      */
-    public static function singleViewDirectory($fileName, $viewsDirectory = '', $directory = '') {
-        self::includeView(self::getDirectoryPath($fileName, $viewsDirectory, $directory));
+    public static function singleViewByDirectory($fileName, $viewDirectory = '', $directory = '') {
+        self::includePath(self::getPath($fileName, $viewDirectory, $directory));
+    }
+    
+    public static function singleRootView($fileName) {
+        self::singleViewByDirectory($fileName, self::$DIRECTORY_VIEWS, '');
     }
     
     /**
@@ -152,28 +148,28 @@ class ViewController {
      * Método que incluye el encabezado común de la vista.
      */
     public static function header() {
-        self::includeView(self::getDirectoryPathViews('header'));
+        self::includePath(self::getPathView('header'));
     }
     
     /**
      * Método que incluye el pie de pagina común de la vista.
      */
     public static function footer() {
-        self::includeView(self::getDirectoryPathViews('footer'));
+        self::includePath(self::getPathView('footer'));
     }
     
     /**
      * Método que incluye la barra lateral común de la vista.
      */
     public static function sidebar() {
-        self::includeView(self::getDirectoryPathViews('sidebar'));
+        self::includePath(self::getPathView('sidebar'));
     }
     
     /**
      * Método que incluye el contenido de la vista.
      */
     public static function content() {
-        self::includeView(self::$VIEW_CONTENT);
+        self::includePath(self::$CONTROLLER_VIEW_PATH);
     }
     
     /**
@@ -192,40 +188,53 @@ class ViewController {
      * Método que incluye el nombre del script js.
      */
     public static function includeScripts() {
-        $optionsManager = new OptionsManager();
-        $baseUrl        = $optionsManager->getSiteUrl();
+        self::$VIEW_SCRIPTS = array_map(function($path) {
+            return "<script src='$path.js' type='text/javascript'></script>";
+        }, self::$VIEW_SCRIPTS);
         
-        foreach (self::$VIEW_SCRIPTS as $script) {
-            $script = $baseUrl . $script;
-            echo "<script src='$script.js' type='text/javascript'></script>";
-        }
+        echo implode('', self::$VIEW_SCRIPTS);
     }
     
     public static function includeStyles() {
-        $optionsManager = new OptionsManager();
-        $baseUrl        = $optionsManager->getSiteUrl();
+        self::$VIEW_STYLES = array_map(function($path) {
+            return "<link href='$path.css' rel='stylesheet' type='text/css'/>";
+        }, self::$VIEW_STYLES);
         
-        foreach (self::$VIEW_STYLES as $style) {
-            $style = $baseUrl . $style;
-            echo "<link href='$style.css' rel='stylesheet' type='text/css'/>";
-        }
+        echo implode('', self::$VIEW_STYLES);
     }
     
     public static function registerScript($scriptName) {
-        self::registerScriptRoute("app/resources/js/$scriptName");
+        self::registerScriptRoute(self::getPathResources('js', $scriptName));
     }
     
     public static function registerScriptRoute($scriptRute) {
+        $scriptRute = Router::getSiteURL() . $scriptRute;
+        
         if (Arrays::valueExists(self::$VIEW_SCRIPTS, $scriptRute) === FALSE) {
             self::$VIEW_SCRIPTS[] = $scriptRute;
         }
     }
     
+    private static function getPathResources($type, $fileName) {
+        return sprintf('app%1$s/resources/%2$s/%3$s', self::getPathTheme(), $type, $fileName);
+    }
+    
+    private static function getPathTheme() {
+        if (Router::getCurrentDirectory() == Route::CONTROLLER_DIRECTORY_NAME_THEME) {
+            //$DIRECTORY_VIEWS contiene el nombre del tema.
+            return '/themes/' . self::$DIRECTORY_VIEWS;
+        }
+        
+        return '';
+    }
+    
     public static function registerStyle($styleName) {
-        self::registerStyleRoute("app/resources/css/$styleName");
+        self::registerStyleRoute(self::getPathResources('css', $styleName));
     }
     
     public static function registerStyleRoute($styleRute) {
+        $styleRute = Router::getSiteURL() . $styleRute;
+        
         if (Arrays::valueExists(self::$VIEW_STYLES, $styleRute) === FALSE) {
             self::$VIEW_STYLES[] = $styleRute;
         }

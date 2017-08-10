@@ -5,7 +5,7 @@ use SoftnCMS\controllers\ViewController;
 
 $posts         = ViewController::getViewData('posts');
 $siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/post/update/';
-ViewController::singleViewDirectory('pagination'); ?>
+ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -45,4 +45,4 @@ ViewController::singleViewDirectory('pagination'); ?>
         </tbody>
     </table>
 </div>
-<?php ViewController::singleViewDirectory('pagination');
+<?php ViewController::singleViewByDirectory('pagination');

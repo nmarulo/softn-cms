@@ -27,7 +27,7 @@ class Router {
     /** @var string */
     private static $SITE_URL;
     
-    /** @var string */
+    /** @var string Directorio del controlador actual. */
     private static $CURRENT_DIRECTORY;
     
     /** @var Request */
@@ -132,9 +132,9 @@ class Router {
      * @return mixed
      */
     private function instanceController() {
-        $controllerName      = $this->route->getController();
+        $controllerName      = $this->route->getControllerName();
         $controllerName      .= 'Controller';
-        $controllerDirectory = $this->route->getDirectoryController();
+        $controllerDirectory = $this->route->getControllerDirectoryName();
         $pathController      = CONTROLLERS . $controllerDirectory . DIRECTORY_SEPARATOR;
         $pathController      .= "$controllerName.php";
         
@@ -153,11 +153,11 @@ class Router {
      * @return string
      */
     private function getMethod($instanceController) {
-        $method = $this->route->getMethod();
+        $method = $this->route->getMethodName();
         
         if (!method_exists($instanceController, $method)) {
             $method = 'index';
-            $this->route->setMethod($method);
+            $this->route->setMethodName($method);
         }
         
         return $method;
@@ -173,9 +173,9 @@ class Router {
     }
     
     private function setDirectoryView() {
-        self::$CURRENT_DIRECTORY = $this->route->getDirectoryController();
-        ViewController::setDirectoryViews($this->route->getDirectoryViews());
-        ViewController::setDirectoryViewsController($this->route->getDirectoryViewsController());
+        self::$CURRENT_DIRECTORY = $this->route->getControllerDirectoryName();
+        ViewController::setDirectoryViews($this->route->getViewDirectoryName());
+        ViewController::setDirectoryViewsController($this->route->getDirectoryNameViewController());
         ViewController::setViewPath($this->route->getViewPath());
     }
 }

@@ -49,7 +49,7 @@ $siteTitle      = $optionsManager->searchByName(OPTION_TITLE)
             </div>
         </div>
         <?php
-        ViewController::singleViewDirectory('messages');
+        ViewController::singleViewByDirectory('messages');
         ViewController::includeScripts();
         ?>
     </body>
