@@ -25,9 +25,6 @@ class User extends TableAbstract {
     /** @var string */
     private $userPassword;
     
-    /** @var int */
-    private $userRol;
-    
     /** @var string */
     private $userRegistered;
     
@@ -105,20 +102,6 @@ class User extends TableAbstract {
      */
     public function setUserPassword($userPassword) {
         $this->userPassword = $userPassword;
-    }
-    
-    /**
-     * @return int
-     */
-    public function getUserRol() {
-        return $this->userRol;
-    }
-    
-    /**
-     * @param int $userRol
-     */
-    public function setUserRol($userRol) {
-        $this->userRol = $userRol;
     }
     
     /**

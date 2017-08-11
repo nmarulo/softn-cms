@@ -87,23 +87,19 @@ class Request {
     
     private function setRuteController($controllerName) {
         if ($controllerName !== FALSE) {
-            $controllerSanitize = Sanitize::alphabetic($controllerName);
-            //ucfirst(): Convierte el primer carácter en mayúscula.
-            $this->route->setControllerName(ucfirst($controllerSanitize));
+            $this->route->setControllerName(Sanitize::alphabetic($controllerName));
         }
     }
     
     private function setRuteMethod($methodName) {
         if ($methodName !== FALSE) {
-            $methodSanitize = Sanitize::alphabetic($methodName);
-            $this->route->setMethodName($methodSanitize);
+            $this->route->setMethodName(Sanitize::alphabetic($methodName));
         }
     }
     
     private function setRuteParameter($parameter) {
         if ($parameter !== FALSE) {
-            $parameterSanitize = Sanitize::integer($parameter);
-            $this->route->setParameter($parameterSanitize);
+            $this->route->setParameter(Sanitize::integer($parameter));
         }
     }
     
