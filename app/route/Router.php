@@ -5,6 +5,8 @@
 
 namespace SoftnCMS\rute;
 
+use Gettext\Translations;
+use Gettext\Translator;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;

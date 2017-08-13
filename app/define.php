@@ -40,6 +40,8 @@ define('VIEWS', ABSPATH . 'views' . DIRECTORY_SEPARATOR);
 /** Ruta de los temas de la aplicación. */
 define('THEMES', ABSPATH . 'themes' . DIRECTORY_SEPARATOR);
 
+define('LANGUAGES', ABSPATH . 'util' . DIRECTORY_SEPARATOR . 'languages' . DIRECTORY_SEPARATOR);
+
 /** Directorio de los temas de la aplicación. */
 define('APP_THEMES', 'app' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR);
 
@@ -53,3 +55,4 @@ define('OPTION_SITE_URL', 'optionSiteUrl');
 define('OPTION_THEME', 'optionTheme');
 define('OPTION_EMAIL_ADMIN', 'optionEmailAdmin');
 define('OPTION_MENU', 'optionMenu');
+define('OPTION_LANGUAGE', 'optionLanguage');

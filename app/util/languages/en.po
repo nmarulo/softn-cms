@@ -1,0 +1,78 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SoftN-CMS v0.4-alpha\n"
+"POT-Creation-Date: 2017-08-12 20:17+0200\n"
+"PO-Revision-Date: 2017-08-12 20:18+0200\n"
+"Last-Translator: \n"
+"Language-Team: Nicolás Marulanda P.\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.3\n"
+"X-Poedit-Basepath: ../..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: vendor\n"
+
+#: views/admin/index/index.php:17
+msgid "Publicaciones"
+msgstr "Posts"
+
+#: views/admin/index/index.php:18 views/admin/sidebar.php:65
+msgid "Comentarios"
+msgstr "Comments"
+
+#: views/admin/index/index.php:22
+msgid "Información general"
+msgstr "General information"
+
+#: views/admin/index/index.php:27
+msgid "Estadísticas Generales"
+msgstr "Statistics"
+
+#: views/admin/index/index.php:36
+msgid "Paginas"
+msgstr "Pages"
+
+#: views/admin/index/index.php:44 views/admin/sidebar.php:43
+msgid "Categorías"
+msgstr "Categories"
+
+#: views/admin/index/index.php:48 views/admin/sidebar.php:48
+msgid "Etiquetas"
+msgstr "Terms"
+
+#: views/admin/index/index.php:52 views/admin/sidebar.php:16
+msgid "Usuarios"
+msgstr "Users"
+
+#: views/admin/sidebar.php:15
+msgid "Entradas"
+msgstr "Posts"
+
+#: views/admin/sidebar.php:22
+msgid "Información"
+msgstr "Information"
+
+#: views/admin/sidebar.php:38
+msgid "Nueva entrada"
+msgstr "New Post"
+
+#: views/admin/sidebar.php:55
+msgid "Menus"
+msgstr "Menus"
+
+#: views/admin/sidebar.php:60
+msgid "Barras laterales"
+msgstr "Sidebars"
+
+#: views/admin/sidebar.php:81
+msgid "Nuevo usuario"
+msgstr "New user"
+
+#: views/admin/sidebar.php:88
+msgid "Configuración"
+msgstr "Option"

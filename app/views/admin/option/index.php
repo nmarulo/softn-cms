@@ -14,8 +14,10 @@ $optionEmailAdmin  = ViewController::getViewData('optionEmailAdmin');
 $listThemes        = ViewController::getViewData('listThemes');
 $currentThemeName  = $optionTheme->getOptionValue();
 $currentMenuId     = $optionMenu->getOptionValue();
+$optionLanguage    = ViewController::getViewData('optionLanguage');
+$currentLanguage   = $optionLanguage->getOptionValue();
+$listLanguages     = ViewController::getViewData('listLanguages');
 ?>
-
 <div class="page-container">
     <div>
         <h1>Configuración general</h1>
@@ -81,6 +83,23 @@ $currentMenuId     = $optionMenu->getOptionValue();
                             }
     
                             echo "<option value='$themeName' $selected>$themeName</option>";
+                        }); ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Seleccionar idioma</label>
+                <div class="col-sm-10">
+                    <select class="form-control" name="<?php echo $optionLanguage->getOptionName(); ?>">
+                        <option value="es">es</option>
+                        <?php array_walk($listLanguages, function($language) use ($currentLanguage) {
+                            $selected = '';
+        
+                            if ($language == $currentLanguage) {
+                                $selected = 'selected';
+                            }
+        
+                            echo "<option value='$language' $selected>$language</option>";
                         }); ?>
                     </select>
                 </div>

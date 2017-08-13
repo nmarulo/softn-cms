@@ -94,6 +94,10 @@ class OptionController extends ControllerAbstract {
                                     ->build(),
             InputIntegerBuilder::init(OPTION_MENU)
                                ->build(),
+            InputAlphabeticBuilder::init(OPTION_LANGUAGE)
+                                  ->setAccents(FALSE)
+                                  ->setSpecialChar(TRUE)
+                                  ->build(),
         ]);
         
         return Form::inputFilter();
@@ -109,8 +113,25 @@ class OptionController extends ControllerAbstract {
         $optionTheme       = $optionsManager->searchByName(OPTION_THEME);
         $optionMenu        = $optionsManager->searchByName(OPTION_MENU);
         $optionEmailAdmin  = $optionsManager->searchByName(OPTION_EMAIL_ADMIN);
+        $optionLanguage    = $optionsManager->searchByName(OPTION_LANGUAGE);
         $menuList          = $menusManager->searchAllParent();
+        $listLanguages     = Util::getFilesAndDirectories(LANGUAGES);
+        $listLanguages     = array_filter($listLanguages, function($language) {
+            $aux          = explode('.', $language);
+            $lastPosition = count($aux) - 1;
+            
+            if (Arrays::get($aux, $lastPosition) === FALSE || Arrays::get($aux, 0) === FALSE) {
+                return FALSE;
+            }
+            
+            return Arrays::get($aux, $lastPosition) == 'po';
+        });
+        $listLanguages     = array_map(function($language) {
+            return Arrays::get(explode('.', $language), 0);
+        }, $listLanguages);
         
+        ViewController::sendViewData('listLanguages', $listLanguages);
+        ViewController::sendViewData('optionLanguage', $optionLanguage);
         ViewController::sendViewData('menuList', $menuList);
         ViewController::sendViewData('optionMenu', $optionMenu);
         ViewController::sendViewData('listThemes', Util::getFilesAndDirectories(THEMES));
