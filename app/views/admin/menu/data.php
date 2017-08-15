@@ -3,25 +3,27 @@
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Menu;
 
-$menus         = ViewController::getViewData('menus');
-$siteUrl       = \SoftnCMS\rute\Router::getSiteURL();
-$siteUrlUpdate = $siteUrl . 'admin/menu/update/';
-$siteUrlEdit   = $siteUrl . 'admin/menu/edit/';
+$menus                = ViewController::getViewData('menus');
+$siteUrl              = \SoftnCMS\rute\Router::getSiteURL();
+$siteUrlUpdate        = $siteUrl . 'admin/menu/update/';
+$siteUrlEdit          = $siteUrl . 'admin/menu/edit/';
+$strTranslateTitle    = __('Título');
+$strTranslateElements = __('Elementos');
 ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th></th>
-                <th>Título</th>
-                <th>Elementos</th>
+                <th><?php echo $strTranslateTitle; ?></th>
+                <th><?php echo $strTranslateElements; ?></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th></th>
-                <th>Título</th>
-                <th>Elementos</th>
+                <th><?php echo $strTranslateTitle; ?></th>
+                <th><?php echo $strTranslateElements; ?></th>
             </tr>
         </tfoot>
         <tbody>

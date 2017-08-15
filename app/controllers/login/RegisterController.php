@@ -40,12 +40,12 @@ class RegisterController extends ControllerAbstract {
                 
                 if ($usersManager->create($user)) {
                     $optionsManager = new OptionsManager();
-                    Messages::addSuccess('Usuario registrado correctamente.', TRUE);
+                    Messages::addSuccess(__('Usuario registrado correctamente.'), TRUE);
                     Util::redirect($optionsManager->getSiteUrl(), 'login');
                 }
             }
             
-            Messages::addDanger('Error al registrar el usuario.');
+            Messages::addDanger(__('Error al registrar el usuario.'));
         }
     }
     

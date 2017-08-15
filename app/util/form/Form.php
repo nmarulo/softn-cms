@@ -69,7 +69,7 @@ class Form {
             $value = $data->filter();
             
             if ($value === '' && $data->isRequire()) {
-                Messages::addDanger('El campo "' . $data->getName() . '" es obligatorio.');
+                Messages::addDanger(__('El campo "%1$s" es obligatorio.', $data->getName()));
                 $notError = FALSE;
                 $output   = FALSE;
                 Token::regenerate();

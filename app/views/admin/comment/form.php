@@ -23,45 +23,46 @@ $showAuthorAndEmail = empty($comment->getCommentUserID());
                         <div class="panel-body">
                             <?php if ($showAuthorAndEmail) { ?>
                                 <div class="form-group">
-                                <label class="control-label">Autor</label>
+                                <label class="control-label"><?php echo __('Autor'); ?></label>
                                 <input class="form-control input-lg" name="<?php echo CommentsManager::COMMENT_AUTHOR; ?>" value="<?php echo $comment->getCommentAuthor(); ?>">
                             </div>
                                 <div class="form-group">
-                                <label class="control-label">Correo electrónico</label>
+                                <label class="control-label"><?php echo __('Correo electrónico'); ?></label>
                                 <input type="email" class="form-control input-lg" name="<?php echo CommentsManager::COMMENT_AUTHOR_EMAIL; ?>" value="<?php echo $comment->getCommentAuthorEmail(); ?>">
                             </div>
                             <?php }
 
                             if ($isUpdate) { ?>
                                 <div class="form-group">
-                                    <label class="control-label">Fecha de publicación</label>
+                                    <label class="control-label"><?php echo __('Fecha de publicación'); ?></label>
                                     <input class="form-control input-lg" value="<?php echo $comment->getCommentDate(); ?>" disabled>
                                 </div>
                             <?php } ?>
                             <div class="form-group">
-                                <label class="control-label">Entrada</label>
+                                <label class="control-label"><?php echo __('Entrada'); ?></label>
                                 <input class="form-control input-lg" name="<?php echo CommentsManager::POST_ID; ?>" value="<?php echo $comment->getPostID(); ?>" <?php echo $disabledPostId; ?>>
                             </div>
                             <div class="form-group form-inline checkbox">
                                 <label class="control-label">
-                                    <input type="checkbox" name="<?php echo CommentsManager::COMMENT_STATUS; ?>" <?php echo $comment->getCommentStatus() ? 'checked' : ''; ?>> Comentario aprobado.
+                                    <input type="checkbox" name="<?php echo CommentsManager::COMMENT_STATUS; ?>" <?php echo $comment->getCommentStatus() ? 'checked' : ''; ?>>
+                                    <?php echo __('Comentario aprobado'); ?>
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label">Contenido del comentario</label>
+                        <label class="control-label"><?php echo __('Contenido del comentario'); ?></label>
                         <textarea id="textContent" class="form-control" name="<?php echo CommentsManager::COMMENT_CONTENTS; ?>" rows="5"><?php echo $comment->getCommentContents(); ?></textarea>
                     </div>
                 </div>
                 <div id="content-right" class="col-sm-3">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Publicación</div>
+                        <div class="panel-heading"><?php echo __('Publicación'); ?></div>
                         <div class="panel-body">
                             <?php if ($isUpdate) { ?>
-                                <button class="btn btn-primary btn-block" name="<?php echo CommentsManager::FORM_UPDATE; ?>" value="<?php echo CommentsManager::FORM_UPDATE; ?>">Actualizar</button>
+                                <button class="btn btn-primary btn-block" name="<?php echo CommentsManager::FORM_UPDATE; ?>" value="<?php echo CommentsManager::FORM_UPDATE; ?>"><?php  echo __('Actualizar');?></button>
                             <?php } else { ?>
-                                <button class="btn btn-primary btn-block" name="<?php echo CommentsManager::FORM_CREATE; ?>" value="<?php echo CommentsManager::FORM_CREATE; ?>">Publicar</button>
+                                <button class="btn btn-primary btn-block" name="<?php echo CommentsManager::FORM_CREATE; ?>" value="<?php echo CommentsManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
                             <?php } ?>
                         </div>
                     </div>

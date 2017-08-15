@@ -28,22 +28,22 @@ $linkPost             = ViewController::getViewData('linkPost');
             <form method="post">
                 <div class="col-sm-9">
                     <div class="form-group">
-                        <input class="form-control input-lg" name="<?php echo PostsManager::POST_TITLE; ?>" placeholder="Escribe el título" value="<?php echo $post->getPostTitle(); ?>">
+                        <input class="form-control input-lg" name="<?php echo PostsManager::POST_TITLE; ?>" value="<?php echo $post->getPostTitle(); ?>">
                     </div>
                     <?php if ($isUpdate) { ?>
                         <div class="form-group">
-                            <label>Enlace: <a href="<?php echo $linkPost; ?>" target="_blank"><?php echo $linkPost; ?></a></label>
+                            <label><?php echo __('Enlace'); ?>: <a href="<?php echo $linkPost; ?>" target="_blank"><?php echo $linkPost; ?></a></label>
                         </div>
                     <?php } ?>
                     <div class="form-group">
-                        <label class="control-label">Contenido de la entrada</label>
+                        <label class="control-label"><?php echo __('Contenido'); ?></label>
                         <textarea id="textContent" class="form-control" name="<?php echo PostsManager::POST_CONTENTS; ?>" rows="5"><?php echo $post->getPostContents(); ?></textarea>
                     </div>
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class="checkbox">
                                 <label>
-                                    <input name="<?php echo PostsManager::POST_COMMENT_STATUS; ?>" type="checkbox" <?php echo $post->getPostCommentStatus() ? 'checked' : ''; ?>> Habilitar comentarios
+                                    <input name="<?php echo PostsManager::POST_COMMENT_STATUS; ?>" type="checkbox" <?php echo $post->getPostCommentStatus() ? 'checked' : ''; ?>> <?php echo __('Habilitar comentarios'); ?>
                                 </label>
                             </div>
                         </div>
@@ -51,26 +51,26 @@ $linkPost             = ViewController::getViewData('linkPost');
                 </div>
                 <div id="content-right" class="col-sm-3">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Publicación</div>
+                        <div class="panel-heading"><?php echo __('Publicación'); ?></div>
                         <div class="panel-body">
                             <div class="form-group checkbox">
                                 <label>
-                                    <input name="<?php echo PostsManager::POST_STATUS; ?>" type="checkbox" <?php echo $post->getPostStatus() ? 'checked' : ''; ?>> Visible
+                                    <input name="<?php echo PostsManager::POST_STATUS; ?>" type="checkbox" <?php echo $post->getPostStatus() ? 'checked' : ''; ?>> <?php echo __('Visible'); ?>
                                 </label>
                             </div>
                             <?php if ($isUpdate) { ?>
-                                <p>Ultima actualización: <span class="label label-warning">
+                                <p><?php echo __('Ultima actualización'); ?>: <span class="label label-warning">
                                         <span class="glyphicon glyphicon-time"></span>
                                         <?php echo $post->getPostUpdate(); ?></span>
                                 </p>
-                                <button class="btn btn-primary btn-block" name="<?php echo PostsManager::FORM_UPDATE; ?>" value="<?php echo PostsManager::FORM_UPDATE; ?>">Actualizar</button>
+                                <button class="btn btn-primary btn-block" name="<?php echo PostsManager::FORM_UPDATE; ?>" value="<?php echo PostsManager::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
                             <?php } else { ?>
-                                <button class="btn btn-primary btn-block" name="<?php echo PostsManager::FORM_CREATE; ?>" value="<?php echo PostsManager::FORM_CREATE; ?>">Publicar</button>
+                                <button class="btn btn-primary btn-block" name="<?php echo PostsManager::FORM_CREATE; ?>" value="<?php echo PostsManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
                             <?php } ?>
                         </div>
                     </div>
                     <div class="panel panel-default">
-                        <div class="panel-heading">Categorías</div>
+                        <div class="panel-heading"><?php echo __('Categorías'); ?></div>
                         <div class="panel-body">
                             <select name="<?php echo PostsCategoriesManager::CATEGORY_ID; ?>[]" multiple class="form-control">
                                 <?php array_walk($categories, function(Category $category) use ($selectedCategoriesId) {
@@ -87,7 +87,7 @@ $linkPost             = ViewController::getViewData('linkPost');
                         </div>
                     </div>
                     <div class="panel panel-default">
-                        <div class="panel-heading">Etiquetas</div>
+                        <div class="panel-heading"><?php echo __('Etiquetas'); ?></div>
                         <div class="panel-body">
                             <select name="<?php echo PostsTermsManager::TERM_ID; ?>[]" multiple class="form-control">
                                 <?php array_walk($terms, function(Term $term) use ($selectedTermsId) {

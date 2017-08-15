@@ -33,16 +33,16 @@ class SidebarController extends CUDControllerAbstract {
                 $sidebar         = Arrays::get($form, 'sidebar');
                 
                 if ($sidebarsManager->create($sidebar)) {
-                    Messages::addSuccess('Barra lateral creado correctamente.', TRUE);
+                    Messages::addSuccess(__('Barra lateral creado correctamente.'), TRUE);
                     Util::redirect(Router::getSiteURL() . 'admin/sidebar');
                 }
             }
             
-            Messages::addDanger('Error al crear el sidebar.');
+            Messages::addDanger(__('Error al crear el sidebar.'));
         }
         
         ViewController::sendViewData('sidebar', new Sidebar());
-        ViewController::sendViewData('title', 'Crear nuevo');
+        ViewController::sendViewData('title', __('Crear nuevo'));
         ViewController::view('form');
     }
     
@@ -82,27 +82,27 @@ class SidebarController extends CUDControllerAbstract {
         $sidebar         = $sidebarsManager->searchById($id);
         
         if (empty($sidebar)) {
-            Messages::addDanger('La barra lateral no existe.', TRUE);
+            Messages::addDanger(__('La barra lateral no existe.'), TRUE);
             Util::redirect(Router::getSiteURL() . 'admin/sidebar');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
-                    Messages::addDanger('Error en los campos del a barra lateral.');
+                    Messages::addDanger(__('Error en los campos del a barra lateral.'));
                 } else {
                     $sidebar = Arrays::get($form, 'sidebar');
                     
                     if ($sidebarsManager->update($sidebar)) {
-                        Messages::addSuccess('Barra lateral actualizada correctamente.');
+                        Messages::addSuccess(__('Barra lateral actualizada correctamente.'));
                     } else {
-                        Messages::addDanger('Error al actualizar la barra lateral.');
+                        Messages::addDanger(__('Error al actualizar la barra lateral.'));
                     }
                 }
             }
             
             ViewController::sendViewData('sidebar', $sidebar);
-            ViewController::sendViewData('title', 'Actualizar');
+            ViewController::sendViewData('title', __('Actualizar'));
             ViewController::view('form');
         }
     }
@@ -111,9 +111,9 @@ class SidebarController extends CUDControllerAbstract {
         $sidebarsManager = new SidebarsManager();
         
         if (empty($sidebarsManager->delete($id))) {
-            Messages::addDanger('Error al borrar la barra lateral.');
+            Messages::addDanger(__('Error al borrar la barra lateral.'));
         } else {
-            Messages::addSuccess('Barra lateral borrada correctamente.');
+            Messages::addSuccess(__('Barra lateral borrada correctamente.'));
         }
         
         parent::delete($id);

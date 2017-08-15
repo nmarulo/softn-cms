@@ -14,31 +14,31 @@ $isUpdate = $method == UsersManager::FORM_UPDATE;
     <div>
         <form class="form-horizontal" role="form" method="post">
             <div class="form-group">
-                <label class="col-sm-2 control-label">Usuario</label>
+                <label class="col-sm-2 control-label"><?php echo __('Usuario'); ?></label>
                 <div class="col-sm-10">
                     <input class="form-control" name="<?php echo UsersManager::USER_LOGIN; ?>" value="<?php echo $user->getUserLogin(); ?>">
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">Nombre</label>
+                <label class="col-sm-2 control-label"><?php echo __('Nombre'); ?></label>
                 <div class="col-sm-10">
                     <input class="form-control" name="<?php echo UsersManager::USER_NAME; ?>" value="<?php echo $user->getUserName(); ?>">
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">E-mail</label>
+                <label class="col-sm-2 control-label"><?php echo __('Correo electrónico'); ?></label>
                 <div class="col-sm-10">
                     <input type="email" class="form-control" name="<?php echo UsersManager::USER_EMAIL; ?>" value="<?php echo $user->getUserEmail(); ?>">
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">Contraseña</label>
+                <label class="col-sm-2 control-label"><?php echo __('Contraseña'); ?></label>
                 <div class="col-sm-10">
                     <input type="password" class="form-control" name="<?php echo UsersManager::USER_PASSWORD; ?>">
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">Repetir contraseña</label>
+                <label class="col-sm-2 control-label"><?php echo __('Repetir contraseña'); ?></label>
                 <div class="col-sm-10">
                     <input type="password" class="form-control" name="<?php echo UsersManager::USER_PASSWORD_REWRITE; ?>">
                 </div>
@@ -50,7 +50,7 @@ $isUpdate = $method == UsersManager::FORM_UPDATE;
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">Sitio web</label>
+                <label class="col-sm-2 control-label"><?php echo __('Sitio web'); ?></label>
                 <div class="col-sm-10">
                     <input type="url" class="form-control" name="<?php echo UsersManager::USER_URL; ?>" value="<?php echo $user->getUserUrl(); ?>">
                 </div>
@@ -58,9 +58,9 @@ $isUpdate = $method == UsersManager::FORM_UPDATE;
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <?php if ($isUpdate) { ?>
-                        <button class="btn btn-primary" name="<?php echo UsersManager::FORM_UPDATE; ?>" value="<?php echo UsersManager::FORM_UPDATE; ?>">Actualizar usuario</button>
+                        <button class="btn btn-primary" name="<?php echo UsersManager::FORM_UPDATE; ?>" value="<?php echo UsersManager::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
                     <?php } else { ?>
-                        <button class="btn btn-primary" name="<?php echo UsersManager::FORM_CREATE; ?>" value="<?php echo UsersManager::FORM_CREATE; ?>">Agregar usuario</button>
+                        <button class="btn btn-primary" name="<?php echo UsersManager::FORM_CREATE; ?>" value="<?php echo UsersManager::FORM_CREATE; ?>"><?php echo __('Agregar'); ?></button>
                     <?php } ?>
                 </div>
             </div>

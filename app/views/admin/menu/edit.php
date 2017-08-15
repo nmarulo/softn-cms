@@ -12,8 +12,8 @@ $menuId        = $menu->getId();
 ?>
 <div class="page-container" data-url="<?php echo $siteUrlMenu; ?>" data-add-url="<?php echo "edit=$menuId"; ?>">
     <div>
-        <h1>Menu: <?php echo $menu->getMenuTitle(); ?>
-            <a class="btn btn-success" href="<?php echo $siteUrlCreate . $menuId; ?>" title="Agregar"><span class="glyphicon glyphicon-plus-sign"></span></a>
+        <h1><?php echo __('Menu'); ?>: <?php echo $menu->getMenuTitle(); ?>
+            <a class="btn btn-success" href="<?php echo $siteUrlCreate . $menuId; ?>" title="Agregar"><span class="glyphicon glyphicon-plus"></span></a>
             <a class="btn btn-primary" href="<?php echo $siteUrlUpdate . $menuId; ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
         </h1>
     </div>

@@ -41,7 +41,7 @@ class SidebarsManager extends CRUDManagerAbstract {
         }
         
         if (!$this->updatePositions()) {
-            Messages::addDanger('Error al actualizar las posiciones de las barras laterales.');
+            Messages::addDanger(__('Error al actualizar las posiciones de las barras laterales.'));
         }
         
         return TRUE;

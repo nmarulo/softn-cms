@@ -36,17 +36,17 @@ class UserController extends CUDControllerAbstract {
                 $user         = Arrays::get($form, 'user');
                 
                 if ($usersManager->create($user)) {
-                    Messages::addSuccess('Usuario creado correctamente.', TRUE);
+                    Messages::addSuccess(__('Usuario creado correctamente.'), TRUE);
                     $optionsManager = new OptionsManager();
                     Util::redirect($optionsManager->getSiteUrl() . 'admin/user');
                 }
             }
             
-            Messages::addDanger('Error al publicar el usuario.');
+            Messages::addDanger(__('Error al publicar el usuario.'));
         }
         
         ViewController::sendViewData('user', new User());
-        ViewController::sendViewData('title', 'Publicar nuevo usuario');
+        ViewController::sendViewData('title', __('Publicar nuevo usuario'));
         ViewController::view('form');
     }
     
@@ -126,44 +126,44 @@ class UserController extends CUDControllerAbstract {
         
         if (empty($user)) {
             $optionsManager = new OptionsManager();
-            Messages::addDanger('El usuario no existe.', TRUE);
+            Messages::addDanger(__('El usuario no existe.'), TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/user');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
-                    Messages::addDanger('Error en los campos del usuario.');
+                    Messages::addDanger(__('Error en los campos del usuario.'));
                 } else {
                     $user = Arrays::get($form, 'user');
                     
                     if ($usersManager->update($user)) {
-                        Messages::addSuccess('Usuario actualizado correctamente.');
+                        Messages::addSuccess(__('Usuario actualizado correctamente.'));
                     } else {
-                        Messages::addDanger('Error al actualizar el usuario.');
+                        Messages::addDanger(__('Error al actualizar el usuario.'));
                     }
                 }
             }
             
             ViewController::sendViewData('user', $user);
-            ViewController::sendViewData('title', 'Actualizar usuario');
+            ViewController::sendViewData('title', __('Actualizar usuario'));
             ViewController::view('form');
         }
     }
     
     public function delete($id) {
         if ($id == LoginManager::getSession()) {
-            Messages::addDanger('No puedes eliminar este usuario.');
+            Messages::addDanger(__('No puedes eliminar este usuario.'));
         } else {
             $usersManager = new UsersManager();
             $result       = $usersManager->delete($id);
             
             if ($result === FALSE) {
-                Messages::addDanger('No se puede borrar un usuario con entradas publicadas.');
+                Messages::addDanger(__('No se puede borrar un usuario con entradas publicadas.'));
             } elseif ($result == 0) {
-                Messages::addDanger('Error al borrar el usuario.');
+                Messages::addDanger(__('Error al borrar el usuario.'));
             } elseif ($result > 0) {
-                Messages::addSuccess('Usuario borrado correctamente.');
+                Messages::addSuccess(__('Usuario borrado correctamente.'));
             }
         }
         

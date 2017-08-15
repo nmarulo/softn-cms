@@ -13,6 +13,8 @@ use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\util\Util;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\util\Messages;
+use Gettext\Translator;
+use Gettext\Translations;
 
 session_start();
 
@@ -22,6 +24,18 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     $directoryController = $route->getControllerDirectoryName();
     $directoryView       = $route->getDirectoryNameViewController();
     $optionsManager      = new OptionsManager();
+    $optionLanguage      = $optionsManager->searchByName(OPTION_LANGUAGE);
+    $translator          = new Translator();
+    $translator->register();
+    
+    if ($optionLanguage) {
+        $language   = $optionLanguage->getOptionValue();
+        $pathMoFile = ABSPATH . "util/languages/$language.mo";
+        
+        if (file_exists($pathMoFile)) {
+            $translator->loadTranslations(Translations::fromMoFile($pathMoFile));
+        }
+    }
     
     if (defined('INSTALL') || $directoryController == 'install') {
         $siteUrl = $optionsManager->getSiteUrl($router);
@@ -32,11 +46,10 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
             Util::redirect($siteUrl . 'install');
         }
     } elseif ($directoryController == 'admin' && !LoginManager::isLogin()) {
-        Messages::addWarning('Debes iniciar sesión.', TRUE);
+        Messages::addWarning(__('Debes iniciar sesión.'), TRUE);
         Util::redirect($optionsManager->getSiteUrl(), 'login');
     } elseif ($directoryController == 'login' && $directoryView == 'index' && LoginManager::isLogin()) {
         Util::redirect($optionsManager->getSiteUrl(), 'admin');
     }
 });
-
 $router->load();

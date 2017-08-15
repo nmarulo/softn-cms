@@ -87,11 +87,11 @@ class MenusManager extends CRUDManagerAbstract {
         
         if ($parentMenuId != self::MENU_SUB_PARENT) {
             if (!$this->updateParentsChildren($parentMenuId, -count($menuIdList))) {
-                Messages::addDanger('Error al actualizar el numero de hijos de los menus.', TRUE);
+                Messages::addDanger(__('Error al actualizar el numero de hijos de los menus.'), TRUE);
             }
             
             if (!$this->updatePositions($parentMenuId)) {
-                Messages::addDanger('Error al actualizar las posiciones de los menus.', TRUE);
+                Messages::addDanger(__('Error al actualizar las posiciones de los menus.'), TRUE);
             }
         }
         
@@ -172,7 +172,7 @@ class MenusManager extends CRUDManagerAbstract {
         
         if ($currentMenu->getMenuSub() == self::MENU_SUB_PARENT && $parentMenuId != self::MENU_SUB_PARENT) {
             if (!$this->updateParentsChildren($parentMenuId, $object->getMenuTotalChildren() + 1)) {
-                Messages::addDanger('Error al actualizar el numero de hijos de los menus.', TRUE);
+                Messages::addDanger(__('Error al actualizar el numero de hijos de los menus.'), TRUE);
             }
         }
         
@@ -251,7 +251,7 @@ class MenusManager extends CRUDManagerAbstract {
         
         if ($parentMenuId != self::MENU_SUB_PARENT) {
             if (!$this->updateParentsChildren($parentMenuId, 1)) {
-                Messages::addDanger('Error al actualizar el numero de hijos de los menus.', TRUE);
+                Messages::addDanger(__('Error al actualizar el numero de hijos de los menus.'), TRUE);
                 
                 return FALSE;
             }

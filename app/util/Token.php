@@ -33,7 +33,7 @@ class Token {
         $token = empty($token) ? Arrays::get($_GET, self::TOKEN_NAME) : $token;
         
         if (empty($token)) {
-            Messages::addDanger('Error. Token no encontrado.');
+            Messages::addDanger(__('Error. Token no encontrado.'));
             
             return FALSE;
         }
@@ -58,19 +58,19 @@ class Token {
             if ($data == self::aud()) {
                 $output = TRUE;
             } else {
-                Messages::addDanger('Error. El Token es invalido.');
+                Messages::addDanger(__('Error. El Token es invalido.'));
             }
             
         } catch (ExpiredException $expiredException) {
-            Messages::addDanger('Error. El Token a caducado.');
+            Messages::addDanger(__('Error. El Token a caducado.'));
         } catch (SignatureInvalidException $invalidException) {
-            Messages::addDanger('Error. El Token invalido.');
+            Messages::addDanger(__('Error. El Token invalido.'));
         } catch (BeforeValidException $beforeValidException) {
-            Messages::addDanger('Error. El Token no se puede usar.');
+            Messages::addDanger(__('Error. El Token no se puede usar.'));
         }catch (\DomainException $domainException){
-            Messages::addDanger('Error en el formato del Token.');
+            Messages::addDanger(__('Error en el formato del Token.'));
         }catch (\Exception $exception){
-            Messages::addDanger('Error desconocido en el Token.');
+            Messages::addDanger(__('Error desconocido en el Token.'));
         }
         
         self::regenerate();
@@ -138,7 +138,7 @@ class Token {
      *
      * @return string
      */
-    public static function urlField($concat = '?', $separator = '=') {
+    public static function urlParameters($concat = '?', $separator = '=') {
         return sprintf('%1$s%2$s$3$s%4$s', $concat, self::TOKEN_NAME, $separator, self::$TOKEN);
     }
     
