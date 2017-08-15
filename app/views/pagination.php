@@ -24,8 +24,8 @@ if (!empty($pagination)) {
     <div class="row clearfix pagination-container">
         <div class="col-md-2">
             <div class="input-group">
-                <span class="input-group-addon">Pagina</span>
-                <input title="Presione Enter para continuar." class="form-control search-paged" type="number" name="search-paged" min="1" value="<?php echo $pagination->getPagedNow(); ?>">
+                <span class="input-group-addon"><?php echo __('Pagina'); ?></span>
+                <input title="<?php echo __('Presione "Enter" para continuar.'); ?>" class="form-control search-paged" type="number" name="search-paged" min="1" value="<?php echo $pagination->getPagedNow(); ?>">
             </div>
         </div>
         <nav class="col-md-8">

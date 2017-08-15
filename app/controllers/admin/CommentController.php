@@ -38,19 +38,19 @@ class CommentController extends CUDControllerAbstract {
                 $comment         = Arrays::get($form, 'comment');
                 
                 if ($commentsManager->create($comment)) {
-                    Messages::addSuccess('Comentario publicado correctamente.', TRUE);
+                    Messages::addSuccess(__('Comentario publicado correctamente.'), TRUE);
                     $optionsManager = new OptionsManager();
                     Util::redirect($optionsManager->getSiteUrl() . 'admin/comment');
                 }
             }
             
-            Messages::addDanger('Error al publicar el comentario.');
+            Messages::addDanger(__('Error al publicar el comentario.'));
         }
         
         $comment = new Comment();
         $comment->setCommentUserID(LoginManager::getSession());
         ViewController::sendViewData('comment', $comment);
-        ViewController::sendViewData('title', 'Publicar nuevo comentario');
+        ViewController::sendViewData('title', __('Publicar nuevo comentario'));
         ViewController::view('form');
     }
     
@@ -119,28 +119,28 @@ class CommentController extends CUDControllerAbstract {
         
         if (empty($comment)) {
             $optionsManager = new OptionsManager();
-            Messages::addDanger('El comentario no existe.', TRUE);
+            Messages::addDanger(__('El comentario no existe.'), TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/comment');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
-                    Messages::addDanger('Error en los campos del comentario.');
+                    Messages::addDanger(__('Error en los campos del comentario.'));
                 } else {
                     $comment = Arrays::get($form, 'comment');
                     
                     if ($commentsManager->update($comment)) {
-                        Messages::addSuccess('Comentario actualizado correctamente.');
+                        Messages::addSuccess(__('Comentario actualizado correctamente.'));
                         $comment = $commentsManager->searchById($comment->getId());
                     } else {
-                        Messages::addDanger('Error al actualizar el comentario.');
+                        Messages::addDanger(__('Error al actualizar el comentario.'));
                     }
                 }
             }
             
             ViewController::sendViewData('comment', $comment);
-            ViewController::sendViewData('title', 'Actualizar comentario');
+            ViewController::sendViewData('title', __('Actualizar comentario'));
             ViewController::view('form');
         }
     }
@@ -149,9 +149,9 @@ class CommentController extends CUDControllerAbstract {
         $commentsManager = new CommentsManager();
         
         if (empty($commentsManager->delete($id))) {
-            Messages::addDanger('Error al borrar el comentario.');
+            Messages::addDanger(__('Error al borrar el comentario.'));
         } else {
-            Messages::addSuccess('Comentario borrado correctamente.');
+            Messages::addSuccess(__('Comentario borrado correctamente.'));
         }
         
         parent::delete($id);

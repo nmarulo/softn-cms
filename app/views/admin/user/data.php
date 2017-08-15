@@ -3,31 +3,36 @@
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\User;
 
-$users         = ViewController::getViewData('users');
-$siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/user/update/';
+$users                  = ViewController::getViewData('users');
+$siteUrlUpdate          = \SoftnCMS\rute\Router::getSiteURL() . 'admin/user/update/';
+$strTranslateUser       = __('Usuario');
+$strTranslateName       = __('Nombre');
+$strTranslateEmail      = __('Correo electrónico');
+$strTranslateRegistered = __('Registro');
+$strTranslatePosts      = __('Entradas');
 ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th></th>
-                <th>Usuario</th>
-                <th>Nombre</th>
-                <th>E-mail</th>
+                <th><?php echo $strTranslateUser; ?></th>
+                <th><?php echo $strTranslateName; ?></th>
+                <th><?php echo $strTranslateEmail; ?></th>
                 <th>Rol</th>
-                <th>Registro</th>
-                <th>Entradas</th>
+                <th><?php echo $strTranslateRegistered; ?></th>
+                <th><?php echo $strTranslatePosts; ?></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th></th>
-                <th>Usuario</th>
-                <th>Nombre</th>
-                <th>E-mail</th>
+                <th><?php echo $strTranslateUser; ?></th>
+                <th><?php echo $strTranslateName; ?></th>
+                <th><?php echo $strTranslateEmail; ?></th>
                 <th>Rol</th>
-                <th>Registro</th>
-                <th>Entradas</th>
+                <th><?php echo $strTranslateRegistered; ?></th>
+                <th><?php echo $strTranslatePosts; ?></th>
             </tr>
         </tfoot>
         <tbody>

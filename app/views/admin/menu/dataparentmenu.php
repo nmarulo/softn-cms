@@ -16,13 +16,13 @@ $subMenuId     = $subMenu->getId();
             <div class="clearfix">
                 <div class="pull-left">
                     <a class="btn btn-success" href="<?php echo $siteUrlCreate . $subMenuId; ?>" title="Agregar">
-                        <span class="glyphicon glyphicon-plus-sign"></span>
+                        <span class="glyphicon glyphicon-plus"></span>
                     </a>
                     <a class='btn btn-primary' href='<?php echo $siteUrlUpdate . $subMenuId; ?>' title='Editar'>
                         <span class='glyphicon glyphicon-edit'></span>
                     </a>
                     <button class='btn btn-danger' data-id="<?php echo $subMenuId; ?>" title='Borrar'>
-                        <span class='glyphicon glyphicon-remove-sign'></span>
+                        <span class='glyphicon glyphicon-remove'></span>
                     </button>
                     <?php echo $subMenu->getMenuTitle(); ?>
                 </div>

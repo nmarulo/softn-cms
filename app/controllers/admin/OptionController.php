@@ -38,7 +38,7 @@ class OptionController extends ControllerAbstract {
             $form           = $this->form();
             
             if (empty($form)) {
-                Messages::addDanger('Error en los campos de las opciones.');
+                Messages::addDanger(__('Error en los campos de las opciones.'));
             } else {
                 $options  = Arrays::get($form, 'options');
                 $numError = 0;
@@ -50,9 +50,9 @@ class OptionController extends ControllerAbstract {
                 });
                 
                 if ($numError === 0) {
-                    Messages::addSuccess('Actualizado correctamente.');
+                    Messages::addSuccess(__('Actualizado correctamente.'));
                 } else {
-                    Messages::addDanger('Error al actualizar.');
+                    Messages::addDanger(__('Error al actualizar.'));
                 }
             }
         }
@@ -124,7 +124,7 @@ class OptionController extends ControllerAbstract {
                 return FALSE;
             }
             
-            return Arrays::get($aux, $lastPosition) == 'po';
+            return Arrays::get($aux, $lastPosition) == 'mo' && Arrays::get($aux, 0) != 'softncms';
         });
         $listLanguages     = array_map(function($language) {
             return Arrays::get(explode('.', $language), 0);

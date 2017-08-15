@@ -3,23 +3,25 @@
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Category;
 
-$categories    = ViewController::getViewData('categories');
-$siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/category/update/';
+$categories        = ViewController::getViewData('categories');
+$siteUrlUpdate     = \SoftnCMS\rute\Router::getSiteURL() . 'admin/category/update/';
+$strTranslateName  = __('Nombre');
+$strTranslatePosts = __('Entradas');
 ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th></th>
-                <th>Nombre</th>
-                <th>Entradas</th>
+                <th><?php echo $strTranslateName; ?></th>
+                <th><?php echo $strTranslatePosts; ?></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th></th>
-                <th>Nombre</th>
-                <th>Entradas</th>
+                <th><?php echo $strTranslateName; ?></th>
+                <th><?php echo $strTranslatePosts; ?></th>
             </tr>
         </tfoot>
         <tbody>

@@ -41,12 +41,12 @@ class IndexController extends ControllerAbstract {
                 
                 if (LoginManager::login($user, $rememberMe)) {
                     $optionsManager = new OptionsManager();
-                    Messages::addSuccess('Inicio de sesión correcto.', TRUE);
+                    Messages::addSuccess(__('Inicio de sesión correcto.'), TRUE);
                     Util::redirect($optionsManager->getSiteUrl(), 'admin');
                 }
             }
             
-            Messages::addDanger('Usuario o/y contraseña incorrecto(s).');
+            Messages::addDanger(__('Usuario o/y contraseña incorrecto(s).'));
         }
     }
     

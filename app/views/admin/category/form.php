@@ -15,22 +15,22 @@ $isUpdate = $method == CategoriesManager::FORM_UPDATE;
         <form method="post">
             <div id="content-left" class="col-sm-9">
                 <div class="form-group">
-                    <label class="control-label">Nombre</label>
+                    <label class="control-label"><?php echo __('Nombre'); ?></label>
                     <input class="form-control" name="<?php echo CategoriesManager::CATEGORY_NAME; ?>" placeholder="Escribe el título" value="<?php echo $category->getCategoryName(); ?>">
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Descripción</label>
+                    <label class="control-label"><?php echo __('Descripción'); ?></label>
                     <textarea class="form-control" name="<?php echo CategoriesManager::CATEGORY_DESCRIPTION; ?>" rows="5"><?php echo $category->getCategoryDescription(); ?></textarea>
                 </div>
             </div>
             <div id="content-right" class="col-sm-3">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Publicación</div>
+                    <div class="panel-heading"><?php echo __('Publicación'); ?></div>
                     <div class="panel-body">
                         <?php if ($isUpdate) { ?>
-                            <button class="btn btn-primary btn-block" name="<?php echo CategoriesManager::FORM_UPDATE; ?>" value="<?php echo CategoriesManager::FORM_UPDATE; ?>">Actualizar</button>
+                            <button class="btn btn-primary btn-block" name="<?php echo CategoriesManager::FORM_UPDATE; ?>" value="<?php echo CategoriesManager::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
                         <?php } else { ?>
-                            <button class="btn btn-primary btn-block" name="<?php echo CategoriesManager::FORM_CREATE; ?>" value="<?php echo CategoriesManager::FORM_CREATE; ?>">Publicar</button>
+                            <button class="btn btn-primary btn-block" name="<?php echo CategoriesManager::FORM_CREATE; ?>" value="<?php echo CategoriesManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
                         <?php } ?>
                     </div>
                 </div>

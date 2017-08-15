@@ -27,7 +27,7 @@ class LogoutController {
             }
         }
         
-        Messages::addSuccess('Cierre de sesión correcto.', TRUE);
+        Messages::addSuccess(__('Cierre de sesión correcto.'), TRUE);
         $optionsManager = new OptionsManager();
         Util::redirect($optionsManager->getSiteUrl(), 'login');
     }

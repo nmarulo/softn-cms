@@ -24,24 +24,8 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     $directoryController = $route->getControllerDirectoryName();
     $directoryView       = $route->getDirectoryNameViewController();
     $optionsManager      = new OptionsManager();
-    
-    if (defined('INSTALL') || $directoryController == 'install') {
-        $siteUrl = $optionsManager->getSiteUrl($router);
-        
-        if (file_exists(ABSPATH . 'config.php')) {
-            Util::redirect($siteUrl);
-        } elseif ($directoryController != 'install') {
-            Util::redirect($siteUrl . 'install');
-        }
-    } elseif ($directoryController == 'admin' && !LoginManager::isLogin()) {
-        Messages::addWarning('Debes iniciar sesión.', TRUE);
-        Util::redirect($optionsManager->getSiteUrl(), 'login');
-    } elseif ($directoryController == 'login' && $directoryView == 'index' && LoginManager::isLogin()) {
-        Util::redirect($optionsManager->getSiteUrl(), 'admin');
-    }
-    
-    $optionLanguage = $optionsManager->searchByName(OPTION_LANGUAGE);
-    $translator     = new Translator();
+    $optionLanguage      = $optionsManager->searchByName(OPTION_LANGUAGE);
+    $translator          = new Translator();
     $translator->register();
     
     if ($optionLanguage) {
@@ -52,6 +36,20 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
             $translator->loadTranslations(Translations::fromMoFile($pathMoFile));
         }
     }
+    
+    if (defined('INSTALL') || $directoryController == 'install') {
+        $siteUrl = $optionsManager->getSiteUrl($router);
+        
+        if (file_exists(ABSPATH . 'config.php')) {
+            Util::redirect($siteUrl);
+        } elseif ($directoryController != 'install') {
+            Util::redirect($siteUrl . 'install');
+        }
+    } elseif ($directoryController == 'admin' && !LoginManager::isLogin()) {
+        Messages::addWarning(__('Debes iniciar sesión.'), TRUE);
+        Util::redirect($optionsManager->getSiteUrl(), 'login');
+    } elseif ($directoryController == 'login' && $directoryView == 'index' && LoginManager::isLogin()) {
+        Util::redirect($optionsManager->getSiteUrl(), 'admin');
+    }
 });
-
 $router->load();

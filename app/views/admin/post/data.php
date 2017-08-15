@@ -3,29 +3,34 @@
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\controllers\ViewController;
 
-$posts         = ViewController::getViewData('posts');
-$siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/post/update/';
+$posts                = ViewController::getViewData('posts');
+$siteUrlUpdate        = \SoftnCMS\rute\Router::getSiteURL() . 'admin/post/update/';
+$strTranslateTitle    = __('Título');
+$strTranslateAuthor   = __('Autor');
+$strTranslateComments = __('Comentarios');
+$strTranslateDate     = __('Fecha');
+$strTranslateState    = __('Estado');
 ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th></th>
-                <th>Título</th>
-                <th>Autor</th>
-                <th>Comentarios</th>
-                <th>Fecha</th>
-                <th>Estado</th>
+                <th><?php echo $strTranslateTitle; ?></th>
+                <th><?php echo $strTranslateAuthor; ?></th>
+                <th><?php echo $strTranslateComments; ?></th>
+                <th><?php echo $strTranslateDate; ?></th>
+                <th><?php echo $strTranslateState; ?></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th></th>
-                <th>Título</th>
-                <th>Autor</th>
-                <th>Comentarios</th>
-                <th>Fecha</th>
-                <th>Estado</th>
+                <th><?php echo $strTranslateTitle; ?></th>
+                <th><?php echo $strTranslateAuthor; ?></th>
+                <th><?php echo $strTranslateComments; ?></th>
+                <th><?php echo $strTranslateDate; ?></th>
+                <th><?php echo $strTranslateState; ?></th>
             </tr>
         </tfoot>
         <tbody>

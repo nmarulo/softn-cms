@@ -3,23 +3,25 @@
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Sidebar;
 
-$sidebars      = ViewController::getViewData('sidebars');
-$siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/sidebar/update/';
+$sidebars             = ViewController::getViewData('sidebars');
+$siteUrlUpdate        = \SoftnCMS\rute\Router::getSiteURL() . 'admin/sidebar/update/';
+$strTranslateTitle    = __('Título');
+$strTranslatePosition = __('Posición');
 ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th></th>
-                <th>Titulo</th>
-                <th>Posición</th>
+                <th><?php echo $strTranslateTitle; ?></th>
+                <th><?php echo $strTranslatePosition; ?></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th></th>
-                <th>Titulo</th>
-                <th>Posición</th>
+                <th><?php echo $strTranslateTitle; ?></th>
+                <th><?php echo $strTranslatePosition; ?></th>
             </tr>
         </tfoot>
         <tbody>

@@ -14,7 +14,7 @@ $countUsers           = ViewController::getViewData('countUsers');
 $posts                = ViewController::getViewData('posts');
 $comments             = ViewController::getViewData('comments');
 $siteUrl              = \SoftnCMS\rute\Router::getSiteURL() . "admin/index/";
-$strTranslatePosts    = __('Publicaciones');
+$strTranslatePosts    = __('Entradas');
 $strTranslateComments = __('Comentarios');
 ?>
 <div class="page-container" data-url="<?php echo $siteUrl; ?>">
