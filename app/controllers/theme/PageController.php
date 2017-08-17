@@ -1,20 +1,20 @@
 <?php
 /**
- * PostController.php
+ * PageController.php
  */
 
 namespace SoftnCMS\controllers\theme;
 
-use SoftnCMS\controllers\template\PostTemplate;
+use SoftnCMS\controllers\template\PageTemplate;
 use SoftnCMS\controllers\ThemeControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\LoginManager;
-use SoftnCMS\models\managers\OptionsManager;
-use SoftnCMS\models\managers\PostsManager;
+use SoftnCMS\models\managers\PagesManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\Escape;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
@@ -24,10 +24,10 @@ use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Util;
 
 /**
- * Class PostController
+ * Class PageController
  * @author Nicolás Marulanda P.
  */
-class PostController extends ThemeControllerAbstract {
+class PageController extends ThemeControllerAbstract {
     
     public function index($id) {
         $this->comment();
@@ -99,16 +99,15 @@ class PostController extends ThemeControllerAbstract {
     }
     
     protected function read($id) {
-        $postsManager = new PostsManager();
-        $post         = $postsManager->searchById($id);
+        $pagesManager = new PagesManager();
+        $page         = $pagesManager->searchById($id);
         
-        if (empty($post)) {
-            $optionsManager = new OptionsManager();
-            Util::redirect($optionsManager->getSiteUrl());
+        if (empty($page)) {
+            Util::redirect(Router::getSiteURL());
         }
         
-        $post->setPostContents(Escape::htmlDecode($post->getPostContents()));
-        ViewController::sendViewData('post', new PostTemplate($post, TRUE));
+        $page->setPageContents(Escape::htmlDecode($page->getPageContents()));
+        ViewController::sendViewData('page', new PageTemplate($page, TRUE));
     }
     
 }

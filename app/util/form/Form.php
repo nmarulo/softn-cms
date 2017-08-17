@@ -31,8 +31,8 @@ class Form {
      */
     public static function submit($name) {
         Token::generate();
-        
-        return (isset($_POST[$name]) || isset($_GET[$name])) && Token::check();
+        //TODO: temporalmente, si estamos instalando la aplicación no se comprobara el token.
+        return (isset($_POST[$name]) || isset($_GET[$name])) && (!defined('INSTALL') || Token::check());
     }
     
     /**

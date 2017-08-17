@@ -61,7 +61,7 @@ class CommentTemplate extends Template {
     
     public function initUser() {
         $usersManager = new UsersManager();
-        $user         = $usersManager->searchById($this->comment->getCommentUserID());
+        $user         = $usersManager->searchById($this->comment->getCommentUserId());
         
         //No lanza exception ya que un usuario no registrado puede comentar.
         //TODO: agregar a la pagina de opciones.

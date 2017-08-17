@@ -33,7 +33,7 @@ class PostsManager extends CRUDManagerAbstract {
     
     const POST_COMMENT_COUNT  = 'post_comment_count';
     
-    const USER_ID             = 'user_ID';
+    const USER_ID             = 'user_id';
     
     /**
      * PostsManager constructor.
@@ -136,7 +136,7 @@ class PostsManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::POST_CONTENTS, $object->getPostContents(), \PDO::PARAM_STR);
         parent::parameterQuery(self::POST_COMMENT_STATUS, $object->getPostCommentStatus(), \PDO::PARAM_INT);
         parent::parameterQuery(self::POST_COMMENT_COUNT, $object->getPostCommentCount(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::USER_ID, $object->getUserID(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::USER_ID, $object->getUserId(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {
@@ -147,7 +147,7 @@ class PostsManager extends CRUDManagerAbstract {
         parent::buildObjectTable($result);
         $post = new Post();
         $post->setId(Arrays::get($result, self::ID));
-        $post->setUserID(Arrays::get($result, self::USER_ID));
+        $post->setUserId(Arrays::get($result, self::USER_ID));
         $post->setPostCommentCount(Arrays::get($result, self::POST_COMMENT_COUNT));
         $post->setPostCommentStatus(Arrays::get($result, self::POST_COMMENT_STATUS));
         $post->setPostContents(Arrays::get($result, self::POST_CONTENTS));

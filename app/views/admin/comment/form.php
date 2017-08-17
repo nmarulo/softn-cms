@@ -9,7 +9,7 @@ $method         = ViewController::getViewData('method');
 $isUpdate       = $method == CRUDManagerAbstract::FORM_UPDATE;
 $disabledPostId = $isUpdate ? 'disabled="disabled"' : '';
 //Mostrara los campos inputs si es de un usuario no registrado.
-$showAuthorAndEmail = empty($comment->getCommentUserID());
+$showAuthorAndEmail = empty($comment->getCommentUserId());
 ?>
 <div class="page-container">
     <div>
@@ -40,7 +40,7 @@ $showAuthorAndEmail = empty($comment->getCommentUserID());
                             <?php } ?>
                             <div class="form-group">
                                 <label class="control-label"><?php echo __('Entrada'); ?></label>
-                                <input class="form-control input-lg" name="<?php echo CommentsManager::POST_ID; ?>" value="<?php echo $comment->getPostID(); ?>" <?php echo $disabledPostId; ?>>
+                                <input class="form-control input-lg" name="<?php echo CommentsManager::POST_ID; ?>" value="<?php echo $comment->getPostId(); ?>" <?php echo $disabledPostId; ?>>
                             </div>
                             <div class="form-group form-inline checkbox">
                                 <label class="control-label">
@@ -68,7 +68,7 @@ $showAuthorAndEmail = empty($comment->getCommentUserID());
                     </div>
                 </div>
                 <input type="hidden" name="<?php echo CommentsManager::ID; ?>" value="<?php echo $comment->getId(); ?>"/>
-                <input type="hidden" name="<?php echo CommentsManager::COMMENT_USER_ID; ?>" value="<?php echo $comment->getCommentUserID(); ?>"/>
+                <input type="hidden" name="<?php echo CommentsManager::COMMENT_USER_ID; ?>" value="<?php echo $comment->getCommentUserId(); ?>"/>
                 <?php \SoftnCMS\util\Token::formField(); ?>
             </form>
         </div>

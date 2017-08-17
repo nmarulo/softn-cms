@@ -14,7 +14,7 @@ use SoftnCMS\util\MySQL;
  */
 abstract class ManagerAbstract {
     
-    const ID          = 'ID';
+    const ID          = 'id';
     
     const FORM_SUBMIT = 'form_submit';
     

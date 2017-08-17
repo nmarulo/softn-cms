@@ -41,7 +41,7 @@ ViewController::singleViewByDirectory('pagination'); ?>
                     <button class="btn-action-sm btn btn-danger" data-id="<?php echo $post->getId(); ?>" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button>
                 </td>
                 <td><a href="#" target="_blank"><?php echo $post->getPostTitle(); ?></a></td>
-                <td><a href="#" target="_blank"><?php echo $post->getUserID(); ?></a></td>
+                <td><a href="#" target="_blank"><?php echo $post->getUserId(); ?></a></td>
                 <td><span class="badge"><?php echo $post->getPostCommentCount(); ?></span></td>
                 <td><?php echo $post->getPostDate(); ?></td>
                 <td><?php echo $post->getPostStatus(); ?></td>

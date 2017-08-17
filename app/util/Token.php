@@ -52,7 +52,7 @@ class Token {
         $output = FALSE;
         
         try {
-            $tokenDecode = (array)JWT::decode($token, TOKEN_KEY, ['HS256']);
+            $tokenDecode = (array)JWT::decode($token, self::getTokenKey(), ['HS256']);
             $data        = $tokenDecode['aud'];
             
             if ($data == self::aud()) {
@@ -67,15 +67,19 @@ class Token {
             Messages::addDanger(__('Error. El Token invalido.'));
         } catch (BeforeValidException $beforeValidException) {
             Messages::addDanger(__('Error. El Token no se puede usar.'));
-        }catch (\DomainException $domainException){
+        } catch (\DomainException $domainException) {
             Messages::addDanger(__('Error en el formato del Token.'));
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             Messages::addDanger(__('Error desconocido en el Token.'));
         }
         
         self::regenerate();
         
         return $output;
+    }
+    
+    private static function getTokenKey() {
+        return TOKEN_KEY;
     }
     
     private static function aud() {
@@ -119,7 +123,7 @@ class Token {
                 ],
             ];
             
-            self::$TOKEN = JWT::encode($token, TOKEN_KEY, 'HS256');
+            self::$TOKEN = JWT::encode($token, self::getTokenKey(), 'HS256');
         }
     }
     

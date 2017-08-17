@@ -24,16 +24,20 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     $directoryController = $route->getControllerDirectoryName();
     $directoryView       = $route->getDirectoryNameViewController();
     $optionsManager      = new OptionsManager();
-    $optionLanguage      = $optionsManager->searchByName(OPTION_LANGUAGE);
     $translator          = new Translator();
     $translator->register();
     
-    if ($optionLanguage) {
-        $language   = $optionLanguage->getOptionValue();
-        $pathMoFile = ABSPATH . "util/languages/$language.mo";
+    if (!defined('INSTALL')) {
+        //TODO: Permitir cambiar el idioma sin consultar la base de datos.
+        $optionLanguage = $optionsManager->searchByName(OPTION_LANGUAGE);
         
-        if (file_exists($pathMoFile)) {
-            $translator->loadTranslations(Translations::fromMoFile($pathMoFile));
+        if ($optionLanguage) {
+            $language   = $optionLanguage->getOptionValue();
+            $pathMoFile = ABSPATH . "util/languages/$language.mo";
+            
+            if (file_exists($pathMoFile)) {
+                $translator->loadTranslations(Translations::fromMoFile($pathMoFile));
+            }
         }
     }
     

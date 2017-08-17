@@ -45,7 +45,7 @@ ViewController::singleViewByDirectory('pagination'); ?>
                 <td><?php echo $comment->getCommentAuthor(); ?></td>
                 <td><?php echo $comment->getCommentContents(); ?></td>
                 <td><?php echo $comment->getCommentStatus(); ?></td>
-                <td><?php echo $comment->getPostID(); ?></td>
+                <td><?php echo $comment->getPostId(); ?></td>
                 <td><?php echo $comment->getCommentDate(); ?></td>
             </tr>
         <?php }); ?>
