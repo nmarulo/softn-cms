@@ -79,7 +79,11 @@ class Token {
     }
     
     private static function getTokenKey() {
-        return TOKEN_KEY;
+        if (defined('TOKEN_KEY')) {
+            return TOKEN_KEY;
+        }
+        //TODO: Que devolver si no esta definido?
+        return '';
     }
     
     private static function aud() {

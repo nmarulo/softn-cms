@@ -17,7 +17,7 @@ class Language {
     
     public static function load() {
         $paramLan   = Arrays::get($_GET, PARAM_LANGUAGE);
-        $language   = empty($paramLan) ? DEFAULT_LANGUAGE : $paramLan;
+        $language   = empty($paramLan) ? self::getDefaultLan() : $paramLan;
         $translator = new Translator();
         $translator->register();
         
@@ -35,6 +35,14 @@ class Language {
         if (file_exists($pathMoFile)) {
             $translator->loadTranslations(Translations::fromMoFile($pathMoFile));
         }
+    }
+    
+    private static function getDefaultLan() {
+        if (defined('DEFAULT_LANGUAGE')) {
+            return DEFAULT_LANGUAGE;
+        }
+        
+        return '';
     }
     
 }
