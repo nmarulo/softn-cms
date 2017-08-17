@@ -30,6 +30,8 @@ define('DB_TYPE', 'mysql');
 
 define('DEBUG', FALSE);
 
+define('DEFAULT_LANGUAGE', 'es');
+
 // Claves SALTED
 define('LOGGED_KEY', 'LOGGED_KEY');
 define('COOKIE_KEY', 'COOKIE_KEY');
