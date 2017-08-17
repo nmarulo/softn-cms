@@ -16,7 +16,7 @@ $urlRegister = ViewController::getViewData('urlRegister');
             <form method="post">
                 <div class="form-group">
                     <label class="control-label"><?php echo __('Usuario'); ?>:</label>
-                    <input class="form-control" name="<?php echo UsersManager::USER_LOGIN; ?>" placeholder="Usuario" autofocus>
+                    <input class="form-control" name="<?php echo UsersManager::USER_LOGIN; ?>" autofocus>
                 </div>
                 <div class="form-group">
                     <label class="control-label"><?php echo __('Contraseña'); ?>:</label>

@@ -12,6 +12,7 @@ $urlAdmin          = $siteUrl . 'admin/';
 $urlPostCreate     = $urlAdmin . 'post/create';
 $urlCategoryCreate = $urlAdmin . 'category/create';
 $urlTermCreate     = $urlAdmin . 'term/create';
+$urlPageCreate     = $urlAdmin . 'page/create';
 $siteTitle         = $optionsManager->searchByName(OPTION_TITLE)
                                     ->getOptionValue();
 $urlLogout         = $siteUrl . 'login/logout';
@@ -40,7 +41,7 @@ $urlUpdateUser     = $urlAdmin . 'user/update/' . $idUser;
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="<?php echo $urlPostCreate; ?>"><?php echo __('Entrada'); ?></a></li>
-                            <li><a href="#"><?php echo __('Pagina'); ?></a></li>
+                            <li><a href="<?php echo $urlPageCreate; ?>"><?php echo __('Pagina'); ?></a></li>
                             <li><a href="<?php echo $urlCategoryCreate; ?>"><?php echo __('Categoría'); ?></a></li>
                             <li><a href="<?php echo $urlTermCreate; ?>"><?php echo __('Etiqueta'); ?></a></li>
                         </ul>

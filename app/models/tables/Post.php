@@ -35,7 +35,7 @@ class Post extends TableAbstract {
     private $postCommentCount;
     
     /** @var int */
-    private $userID;
+    private $userId;
     
     /**
      * @return string
@@ -138,15 +138,15 @@ class Post extends TableAbstract {
     /**
      * @return int
      */
-    public function getUserID() {
-        return $this->userID;
+    public function getUserId() {
+        return $this->userId;
     }
     
     /**
-     * @param int $userID
+     * @param int $userId
      */
-    public function setUserID($userID) {
-        $this->userID = $userID;
+    public function setUserId($userId) {
+        $this->userId = $userId;
     }
     
 }

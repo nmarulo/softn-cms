@@ -29,10 +29,10 @@ class Comment extends TableAbstract {
     private $commentContents;
     
     /** @var int */
-    private $commentUserID;
+    private $commentUserId;
     
     /** @var int */
-    private $postID;
+    private $postId;
     
     /**
      * @return int
@@ -107,29 +107,29 @@ class Comment extends TableAbstract {
     /**
      * @return int
      */
-    public function getCommentUserID() {
-        return $this->commentUserID;
+    public function getCommentUserId() {
+        return $this->commentUserId;
     }
     
     /**
-     * @param int $commentUserID
+     * @param int $commentUserId
      */
-    public function setCommentUserID($commentUserID) {
-        $this->commentUserID = $commentUserID;
+    public function setCommentUserId($commentUserId) {
+        $this->commentUserId = $commentUserId;
     }
     
     /**
      * @return int
      */
-    public function getPostID() {
-        return $this->postID;
+    public function getPostId() {
+        return $this->postId;
     }
     
     /**
-     * @param int $postID
+     * @param int $postId
      */
-    public function setPostID($postID) {
-        $this->postID = $postID;
+    public function setPostId($postId) {
+        $this->postId = $postId;
     }
     
 }

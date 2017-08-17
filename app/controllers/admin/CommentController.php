@@ -48,7 +48,7 @@ class CommentController extends CUDControllerAbstract {
         }
         
         $comment = new Comment();
-        $comment->setCommentUserID(LoginManager::getSession());
+        $comment->setCommentUserId(LoginManager::getSession());
         ViewController::sendViewData('comment', $comment);
         ViewController::sendViewData('title', __('Publicar nuevo comentario'));
         ViewController::view('form');
@@ -66,11 +66,11 @@ class CommentController extends CUDControllerAbstract {
         $comment->setId(Arrays::get($inputs, CommentsManager::ID));
         $comment->setCommentStatus(Arrays::get($inputs, CommentsManager::COMMENT_STATUS));
         $comment->setCommentContents(Arrays::get($inputs, CommentsManager::COMMENT_CONTENTS));
-        $comment->setPostID(NULL);
+        $comment->setPostId(NULL);
         $comment->setCommentAuthor(NULL);
         $comment->setCommentAuthorEmail(NULL);
         $comment->setCommentDate(NULL);
-        $comment->setCommentUserID(NULL);
+        $comment->setCommentUserId(NULL);
         
         if (empty($userId)) {
             $comment->setCommentAuthor(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR));
@@ -82,9 +82,9 @@ class CommentController extends CUDControllerAbstract {
             $user         = $usersManager->searchById(LoginManager::getSession());
             $comment->setCommentAuthor($user->getUserName());
             $comment->setCommentAuthorEmail($user->getUserEmail());
-            $comment->setCommentUserID($user->getId());
+            $comment->setCommentUserId($user->getId());
             $comment->setCommentDate(Util::dateNow());
-            $comment->setPostID(Arrays::get($inputs, CommentsManager::POST_ID));
+            $comment->setPostId(Arrays::get($inputs, CommentsManager::POST_ID));
         }
         
         return ['comment' => $comment];

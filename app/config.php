@@ -28,11 +28,11 @@ define('DB_PREFIX', 'sn_');
 /** Tipo de base de datos. */
 define('DB_TYPE', 'mysql');
 
-define('DEBUG', TRUE);
+define('DEBUG', FALSE);
 
 // Claves SALTED
-define('LOGGED_KEY', '5GLhueRQNTmlo8nY6XusgNN1JDSnQWRKsGiQTkjU0QuD9IVf9SdtmPrwDxc6irBs');
-define('COOKIE_KEY', 'bydiGj9QAG0Nh9RpzGjmPKtTTiUI6PI3iivDP9nEyoTQMtaqnmN7GxR8xXYci5dw');
-define('SALTED_KEY', '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
-define('TOKEN_KEY', '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
+define('LOGGED_KEY', 'cN2eY0ik8pcbx1jwwhKyW96177s7V9pzGI3BfMZWWNjMELBQG7XnTRZ4CrL9IPTl');
+define('COOKIE_KEY', 'wvsRSq4q83Of8ng3dQy3drfZvDr3ToKYKaeZUWwMHbGAZRj87swCVUSMKHvPrOYu');
+define('SALTED_KEY', 'SALTED_KEY');
+define('TOKEN_KEY', 'FpOBdL76EPxRPAGB6vEyix2qLaVqllUinz5eJM3XIsUIcAebvB7CvubIwJuIohDi');
 define('COOKIE_EXPIRE', strtotime('+30 days'));//strtotime('+30 days')

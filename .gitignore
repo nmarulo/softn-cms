@@ -5,3 +5,4 @@ test-*
 *.vpp*
 *.vux
 *.temp.*
+app/config.php

@@ -12,37 +12,37 @@ namespace SoftnCMS\models\tables;
 class PostTerm {
     
     /** @var int */
-    private $postID;
+    private $postId;
     
     /** @var int */
-    private $termID;
+    private $termId;
     
     /**
      * @return int
      */
-    public function getPostID() {
-        return $this->postID;
+    public function getPostId() {
+        return $this->postId;
     }
     
     /**
-     * @param int $postID
+     * @param int $postId
      */
-    public function setPostID($postID) {
-        $this->postID = $postID;
+    public function setPostId($postId) {
+        $this->postId = $postId;
     }
     
     /**
      * @return int
      */
-    public function getTermID() {
-        return $this->termID;
+    public function getTermId() {
+        return $this->termId;
     }
     
     /**
-     * @param int $termID
+     * @param int $termId
      */
-    public function setTermID($termID) {
-        $this->termID = $termID;
+    public function setTermId($termId) {
+        $this->termId = $termId;
     }
     
 }

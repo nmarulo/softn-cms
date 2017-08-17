@@ -12,6 +12,7 @@ $urlUserCreate = $urlUser . 'create/';
 $urlOption     = $urlAdmin . 'option/';
 $urlMenu       = $urlAdmin . 'menu/';
 $urlSidebar    = $urlAdmin . 'sidebar/';
+$urlPage       = $urlAdmin . 'page/';
 $strTranslatePosts = __('Entradas');
 $strTranslateUsers = __('Usuarios');
 ?>
@@ -53,6 +54,11 @@ $strTranslateUsers = __('Usuarios');
         <li>
             <a href="<?php echo $urlMenu; ?>">
                 <span class="fa fa-bars"></span> <?php echo __('Menus'); ?>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo $urlPage; ?>">
+                <span class="glyphicon glyphicon-file"></span> <?php echo __('Paginas'); ?>
             </a>
         </li>
         <li>

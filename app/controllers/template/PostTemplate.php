@@ -64,7 +64,7 @@ class PostTemplate extends Template {
     
     public function initUser() {
         $usersManager = new UsersManager();
-        $user         = $usersManager->searchById($this->post->getUserID());
+        $user         = $usersManager->searchById($this->post->getUserId());
         
         if (empty($user)) {
             throw new \Exception("El usuario no existe.");
