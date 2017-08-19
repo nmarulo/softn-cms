@@ -11,4 +11,9 @@ namespace SoftnCMS\models\managers;
  */
 class ProfilesManager {
     
+    const TABLE               = 'profile';
+    
+    const PROFILE_NAME        = 'profile_name';
+    
+    const PROFILE_DESCRIPTION = 'profile_description';
 }

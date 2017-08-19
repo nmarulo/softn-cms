@@ -11,4 +11,38 @@ namespace SoftnCMS\models\tables;
  */
 class UserProfile {
     
+    /** @var int */
+    private $userId;
+    
+    /** @var int */
+    private $profileId;
+    
+    /**
+     * @return int
+     */
+    public function getUserId() {
+        return $this->userId;
+    }
+    
+    /**
+     * @param int $userId
+     */
+    public function setUserId($userId) {
+        $this->userId = $userId;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getProfileId() {
+        return $this->profileId;
+    }
+    
+    /**
+     * @param int $profileId
+     */
+    public function setProfileId($profileId) {
+        $this->profileId = $profileId;
+    }
+    
 }

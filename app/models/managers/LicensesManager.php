@@ -11,4 +11,9 @@ namespace SoftnCMS\models\managers;
  */
 class LicensesManager {
     
+    const TABLE               = 'licenses';
+    
+    const LICENSE_NAME        = 'license_name';
+    
+    const LICENSE_DESCRIPTION = 'license_description';
 }
