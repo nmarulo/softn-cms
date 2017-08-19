@@ -44,12 +44,6 @@ $isUpdate = $method == UsersManager::FORM_UPDATE;
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">Tipo de usuario</label>
-                <div class="col-sm-10">
-                    <input type="number" class="form-control" name="<?php echo UsersManager::USER_ROL; ?>" value="<?php echo $user->getUserRol(); ?>" disabled>
-                </div>
-            </div>
-            <div class="form-group">
                 <label class="col-sm-2 control-label"><?php echo __('Sitio web'); ?></label>
                 <div class="col-sm-10">
                     <input type="url" class="form-control" name="<?php echo UsersManager::USER_URL; ?>" value="<?php echo $user->getUserUrl(); ?>">

@@ -76,7 +76,6 @@ class UserController extends CUDControllerAbstract {
         $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
         $user->setUserName(Arrays::get($inputs, UsersManager::USER_NAME));
         $user->setUserRegistered(NULL);
-        $user->setUserRol(Arrays::get($inputs, UsersManager::USER_ROL));
         $user->setUserUrl(Arrays::get($inputs, UsersManager::USER_URL));
         $user->setUserPassword($pass);
         $user->setUserPostCount(NULL);
@@ -104,8 +103,6 @@ class UserController extends CUDControllerAbstract {
                                     ->build(),
             InputAlphanumericBuilder::init(UsersManager::USER_NAME)
                                     ->build(),
-            InputIntegerBuilder::init(UsersManager::USER_ROL)
-                               ->build(),
             InputUrlBuilder::init(UsersManager::USER_URL)
                            ->setRequire(FALSE)
                            ->build(),
