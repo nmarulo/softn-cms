@@ -15,6 +15,8 @@ use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
+use SoftnCMS\route\Route;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\Escape;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
@@ -70,6 +72,7 @@ class PostController extends ThemeControllerAbstract {
             $user         = $usersManager->searchById(LoginManager::getSession());
             $comment->setCommentAuthorEmail($user->getUserEmail());
             $comment->setCommentAuthor($user->getUserName());
+            $comment->setCommentStatus(1);
         }
         
         return ['comment' => $comment];
@@ -99,15 +102,14 @@ class PostController extends ThemeControllerAbstract {
     }
     
     protected function read($id) {
+        $postStatus   = TRUE;
         $postsManager = new PostsManager();
-        $post         = $postsManager->searchById($id);
+        $post         = $postsManager->searchByIdAndStatus($id, $postStatus);
         
         if (empty($post)) {
-            $optionsManager = new OptionsManager();
-            Util::redirect($optionsManager->getSiteUrl());
+            Util::redirect(Router::getSiteURL());
         }
         
-        $post->setPostContents(Escape::htmlDecode($post->getPostContents()));
         ViewController::sendViewData('post', new PostTemplate($post, TRUE));
     }
     

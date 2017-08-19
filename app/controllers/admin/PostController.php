@@ -106,6 +106,7 @@ class PostController extends CUDControllerAbstract {
             InputIntegerBuilder::init(PostsManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(PostsManager::POST_TITLE)
+                                    ->setSpecialChar(TRUE)
                                     ->build(),
             InputHtmlBuilder::init(PostsManager::POST_CONTENTS)
                             ->build(),

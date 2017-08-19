@@ -4,6 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\managers\CommentsManager;
+use SoftnCMS\controllers\template\CommentTemplate;
 
 $postTemplate     = ViewController::getViewData('post');
 $siteUrl          = $postTemplate->getSiteUrl();
@@ -24,7 +25,7 @@ if (!empty($commentsTemplate)) {
                 </span>
             </small>
         </h2>
-        <?php foreach ($commentsTemplate as $commentTemplate) {
+        <?php array_walk($commentsTemplate, function(CommentTemplate $commentTemplate) use ($siteUrl, $urlUser) {
             $commentTemplate->initUser();
             $comment      = $commentTemplate->getComment();
             $userTemplate = $commentTemplate->getUserTemplate();
@@ -51,7 +52,7 @@ if (!empty($commentsTemplate)) {
                     <p><?php echo $comment->getCommentContents(); ?></p>
                 </div>
             </div>
-        <?php } ?>
+        <?php }); ?>
     </div>
 <?php }
 

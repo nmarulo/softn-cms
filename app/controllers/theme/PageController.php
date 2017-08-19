@@ -99,14 +99,14 @@ class PageController extends ThemeControllerAbstract {
     }
     
     protected function read($id) {
+        $pageStatus = true;
         $pagesManager = new PagesManager();
-        $page         = $pagesManager->searchById($id);
+        $page         = $pagesManager->searchByIdAndStatus($id, $pageStatus);
         
         if (empty($page)) {
             Util::redirect(Router::getSiteURL());
         }
         
-        $page->setPageContents(Escape::htmlDecode($page->getPageContents()));
         ViewController::sendViewData('page', new PageTemplate($page, TRUE));
     }
     

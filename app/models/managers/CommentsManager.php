@@ -37,6 +37,15 @@ class CommentsManager extends CRUDManagerAbstract {
         return parent::searchAllBy(self::POST_ID, self::ID);
     }
     
+    public function searchByPostIdAndStatus($postId, $status){
+        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
+        parent::parameterQuery(self::COMMENT_STATUS, $status, \PDO::PARAM_INT);
+        $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s ORDER BY %4$s DESC';
+        $query = sprintf($query, $this->getTableWithPrefix(), self::COMMENT_STATUS, self::POST_ID, self::ID);
+        
+        return parent::readData($query);
+    }
+    
     public function delete($id) {
         $postsManager = new PostsManager();
         $post         = $postsManager->searchByCommentId($id);

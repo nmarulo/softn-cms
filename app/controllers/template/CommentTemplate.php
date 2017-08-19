@@ -10,6 +10,7 @@ use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
+use SoftnCMS\util\Escape;
 
 /**
  * Class CommentTemplate
@@ -34,6 +35,7 @@ class CommentTemplate extends Template {
      */
     public function __construct(Comment $comment = NULL, $initRelationship = FALSE) {
         parent::__construct();
+        $comment->setCommentContents(Escape::htmlDecode($comment->getCommentContents()));
         $this->comment      = $comment;
         $this->post         = NULL;
         $this->userTemplate = NULL;

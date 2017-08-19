@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\template;
 use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\PagesManager;
 use SoftnCMS\models\tables\Page;
+use SoftnCMS\util\Escape;
 
 /**
  * Class PageTemplate
@@ -26,6 +27,7 @@ class PageTemplate extends Template {
      */
     public function __construct(Page $page = NULL, $initRelationShip = FALSE) {
         parent::__construct();
+        $page->setPageContents(Escape::htmlDecode($page->getPageContents()));
         $this->page = $page;
         
         if ($initRelationShip) {
