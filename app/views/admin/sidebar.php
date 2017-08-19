@@ -1,18 +1,20 @@
 <?php
 
-$siteUrl       = \SoftnCMS\rute\Router::getSiteURL();
-$urlAdmin      = $siteUrl . 'admin/';
-$urlPost       = $urlAdmin . 'post/';
-$urlPostCreate = $urlPost . 'create/';
-$urlCategory   = $urlAdmin . 'category/';
-$urlTerm       = $urlAdmin . 'term/';
-$urlComment    = $urlAdmin . 'comment/';
-$urlUser       = $urlAdmin . 'user/';
-$urlUserCreate = $urlUser . 'create/';
-$urlOption     = $urlAdmin . 'option/';
-$urlMenu       = $urlAdmin . 'menu/';
-$urlSidebar    = $urlAdmin . 'sidebar/';
-$urlPage       = $urlAdmin . 'page/';
+$siteUrl           = \SoftnCMS\rute\Router::getSiteURL();
+$urlAdmin          = $siteUrl . 'admin/';
+$urlPost           = $urlAdmin . 'post/';
+$urlPostCreate     = $urlPost . 'create/';
+$urlCategory       = $urlAdmin . 'category/';
+$urlTerm           = $urlAdmin . 'term/';
+$urlComment        = $urlAdmin . 'comment/';
+$urlUser           = $urlAdmin . 'user/';
+$urlUserCreate     = $urlUser . 'create/';
+$urlOption         = $urlAdmin . 'option/';
+$urlMenu           = $urlAdmin . 'menu/';
+$urlSidebar        = $urlAdmin . 'sidebar/';
+$urlPage           = $urlAdmin . 'page/';
+$urlProfile        = $urlAdmin . 'profile/';
+$urlLicense        = $urlAdmin . 'license/';
 $strTranslatePosts = __('Entradas');
 $strTranslateUsers = __('Usuarios');
 ?>
@@ -85,6 +87,16 @@ $strTranslateUsers = __('Usuarios');
                 <li>
                     <a href="<?php echo $urlUserCreate; ?>">
                         <span class="glyphicon glyphicon-pencil"></span> <?php echo __('Nuevo usuario'); ?>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo $urlProfile; ?>">
+                        <span class="glyphicon glyphicon-sunglasses"></span> <?php echo __('Perfiles'); ?>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo $urlLicense; ?>">
+                        <span class="glyphicon glyphicon-user"></span> <?php echo __('Permisos'); ?>
                     </a>
                 </li>
             </ul>
