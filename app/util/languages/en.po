@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SoftN-CMS v0.4-alpha\n"
-"POT-Creation-Date: 2017-08-17 18:23+0200\n"
-"PO-Revision-Date: 2017-08-17 18:25+0200\n"
+"POT-Creation-Date: 2017-08-20 13:01+0200\n"
+"PO-Revision-Date: 2017-08-20 13:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: Nicolás Marulanda P.\n"
 "Language: en\n"
@@ -97,6 +97,58 @@ msgstr "Error deleting comment."
 msgid "Comentario borrado correctamente."
 msgstr "Comment deleted correctly."
 
+#: controllers/admin/LicenseController.php:40
+msgid "Permiso creado correctamente."
+msgstr "License created successfully."
+
+#: controllers/admin/LicenseController.php:45
+msgid "Error al crear el permiso."
+msgstr "Failed to create license."
+
+#: controllers/admin/LicenseController.php:50
+msgid "Crear nuevo permiso"
+msgstr "New license"
+
+#: controllers/admin/LicenseController.php:101
+msgid "El permiso no existe."
+msgstr "The license does not exist."
+
+#: controllers/admin/LicenseController.php:107
+msgid "Error en los campos del permiso."
+msgstr "Error in license fields."
+
+#: controllers/admin/LicenseController.php:115
+msgid "Permiso actualizado correctamente."
+msgstr "License updated successfully."
+
+#: controllers/admin/LicenseController.php:117
+msgid "Error al actualizar el permiso."
+msgstr "Failed to update license."
+
+#: controllers/admin/LicenseController.php:125
+msgid "Actualizar permiso"
+msgstr "Update license"
+
+#: controllers/admin/LicenseController.php:134
+#: controllers/admin/LicenseController.php:157
+#: controllers/admin/UserController.php:175
+#: controllers/admin/UserController.php:198
+msgid "Error al borrar los perfiles."
+msgstr "Error while deleting profiles."
+
+#: controllers/admin/LicenseController.php:167
+#: controllers/admin/UserController.php:208
+msgid "Error al actualizar los perfiles."
+msgstr "Failed to update profiles."
+
+#: controllers/admin/LicenseController.php:185
+msgid "Error al borrar el permiso."
+msgstr "Error deleting license."
+
+#: controllers/admin/LicenseController.php:187
+msgid "Permiso borrado correctamente."
+msgstr "License deleted correctly."
+
 #: controllers/admin/MenuController.php:40
 msgid "Menu publicado correctamente."
 msgstr "Menu published correctly."
@@ -167,6 +219,7 @@ msgid "Publicar nueva pagina"
 msgstr "New page"
 
 #: controllers/admin/PageController.php:98
+#: controllers/template/PageTemplate.php:46
 msgid "La pagina no existe."
 msgstr "Page does not exist."
 
@@ -182,73 +235,122 @@ msgstr "Page updated successfully."
 msgid "Error al actualizar la pagina."
 msgstr "Failed to update page."
 
-#: controllers/admin/PageController.php:119
+#: controllers/admin/PageController.php:121
 msgid "Actualizar pagina"
 msgstr "Update page"
 
-#: controllers/admin/PageController.php:127
+#: controllers/admin/PageController.php:129
 msgid "Error al borrar la pagina."
 msgstr "Error deleting the page."
 
-#: controllers/admin/PageController.php:129
+#: controllers/admin/PageController.php:131
 msgid "Pagina borrada correctamente."
 msgstr "Page successfully deleting."
 
-#: controllers/admin/PostController.php:55
+#: controllers/admin/PostController.php:56
 msgid "Entrada publicada correctamente."
 msgstr "Correctly published post."
 
-#: controllers/admin/PostController.php:60
+#: controllers/admin/PostController.php:61
 msgid "Error al publicar la entrada."
 msgstr "Failed to publish post."
 
-#: controllers/admin/PostController.php:65
+#: controllers/admin/PostController.php:66
 msgid "Publicar nueva entrada"
 msgstr "New post"
 
-#: controllers/admin/PostController.php:132
+#: controllers/admin/PostController.php:134
 msgid "Error al borrar las etiquetas."
 msgstr "Error while deleting tags."
 
-#: controllers/admin/PostController.php:166
+#: controllers/admin/PostController.php:168
 msgid "Error al actualizar las etiquetas."
 msgstr "Failed to update tags."
 
-#: controllers/admin/PostController.php:187
+#: controllers/admin/PostController.php:189
 msgid "Error al borrar las categorías."
 msgstr "Error deleting categories."
 
-#: controllers/admin/PostController.php:221
+#: controllers/admin/PostController.php:223
 msgid "Error al actualizar las categorías."
 msgstr "Failed to update categories."
 
-#: controllers/admin/PostController.php:252
+#: controllers/admin/PostController.php:254
 msgid "La entrada no existe."
 msgstr "Post does not exist."
 
-#: controllers/admin/PostController.php:259
+#: controllers/admin/PostController.php:261
 msgid "Error en los campos de la entrada."
 msgstr "Error in post fields."
 
-#: controllers/admin/PostController.php:269
+#: controllers/admin/PostController.php:271
 msgid "Entrada actualizada correctamente."
 msgstr "Post updated successfully."
 
-#: controllers/admin/PostController.php:271
+#: controllers/admin/PostController.php:273
 msgid "Error al actualizar la entrada."
 msgstr "Failed to update post."
 
-#: controllers/admin/PostController.php:286
+#: controllers/admin/PostController.php:287
 msgid "Actualizar entrada"
 msgstr "Update post"
 
-#: controllers/admin/PostController.php:295
+#: controllers/admin/PostController.php:296
 msgid "Error al borrar la entrada."
 msgstr "Error deleting the post."
 
-#: controllers/admin/PostController.php:297
+#: controllers/admin/PostController.php:298
 msgid "Entrada borrada correctamente."
 msgstr "Post successfully deleting."
+
+#: controllers/admin/ProfileController.php:40
+msgid "Perfil creado correctamente."
+msgstr "Profile created successfully."
+
+#: controllers/admin/ProfileController.php:45
+msgid "Error al crear el perfil."
+msgstr "Failed to create profile."
+
+#: controllers/admin/ProfileController.php:50
+msgid "Crear nuevo perfil"
+msgstr "New profile"
+
+#: controllers/admin/ProfileController.php:101
+msgid "El perfil no existe."
+msgstr "The Profile does not exist."
+
+#: controllers/admin/ProfileController.php:107
+msgid "Error en los campos del perfil."
+msgstr "Error in the profile fields."
+
+#: controllers/admin/ProfileController.php:115
+msgid "Perfil actualizado correctamente."
+msgstr "Profile updated correctly."
+
+#: controllers/admin/ProfileController.php:117
+msgid "Error al actualizar el perfil."
+msgstr "Error updating the profile."
+
+#: controllers/admin/ProfileController.php:125
+msgid "Actualizar perfil"
+msgstr "Update profile"
+
+#: controllers/admin/ProfileController.php:134
+#: controllers/admin/ProfileController.php:157
+msgid "Error al borrar los permisos."
+msgstr "Error deleting licenses."
+
+#: controllers/admin/ProfileController.php:167
+msgid "Error al actualizar los permisos."
+msgstr "Failed to update licenses."
+
+#: controllers/admin/ProfileController.php:185
+msgid "Error al borrar el perfil."
+msgstr "Error deleting profile."
+
+#: controllers/admin/ProfileController.php:187
+msgid "Perfil borrado correctamente."
+msgstr "Profile deleting correctly."
 
 #: controllers/admin/SidebarController.php:36
 msgid "Barra lateral creado correctamente."
@@ -279,10 +381,11 @@ msgid "Error al actualizar la barra lateral."
 msgstr "Failed to update sidebar."
 
 #: controllers/admin/SidebarController.php:105 views/admin/category/form.php:31
-#: views/admin/comment/form.php:63 views/admin/menu/form.php:69
-#: views/admin/page/form.php:53 views/admin/post/form.php:66
+#: views/admin/comment/form.php:63 views/admin/license/form.php:47
+#: views/admin/menu/form.php:69 views/admin/page/form.php:53
+#: views/admin/post/form.php:66 views/admin/profile/form.php:47
 #: views/admin/sidebar/form.php:31 views/admin/term/form.php:31
-#: views/admin/user/form.php:61
+#: views/admin/user/form.php:73
 msgid "Actualizar"
 msgstr "Update"
 
@@ -334,51 +437,51 @@ msgstr "Failed to delete tag."
 msgid "Etiqueta borrada correctamente."
 msgstr "Tag deleted correctly."
 
-#: controllers/admin/UserController.php:39
+#: controllers/admin/UserController.php:44
 msgid "Usuario creado correctamente."
 msgstr "User created successfully."
 
-#: controllers/admin/UserController.php:45
+#: controllers/admin/UserController.php:50
 msgid "Error al publicar el usuario."
 msgstr "Failed to publish the user."
 
-#: controllers/admin/UserController.php:49
+#: controllers/admin/UserController.php:55
 msgid "Publicar nuevo usuario"
 msgstr "New user"
 
-#: controllers/admin/UserController.php:129
+#: controllers/admin/UserController.php:142
 msgid "El usuario no existe."
 msgstr "The user does not exist."
 
-#: controllers/admin/UserController.php:136
+#: controllers/admin/UserController.php:148
 msgid "Error en los campos del usuario."
 msgstr "Error in user fields."
 
-#: controllers/admin/UserController.php:141
+#: controllers/admin/UserController.php:156
 msgid "Usuario actualizado correctamente."
 msgstr "User updated successfully."
 
-#: controllers/admin/UserController.php:143
+#: controllers/admin/UserController.php:158
 msgid "Error al actualizar el usuario."
 msgstr "Failed to update user."
 
-#: controllers/admin/UserController.php:149
+#: controllers/admin/UserController.php:166
 msgid "Actualizar usuario"
 msgstr "Update user"
 
-#: controllers/admin/UserController.php:156
+#: controllers/admin/UserController.php:224
 msgid "No puedes eliminar este usuario."
 msgstr "You can not delete this user."
 
-#: controllers/admin/UserController.php:162
+#: controllers/admin/UserController.php:230
 msgid "No se puede borrar un usuario con entradas publicadas."
 msgstr "Can not delete a user with published posts."
 
-#: controllers/admin/UserController.php:164
+#: controllers/admin/UserController.php:232
 msgid "Error al borrar el usuario."
 msgstr "Error deleting user."
 
-#: controllers/admin/UserController.php:166
+#: controllers/admin/UserController.php:234
 msgid "Usuario borrado correctamente."
 msgstr "User deleted correctly."
 
@@ -410,7 +513,7 @@ msgstr "User successfully registered."
 msgid "Error al registrar el usuario."
 msgstr "Failed to register user."
 
-#: load.php:53
+#: load.php:36
 msgid "Debes iniciar sesión."
 msgstr "You must log in."
 
@@ -440,27 +543,27 @@ msgstr "Failed to update sidebar positions."
 msgid "Error. Token no encontrado."
 msgstr "Error. Token not found."
 
-#: util/Token.php:72
+#: util/Token.php:61
 msgid "Error. El Token es invalido."
 msgstr "The Token is invalid."
 
-#: util/Token.php:76
+#: util/Token.php:65
 msgid "Error. El Token a caducado."
 msgstr "The Token has expired."
 
-#: util/Token.php:78
+#: util/Token.php:67
 msgid "Error. El Token invalido."
 msgstr "Error: The Token invalid."
 
-#: util/Token.php:80
+#: util/Token.php:69
 msgid "Error. El Token no se puede usar."
 msgstr "The Token can not be used."
 
-#: util/Token.php:82
+#: util/Token.php:71
 msgid "Error en el formato del Token."
 msgstr "Token format error."
 
-#: util/Token.php:84
+#: util/Token.php:73
 msgid "Error desconocido en el Token."
 msgstr "Unknown error in Token."
 
@@ -470,38 +573,43 @@ msgid "El campo \"%1$s\" es obligatorio."
 msgstr "The field \"%1$s\" is required."
 
 #: views/admin/category/data.php:8 views/admin/category/form.php:18
+#: views/admin/license/data.php:8 views/admin/license/form.php:24
+#: views/admin/profile/data.php:8 views/admin/profile/form.php:24
 #: views/admin/term/data.php:10 views/admin/term/form.php:18
-#: views/admin/user/data.php:9 views/admin/user/form.php:23
+#: views/admin/user/data.php:9 views/admin/user/form.php:29
 msgid "Nombre"
 msgstr "Name"
 
 #: views/admin/category/data.php:9 views/admin/index/index.php:17
-#: views/admin/post/index.php:11 views/admin/sidebar.php:16
+#: views/admin/post/index.php:11 views/admin/sidebar.php:18
 #: views/admin/term/data.php:11 views/admin/user/data.php:12
 msgid "Entradas"
 msgstr "Posts"
 
-#: views/admin/category/form.php:22 views/admin/sidebar/form.php:22
+#: views/admin/category/form.php:22 views/admin/license/form.php:28
+#: views/admin/profile/form.php:28 views/admin/sidebar/form.php:22
 #: views/admin/term/form.php:22
 msgid "Descripción"
 msgstr "Description"
 
 #: views/admin/category/form.php:28 views/admin/comment/form.php:60
-#: views/admin/menu/form.php:66 views/admin/page/form.php:45
-#: views/admin/post/form.php:54 views/admin/sidebar/form.php:28
+#: views/admin/license/form.php:44 views/admin/menu/form.php:66
+#: views/admin/page/form.php:45 views/admin/post/form.php:54
+#: views/admin/profile/form.php:44 views/admin/sidebar/form.php:28
 #: views/admin/term/form.php:28
 msgid "Publicación"
 msgstr "Publication"
 
 #: views/admin/category/form.php:33 views/admin/comment/form.php:65
-#: views/admin/header.php:39 views/admin/menu/form.php:71
-#: views/admin/page/form.php:55 views/admin/post/form.php:68
+#: views/admin/header.php:39 views/admin/license/form.php:49
+#: views/admin/menu/form.php:71 views/admin/page/form.php:55
+#: views/admin/post/form.php:68 views/admin/profile/form.php:49
 #: views/admin/sidebar/form.php:33 views/admin/term/form.php:33
 msgid "Publicar"
 msgstr "Publish"
 
 #: views/admin/category/index.php:11 views/admin/index/index.php:44
-#: views/admin/post/form.php:73 views/admin/sidebar.php:44
+#: views/admin/post/form.php:73 views/admin/sidebar.php:46
 msgid "Categorías"
 msgstr "Categories"
 
@@ -530,7 +638,7 @@ msgid "Fecha"
 msgstr "Date"
 
 #: views/admin/comment/form.php:30 views/admin/user/data.php:10
-#: views/admin/user/form.php:29 views/login/register/index.php:30
+#: views/admin/user/form.php:35 views/login/register/index.php:30
 msgid "Correo electrónico"
 msgstr "Email"
 
@@ -548,7 +656,7 @@ msgstr "Content of the comment"
 
 #: views/admin/comment/index.php:11 views/admin/index/index.php:18
 #: views/admin/page/data.php:9 views/admin/post/data.php:10
-#: views/admin/sidebar.php:71
+#: views/admin/sidebar.php:73
 msgid "Comentarios"
 msgstr "Comments"
 
@@ -599,19 +707,29 @@ msgid "Estadísticas Generales"
 msgstr "Statistics"
 
 #: views/admin/index/index.php:36 views/admin/page/index.php:11
-#: views/admin/sidebar.php:61
+#: views/admin/sidebar.php:63
 msgid "Paginas"
 msgstr "Pages"
 
 #: views/admin/index/index.php:48 views/admin/post/form.php:90
-#: views/admin/sidebar.php:49 views/admin/term/index.php:11
+#: views/admin/sidebar.php:51 views/admin/term/index.php:11
 msgid "Etiquetas"
 msgstr "Terms"
 
-#: views/admin/index/index.php:52 views/admin/sidebar.php:17
+#: views/admin/index/index.php:52 views/admin/sidebar.php:19
 #: views/admin/user/index.php:11
 msgid "Usuarios"
 msgstr "Users"
+
+#: views/admin/license/form.php:32 views/admin/profile/index.php:11
+#: views/admin/sidebar.php:94 views/admin/user/form.php:59
+msgid "Perfiles"
+msgstr "Profiles"
+
+#: views/admin/license/index.php:11 views/admin/profile/form.php:32
+#: views/admin/sidebar.php:99
+msgid "Permisos"
+msgstr "Licenses"
 
 #: views/admin/menu/data.php:10 views/admin/menu/form.php:31
 #: views/admin/page/data.php:8 views/admin/post/data.php:8
@@ -640,11 +758,11 @@ msgstr "Select parent menu"
 msgid "Sin padre"
 msgstr "No father"
 
-#: views/admin/menu/index.php:12 views/admin/sidebar.php:56
+#: views/admin/menu/index.php:12 views/admin/sidebar.php:58
 msgid "Menus"
 msgstr "Menus"
 
-#: views/admin/option/index.php:23 views/admin/sidebar.php:94
+#: views/admin/option/index.php:23 views/admin/sidebar.php:106
 msgid "Configuración"
 msgstr "Option"
 
@@ -696,19 +814,19 @@ msgstr "Enable comments"
 msgid "Visible"
 msgstr "Visible"
 
-#: views/admin/sidebar.php:23
+#: views/admin/sidebar.php:25
 msgid "Información"
 msgstr "Information"
 
-#: views/admin/sidebar.php:39
+#: views/admin/sidebar.php:41
 msgid "Nueva entrada"
 msgstr "New Post"
 
-#: views/admin/sidebar.php:66 views/admin/sidebar/index.php:10
+#: views/admin/sidebar.php:68 views/admin/sidebar/index.php:10
 msgid "Barras laterales"
 msgstr "Sidebars"
 
-#: views/admin/sidebar.php:87
+#: views/admin/sidebar.php:89
 msgid "Nuevo usuario"
 msgstr "New user"
 
@@ -716,7 +834,7 @@ msgstr "New user"
 msgid "Posición"
 msgstr "Position"
 
-#: views/admin/user/data.php:8 views/admin/user/form.php:17
+#: views/admin/user/data.php:8 views/admin/user/form.php:23
 #: views/login/index/index.php:18 views/login/register/index.php:18
 msgid "Usuario"
 msgstr "User"
@@ -725,12 +843,12 @@ msgstr "User"
 msgid "Registro"
 msgstr "Registration"
 
-#: views/admin/user/form.php:35 views/login/index/index.php:22
+#: views/admin/user/form.php:41 views/login/index/index.php:22
 #: views/login/register/index.php:22
 msgid "Contraseña"
 msgstr "Password"
 
-#: views/admin/user/form.php:41 views/login/register/index.php:26
+#: views/admin/user/form.php:47 views/login/register/index.php:26
 msgid "Repetir contraseña"
 msgstr "Repeat password"
 
@@ -738,7 +856,7 @@ msgstr "Repeat password"
 msgid "Sitio web"
 msgstr "Website"
 
-#: views/admin/user/form.php:63
+#: views/admin/user/form.php:75
 msgid "Agregar"
 msgstr "Add"
 

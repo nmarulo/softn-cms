@@ -1,11 +1,17 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\ProfilesManager;
+use SoftnCMS\models\managers\LicensesProfilesManager;
+use SoftnCMS\models\tables\License;
+use SoftnCMS\util\Arrays;
 
-$profile  = ViewController::getViewData('profile');
-$title    = ViewController::getViewData('title');
-$method   = ViewController::getViewData('method');
-$isUpdate = $method == ProfilesManager::FORM_UPDATE;
+$profile            = ViewController::getViewData('profile');
+$title              = ViewController::getViewData('title');
+$method             = ViewController::getViewData('method');
+$isUpdate           = $method == ProfilesManager::FORM_UPDATE;
+$licenses           = ViewController::getViewData('licenses');
+$selectedLicensesId = ViewController::getViewData('selectedLicensesId');
 ?>
 <div class="page-container" data-menu-collapse-id="user">
     <div>
@@ -16,11 +22,21 @@ $isUpdate = $method == ProfilesManager::FORM_UPDATE;
             <div id="content-left" class="col-sm-9">
                 <div class="form-group">
                     <label class="control-label"><?php echo __('Nombre'); ?></label>
-                    <input class="form-control" name="<?php echo ProfilesManager::PROFILE_NAME; ?>" value="<?php echo $profile->getLicenseName(); ?>">
+                    <input class="form-control" name="<?php echo ProfilesManager::PROFILE_NAME; ?>" value="<?php echo $profile->getProfileName(); ?>">
                 </div>
                 <div class="form-group">
                     <label class="control-label"><?php echo __('Descripción'); ?></label>
-                    <textarea class="form-control" name="<?php echo ProfilesManager::PROFILE_DESCRIPTION; ?>" rows="5"><?php echo $profile->getLicenseDescription(); ?></textarea>
+                    <textarea class="form-control" name="<?php echo ProfilesManager::PROFILE_DESCRIPTION; ?>" rows="5"><?php echo $profile->getProfileDescription(); ?></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="control-label"><?php echo __('Permisos'); ?></label>
+                    <select class="form-control" name="<?php echo LicensesProfilesManager::LICENSE_ID; ?>[]" multiple>
+                        <?php array_walk($licenses, function(License $license) use ($selectedLicensesId) {
+                            $licenseId = $license->getId();
+                            $selected  = Arrays::valueExists($selectedLicensesId, $licenseId) ? 'selected' : '';
+                            echo "<option value='$licenseId' $selected>" . $license->getLicenseName() . '</option>';
+                        }); ?>
+                    </select>
                 </div>
             </div>
             <div id="content-right" class="col-sm-3">

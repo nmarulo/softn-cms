@@ -1,11 +1,17 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\LicensesManager;
+use SoftnCMS\models\managers\LicensesProfilesManager;
+use SoftnCMS\models\tables\Profile;
+use SoftnCMS\util\Arrays;
 
-$license  = ViewController::getViewData('license');
-$title    = ViewController::getViewData('title');
-$method   = ViewController::getViewData('method');
-$isUpdate = $method == LicensesManager::FORM_UPDATE;
+$license            = ViewController::getViewData('license');
+$title              = ViewController::getViewData('title');
+$method             = ViewController::getViewData('method');
+$isUpdate           = $method == LicensesManager::FORM_UPDATE;
+$profiles           = ViewController::getViewData('profiles');
+$selectedProfilesId = ViewController::getViewData('selectedProfilesId');
 ?>
 <div class="page-container" data-menu-collapse-id="user">
     <div>
@@ -21,6 +27,16 @@ $isUpdate = $method == LicensesManager::FORM_UPDATE;
                 <div class="form-group">
                     <label class="control-label"><?php echo __('Descripción'); ?></label>
                     <textarea class="form-control" name="<?php echo LicensesManager::LICENSE_DESCRIPTION; ?>" rows="5"><?php echo $license->getLicenseDescription(); ?></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="control-label"><?php echo __('Perfiles'); ?></label>
+                    <select class="form-control" name="<?php echo LicensesProfilesManager::PROFILE_ID; ?>[]" multiple>
+                        <?php array_walk($profiles, function(Profile $profile) use ($selectedProfilesId) {
+                            $profileId = $profile->getId();
+                            $selected  = Arrays::valueExists($selectedProfilesId, $profileId) ? 'selected' : '';
+                            echo "<option value='$profileId' $selected>" . $profile->getProfileName() . '</option>';
+                        }); ?>
+                    </select>
                 </div>
             </div>
             <div id="content-right" class="col-sm-3">

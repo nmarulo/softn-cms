@@ -8,11 +8,16 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
+use SoftnCMS\models\managers\LicensesManager;
+use SoftnCMS\models\managers\LicensesProfilesManager;
 use SoftnCMS\models\managers\ProfilesManager;
+use SoftnCMS\models\tables\LicenseProfile;
 use SoftnCMS\models\tables\Profile;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\util\form\builders\InputIntegerBuilder;
+use SoftnCMS\util\form\builders\InputListIntegerBuilder;
 use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Util;
@@ -32,6 +37,8 @@ class ProfileController extends CUDControllerAbstract {
                 $profile         = Arrays::get($form, 'profile');
                 
                 if ($profilesManager->create($profile)) {
+                    $licenses = Arrays::get($form, 'licenses');
+                    $this->createOrDeleteLicenses($licenses, $profilesManager->getLastInsertId());
                     Messages::addSuccess(__('Perfil creado correctamente.'));
                     Util::redirect(Router::getSiteURL() . 'admin/profile');
                 }
@@ -40,6 +47,7 @@ class ProfileController extends CUDControllerAbstract {
             Messages::addDanger(__('Error al crear el perfil.'));
         }
         
+        $this->sendViewLicenses();
         ViewController::sendViewData('profile', new Profile());
         ViewController::sendViewData('title', __('Crear nuevo perfil'));
         ViewController::view('form');
@@ -52,28 +60,39 @@ class ProfileController extends CUDControllerAbstract {
             return FALSE;
         }
         
-        $license = new Profile();
-        $license->setId(Arrays::get($inputs, ProfilesManager::ID));
-        $license->setProfileName(Arrays::get($inputs, ProfilesManager::PROFILE_NAME));
-        $license->setProfileDescription(Arrays::get($inputs, ProfilesManager::PROFILE_DESCRIPTION));
+        $profile  = new Profile();
+        $licenses = Arrays::get($inputs, LicensesProfilesManager::LICENSE_ID);
+        $profile->setId(Arrays::get($inputs, ProfilesManager::ID));
+        $profile->setProfileName(Arrays::get($inputs, ProfilesManager::PROFILE_NAME));
+        $profile->setProfileDescription(Arrays::get($inputs, ProfilesManager::PROFILE_DESCRIPTION));
         
-        return ['license' => $license];
+        return [
+            'profile'  => $profile,
+            'licenses' => $licenses,
+        ];
     }
     
     protected function filterInputs() {
         Form::setInput([
+            InputIntegerBuilder::init(ProfilesManager::ID)
+                               ->build(),
             InputAlphanumericBuilder::init(ProfilesManager::PROFILE_NAME)
                                     ->setAccents(FALSE)
-                                    ->setWithoutSpace(TRUE)
-                                    ->setReplaceSpace('_')
                                     ->setSpecialChar(TRUE)
                                     ->build(),
             InputAlphanumericBuilder::init(ProfilesManager::PROFILE_DESCRIPTION)
                                     ->setRequire(FALSE)
                                     ->build(),
+            InputListIntegerBuilder::init(LicensesProfilesManager::LICENSE_ID)
+                                   ->build(),
         ]);
         
         return Form::inputFilter();
+    }
+    
+    private function sendViewLicenses() {
+        $licensesManager = new LicensesManager();
+        ViewController::sendViewData('licenses', $licensesManager->read());
     }
     
     public function update($id) {
@@ -92,6 +111,9 @@ class ProfileController extends CUDControllerAbstract {
                 $profile = Arrays::get($form, 'profile');
                 
                 if ($profilesManager->update($profile)) {
+                    $profile  = $profilesManager->searchById($id);
+                    $licenses = Arrays::get($form, 'licenses');
+                    $this->createOrDeleteLicenses($licenses, $id);
                     Messages::addSuccess(__('Perfil actualizado correctamente.'));
                 } else {
                     Messages::addDanger(__('Error al actualizar el perfil.'));
@@ -99,9 +121,63 @@ class ProfileController extends CUDControllerAbstract {
             }
         }
         
+        $this->sendViewLicenses();
+        ViewController::sendViewData('selectedLicensesId', $this->getLicensesIdByProfileId($id));
         ViewController::sendViewData('profile', $profile);
         ViewController::sendViewData('title', __('Actualizar perfil'));
         ViewController::view('form');
+    }
+    
+    private function createOrDeleteLicenses($licensesId, $profileId) {
+        $licensesProfilesManager = new LicensesProfilesManager();
+        
+        if (empty($licensesId)) {
+            if ($licensesProfilesManager->deleteAllByProfileId($profileId) === FALSE) {
+                Messages::addDanger(__('Error al borrar los permisos.'));
+            }
+        } else {
+            $selectedLicensesId = $this->getLicensesIdByProfileId($profileId);
+            $numError           = 0;
+            //Obtengo los identificadores de los nuevos permisos.
+            $newSelectedLicensesId = array_filter($licensesId, function($licenseId) use ($selectedLicensesId) {
+                return !Arrays::valueExists($selectedLicensesId, $licenseId);
+            });
+            $newLicensesProfiles   = array_map(function($licenseId) use ($profileId) {
+                $licenseProfile = new LicenseProfile();
+                $licenseProfile->setProfileId($profileId);
+                $licenseProfile->setLicenseId($licenseId);
+                
+                return $licenseProfile;
+            }, $newSelectedLicensesId);
+            
+            //Obtengo los identificadores de los permisos que no se han seleccionado.
+            $licensesIdNotSelected = array_filter($selectedLicensesId, function($selectedLicenseId) use ($licensesId) {
+                return !Arrays::valueExists($licensesId, $selectedLicenseId);
+            });
+            
+            if (!empty($licensesIdNotSelected) && $licensesProfilesManager->deleteAllLicensesByProfileId($licensesIdNotSelected, $profileId) === FALSE) {
+                Messages::addDanger(__('Error al borrar los permisos.'));
+            }
+            
+            array_walk($newLicensesProfiles, function(LicenseProfile $licenseProfile) use (&$numError, $licensesProfilesManager) {
+                if (!$licensesProfilesManager->create($licenseProfile)) {
+                    ++$numError;
+                }
+            });
+            
+            if ($numError > 0) {
+                Messages::addDanger(__('Error al actualizar los permisos.'));
+            }
+        }
+    }
+    
+    private function getLicensesIdByProfileId($profileId) {
+        $licensesProfilesManager = new LicensesProfilesManager();
+        $licensesProfile         = $licensesProfilesManager->searchAllByProfileId($profileId);
+        
+        return array_map(function(LicenseProfile $licenseProfile) {
+            return $licenseProfile->getLicenseId();
+        }, $licensesProfile);
     }
     
     public function delete($id) {
