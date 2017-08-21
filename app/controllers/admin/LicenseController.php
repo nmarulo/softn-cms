@@ -77,7 +77,6 @@ class LicenseController extends CUDControllerAbstract {
             InputIntegerBuilder::init(LicensesManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(LicensesManager::LICENSE_NAME)
-                                    ->setAccents(FALSE)
                                     ->setSpecialChar(TRUE)
                                     ->build(),
             InputAlphanumericBuilder::init(LicensesManager::LICENSE_DESCRIPTION)

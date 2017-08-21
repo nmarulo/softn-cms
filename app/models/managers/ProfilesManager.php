@@ -21,6 +21,40 @@ class ProfilesManager extends CRUDManagerAbstract {
     
     const PROFILE_DESCRIPTION = 'profile_description';
     
+    public function create($object) {
+        $object = $this->checkName($object);
+        
+        return parent::create($object);
+    }
+    
+    /**
+     * @param Profile $profile
+     *
+     * @return Profile
+     */
+    private function checkName($profile) {
+        $name    = $profile->getProfileName();
+        $id      = $profile->getId();
+        $newName = $name;
+        $num     = 0;
+        
+        while ($this->nameExists($newName, $id)) {
+            $newName = $name . ++$num;
+        }
+        
+        $profile->setProfileName($newName);
+        
+        return $profile;
+    }
+    
+    private function nameExists($name, $id) {
+        parent::parameterQuery(self::PROFILE_NAME, $name, \PDO::PARAM_STR);
+        $result = parent::searchBy(self::PROFILE_NAME);
+        
+        //Si el "id" es el mismo, estamos actualizando.
+        return $result !== FALSE && $result->getId() != $id;
+    }
+    
     /**
      * @param Profile $object
      */

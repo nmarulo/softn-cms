@@ -77,7 +77,6 @@ class ProfileController extends CUDControllerAbstract {
             InputIntegerBuilder::init(ProfilesManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(ProfilesManager::PROFILE_NAME)
-                                    ->setAccents(FALSE)
                                     ->setSpecialChar(TRUE)
                                     ->build(),
             InputAlphanumericBuilder::init(ProfilesManager::PROFILE_DESCRIPTION)
