@@ -45,7 +45,7 @@ class UserTemplate extends Template {
     
     public function initPosts() {
         $postsManager = new PostsManager();
-        $this->post   = $postsManager->searchByUserId($this->user->getId());
+        $this->post   = $postsManager->searchAllByUserId($this->user->getId());
         $this->post   = array_map(function(Post $post) {
             return new PostTemplate($post);
         }, $this->post);

@@ -19,7 +19,6 @@ ViewController::singleViewByDirectory('pagination'); ?>
                 <th><?php echo $strTranslateUser; ?></th>
                 <th><?php echo $strTranslateName; ?></th>
                 <th><?php echo $strTranslateEmail; ?></th>
-                <th>Rol</th>
                 <th><?php echo $strTranslateRegistered; ?></th>
                 <th><?php echo $strTranslatePosts; ?></th>
             </tr>
@@ -30,7 +29,6 @@ ViewController::singleViewByDirectory('pagination'); ?>
                 <th><?php echo $strTranslateUser; ?></th>
                 <th><?php echo $strTranslateName; ?></th>
                 <th><?php echo $strTranslateEmail; ?></th>
-                <th>Rol</th>
                 <th><?php echo $strTranslateRegistered; ?></th>
                 <th><?php echo $strTranslatePosts; ?></th>
             </tr>
@@ -45,7 +43,6 @@ ViewController::singleViewByDirectory('pagination'); ?>
                 <td><?php echo $user->getUserLogin(); ?></td>
                 <td><?php echo $user->getUserName(); ?></td>
                 <td><?php echo $user->getUserEmail(); ?></td>
-                <td><?php echo $user->getUserRol(); ?></td>
                 <td><?php echo $user->getUserRegistered(); ?></td>
                 <td><?php echo $user->getUserPostCount(); ?></td>
             </tr>

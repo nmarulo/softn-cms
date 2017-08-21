@@ -45,7 +45,7 @@ class CategoryTemplate extends Template {
     
     public function initPosts() {
         $postsManager = new PostsManager();
-        $this->posts  = $postsManager->searchByCategoryId($this->category->getId());
+        $this->posts  = $postsManager->searchAllByCategoryId($this->category->getId());
         $this->posts  = array_map(function(Post $post) {
             return new PostTemplate($post);
         }, $this->posts);

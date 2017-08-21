@@ -15,6 +15,7 @@ use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\Term;
+use SoftnCMS\util\Escape;
 
 /**
  * Class PostTemplate
@@ -45,6 +46,7 @@ class PostTemplate extends Template {
      */
     public function __construct(Post $post = NULL, $initRelationship = FALSE) {
         parent::__construct();
+        $post->setPostContents(Escape::htmlDecode($post->getPostContents()));
         $this->post               = $post;
         $this->categoriesTemplate = [];
         $this->termsTemplate      = [];
@@ -90,11 +92,14 @@ class PostTemplate extends Template {
     }
     
     public function initComments() {
+        $commentStatus          = TRUE;
         $commentsManager        = new CommentsManager();
-        $this->commentsTemplate = $commentsManager->searchByPostId($this->post->getId());
+        $this->commentsTemplate = $commentsManager->searchByPostIdAndStatus($this->post->getId(), $commentStatus);
         $this->commentsTemplate = array_map(function(Comment $comment) {
             return new CommentTemplate($comment);
         }, $this->commentsTemplate);
+        
+        $this->post->setPostCommentCount(count($this->commentsTemplate));
     }
     
     /**

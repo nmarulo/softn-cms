@@ -10,8 +10,11 @@ use SoftnCMS\controllers\ThemeControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\managers\PostsCategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\tables\Post;
+use SoftnCMS\route\Route;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Escape;
 use SoftnCMS\util\Util;
 
@@ -26,12 +29,13 @@ class CategoryController extends ThemeControllerAbstract {
         $category          = $categoriesManager->searchById($id);
         
         if (empty($category)) {
-            $optionsManager = new OptionsManager();
-            Util::redirect($optionsManager->getSiteUrl());
+            Util::redirect(Router::getSiteURL());
         }
         
-        $count        = $category->getCategoryPostCount();
+        $postStatus = TRUE;
         $postsManager = new PostsManager();
+        $postsCategoriesManager = new PostsCategoriesManager();
+        $count        = $postsCategoriesManager->countPostsByCategoryIdAndPostStatus($id, $postStatus);
         $pagination   = parent::pagination($count);
         $filters      = [];
         
@@ -39,11 +43,7 @@ class CategoryController extends ThemeControllerAbstract {
             $filters['limit'] = $pagination;
         }
         
-        $posts = $postsManager->searchByCategoryId($category->getId(), $filters);
-        array_walk($posts, function(Post $post) {
-            $post->setPostContents(Escape::htmlDecode($post->getPostContents()));
-        });
-        
+        $posts = $postsManager->searchAllByCategoryIdAndStatus($category->getId(), $postStatus, $filters);
         $postsTemplate = array_map(function(Post $post) {
             return new PostTemplate($post, TRUE);
         }, $posts);

@@ -1,11 +1,17 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\UsersManager;
+use SoftnCMS\models\managers\UsersProfilesManager;
+use SoftnCMS\models\tables\Profile;
+use SoftnCMS\util\Arrays;
 
-$title    = ViewController::getViewData('title');
-$user     = ViewController::getViewData('user');
-$method   = ViewController::getViewData('method');
-$isUpdate = $method == UsersManager::FORM_UPDATE;
+$title            = ViewController::getViewData('title');
+$user             = ViewController::getViewData('user');
+$method           = ViewController::getViewData('method');
+$isUpdate         = $method == UsersManager::FORM_UPDATE;
+$profiles         = ViewController::getViewData('profiles');
+$selectProfilesId = ViewController::getViewData('selectedProfilesId');
 ?>
 <div class="page-container" data-menu-collapse-id="user">
     <div>
@@ -44,15 +50,21 @@ $isUpdate = $method == UsersManager::FORM_UPDATE;
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">Tipo de usuario</label>
-                <div class="col-sm-10">
-                    <input type="number" class="form-control" name="<?php echo UsersManager::USER_ROL; ?>" value="<?php echo $user->getUserRol(); ?>" disabled>
-                </div>
-            </div>
-            <div class="form-group">
                 <label class="col-sm-2 control-label"><?php echo __('Sitio web'); ?></label>
                 <div class="col-sm-10">
                     <input type="url" class="form-control" name="<?php echo UsersManager::USER_URL; ?>" value="<?php echo $user->getUserUrl(); ?>">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><?php echo __('Perfiles'); ?></label>
+                <div class="col-sm-10">
+                    <select class="form-control" name="<?php echo UsersProfilesManager::PROFILE_ID; ?>[]" multiple>
+                        <?php array_walk($profiles, function(Profile $profile) use ($selectProfilesId) {
+                            $profileId = $profile->getId();
+                            $selected  = Arrays::valueExists($selectProfilesId, $profileId) ? 'selected' : '';
+                            echo "<option value='$profileId' $selected>" . $profile->getProfileName() . '</option>';
+                        }); ?>
+                    </select>
                 </div>
             </div>
             <div class="form-group">

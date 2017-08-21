@@ -24,8 +24,9 @@ class IndexController extends ControllerAbstract {
     }
     
     protected function read() {
+        $postStatus   = TRUE;
         $postsManager = new PostsManager();
-        $count        = $postsManager->count();
+        $count        = $postsManager->countByStatus($postStatus);
         $pagination   = parent::pagination($count);
         $filters      = [];
         
@@ -33,11 +34,7 @@ class IndexController extends ControllerAbstract {
             $filters['limit'] = $pagination;
         }
         
-        $posts = $postsManager->read($filters);
-        array_walk($posts, function(Post $post) {
-            $post->setPostContents(Escape::htmlDecode($post->getPostContents()));
-        });
-        
+        $posts         = $postsManager->searchAllByStatus($postStatus, $filters);
         $postsTemplate = array_map(function(Post $post) {
             return new PostTemplate($post, TRUE);
         }, $posts);

@@ -9,6 +9,7 @@ use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\CommentsManager;
+use SoftnCMS\models\managers\PagesManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\managers\UsersManager;
@@ -35,6 +36,7 @@ class IndexController extends ControllerAbstract {
         $categoriesManager = new CategoriesManager();
         $termsManager      = new TermsManager();
         $usersManager      = new UsersManager();
+        $pagesManager = new PagesManager();
         $posts             = $postsManager->read(['limit' => 5]);
         $comments          = $commentsManager->read(['limit' => 5]);
         
@@ -69,7 +71,7 @@ class IndexController extends ControllerAbstract {
         ViewController::sendViewData('countCategories', $categoriesManager->count());
         ViewController::sendViewData('countTerms', $termsManager->count());
         ViewController::sendViewData('countUsers', $usersManager->count());
-        ViewController::sendViewData('countPages', 0);
+        ViewController::sendViewData('countPages', $pagesManager->count());
     }
     
     public function apiGitHub() {

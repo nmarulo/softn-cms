@@ -28,8 +28,6 @@ class UsersManager extends CRUDManagerAbstract {
     
     const USER_PASSWORD_REWRITE = 'user_password_rewrite';
     
-    const USER_ROL              = 'user_rol';
-    
     const USER_REGISTERED       = 'user_registered';
     
     const USER_URL              = 'user_url';
@@ -160,7 +158,6 @@ class UsersManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::USER_NAME, $object->getUserName(), \PDO::PARAM_STR);
         parent::parameterQuery(self::USER_PASSWORD, $object->getUserPassword(), \PDO::PARAM_STR);
         parent::parameterQuery(self::USER_REGISTERED, $object->getUserRegistered(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::USER_ROL, $object->getUserRol(), \PDO::PARAM_INT);
         parent::parameterQuery(self::USER_URL, $object->getUserUrl(), \PDO::PARAM_STR);
         parent::parameterQuery(self::USER_POST_COUNT, $object->getUserPostCount(), \PDO::PARAM_INT);
     }
@@ -179,7 +176,6 @@ class UsersManager extends CRUDManagerAbstract {
         $user = new User();
         $user->setId(Arrays::get($result, self::ID));
         $user->setUserUrl(Arrays::get($result, self::USER_URL));
-        $user->setUserRol(Arrays::get($result, self::USER_ROL));
         $user->setUserRegistered(Arrays::get($result, self::USER_REGISTERED));
         $user->setUserName(Arrays::get($result, self::USER_NAME));
         $user->setUserLogin(Arrays::get($result, self::USER_LOGIN));

@@ -45,7 +45,7 @@ class TermTemplate extends Template {
     
     public function initPosts() {
         $postsManager = new PostsManager();
-        $this->posts  = $postsManager->searchByTermId($this->term->getId());
+        $this->posts  = $postsManager->searchAllByTermId($this->term->getId());
         $this->posts  = array_map(function(Post $post) {
             return new PostTemplate($post);
         }, $this->posts);

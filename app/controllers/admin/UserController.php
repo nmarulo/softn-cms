@@ -10,12 +10,17 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\managers\UsersManager;
+use SoftnCMS\models\managers\UsersProfilesManager;
 use SoftnCMS\models\tables\User;
+use SoftnCMS\models\tables\UserProfile;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
+use SoftnCMS\util\form\builders\InputListIntegerBuilder;
 use SoftnCMS\util\form\builders\InputUrlBuilder;
 use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
@@ -36,15 +41,17 @@ class UserController extends CUDControllerAbstract {
                 $user         = Arrays::get($form, 'user');
                 
                 if ($usersManager->create($user)) {
+                    $profiles = Arrays::get($form, 'profiles');
+                    $this->createOrDeleteProfiles($profiles, $usersManager->getLastInsertId());
                     Messages::addSuccess(__('Usuario creado correctamente.'), TRUE);
-                    $optionsManager = new OptionsManager();
-                    Util::redirect($optionsManager->getSiteUrl() . 'admin/user');
+                    Util::redirect(Router::getSiteURL() . 'admin/user');
                 }
             }
             
             Messages::addDanger(__('Error al publicar el usuario.'));
         }
         
+        $this->sendViewProfiles();
         ViewController::sendViewData('user', new User());
         ViewController::sendViewData('title', __('Publicar nuevo usuario'));
         ViewController::view('form');
@@ -70,13 +77,13 @@ class UserController extends CUDControllerAbstract {
             $pass = Util::encrypt($pass, LOGGED_KEY);
         }
         
-        $user = new User();
+        $user     = new User();
+        $profiles = Arrays::get($inputs, UsersProfilesManager::PROFILE_ID);
         $user->setId(Arrays::get($inputs, UsersManager::ID));
         $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
         $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
         $user->setUserName(Arrays::get($inputs, UsersManager::USER_NAME));
         $user->setUserRegistered(NULL);
-        $user->setUserRol(Arrays::get($inputs, UsersManager::USER_ROL));
         $user->setUserUrl(Arrays::get($inputs, UsersManager::USER_URL));
         $user->setUserPassword($pass);
         $user->setUserPostCount(NULL);
@@ -86,7 +93,10 @@ class UserController extends CUDControllerAbstract {
             $user->setUserPostCount(0);
         }
         
-        return ['user' => $user];
+        return [
+            'user'     => $user,
+            'profiles' => $profiles,
+        ];
     }
     
     protected function filterInputs() {
@@ -104,8 +114,6 @@ class UserController extends CUDControllerAbstract {
                                     ->build(),
             InputAlphanumericBuilder::init(UsersManager::USER_NAME)
                                     ->build(),
-            InputIntegerBuilder::init(UsersManager::USER_ROL)
-                               ->build(),
             InputUrlBuilder::init(UsersManager::USER_URL)
                            ->setRequire(FALSE)
                            ->build(),
@@ -115,9 +123,16 @@ class UserController extends CUDControllerAbstract {
             InputAlphanumericBuilder::init(UsersManager::USER_PASSWORD_REWRITE)
                                     ->setRequire($isCreate)
                                     ->build(),
+            InputListIntegerBuilder::init(UsersProfilesManager::PROFILE_ID)
+                                   ->build(),
         ]);
         
         return Form::inputFilter();
+    }
+    
+    private function sendViewProfiles() {
+        $profilesManager = new ProfilesManager();
+        ViewController::sendViewData('profiles', $profilesManager->read());
     }
     
     public function update($id) {
@@ -125,30 +140,84 @@ class UserController extends CUDControllerAbstract {
         $user         = $usersManager->searchById($id);
         
         if (empty($user)) {
-            $optionsManager = new OptionsManager();
             Messages::addDanger(__('El usuario no existe.'), TRUE);
-            Util::redirect($optionsManager->getSiteUrl() . 'admin/user');
-        } else {
-            if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
-                $form = $this->form();
+            Util::redirect(Router::getSiteURL() . 'admin/user');
+        } elseif (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+            $form = $this->form();
+            
+            if (empty($form)) {
+                Messages::addDanger(__('Error en los campos del usuario.'));
+            } else {
+                $user = Arrays::get($form, 'user');
                 
-                if (empty($form)) {
-                    Messages::addDanger(__('Error en los campos del usuario.'));
+                if ($usersManager->update($user)) {
+                    $user     = $usersManager->searchById($id);
+                    $profiles = Arrays::get($form, 'profiles');
+                    $this->createOrDeleteProfiles($profiles, $id);
+                    Messages::addSuccess(__('Usuario actualizado correctamente.'));
                 } else {
-                    $user = Arrays::get($form, 'user');
-                    
-                    if ($usersManager->update($user)) {
-                        Messages::addSuccess(__('Usuario actualizado correctamente.'));
-                    } else {
-                        Messages::addDanger(__('Error al actualizar el usuario.'));
-                    }
+                    Messages::addDanger(__('Error al actualizar el usuario.'));
                 }
             }
-            
-            ViewController::sendViewData('user', $user);
-            ViewController::sendViewData('title', __('Actualizar usuario'));
-            ViewController::view('form');
         }
+        
+        $this->sendViewProfiles();
+        ViewController::sendViewData('selectedProfilesId', $this->getProfilesIdByUserId($id));
+        ViewController::sendViewData('user', $user);
+        ViewController::sendViewData('title', __('Actualizar usuario'));
+        ViewController::view('form');
+    }
+    
+    private function createOrDeleteProfiles($profilesId, $userId) {
+        $usersProfilesManager = new UsersProfilesManager();
+        
+        if (empty($profilesId)) {
+            if ($usersProfilesManager->deleteAllByUserId($userId) === FALSE) {
+                Messages::addDanger(__('Error al borrar los perfiles.'));
+            }
+        } else {
+            $selectedProfilesId = $this->getProfilesIdByUserId($userId);
+            $numError           = 0;
+            //Obtengo los identificadores de los nuevos perfiles.
+            $newSelectedProfilesId = array_filter($profilesId, function($profileId) use ($selectedProfilesId) {
+                return !Arrays::valueExists($selectedProfilesId, $profileId);
+            });
+            $newUsersProfiles      = array_map(function($profileId) use ($userId) {
+                $userProfile = new UserProfile();
+                $userProfile->setProfileId($profileId);
+                $userProfile->setUserId($userId);
+                
+                return $userProfile;
+            }, $newSelectedProfilesId);
+            
+            //Obtengo los identificadores de los perfiles que no se han seleccionado.
+            $profilesIdNotSelected = array_filter($selectedProfilesId, function($selectedProfileId) use ($profilesId) {
+                return !Arrays::valueExists($profilesId, $selectedProfileId);
+            });
+            
+            if (!empty($profilesIdNotSelected) && $usersProfilesManager->deleteAllProfilesByUserId($profilesIdNotSelected, $userId) === FALSE) {
+                Messages::addDanger(__('Error al borrar los perfiles.'));
+            }
+            
+            array_walk($newUsersProfiles, function(UserProfile $userProfile) use (&$numError, $usersProfilesManager) {
+                if (!$usersProfilesManager->create($userProfile)) {
+                    ++$numError;
+                }
+            });
+            
+            if ($numError > 0) {
+                Messages::addDanger(__('Error al actualizar los perfiles.'));
+            }
+        }
+    }
+    
+    private function getProfilesIdByUserId($userId) {
+        $usersProfilesManager = new UsersProfilesManager();
+        $userProfiles         = $usersProfilesManager->searchAllByUserId($userId);
+        
+        return array_map(function(UserProfile $userProfile) {
+            return $userProfile->getProfileId();
+        }, $userProfiles);
     }
     
     public function delete($id) {
@@ -182,5 +251,4 @@ class UserController extends CUDControllerAbstract {
         
         ViewController::sendViewData('users', $usersManager->read($filters));
     }
-    
 }

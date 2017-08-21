@@ -5,9 +5,8 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}users` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `user_login` VARCHAR(60) NOT NULL COMMENT 'nombre usado para acceder',
     `user_name` VARCHAR(50) NOT NULL COMMENT 'Nombre del usuario',
-    `user_email` VARCHAR(100) NOT NULL COMMENT 'Correo electronico',
+    `user_email` VARCHAR(100) NOT NULL COMMENT 'Correo electrónico',
     `user_password` VARCHAR(64) NOT NULL COMMENT 'Contraseña',
-    `user_rol` INT NOT NULL COMMENT 'Determinara el rango del usuario y los privilegios dentro del panel de administración. Por defecto 0: Tiene solo acceso para editar su información.',
     `user_registered` DATETIME NOT NULL COMMENT 'Fecha de registro',
     `user_url` VARCHAR(100) NULL,
     `user_post_count` INT NOT NULL,
@@ -150,7 +149,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}posts_categories` (
         ON DELETE CASCADE
         ON UPDATE NO ACTION)
     ENGINE = InnoDB
-    COMMENT = 'Relaciones entre post y categorias';
+    COMMENT = 'Relaciones entre post y categorías';
 
 CREATE INDEX `fk_posts_categories_id` ON `#{PREFIX}posts_categories` (`category_id` ASC);
 

@@ -29,6 +29,15 @@ class PagesManager extends CRUDManagerAbstract {
     
     const PAGE_COMMENT_COUNT  = 'page_comment_count';
     
+    public function searchByIdAndStatus($id, $status) {
+        parent::parameterQuery(self::ID, $id, \PDO::PARAM_INT);
+        parent::parameterQuery(self::PAGE_STATUS, $status, \PDO::PARAM_INT);
+        $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s';
+        $query = sprintf($query, $this->getTableWithPrefix(), self::ID, self::PAGE_STATUS);
+        
+        return Arrays::get(parent::readData($query), 0);
+    }
+    
     protected function buildObjectTable($result) {
         parent::buildObjectTable($result);
         

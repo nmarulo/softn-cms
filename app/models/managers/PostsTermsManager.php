@@ -21,6 +21,19 @@ class PostsTermsManager extends CRUDManagerAbstract {
     
     const TERM_ID = 'term_id';
     
+    public function countPostsByTermIdAndPostStatus($termId, $postStatus) {
+        $tablePosts = $this->getTableWithPrefix(PostsManager::TABLE);
+        $table      = $this->getTableWithPrefix();
+        $query      = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s IN (SELECT %4$s FROM %5$s WHERE %6$s = :%6$s)', $table, self::TERM_ID, self::POST_ID, PostsManager::ID, $tablePosts, PostsManager::POST_STATUS);
+        parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
+        parent::parameterQuery(PostsManager::POST_STATUS, $postStatus, \PDO::PARAM_INT);
+        $result = $this->select($query);
+        $result = Arrays::get($result, 0);
+        $result = Arrays::get($result, 'COUNT');
+        
+        return $result === FALSE ? 0 : $result;
+    }
+    
     public function searchAllByTermId($termId) {
         parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
         

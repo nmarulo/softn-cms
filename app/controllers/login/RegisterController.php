@@ -70,7 +70,6 @@ class RegisterController extends ControllerAbstract {
         $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
         $user->setUserRegistered(Util::dateNow());
         $user->setUserName($user->getUserLogin());
-        $user->setUserRol(0);
         $user->setUserPostCount(0);
         
         return ['user' => $user];
