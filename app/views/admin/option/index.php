@@ -18,12 +18,12 @@ $optionLanguage    = ViewController::getViewData('optionLanguage');
 $currentLanguage   = $optionLanguage->getOptionValue();
 $listLanguages     = ViewController::getViewData('listLanguages');
 ?>
-<div class="page-container">
+<div class="page-container" data-menu-collapse-id="option">
     <div>
         <h1><?php echo __('Configuración'); ?></h1>
     </div>
     <div>
-        <form class="form-horizontal" role="form" method="post">
+        <form class="form-horizontal" method="post">
             <div class="form-group">
                 <label class="col-sm-2 control-label"><?php echo __('Título del sitio'); ?></label>
                 <div class="col-sm-10">

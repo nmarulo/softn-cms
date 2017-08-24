@@ -102,6 +102,12 @@ class Util {
         exit();
     }
     
+    /**
+     * @param string $directory
+     * @param array  $filter
+     *
+     * @return array
+     */
     public static function getFilesAndDirectories($directory, $filter = [
         '..',
         '.',
@@ -110,19 +116,23 @@ class Util {
         return array_diff(scandir($directory), $filter);
     }
     
-    public static function getUrl($urlGet = ''){
+    public static function removeExtension($file, $delimiter = '.') {
+        return Arrays::get(explode($delimiter, $file), 0);
+    }
+    
+    public static function getUrl($urlGet = '') {
         $host       = $_SERVER['HTTP_HOST'];// localhost
         $scheme     = $_SERVER['REQUEST_SCHEME'];// http
         $uriCurrent = $_SERVER['REQUEST_URI'];// /softn-cms/install
         $uri        = $uriCurrent;
         $url        = $scheme . '://' . $host;
-    
+        
         if (!empty($urlGet)) {
             $strPos = strpos($uriCurrent, $urlGet);
             //Para obtener la uri raíz de la pagina.
             $uri = substr($uriCurrent, 0, $strPos);// /softn-cms/
         }
-    
+        
         return Sanitize::url($url . $uri);
     }
 }
