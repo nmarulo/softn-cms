@@ -14,6 +14,7 @@ use SoftnCMS\util\Util;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\util\Messages;
 use SoftnCMS\route\Route;
+use SoftnCMS\models\licenses\License;
 
 session_start();
 
@@ -44,7 +45,13 @@ $router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
     $route = $router->getRoute();
     
     if ($route->getControllerDirectoryName() == Route::CONTROLLER_DIRECTORY_NAME_ADMIN) {
-        //Compruebo si existe algún permiso, de lo contrario permite el acceso total.
+        $canCallUserFun = License::initCheck($route, LoginManager::getSession());
+        $router->setCanCallUserFunc($canCallUserFun);
+        
+        //No redirecciona al borrar, porque este método se llama por AJAX.
+        if (!$canCallUserFun && $route->getMethodName() != 'delete') {
+            Util::redirect(Router::getSiteURL() . 'admin');
+        }
     }
 });
 $router->load();

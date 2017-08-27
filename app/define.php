@@ -34,6 +34,8 @@ define('NAMESPACE_MODELS', APP_NAMESPACE . 'models\\');
 /** Espacio de nombre de los gestores de las tablas. */
 define('NAMESPACE_MANAGERS', NAMESPACE_MODELS . 'managers\\');
 
+define('NAMESPACES_LICENSES', NAMESPACE_MODELS . 'licenses\\');
+
 /** Ruta de los modulos de controladores. */
 define('CONTROLLERS', ABSPATH . 'controllers' . DIRECTORY_SEPARATOR);
 
@@ -68,11 +70,12 @@ define('OPTION_EMAIL_ADMIN', 'optionEmailAdmin');
 define('OPTION_MENU', 'optionMenu');
 define('OPTION_LANGUAGE', 'optionLanguage');
 
-define('LICENSE_READ', 'read');
-define('LICENSE_UPDATE', 'update');
-define('LICENSE_INSERT', 'insert');
-define('LICENSE_DELETE', 'delete');
-define('LICENSE_READ_CODE', '100');
-define('LICENSE_UPDATE_CODE', '011');
-define('LICENSE_INSERT_CODE', '001');
-define('LICENSE_DELETE_CODE', '000');
+define('LICENSE_DEFAULT_CODE', 0);
+define('LICENSE_READ_CODE', 1);
+define('LICENSE_READ_INSERT_CODE', 2);
+define('LICENSE_READ_UPDATE_CODE', 3);
+define('LICENSE_READ_DELETE_CODE', 4);
+define('LICENSE_READ_INSERT_UPDATE_CODE', 5);
+define('LICENSE_READ_INSERT_DELETE_CODE', 6);
+define('LICENSE_READ_UPDATE_DELETE_CODE', 7);
+define('LICENSE_READ_INSERT_UPDATE_DELETE_CODE', 8);

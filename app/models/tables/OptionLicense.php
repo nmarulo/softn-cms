@@ -29,24 +29,7 @@ class OptionLicense extends TableAbstract {
     private $optionLicenseColumn;
     
     /** @var int */
-    private $optionLicenseDataId;
-    
-    /** @var int */
     private $licenseId;
-    
-    /**
-     * @return int
-     */
-    public function getOptionLicenseDataId() {
-        return $this->optionLicenseDataId;
-    }
-    
-    /**
-     * @param int $optionLicenseDataId
-     */
-    public function setOptionLicenseDataId($optionLicenseDataId) {
-        $this->optionLicenseDataId = $optionLicenseDataId;
-    }
     
     /**
      * @return string

@@ -41,19 +41,23 @@ class Router {
     /** @var array */
     private $events;
     
+    /** @var bool */
+    private $canCallUserFunc;
+    
     /**
      * Router constructor.
      */
     public function __construct() {
-        $this->request  = new Request();
-        $this->route    = $this->request->getRoute();
-        $this->events   = [
+        $this->canCallUserFunc = TRUE;
+        $this->request         = new Request();
+        $this->route           = $this->request->getRoute();
+        $this->events          = [
             self::EVENT_ERROR => function() {
                 throw new \Exception('Error');
             },
         ];
-        $optionsManager = new OptionsManager();
-        self::$SITE_URL = $optionsManager->getSiteUrl($this);
+        $optionsManager        = new OptionsManager();
+        self::$SITE_URL        = $optionsManager->getSiteUrl($this);
     }
     
     /**
@@ -88,6 +92,13 @@ class Router {
         $this->events[$event] = $callback;
     }
     
+    /**
+     * @param bool $canCallUserFunc
+     */
+    public function setCanCallUserFunc($canCallUserFunc) {
+        $this->canCallUserFunc = $canCallUserFunc;
+    }
+    
     public function load() {
         $this->events(self::EVENT_INIT_LOAD);
         
@@ -99,10 +110,12 @@ class Router {
         $this->setDirectoryView();
         $this->events(self::EVENT_BEFORE_CALL_METHOD);
         
-        call_user_func_array([
-            $instanceController,
-            $method,
-        ], $parameter);
+        if ($this->canCallUserFunc) {
+            call_user_func_array([
+                $instanceController,
+                $method,
+            ], $parameter);
+        }
         
         $this->events(self::EVENT_AFTER_CALL_METHOD);
     }
