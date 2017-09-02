@@ -49,7 +49,7 @@ class OptionLicenseController extends CUDControllerAbstract {
         ViewController::sendViewData('licenses', $licensesManager->searchAllWithoutConfigured());
         ViewController::sendViewData('optionLicense', new OptionLicense());
         ViewController::sendViewData('dataList', $this->getViewData());
-        ViewController::sendViewData('title', __('Nueva configuración de permiso'));
+        ViewController::sendViewData('title', __('Nueva configuración de permisos'));
         ViewController::view('form');
     }
     

@@ -48,7 +48,7 @@ $router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
         $canCallUserFun = LicenseAbstract::initCheck($route, LoginManager::getSession());
         $router->setCanCallUserFunc($canCallUserFun);
         
-        //No redirecciona al borrar, porque este método se llama por AJAX.
+        //No redirecciona al borrar, porque este método ejecuta mediante AJAX.
         if (!$canCallUserFun && $route->getMethodName() != 'delete') {
             Util::redirect(Router::getSiteURL() . 'admin');
         }

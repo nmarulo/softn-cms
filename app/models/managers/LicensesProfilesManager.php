@@ -22,6 +22,19 @@ class LicensesProfilesManager extends CRUDManagerAbstract {
     
     const PROFILE_ID = 'profile_id';
     
+    public function searchAllByProfilesId($profilesId) {
+        $where        = array_map(function($profileId) {
+            $param = self::PROFILE_ID . $profileId;
+            parent::parameterQuery($param, $profileId, \PDO::PARAM_INT);
+            
+            return self::PROFILE_ID . " = :$param";
+        }, $profilesId);
+        $implodeWhere = implode(' OR ', $where);
+        $query = sprintf('SELECT * FROM %1$s WHERE %2$s', $this->getTableWithPrefix(), $implodeWhere);
+        
+        return parent::readData($query);
+    }
+    
     public function deleteAllByProfileId($profileId) {
         parent::parameterQuery(self::PROFILE_ID, $profileId, \PDO::PARAM_INT);
         
@@ -63,6 +76,7 @@ class LicensesProfilesManager extends CRUDManagerAbstract {
         
         return $result;
     }
+    
     public function deleteAllProfilesByLicenseId($profilesId, $licenseId) {
         $mySql           = new MySQL();
         $queryProfilesId = '';

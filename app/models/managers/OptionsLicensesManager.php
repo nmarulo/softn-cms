@@ -21,10 +21,17 @@ class OptionsLicensesManager extends CRUDManagerAbstract {
     
     const LICENSE_ID            = 'license_id';
     
-    public function searchAll($controllerName, $methodName, $userId, $licenseType = LICENSE_READ_CODE, $tableName = '', $columnName = '') {
-    }
-    
-    public function searchAllByMethodAndLicenseType($methodName, $licenseType) {
+    public function searchAllByLicensesId($licensesId) {
+        $where        = array_map(function($licenseId) {
+            $param = self::LICENSE_ID . $licenseId;
+            parent::parameterQuery($param, $licenseId, \PDO::PARAM_INT);
+            
+            return self::LICENSE_ID . " = :$param";
+        }, $licensesId);
+        $implodeWhere = implode(' OR ', $where);
+        $query        = sprintf('SELECT * FROM %1$s WHERE %2$s', $this->getTableWithPrefix(), $implodeWhere);
+        
+        return parent::readData($query);
     }
     
     public function searchByIdAndLicenseId($id, $licenseId) {

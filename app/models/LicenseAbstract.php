@@ -5,7 +5,13 @@
 
 namespace SoftnCMS\models;
 
+use SoftnCMS\models\managers\LicensesProfilesManager;
 use SoftnCMS\models\managers\OptionsLicensesManager;
+use SoftnCMS\models\managers\ProfilesManager;
+use SoftnCMS\models\managers\UsersProfilesManager;
+use SoftnCMS\models\tables\LicenseProfile;
+use SoftnCMS\models\tables\OptionLicense;
+use SoftnCMS\models\tables\UserProfile;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
 
@@ -18,26 +24,20 @@ abstract class LicenseAbstract {
     /** @var LicenseAbstract */
     private static $INSTANCE;
     
-    protected      $nameMethods;
-    
-    protected      $nameTable;
-    
-    /**
-     * @var array Nombre de las columnas de la tabla.
-     * Key(nombre de la constante en la clase XManager)
-     * Value(nombre de la columna en base de datos)
-     */
-    protected $columns;
-    
     /** @var Route */
     protected $route;
     
-    /** @var array */
-    protected $licenses;
-    
+    /** @var int */
     protected $userId;
     
-    private   $nameSpaceAdmin;
+    /** @var array */
+    protected $optionsLicenses;
+    
+    /** @var array */
+    protected $licensesId;
+    
+    /** @var array */
+    protected $fields;
     
     /**
      * License constructor.
@@ -46,45 +46,32 @@ abstract class LicenseAbstract {
      * @param int   $userId
      */
     public function __construct($route, $userId) {
-        $this->nameSpaceAdmin = NAMESPACE_CONTROLLERS . Route::CONTROLLER_DIRECTORY_NAME_ADMIN . '\\';
-        $this->route          = $route;
-        $this->userId         = $userId;
-        $this->licenses       = [];
-        $this->setTableAndColumns($this->getManagerClass());
-        $this->setMethods();
+        $this->route           = $route;
+        $this->userId          = $userId;
+        $this->optionsLicenses = [];
+        $this->licensesId      = [];
+        $this->fields          = [];
+        $this->setLicenses();
     }
     
-    protected function setTableAndColumns($class) {
-        $this->setTable($class);
-        $reflectionClass = new \ReflectionClass($class);
-        $this->columns   = $reflectionClass->getConstants();
-        $reflectionClass = new \ReflectionClass(NAMESPACE_MODELS . 'CRUDManagerAbstract');
-        $keys            = array_keys($reflectionClass->getConstants());
-        $this->columns   = array_diff_key($this->columns, $keys);
+    private function setLicenses() {
+        $optionsLicensesManager  = new OptionsLicensesManager();
+        $licensesProfilesManager = new LicensesProfilesManager();
+        $usersProfilesManager    = new UsersProfilesManager();
+        $usersProfiles           = $usersProfilesManager->searchAllByUserId($this->userId);
+        $profilesId              = array_map(function(UserProfile $userProfile) {
+            return $userProfile->getProfileId();
+        }, $usersProfiles);
+        $licensesProfiles        = $licensesProfilesManager->searchAllByProfilesId($profilesId);
+        $this->licensesId        = array_map(function(LicenseProfile $licenseProfile) {
+            return $licenseProfile->getLicenseId();
+        }, $licensesProfiles);
+        $this->optionsLicenses   = $optionsLicensesManager->searchAllByLicensesId($this->licensesId);
     }
     
-    private function setTable($class) {
-        $const = "$class::TABLE";
-        
-        if (!defined($const)) {
-            throw new \Exception("No existe la constante 'TABLE' en la clase $class.");
-        }
-        
-        $this->nameTable = constant($const);
-    }
+    //Este método es static porque se usa en "OptionLicenseController".
     
     public static abstract function getManagerClass();
-    
-    private function setMethods() {
-        $controller          = $this->route->getControllerName() . 'Controller';
-        $controllerNameSpace = $this->nameSpaceAdmin . $controller;
-        $reflectionClass     = new \ReflectionClass($controllerNameSpace);
-        $reflectionMethods   = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
-        
-        $this->nameMethods = array_map(function($methodRefection) {
-            return Arrays::get($methodRefection, 'name');
-        }, $reflectionMethods);
-    }
     
     /**
      * @return LicenseAbstract
@@ -114,9 +101,46 @@ abstract class LicenseAbstract {
     }
     
     public function check() {
-        $optionsLicensesManager = new OptionsLicensesManager();
-        //$this->licenses         = $optionsLicensesManager->searchAll($this->route->getControllerName(), $this->route->getMethodName(), $this->userId);
+        $pageName            = $this->route->getControllerName();
+        $methodName          = $this->route->getMethodName();
+        $optionLicenseObject = array_map(function(OptionLicense $optionLicense) {
+            return $optionLicense->getOptionLicenseObject();
+        }, $this->optionsLicenses);
         
-        return !empty($this->licenses);
+        $pagesLicense = array_map(function($pagesLicense) use ($pageName, $methodName) {
+            return array_filter($pagesLicense, function(PageLicense $pageLicense) use ($pageName, $methodName) {
+                return $this->checkMethod($pageLicense, $pageName, $methodName);
+            });
+        }, $optionLicenseObject);
+        
+        if (empty(array_filter($pagesLicense))) {
+            return FALSE;
+        }
+        
+        $this->setFields($pagesLicense, $methodName);
+        
+        return TRUE;
+    }
+    
+    /**
+     * @param PageLicense $pageLicense
+     * @param string      $pageName
+     * @param string      $methodName
+     *
+     * @return bool
+     */
+    private function checkMethod($pageLicense, $pageName, $methodName) {
+        $strcasecmp = strcasecmp($pageLicense->getPageName(), $pageName);
+        
+        return $strcasecmp == 0 && Arrays::keyExists($pageLicense->getMethods(), strtoupper($methodName));
+    }
+    
+    private function setFields($pagesLicense, $methodName) {
+        $this->fields = array_map(function($pagesLicenseValue) use ($methodName) {
+            return array_map(function(PageLicense $pageLicense) use ($methodName) {
+                return Arrays::get($pageLicense->getMethods(), strtoupper($methodName))
+                             ->getFields();
+            }, $pagesLicenseValue);
+        }, $pagesLicense);
     }
 }
