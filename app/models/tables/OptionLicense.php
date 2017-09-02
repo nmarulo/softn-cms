@@ -13,92 +13,32 @@ use SoftnCMS\models\TableAbstract;
  */
 class OptionLicense extends TableAbstract {
     
-    /** @var string */
-    private $optionLicenseType;
-    
-    /** @var string */
-    private $optionLicenseController;
-    
-    /** @var string */
-    private $optionLicenseMethod;
-    
-    /** @var string */
-    private $optionLicenseTable;
-    
-    /** @var string */
-    private $optionLicenseColumn;
+    /** @var array */
+    private $optionLicenseObject;
     
     /** @var int */
     private $licenseId;
     
     /**
-     * @return string
+     * OptionLicense constructor.
      */
-    public function getOptionLicenseType() {
-        return $this->optionLicenseType;
+    public function __construct() {
+        $this->optionLicenseObject = [];
+        $this->licenseId           = 0;
     }
     
     /**
-     * @param string $optionLicenseType
+     * @return array
      */
-    public function setOptionLicenseType($optionLicenseType) {
-        $this->optionLicenseType = $optionLicenseType;
+    public function getOptionLicenseObject() {
+        return $this->optionLicenseObject;
     }
     
     /**
-     * @return string
+     * @param array $optionLicenseObject
      */
-    public function getOptionLicenseController() {
-        return $this->optionLicenseController;
-    }
-    
-    /**
-     * @param string $optionLicenseController
-     */
-    public function setOptionLicenseController($optionLicenseController) {
-        $this->optionLicenseController = $optionLicenseController;
-    }
-    
-    /**
-     * @return string
-     */
-    public function getOptionLicenseMethod() {
-        return $this->optionLicenseMethod;
-    }
-    
-    /**
-     * @param string $optionLicenseMethod
-     */
-    public function setOptionLicenseMethod($optionLicenseMethod) {
-        $this->optionLicenseMethod = $optionLicenseMethod;
-    }
-    
-    /**
-     * @return string
-     */
-    public function getOptionLicenseTable() {
-        return $this->optionLicenseTable;
-    }
-    
-    /**
-     * @param string $optionLicenseTable
-     */
-    public function setOptionLicenseTable($optionLicenseTable) {
-        $this->optionLicenseTable = $optionLicenseTable;
-    }
-    
-    /**
-     * @return string
-     */
-    public function getOptionLicenseColumn() {
-        return $this->optionLicenseColumn;
-    }
-    
-    /**
-     * @param string $optionLicenseColumn
-     */
-    public function setOptionLicenseColumn($optionLicenseColumn) {
-        $this->optionLicenseColumn = $optionLicenseColumn;
+    public function setOptionLicenseObject($optionLicenseObject) {
+        $this->optionLicenseObject = $optionLicenseObject;
     }
     
     /**

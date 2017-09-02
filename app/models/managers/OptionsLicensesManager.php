@@ -15,65 +15,36 @@ use SoftnCMS\util\Arrays;
  */
 class OptionsLicensesManager extends CRUDManagerAbstract {
     
-    const TABLE                     = 'options_licenses';
+    const TABLE                 = 'options_licenses';
     
-    const OPTION_LICENSE_TYPE       = 'option_license_type';
+    const OPTION_LICENSE_OBJECT = 'option_license_object';
     
-    const OPTION_LICENSE_CONTROLLER = 'option_license_controller';
-    
-    const OPTION_LICENSE_METHOD     = 'option_license_method';
-    
-    const OPTION_LICENSE_TABLE      = 'option_license_table';
-    
-    const OPTION_LICENSE_COLUMN     = 'option_license_column';
-    
-    const LICENSE_ID                = 'license_id';
+    const LICENSE_ID            = 'license_id';
     
     public function searchAll($controllerName, $methodName, $userId, $licenseType = LICENSE_READ_CODE, $tableName = '', $columnName = '') {
-        $queryTableColumn = '';
-        parent::parameterQuery(self::OPTION_LICENSE_CONTROLLER, $controllerName, \PDO::PARAM_STR);
-        parent::parameterQuery(self::OPTION_LICENSE_METHOD, $methodName, \PDO::PARAM_STR);
-        parent::parameterQuery(UsersProfilesManager::USER_ID, $userId, \PDO::PARAM_INT);
-        parent::parameterQuery(self::OPTION_LICENSE_TYPE, $licenseType, \PDO::PARAM_INT);
-        
-        if (!empty($tableName)) {
-            parent::parameterQuery(self::OPTION_LICENSE_TABLE, $tableName, \PDO::PARAM_STR);
-            $queryTableColumn = sprintf(' AND %1$s = :%1$s', self::OPTION_LICENSE_TABLE);
-        }
-        
-        if (!empty($columnName)) {
-            parent::parameterQuery(self::OPTION_LICENSE_COLUMN, $columnName, \PDO::PARAM_STR);
-            $queryTableColumn .= sprintf(' AND %1$s = :%1$s', self::OPTION_LICENSE_COLUMN);
-        }
-        
-        $table                 = $this->getTableWithPrefix();
-        $tableLicensesProfiles = parent::getTableWithPrefix(LicensesProfilesManager::TABLE);
-        $tableUsersProfiles    = parent::getTableWithPrefix(UsersProfilesManager::TABLE);
-        $query                 = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s AND %11$s >= :%11$s%12$s AND %1$s.%4$s IN (SELECT %5$s FROM %6$s WHERE %6$s.%7$s IN (SELECT %8$s FROM %9$s WHERE %10$s = :%10$s))';
-        $query                 = sprintf($query, $table, self::OPTION_LICENSE_CONTROLLER, self::OPTION_LICENSE_METHOD, self::LICENSE_ID, LicensesProfilesManager::LICENSE_ID, $tableLicensesProfiles, LicensesProfilesManager::PROFILE_ID, UsersProfilesManager::PROFILE_ID, $tableUsersProfiles, UsersProfilesManager::USER_ID, self::OPTION_LICENSE_TYPE, $queryTableColumn);
-        
-        return parent::readData($query);
     }
     
     public function searchAllByMethodAndLicenseType($methodName, $licenseType) {
-        parent::parameterQuery(self::OPTION_LICENSE_TYPE, $licenseType, \PDO::PARAM_INT);
-        parent::parameterQuery(self::OPTION_LICENSE_METHOD, $methodName, \PDO::PARAM_STR);
+    }
+    
+    public function searchByIdAndLicenseId($id, $licenseId) {
+        if (empty($licenseId)) {
+            return FALSE;
+        }
         
-        $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s >= :%3$s';
-        $query = sprintf($query, $this->getTableWithPrefix(), self::OPTION_LICENSE_METHOD, self::OPTION_LICENSE_TYPE);
+        parent::parameterQuery(self::ID, $id, \PDO::PARAM_INT);
+        parent::parameterQuery(self::LICENSE_ID, $licenseId, \PDO::PARAM_INT);
+        $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s';
+        $query = sprintf($query, $this->getTableWithPrefix(), self::ID, self::LICENSE_ID);
         
-        return parent::readData($query);
+        return Arrays::get(parent::readData($query), 0);
     }
     
     /**
      * @param OptionLicense $object
      */
     protected function addParameterQuery($object) {
-        parent::parameterQuery(self::OPTION_LICENSE_TYPE, $object->getOptionLicenseType(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::OPTION_LICENSE_CONTROLLER, $object->getOptionLicenseController(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::OPTION_LICENSE_METHOD, $object->getOptionLicenseMethod(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::OPTION_LICENSE_TABLE, $object->getOptionLicenseTable(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::OPTION_LICENSE_COLUMN, $object->getOptionLicenseColumn(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::OPTION_LICENSE_OBJECT, serialize($object->getOptionLicenseObject()), \PDO::PARAM_STR);
         parent::parameterQuery(self::LICENSE_ID, $object->getLicenseId(), \PDO::PARAM_STR);
     }
     
@@ -85,11 +56,7 @@ class OptionsLicensesManager extends CRUDManagerAbstract {
         parent::buildObjectTable($result);
         $optionLicense = new OptionLicense();
         $optionLicense->setId(Arrays::get($result, self::ID));
-        $optionLicense->setOptionLicenseType(Arrays::get($result, self::OPTION_LICENSE_TYPE));
-        $optionLicense->setOptionLicenseController(Arrays::get($result, self::OPTION_LICENSE_CONTROLLER));
-        $optionLicense->setOptionLicenseMethod(Arrays::get($result, self::OPTION_LICENSE_METHOD));
-        $optionLicense->setOptionLicenseTable(Arrays::get($result, self::OPTION_LICENSE_TABLE));
-        $optionLicense->setOptionLicenseColumn(Arrays::get($result, self::OPTION_LICENSE_COLUMN));
+        $optionLicense->setOptionLicenseObject(unserialize(Arrays::get($result, self::OPTION_LICENSE_OBJECT)));
         $optionLicense->setLicenseId(Arrays::get($result, self::LICENSE_ID));
         
         return $optionLicense;

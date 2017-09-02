@@ -21,6 +21,14 @@ class LicensesManager extends CRUDManagerAbstract {
     
     const LICENSE_DESCRIPTION = 'license_description';
     
+    public function searchAllWithoutConfigured() {
+        $tableOptionLicense = parent::getTableWithPrefix(OptionsLicensesManager::TABLE);
+        $query              = 'SELECT * FROM %1$s WHERE %2$s NOT IN (SELECT %3$s FROM %4$s)';
+        $query              = sprintf($query, $this->getTableWithPrefix(), self::ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
+        
+        return parent::readData($query);
+    }
+    
     public function create($object) {
         $object = $this->checkName($object);
         

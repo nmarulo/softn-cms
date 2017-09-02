@@ -1,24 +1,17 @@
 <?php
 
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\util\Arrays;
 
-$controllers = ViewController::getViewData('controllers');
-$managers    = ViewController::getViewData('managers');
-var_dump($managers);
+ViewController::registerScript('pagination');
+ViewController::registerScript('delete-data');
+$siteUrl = \SoftnCMS\rute\Router::getSiteURL() . "admin/optionlicense/";
 ?>
-<div class="page-container" data-menu-collapse-id="option">
+<div class="page-container" data-menu-collapse-id="option" data-url="<?php echo $siteUrl; ?>">
     <div>
-        <h1><?php echo __('Permisos'); ?></h1>
+        <h1><?php echo __('Permisos'); ?>
+            <a href="<?php echo $siteUrl . 'create'; ?>" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span></a></h1>
     </div>
-    <div>
-        
-        <form method="post">
-        <?php array_walk($controllers, function($controller) {
-            ViewController::sendViewData('controllerName', Arrays::get($controller, 'controllerName'));
-            ViewController::sendViewData('methods', Arrays::get($controller, 'controllerMethods'));
-            ViewController::singleView('data');
-        }); ?>
-        </form>
+    <div id="data-container">
+        <?php ViewController::singleView('data'); ?>
     </div>
 </div>

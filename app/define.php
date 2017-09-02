@@ -42,6 +42,8 @@ define('CONTROLLERS', ABSPATH . 'controllers' . DIRECTORY_SEPARATOR);
 /** Ruta de los modulos de modelos. */
 define('MODELS', ABSPATH . 'models' . DIRECTORY_SEPARATOR);
 
+define('LICENSES', MODELS . 'licenses' . DIRECTORY_SEPARATOR);
+
 /** Ruta de los modulos de modelos. */
 define('MANAGERS', MODELS . 'managers' . DIRECTORY_SEPARATOR);
 

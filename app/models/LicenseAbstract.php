@@ -3,10 +3,9 @@
  * License.php
  */
 
-namespace SoftnCMS\models\licenses;
+namespace SoftnCMS\models;
 
 use SoftnCMS\models\managers\OptionsLicensesManager;
-use SoftnCMS\models\tables\OptionLicense;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
 
@@ -14,9 +13,9 @@ use SoftnCMS\util\Arrays;
  * Class License
  * @author Nicolás Marulanda P.
  */
-abstract class License {
+abstract class LicenseAbstract {
     
-    /** @var License */
+    /** @var LicenseAbstract */
     private static $INSTANCE;
     
     protected      $nameMethods;
@@ -43,15 +42,15 @@ abstract class License {
     /**
      * License constructor.
      *
-     * @param Route  $route
-     * @param string $managerClass
+     * @param Route $route
+     * @param int   $userId
      */
-    public function __construct($route, $managerClass, $userId) {
+    public function __construct($route, $userId) {
         $this->nameSpaceAdmin = NAMESPACE_CONTROLLERS . Route::CONTROLLER_DIRECTORY_NAME_ADMIN . '\\';
         $this->route          = $route;
         $this->userId         = $userId;
         $this->licenses       = [];
-        $this->setTableAndColumns($managerClass);
+        $this->setTableAndColumns($this->getManagerClass());
         $this->setMethods();
     }
     
@@ -74,6 +73,8 @@ abstract class License {
         $this->nameTable = constant($const);
     }
     
+    public static abstract function getManagerClass();
+    
     private function setMethods() {
         $controller          = $this->route->getControllerName() . 'Controller';
         $controllerNameSpace = $this->nameSpaceAdmin . $controller;
@@ -86,7 +87,7 @@ abstract class License {
     }
     
     /**
-     * @return License
+     * @return LicenseAbstract
      */
     public static function getInstance() {
         return self::$INSTANCE;
@@ -114,7 +115,7 @@ abstract class License {
     
     public function check() {
         $optionsLicensesManager = new OptionsLicensesManager();
-        $this->licenses         = $optionsLicensesManager->searchAll($this->route->getControllerName(), $this->route->getMethodName(), $this->userId);
+        //$this->licenses         = $optionsLicensesManager->searchAll($this->route->getControllerName(), $this->route->getMethodName(), $this->userId);
         
         return !empty($this->licenses);
     }

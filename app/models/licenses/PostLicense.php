@@ -1,20 +1,21 @@
 <?php
 /**
- * CategoryLicense.php
+ * PostsLicense.php
  */
 
 namespace SoftnCMS\models\licenses;
 
 use SoftnCMS\models\LicenseAbstract;
-use SoftnCMS\models\managers\CategoriesManager;
+use SoftnCMS\models\managers\PostsManager;
 
 /**
- * Class CategoryLicense
+ * Class PostsLicense
  * @author Nicolás Marulanda P.
  */
-class CategoryLicense extends LicenseAbstract {
+class PostLicense extends LicenseAbstract {
     
     public static function getManagerClass() {
-        return CategoriesManager::class;
+        return PostsManager::class;
     }
+    
 }
