@@ -34,6 +34,23 @@ class User extends TableAbstract {
     /** @var int */
     private $userPostCount;
     
+    /** @var int */
+    private $profileId;
+    
+    /**
+     * @return int
+     */
+    public function getProfileId() {
+        return $this->profileId;
+    }
+    
+    /**
+     * @param int $profileId
+     */
+    public function setProfileId($profileId) {
+        $this->profileId = $profileId;
+    }
+    
     /**
      * @return int
      */

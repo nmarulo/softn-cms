@@ -71,6 +71,7 @@ class RegisterController extends ControllerAbstract {
         $user->setUserRegistered(Util::dateNow());
         $user->setUserName($user->getUserLogin());
         $user->setUserPostCount(0);
+        $user->setProfileId(1);//TODO: test
         
         return ['user' => $user];
     }

@@ -261,7 +261,7 @@ class OptionLicenseController extends CUDControllerAbstract {
                 if ($optionsLicensesManager->update($optionLicense)) {
                     Messages::addSuccess(__('Configuración del permiso actualizado correctamente.'));
                 } else {
-                    Messages::addDanger(__('Error al actualizar la configuración del permiso'));
+                    Messages::addDanger(__('Error al actualizar la configuración del permiso.'));
                 }
             }
         }
@@ -272,7 +272,7 @@ class OptionLicenseController extends CUDControllerAbstract {
         ViewController::sendViewData('license', $license);
         ViewController::sendViewData('licenses', $licensesManager->searchAllWithoutConfigured());
         ViewController::sendViewData('dataList', $this->getViewData());
-        ViewController::sendViewData('title', 'Actualizar configuración del permiso');
+        ViewController::sendViewData('title', __('Actualizar configuración del permiso'));
         ViewController::view('form');
     }
     

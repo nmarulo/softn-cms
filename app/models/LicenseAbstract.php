@@ -5,13 +5,10 @@
 
 namespace SoftnCMS\models;
 
-use SoftnCMS\models\managers\LicensesProfilesManager;
 use SoftnCMS\models\managers\OptionsLicensesManager;
-use SoftnCMS\models\managers\ProfilesManager;
-use SoftnCMS\models\managers\UsersProfilesManager;
-use SoftnCMS\models\tables\LicenseProfile;
+use SoftnCMS\models\managers\UsersLicensesManager;
 use SoftnCMS\models\tables\OptionLicense;
-use SoftnCMS\models\tables\UserProfile;
+use SoftnCMS\models\tables\UserLicense;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
 
@@ -30,8 +27,8 @@ abstract class LicenseAbstract {
     /** @var int */
     protected $userId;
     
-    /** @var array */
-    protected $optionsLicenses;
+    /** @var PageLicense */
+    protected $pageLicense;
     
     /** @var array */
     protected $licensesId;
@@ -46,32 +43,14 @@ abstract class LicenseAbstract {
      * @param int   $userId
      */
     public function __construct($route, $userId) {
-        $this->route           = $route;
-        $this->userId          = $userId;
-        $this->optionsLicenses = [];
-        $this->licensesId      = [];
-        $this->fields          = [];
-        $this->setLicenses();
+        $this->route       = $route;
+        $this->userId      = $userId;
+        $this->pageLicense = NULL;
+        $this->licensesId  = [];
+        $this->fields      = [];
     }
     
-    private function setLicenses() {
-        $optionsLicensesManager  = new OptionsLicensesManager();
-        $licensesProfilesManager = new LicensesProfilesManager();
-        $usersProfilesManager    = new UsersProfilesManager();
-        $usersProfiles           = $usersProfilesManager->searchAllByUserId($this->userId);
-        $profilesId              = array_map(function(UserProfile $userProfile) {
-            return $userProfile->getProfileId();
-        }, $usersProfiles);
-        $licensesProfiles        = $licensesProfilesManager->searchAllByProfilesId($profilesId);
-        $this->licensesId        = array_map(function(LicenseProfile $licenseProfile) {
-            return $licenseProfile->getLicenseId();
-        }, $licensesProfiles);
-        $this->optionsLicenses   = $optionsLicensesManager->searchAllByLicensesId($this->licensesId);
-    }
-    
-    //Este método es static porque se usa en "OptionLicenseController".
-    
-    public static abstract function getManagerClass();
+    public static abstract function getManagerClass();//Este método es static porque se usa en "OptionLicenseController".
     
     /**
      * @return LicenseAbstract
@@ -101,25 +80,41 @@ abstract class LicenseAbstract {
     }
     
     public function check() {
-        $pageName            = $this->route->getControllerName();
-        $methodName          = $this->route->getMethodName();
-        $optionLicenseObject = array_map(function(OptionLicense $optionLicense) {
-            return $optionLicense->getOptionLicenseObject();
-        }, $this->optionsLicenses);
+        $this->setLicenses($this->userId);
+        $this->setPageLicense($this->licensesId, $this->route);
         
-        $pagesLicense = array_map(function($pagesLicense) use ($pageName, $methodName) {
-            return array_filter($pagesLicense, function(PageLicense $pageLicense) use ($pageName, $methodName) {
-                return $this->checkMethod($pageLicense, $pageName, $methodName);
+        return !empty($this->pageLicense);
+    }
+    
+    private function setLicenses($userId) {
+        $usersLicensesManager = new UsersLicensesManager();
+        $UserLicenses         = $usersLicensesManager->searchAllByUserId($userId);
+        $this->licensesId     = array_map(function(UserLicense $userLicense) {
+            return $userLicense->getLicenseId();
+        }, $UserLicenses);
+    }
+    
+    /**
+     * @param array $licensesId
+     * @param Route $route
+     */
+    private function setPageLicense($licensesId, $route) {
+        $pageName               = $route->getControllerName();
+        $methodName             = $route->getMethodName();
+        $optionsLicensesManager = new OptionsLicensesManager();
+        $optionsLicenses        = $optionsLicensesManager->searchAllByLicensesId($licensesId);
+        
+        array_walk($optionsLicenses, function(OptionLicense $optionLicense) use ($pageName, $methodName) {
+            array_walk($optionLicense->getOptionLicenseObject(), function(PageLicense $pageLicense) use ($pageName, $methodName) {
+                if ($this->checkMethod($pageLicense, $pageName, $methodName)) {
+                    if ($this->pageLicense == NULL) {
+                        $this->pageLicense = new PageLicense($pageLicense->getPageName());
+                    }
+                    
+                    $this->pageLicense->addOrUpdateMethod(Arrays::get($pageLicense->getMethods(), strtoupper($methodName)));
+                }
             });
-        }, $optionLicenseObject);
-        
-        if (empty(array_filter($pagesLicense))) {
-            return FALSE;
-        }
-        
-        $this->setFields($pagesLicense, $methodName);
-        
-        return TRUE;
+        });
     }
     
     /**
@@ -135,12 +130,4 @@ abstract class LicenseAbstract {
         return $strcasecmp == 0 && Arrays::keyExists($pageLicense->getMethods(), strtoupper($methodName));
     }
     
-    private function setFields($pagesLicense, $methodName) {
-        $this->fields = array_map(function($pagesLicenseValue) use ($methodName) {
-            return array_map(function(PageLicense $pageLicense) use ($methodName) {
-                return Arrays::get($pageLicense->getMethods(), strtoupper($methodName))
-                             ->getFields();
-            }, $pagesLicenseValue);
-        }, $pagesLicense);
-    }
 }

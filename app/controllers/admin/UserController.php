@@ -9,12 +9,9 @@ use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LoginManager;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\managers\UsersManager;
-use SoftnCMS\models\managers\UsersProfilesManager;
 use SoftnCMS\models\tables\User;
-use SoftnCMS\models\tables\UserProfile;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
@@ -41,8 +38,6 @@ class UserController extends CUDControllerAbstract {
                 $user         = Arrays::get($form, 'user');
                 
                 if ($usersManager->create($user)) {
-                    $profiles = Arrays::get($form, 'profiles');
-                    $this->createOrDeleteProfiles($profiles, $usersManager->getLastInsertId());
                     Messages::addSuccess(__('Usuario creado correctamente.'), TRUE);
                     Util::redirect(Router::getSiteURL() . 'admin/user');
                 }
@@ -77,8 +72,7 @@ class UserController extends CUDControllerAbstract {
             $pass = Util::encrypt($pass, LOGGED_KEY);
         }
         
-        $user     = new User();
-        $profiles = Arrays::get($inputs, UsersProfilesManager::PROFILE_ID);
+        $user = new User();
         $user->setId(Arrays::get($inputs, UsersManager::ID));
         $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
         $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
@@ -87,6 +81,7 @@ class UserController extends CUDControllerAbstract {
         $user->setUserUrl(Arrays::get($inputs, UsersManager::USER_URL));
         $user->setUserPassword($pass);
         $user->setUserPostCount(NULL);
+        $user->setProfileId(Arrays::get($inputs, UsersManager::PROFILE_ID));
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $user->setUserRegistered(Util::dateNow());
@@ -94,8 +89,7 @@ class UserController extends CUDControllerAbstract {
         }
         
         return [
-            'user'     => $user,
-            'profiles' => $profiles,
+            'user' => $user,
         ];
     }
     
@@ -123,7 +117,7 @@ class UserController extends CUDControllerAbstract {
             InputAlphanumericBuilder::init(UsersManager::USER_PASSWORD_REWRITE)
                                     ->setRequire($isCreate)
                                     ->build(),
-            InputListIntegerBuilder::init(UsersProfilesManager::PROFILE_ID)
+            InputIntegerBuilder::init(UsersManager::PROFILE_ID)
                                    ->build(),
         ]);
         
@@ -151,9 +145,7 @@ class UserController extends CUDControllerAbstract {
                 $user = Arrays::get($form, 'user');
                 
                 if ($usersManager->update($user)) {
-                    $user     = $usersManager->searchById($id);
-                    $profiles = Arrays::get($form, 'profiles');
-                    $this->createOrDeleteProfiles($profiles, $id);
+                    $user = $usersManager->searchById($id);
                     Messages::addSuccess(__('Usuario actualizado correctamente.'));
                 } else {
                     Messages::addDanger(__('Error al actualizar el usuario.'));
@@ -162,62 +154,10 @@ class UserController extends CUDControllerAbstract {
         }
         
         $this->sendViewProfiles();
-        ViewController::sendViewData('selectedProfilesId', $this->getProfilesIdByUserId($id));
+        ViewController::sendViewData('selectedProfileId', $user->getProfileId());
         ViewController::sendViewData('user', $user);
         ViewController::sendViewData('title', __('Actualizar usuario'));
         ViewController::view('form');
-    }
-    
-    private function createOrDeleteProfiles($profilesId, $userId) {
-        $usersProfilesManager = new UsersProfilesManager();
-        
-        if (empty($profilesId)) {
-            if ($usersProfilesManager->deleteAllByUserId($userId) === FALSE) {
-                Messages::addDanger(__('Error al borrar los perfiles.'));
-            }
-        } else {
-            $selectedProfilesId = $this->getProfilesIdByUserId($userId);
-            $numError           = 0;
-            //Obtengo los identificadores de los nuevos perfiles.
-            $newSelectedProfilesId = array_filter($profilesId, function($profileId) use ($selectedProfilesId) {
-                return !Arrays::valueExists($selectedProfilesId, $profileId);
-            });
-            $newUsersProfiles      = array_map(function($profileId) use ($userId) {
-                $userProfile = new UserProfile();
-                $userProfile->setProfileId($profileId);
-                $userProfile->setUserId($userId);
-                
-                return $userProfile;
-            }, $newSelectedProfilesId);
-            
-            //Obtengo los identificadores de los perfiles que no se han seleccionado.
-            $profilesIdNotSelected = array_filter($selectedProfilesId, function($selectedProfileId) use ($profilesId) {
-                return !Arrays::valueExists($profilesId, $selectedProfileId);
-            });
-            
-            if (!empty($profilesIdNotSelected) && $usersProfilesManager->deleteAllProfilesByUserId($profilesIdNotSelected, $userId) === FALSE) {
-                Messages::addDanger(__('Error al borrar los perfiles.'));
-            }
-            
-            array_walk($newUsersProfiles, function(UserProfile $userProfile) use (&$numError, $usersProfilesManager) {
-                if (!$usersProfilesManager->create($userProfile)) {
-                    ++$numError;
-                }
-            });
-            
-            if ($numError > 0) {
-                Messages::addDanger(__('Error al actualizar los perfiles.'));
-            }
-        }
-    }
-    
-    private function getProfilesIdByUserId($userId) {
-        $usersProfilesManager = new UsersProfilesManager();
-        $userProfiles         = $usersProfilesManager->searchAllByUserId($userId);
-        
-        return array_map(function(UserProfile $userProfile) {
-            return $userProfile->getProfileId();
-        }, $userProfiles);
     }
     
     public function delete($id) {

@@ -2,16 +2,14 @@
 
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\UsersManager;
-use SoftnCMS\models\managers\UsersProfilesManager;
 use SoftnCMS\models\tables\Profile;
-use SoftnCMS\util\Arrays;
 
-$title            = ViewController::getViewData('title');
-$user             = ViewController::getViewData('user');
-$method           = ViewController::getViewData('method');
-$isUpdate         = $method == UsersManager::FORM_UPDATE;
-$profiles         = ViewController::getViewData('profiles');
-$selectProfilesId = ViewController::getViewData('selectedProfilesId');
+$title             = ViewController::getViewData('title');
+$user              = ViewController::getViewData('user');
+$method            = ViewController::getViewData('method');
+$isUpdate          = $method == UsersManager::FORM_UPDATE;
+$profiles          = ViewController::getViewData('profiles');
+$selectedProfileId = ViewController::getViewData('selectedProfileId');
 ?>
 <div class="page-container" data-menu-collapse-id="user">
     <div>
@@ -56,13 +54,13 @@ $selectProfilesId = ViewController::getViewData('selectedProfilesId');
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label"><?php echo __('Perfiles'); ?></label>
+                <label class="col-sm-2 control-label"><?php echo __('Perfil'); ?></label>
                 <div class="col-sm-10">
-                    <select class="form-control" name="<?php echo UsersProfilesManager::PROFILE_ID; ?>[]" multiple>
-                        <?php array_walk($profiles, function(Profile $profile) use ($selectProfilesId) {
-                            $profileId = $profile->getId();
-                            $selected  = Arrays::valueExists($selectProfilesId, $profileId) ? 'selected' : '';
-                            echo "<option value='$profileId' $selected>" . $profile->getProfileName() . '</option>';
+                    <select class="form-control" name="<?php echo UsersManager::PROFILE_ID; ?>">
+                        <?php array_walk($profiles, function(Profile $profile) use ($selectedProfileId) {
+                            $id       = $profile->getId();
+                            $selected = $selectedProfileId == $id ? 'selected' : '';
+                            echo "<option value='$id' $selected>" . $profile->getProfileName() . '</option>';
                         }); ?>
                     </select>
                 </div>

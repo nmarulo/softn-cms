@@ -9,10 +9,10 @@ use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LicensesManager;
-use SoftnCMS\models\managers\LicensesProfilesManager;
+use SoftnCMS\models\managers\ProfilesLicensesManager;
 use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\tables\License;
-use SoftnCMS\models\tables\LicenseProfile;
+use SoftnCMS\models\tables\ProfileLicense;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
@@ -61,7 +61,7 @@ class LicenseController extends CUDControllerAbstract {
         }
         
         $license  = new License();
-        $profiles = Arrays::get($inputs, LicensesProfilesManager::PROFILE_ID);
+        $profiles = Arrays::get($inputs, ProfilesLicensesManager::PROFILE_ID);
         $license->setId(Arrays::get($inputs, LicensesManager::ID));
         $license->setLicenseName(Arrays::get($inputs, LicensesManager::LICENSE_NAME));
         $license->setLicenseDescription(Arrays::get($inputs, LicensesManager::LICENSE_DESCRIPTION));
@@ -82,7 +82,7 @@ class LicenseController extends CUDControllerAbstract {
             InputAlphanumericBuilder::init(LicensesManager::LICENSE_DESCRIPTION)
                                     ->setRequire(FALSE)
                                     ->build(),
-            InputListIntegerBuilder::init(LicensesProfilesManager::PROFILE_ID)
+            InputListIntegerBuilder::init(ProfilesLicensesManager::PROFILE_ID)
                                    ->build(),
         ]);
         
@@ -90,10 +90,10 @@ class LicenseController extends CUDControllerAbstract {
     }
     
     private function createOrDeleteProfiles($profilesId, $licenseId) {
-        $licensesProfilesManager = new LicensesProfilesManager();
+        $profilesLicensesManager = new ProfilesLicensesManager();
         
         if (empty($profilesId)) {
-            if ($licensesProfilesManager->deleteAllByLicenseId($licenseId) === FALSE) {
+            if ($profilesLicensesManager->deleteAllByLicenseId($licenseId) === FALSE) {
                 Messages::addDanger(__('Error al borrar los perfiles.'));
             }
         } else {
@@ -104,11 +104,11 @@ class LicenseController extends CUDControllerAbstract {
                 return !Arrays::valueExists($selectedProfilesId, $profileId);
             });
             $newLicensesProfiles   = array_map(function($profileId) use ($licenseId) {
-                $licenseProfile = new LicenseProfile();
-                $licenseProfile->setProfileId($profileId);
-                $licenseProfile->setLicenseId($licenseId);
+                $profileLicense = new ProfileLicense();
+                $profileLicense->setProfileId($profileId);
+                $profileLicense->setLicenseId($licenseId);
                 
-                return $licenseProfile;
+                return $profileLicense;
             }, $newSelectedProfilesId);
             
             //Obtengo los identificadores de los perfiles que no se han seleccionado.
@@ -116,12 +116,12 @@ class LicenseController extends CUDControllerAbstract {
                 return !Arrays::valueExists($profilesId, $selectedProfileId);
             });
             
-            if (!empty($profilesIdNotSelected) && $licensesProfilesManager->deleteAllProfilesByLicenseId($profilesIdNotSelected, $licenseId) === FALSE) {
+            if (!empty($profilesIdNotSelected) && $profilesLicensesManager->deleteAllProfilesByLicenseId($profilesIdNotSelected, $licenseId) === FALSE) {
                 Messages::addDanger(__('Error al borrar los perfiles.'));
             }
             
-            array_walk($newLicensesProfiles, function(LicenseProfile $licenseProfile) use (&$numError, $licensesProfilesManager) {
-                if (!$licensesProfilesManager->create($licenseProfile)) {
+            array_walk($newLicensesProfiles, function(ProfileLicense $profileLicense) use (&$numError, $profilesLicensesManager) {
+                if (!$profilesLicensesManager->create($profileLicense)) {
                     ++$numError;
                 }
             });
@@ -133,11 +133,11 @@ class LicenseController extends CUDControllerAbstract {
     }
     
     private function getProfilesIdByLicenseId($licenseId) {
-        $licensesProfilesManager = new LicensesProfilesManager();
+        $licensesProfilesManager = new ProfilesLicensesManager();
         $licenseProfiles         = $licensesProfilesManager->searchAllByLicenseId($licenseId);
         
-        return array_map(function(LicenseProfile $licenseProfile) {
-            return $licenseProfile->getProfileId();
+        return array_map(function(ProfileLicense $profileLicense) {
+            return $profileLicense->getProfileId();
         }, $licenseProfiles);
     }
     

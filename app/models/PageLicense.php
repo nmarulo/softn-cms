@@ -5,6 +5,8 @@
 
 namespace SoftnCMS\models;
 
+use SoftnCMS\util\Arrays;
+
 /**
  * Class License
  * @author Nicolás Marulanda P.
@@ -58,7 +60,20 @@ class PageLicense implements \Serializable {
      * @param MethodLicense $method
      */
     public function addOrUpdateMethod($method) {
-        $this->methods[$method->getMethodName()] = $method;
+        $methodName = $method->getMethodName();
+        
+        if (Arrays::keyExists($this->methods, $methodName)) {
+            $currentMethod       = Arrays::get($this->methods, $methodName);
+            $currentMethodFields = $currentMethod->getFields();
+            $merge               = array_merge($currentMethodFields, $method->getFields());
+            $fields              = array_diff($merge, $currentMethodFields);
+            array_walk($fields, function($field) use (&$currentMethod) {
+                $currentMethod->addField($field);
+            });
+            $method = $currentMethod;
+        }
+        
+        $this->methods[$methodName] = $method;
     }
     
     /**
