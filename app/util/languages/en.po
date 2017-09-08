@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SoftN-CMS v0.4-alpha\n"
-"POT-Creation-Date: 2017-09-08 00:06+0200\n"
-"PO-Revision-Date: 2017-09-08 00:06+0200\n"
+"POT-Creation-Date: 2017-09-08 21:05+0200\n"
+"PO-Revision-Date: 2017-09-08 21:07+0200\n"
 "Last-Translator: \n"
 "Language-Team: Nicolás Marulanda P.\n"
 "Language: en\n"
@@ -203,43 +203,47 @@ msgstr "Updated successfully."
 msgid "Error al actualizar."
 msgstr "Failed to update."
 
-#: controllers/admin/OptionLicenseController.php:40
+#: controllers/admin/OptionLicenseController.php:48
 msgid "Permiso configurado correctamente."
 msgstr "License configured successfully."
 
-#: controllers/admin/OptionLicenseController.php:45
+#: controllers/admin/OptionLicenseController.php:53
 msgid "Error al crear la configuración del permiso."
 msgstr "Failed to create license configured."
 
-#: controllers/admin/OptionLicenseController.php:52
+#: controllers/admin/OptionLicenseController.php:61
 msgid "Nueva configuración de permisos"
 msgstr "New licenses configuration"
 
-#: controllers/admin/OptionLicenseController.php:251
+#: controllers/admin/OptionLicenseController.php:281
 msgid "La configuración del permiso no existe."
 msgstr "The license configuration does not exist."
 
-#: controllers/admin/OptionLicenseController.php:257
+#: controllers/admin/OptionLicenseController.php:287
 msgid "Error en los campos de la configuración del permiso."
 msgstr "Error in license configuration fields."
 
-#: controllers/admin/OptionLicenseController.php:262
+#: controllers/admin/OptionLicenseController.php:297
+msgid "La configuración del permiso fue borrada al no tener asignado ningún campo."
+msgstr "License configuration was deleted because no fields where assigned."
+
+#: controllers/admin/OptionLicenseController.php:316
 msgid "Configuración del permiso actualizado correctamente."
 msgstr "License configuration updated successfully."
 
-#: controllers/admin/OptionLicenseController.php:264
+#: controllers/admin/OptionLicenseController.php:318
 msgid "Error al actualizar la configuración del permiso."
 msgstr "Failed to update license configuration."
 
-#: controllers/admin/OptionLicenseController.php:275
+#: controllers/admin/OptionLicenseController.php:339
 msgid "Actualizar configuración del permiso"
 msgstr "Update license configuration"
 
-#: controllers/admin/OptionLicenseController.php:283
+#: controllers/admin/OptionLicenseController.php:347
 msgid "Error al borrar la configuración del permiso."
 msgstr "Error deleting license configuration."
 
-#: controllers/admin/OptionLicenseController.php:285
+#: controllers/admin/OptionLicenseController.php:349
 msgid "Configuración del permiso borrado correctamente."
 msgstr "License configuration deleted correctly."
 
@@ -420,8 +424,8 @@ msgstr "Failed to update sidebar."
 #: controllers/admin/SidebarController.php:105 views/admin/category/form.php:31
 #: views/admin/comment/form.php:63 views/admin/license/form.php:47
 #: views/admin/menu/form.php:69 views/admin/optionlicense/datapages.php:46
-#: views/admin/optionlicense/datapages.php:90
-#: views/admin/optionlicense/form.php:54 views/admin/page/form.php:53
+#: views/admin/optionlicense/datapages.php:97
+#: views/admin/optionlicense/form.php:50 views/admin/page/form.php:53
 #: views/admin/post/form.php:66 views/admin/profile/form.php:47
 #: views/admin/sidebar/form.php:31 views/admin/term/form.php:31
 #: views/admin/user/form.php:71
@@ -641,8 +645,8 @@ msgstr "Publication"
 
 #: views/admin/category/form.php:33 views/admin/comment/form.php:65
 #: views/admin/header.php:39 views/admin/license/form.php:49
-#: views/admin/menu/form.php:71 views/admin/optionlicense/datapages.php:92
-#: views/admin/optionlicense/form.php:56 views/admin/page/form.php:55
+#: views/admin/menu/form.php:71 views/admin/optionlicense/datapages.php:99
+#: views/admin/optionlicense/form.php:52 views/admin/page/form.php:55
 #: views/admin/post/form.php:68 views/admin/profile/form.php:49
 #: views/admin/sidebar/form.php:33 views/admin/term/form.php:33
 msgid "Publicar"
@@ -854,7 +858,7 @@ msgstr "Delete"
 msgid "Campos a visualizar por pagina"
 msgstr "Data to show per page"
 
-#: views/admin/optionlicense/form.php:25
+#: views/admin/optionlicense/form.php:23
 msgid "Permiso"
 msgstr "License"
 
