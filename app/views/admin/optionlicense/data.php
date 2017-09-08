@@ -1,38 +1,34 @@
 <?php
 
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\tables\OptionLicense;
+use SoftnCMS\models\tables\License;
 
-$optionLicenses = ViewController::getViewData('optionLicenses');
-$siteUrlUpdate  = \SoftnCMS\rute\Router::getSiteURL() . 'admin/optionlicense/update/';
+$licenses      = ViewController::getViewData('licenses');
+$siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/optionlicense/update/';
 ViewController::singleViewByDirectory('pagination'); ?>
-    <div class="table-responsive">
+<div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th></th>
-                <th>id</th>
-                <th>LicenseId</th>
+                <th>License</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th></th>
-                <th>id</th>
-                <th>LicenseId</th>
+                <th>License</th>
             </tr>
         </tfoot>
         <tbody>
-        <?php array_walk($optionLicenses, function(OptionLicense $optionLicense) use ($siteUrlUpdate) {
-            $id = $optionLicense->getId();
-            $licenseId = $optionLicense->getLicenseId(); ?>
+        <?php array_walk($licenses, function(License $license) use ($siteUrlUpdate) {
+            $id = $license->getId(); ?>
             <tr>
                 <td class="options">
-                    <a class="btn-action-sm btn btn-primary" href="<?php echo $siteUrlUpdate . $id . "?licenseId=$licenseId"; ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
+                    <a class="btn-action-sm btn btn-primary" href="<?php echo $siteUrlUpdate . $id; ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
                     <button class="btn-action-sm btn btn-danger" data-id="<?php echo $id; ?>" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button>
                 </td>
-                <td><?php echo $id; ?></td>
-                <td><?php echo $licenseId; ?></td>
+                <td><?php echo $license->getLicenseName(); ?></td>
             </tr>
         <?php }); ?>
         </tbody>

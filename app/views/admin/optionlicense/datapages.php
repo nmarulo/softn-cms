@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\util\Arrays;
 
-$pageLicense       = ViewController::getViewData('pageLicense');
+$optionLicenses    = ViewController::getViewData('optionLicenses');
 $className         = ViewController::getViewData('className');
 $controllerMethods = ViewController::getViewData('controllerMethods');
 $managerConstants  = ViewController::getViewData('managerConstants');
@@ -18,10 +18,10 @@ $checkedDelete     = '';
 $method            = ViewController::getViewData('method');
 $isUpdate          = $method == CRUDManagerAbstract::FORM_UPDATE;
 
-if (!empty($pageLicense)) {
-    $checkedInsert = $pageLicense->isCanInsert() ? 'checked' : '';
-    $checkedUpdate = $pageLicense->isCanUpdate() ? 'checked' : '';
-    $checkedDelete = $pageLicense->isCanDelete() ? 'checked' : '';
+if (!empty($optionLicenses)) {
+    $checkedInsert = empty(Arrays::get($optionLicenses, 'insert')) ? '' : 'checked';
+    $checkedUpdate = empty(Arrays::get($optionLicenses, 'update')) ? '' : 'checked';
+    $checkedDelete = empty(Arrays::get($optionLicenses, 'delete')) ? '' : 'checked';
 }
 ?>
 <div class="panel panel-default">
@@ -54,14 +54,20 @@ if (!empty($pageLicense)) {
         </div>
         <h3><?php echo __('Campos a visualizar por pagina'); ?></h3>
         <div class="panel-group" id="accordion-<?php echo $className; ?>" role="tablist">
-            <?php array_walk($controllerMethods, function($method) use ($managerConstants, $className, $pageLicense) {
-                $classNameMethod = $className . '_' . $method;
-                $fields          = [];
+            <?php array_walk($controllerMethods, function($method) use ($managerConstants, $className, $optionLicenses) {
+                $classNameMethod         = $className . '_' . $method;
+                $inputNameClassMethodId  = $classNameMethod . '_ID';
+                $fields                  = [];
+                $inputValueClassMethodId = NULL;
     
-                if (!empty($pageLicense)) {
-                    $methodLicenses = $pageLicense->getMethods();
-                    $methodLicense  = Arrays::get($methodLicenses, $method);
-                    $fields         = empty($methodLicense) ? [] : $methodLicense->getFields();
+                if (!empty($optionLicenses)) {
+                    $data = Arrays::get($optionLicenses, $method);
+        
+                    if (!empty($data)) {
+                        $fields                  = Arrays::get($data, 'fields');
+                        $object                  = Arrays::get($data, 'object');
+                        $inputValueClassMethodId = $object->getId();
+                    }
                 } ?>
                 <div class="panel panel-default">
                     <div class="panel-heading clearfix" role="tab" id="heading-<?php echo $classNameMethod; ?>">
@@ -84,6 +90,7 @@ if (!empty($pageLicense)) {
                         </div>
                     </div>
                 </div>
+                <input type="hidden" name="<?php echo $inputNameClassMethodId; ?>" value="<?php echo $inputValueClassMethodId; ?>"/>
             <?php }); ?>
         </div>
         <?php if ($isUpdate) { ?>

@@ -22,6 +22,15 @@ class ProfilesLicensesManager extends CRUDManagerAbstract {
     
     const PROFILE_ID = 'profile_id';
     
+    public function searchAllByUserId($userId) {
+        parent::parameterQuery(UsersManager::ID, $userId, \PDO::PARAM_INT);
+        $tableUsers = parent::getTableWithPrefix(UsersManager::TABLE);
+        $query      = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s.%4$s FROM %3$s WHERE %5$s = :%5$s)';
+        $query      = sprintf($query, $this->getTableWithPrefix(), self::PROFILE_ID, $tableUsers, UsersManager::PROFILE_ID, UsersManager::ID);
+        
+        return parent::readData($query);
+    }
+    
     public function searchAllByProfileId($profileId) {
         parent::parameterQuery(self::PROFILE_ID, $profileId, \PDO::PARAM_INT);
         

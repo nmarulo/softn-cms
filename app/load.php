@@ -45,13 +45,13 @@ $router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
     $route = $router->getRoute();
     
     if ($route->getControllerDirectoryName() == Route::CONTROLLER_DIRECTORY_NAME_ADMIN) {
-//        $canCallUserFun = LicenseAbstract::initCheck($route, LoginManager::getSession());
-//        $router->setCanCallUserFunc($canCallUserFun);
-//
-//        //No redirecciona al borrar, porque este método ejecuta mediante AJAX.
-//        if (!$canCallUserFun && $route->getMethodName() != 'delete') {
-//            Util::redirect(Router::getSiteURL() . 'admin');
-//        }
+        $canCallUserFun = LicenseAbstract::initCheck($route, LoginManager::getSession());
+        $router->setCanCallUserFunc($canCallUserFun);
+
+        //No redirecciona al borrar, porque este método ejecuta mediante AJAX.
+        if (!$canCallUserFun && $route->getMethodName() != 'delete' && $route->getMethodName() != 'reloadAJAX') {
+            Util::redirect(Router::getSiteURL() . 'admin');
+        }
     }
 });
 $router->load();

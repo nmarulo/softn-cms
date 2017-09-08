@@ -15,11 +15,33 @@ use SoftnCMS\util\Arrays;
  */
 class OptionsLicensesManager extends CRUDManagerAbstract {
     
-    const TABLE                 = 'options_licenses';
+    const TABLE                          = 'options_licenses';
     
-    const OPTION_LICENSE_OBJECT = 'option_license_object';
+    const OPTION_LICENSE_CONTROLLER_NAME = 'option_license_controller_name';
     
-    const LICENSE_ID            = 'license_id';
+    const OPTION_LICENSE_METHOD_NAME     = 'option_license_method_name';
+    
+    const OPTION_LICENSE_CAN_INSERT      = 'option_license_can_insert';
+    
+    const OPTION_LICENSE_CAN_UPDATE      = 'option_license_can_update';
+    
+    const OPTION_LICENSE_CAN_DELETE      = 'option_license_can_delete';
+    
+    const OPTION_LICENSE_FIELDS_NAME     = 'option_license_fields_name';
+    
+    const LICENSE_ID                     = 'license_id';
+    
+    public function deleteByLicenseId($licenseId){
+        parent::parameterQuery(self::LICENSE_ID, $licenseId, \PDO::PARAM_INT);
+        
+        return parent::deleteBy();
+    }
+    
+    public function searchAllByLicenseId($licenseId){
+        parent::parameterQuery(self::LICENSE_ID, $licenseId, \PDO::PARAM_INT);
+        
+        return parent::searchAllBy(self::LICENSE_ID);
+    }
     
     public function searchAllByLicensesId($licensesId) {
         $where        = array_map(function($licenseId) {
@@ -51,7 +73,12 @@ class OptionsLicensesManager extends CRUDManagerAbstract {
      * @param OptionLicense $object
      */
     protected function addParameterQuery($object) {
-        parent::parameterQuery(self::OPTION_LICENSE_OBJECT, serialize($object->getOptionLicenseObject()), \PDO::PARAM_STR);
+        parent::parameterQuery(self::OPTION_LICENSE_CONTROLLER_NAME, $object->getOptionLicenseControllerName(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::OPTION_LICENSE_METHOD_NAME, $object->getOptionLicenseMethodName(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::OPTION_LICENSE_CAN_INSERT, $object->getOptionLicenseCanInsert(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::OPTION_LICENSE_CAN_UPDATE, $object->getOptionLicenseCanUpdate(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::OPTION_LICENSE_CAN_DELETE, $object->getOptionLicenseCanDelete(), \PDO::PARAM_STR);
+        parent::parameterQuery(self::OPTION_LICENSE_FIELDS_NAME, serialize($object->getOptionLicenseFieldsName()), \PDO::PARAM_STR);
         parent::parameterQuery(self::LICENSE_ID, $object->getLicenseId(), \PDO::PARAM_STR);
     }
     
@@ -63,7 +90,12 @@ class OptionsLicensesManager extends CRUDManagerAbstract {
         parent::buildObjectTable($result);
         $optionLicense = new OptionLicense();
         $optionLicense->setId(Arrays::get($result, self::ID));
-        $optionLicense->setOptionLicenseObject(unserialize(Arrays::get($result, self::OPTION_LICENSE_OBJECT)));
+        $optionLicense->setOptionLicenseControllerName(Arrays::get($result, self::OPTION_LICENSE_CONTROLLER_NAME));
+        $optionLicense->setOptionLicenseMethodName(Arrays::get($result, self::OPTION_LICENSE_METHOD_NAME));
+        $optionLicense->setOptionLicenseCanInsert(Arrays::get($result, self::OPTION_LICENSE_CAN_INSERT));
+        $optionLicense->setOptionLicenseCanUpdate(Arrays::get($result, self::OPTION_LICENSE_CAN_UPDATE));
+        $optionLicense->setOptionLicenseCanDelete(Arrays::get($result, self::OPTION_LICENSE_CAN_DELETE));
+        $optionLicense->setOptionLicenseFieldsName(unserialize(Arrays::get($result, self::OPTION_LICENSE_FIELDS_NAME)));
         $optionLicense->setLicenseId(Arrays::get($result, self::LICENSE_ID));
         
         return $optionLicense;

@@ -10,8 +10,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LicensesManager;
 use SoftnCMS\models\managers\OptionsLicensesManager;
-use SoftnCMS\models\MethodLicense;
-use SoftnCMS\models\PageLicense;
+use SoftnCMS\models\tables\License;
 use SoftnCMS\models\tables\OptionLicense;
 use SoftnCMS\route\Route;
 use SoftnCMS\rute\Router;
@@ -28,15 +27,24 @@ use SoftnCMS\util\Util;
  */
 class OptionLicenseController extends CUDControllerAbstract {
     
+    /** @var array */
+    private $inputNames;
+    
     public function create() {
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $optionsLicenseManager = new OptionsLicensesManager();
             $form                  = $this->form();
             
             if (!empty($form)) {
-                $optionLicense = Arrays::get($form, 'optionLicense');
+                $optionsLicenses = Arrays::get($form, 'optionsLicenses');
+                $len             = count($optionsLicenses);
+                $notError        = TRUE;
                 
-                if ($optionsLicenseManager->create($optionLicense)) {
+                for ($i = 0; $i < $len && $notError; ++$i) {
+                    $notError = $optionsLicenseManager->create(Arrays::get($optionsLicenses, $i));
+                }
+                
+                if ($notError) {
                     Messages::addSuccess(__('Permiso configurado correctamente.', TRUE));
                     Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
                 }
@@ -46,8 +54,9 @@ class OptionLicenseController extends CUDControllerAbstract {
         }
         
         $licensesManager = new LicensesManager();
+        ViewController::sendViewData('license', new License());
         ViewController::sendViewData('licenses', $licensesManager->searchAllWithoutConfigured());
-        ViewController::sendViewData('optionLicense', new OptionLicense());
+        ViewController::sendViewData('optionsLicenses', []);
         ViewController::sendViewData('dataList', $this->getViewData());
         ViewController::sendViewData('title', __('Nueva configuración de permisos'));
         ViewController::view('form');
@@ -60,25 +69,85 @@ class OptionLicenseController extends CUDControllerAbstract {
             return FALSE;
         }
         
-        $optionLicense = new OptionLicense();
-        $optionLicense->setId(Arrays::get($filterInputs, OptionsLicensesManager::ID));
-        $optionLicense->setLicenseId(Arrays::get($filterInputs, OptionsLicensesManager::LICENSE_ID));
-        $optionLicense->setOptionLicenseObject($this->getOptionLicenseObject($filterInputs));
+        $licenseId = Arrays::get($filterInputs, OptionsLicensesManager::LICENSE_ID);
+        
+        /*
+         * $filterInputs =>
+         * CATEGORY_UPDATE
+         * CATEGORY_INSERT
+         * CATEGORY_DELETE
+         * CATEGORY_INDEX_category_name
+         * CATEGORY_INDEX_category_description
+         */
+        $optionsLicenses  = [];
+        $filterInputsKeys = array_keys($filterInputs);
+        
+        array_walk($this->inputNames, function($inputName) use ($filterInputsKeys, $filterInputs, $licenseId, &$optionsLicenses) {
+            $pageName   = Arrays::get($inputName, 'pageName');
+            $capacities = Arrays::get($inputName, 'capacities');
+            $capacities = array_filter($capacities, function($capacity) use ($filterInputsKeys) {
+                return array_search($capacity, $filterInputsKeys, TRUE) !== FALSE;
+            });
+            $capacities = array_map(function($capacity) use ($pageName) {
+                return strtolower(str_replace($pageName . '_', '', $capacity));
+            }, $capacities);
+            
+            $methods = Arrays::get($inputName, 'methods');
+            $methods = array_filter($methods, function($method) use ($filterInputsKeys, $pageName, $filterInputs) {
+                $methodName = Arrays::get($method, 'methodName');
+                $fields     = Arrays::get($method, 'fields');
+                $filter     = array_filter($fields, function($field) use ($filterInputsKeys) {
+                    return array_search($field, $filterInputsKeys) !== FALSE;
+                });
+                $id         = Arrays::get($filterInputs, sprintf('%1$s_%2$s_ID', $pageName, $methodName));
+                
+                return !empty($filter) || !empty($id);
+            });
+            $methods = array_map(function($method) use ($pageName, $filterInputsKeys) {
+                $methodName       = Arrays::get($method, 'methodName');
+                $fields           = Arrays::get($method, 'fields');
+                $fields           = array_filter($fields, function($field) use ($filterInputsKeys) {
+                    return array_search($field, $filterInputsKeys) !== FALSE;
+                });
+                $fields           = array_map(function($field) use ($pageName, $methodName) {
+                    return str_replace(sprintf('%1$s_%2$s_', $pageName, $methodName), '', $field);
+                }, $fields);
+                $method['fields'] = $fields;
+                
+                return $method;
+            }, $methods);
+            
+            array_walk($methods, function($method) use ($pageName, $filterInputs, $capacities, $licenseId, &$optionsLicenses) {
+                $methodName    = Arrays::get($method, 'methodName');
+                $fields        = Arrays::get($method, 'fields');
+                $id            = Arrays::get($filterInputs, sprintf('%1$s_%2$s_ID', $pageName, $methodName));
+                $optionLicense = new OptionLicense();
+                $optionLicense->setId($id);
+                $optionLicense->setOptionLicenseControllerName($pageName);
+                $optionLicense->setOptionLicenseMethodName($methodName);
+                $optionLicense->setOptionLicenseCanInsert(array_search('insert', $capacities) !== FALSE);
+                $optionLicense->setOptionLicenseCanUpdate(array_search('update', $capacities) !== FALSE);
+                $optionLicense->setOptionLicenseCanDelete(array_search('delete', $capacities) !== FALSE);
+                $optionLicense->setOptionLicenseFieldsName($fields);
+                $optionLicense->setLicenseId($licenseId);
+                $optionsLicenses[] = $optionLicense;
+            });
+        });
+        
+        //$optionLicense->setOptionLicenseObject($this->getOptionLicenseObject($filterInputs));
         
         return [
-            'optionLicense' => $optionLicense,
+            'optionsLicenses' => $optionsLicenses,
         ];
     }
     
     protected function filterInputs() {
-        $inputNames = $this->getInputNames();
-        array_walk($inputNames, function($inputName) {
+        $this->inputNames = $this->getInputNames();
+        array_walk($this->inputNames, function($inputName) {
             $this->setCapacities($inputName);
             $this->setFields($inputName);
         });
         Form::addInput(InputIntegerBuilder::init(OptionsLicensesManager::LICENSE_ID)
-                                          ->build());
-        Form::addInput(InputIntegerBuilder::init(OptionsLicensesManager::ID)
                                           ->build());
         
         return Form::inputFilter();
@@ -173,81 +242,42 @@ class OptionLicenseController extends CUDControllerAbstract {
     }
     
     private function setFields($inputName) {
-        $methods = Arrays::get($inputName, 'methods');
+        $methods  = Arrays::get($inputName, 'methods');
+        $pageName = Arrays::get($inputName, 'pageName');
         
         if (!empty($methods)) {
-            array_walk($methods, function($method) {
-                $fields = Arrays::get($method, 'fields');
+            array_walk($methods, function($method) use ($pageName) {
+                $methodName = Arrays::get($method, 'methodName');
+                $fields     = Arrays::get($method, 'fields');
                 
                 if (!empty($fields)) {
-                    array_walk($fields, function($field) {
+                    $addInputPageMethodId = FALSE;
+                    array_walk($fields, function($field) use ($pageName, $methodName, &$addInputPageMethodId) {
                         if (Arrays::keyExists($_POST, $field)) {
                             Form::addInput(InputBooleanBuilder::init($field)
                                                               ->build());
                         }
                     });
+                    
+                    Form::addInput(InputIntegerBuilder::init(sprintf('%1$s_%2$s_ID', $pageName, $methodName))
+                                                      ->build());
                 }
             });
         }
     }
     
-    private function getOptionLicenseObject($filterInputs) {
-        $filterInputsKey = array_keys($filterInputs);
-        $optionLicense   = [];
-        $inputNames      = $this->getInputNames();
-        
-        array_walk($inputNames, function($inputName) use (&$optionLicense, $filterInputsKey) {
-            $pageName       = Arrays::get($inputName, 'pageName');
-            $methods        = Arrays::get($inputName, 'methods');
-            $methodLicenses = [];
-            
-            array_walk($methods, function($method) use (&$methodLicenses, $pageName, $filterInputsKey) {
-                $methodName = Arrays::get($method, 'methodName');
-                $fields     = Arrays::get($method, 'fields');
-                $fields     = array_filter($fields, function($field) use ($filterInputsKey) {
-                    return array_search($field, $filterInputsKey, TRUE) !== FALSE;
-                });
-                
-                if (!empty($fields)) {
-                    $fields        = array_map(function($field) use ($pageName, $methodName) {
-                        return str_replace(sprintf('%1$s_%2$s_', $pageName, $methodName), '', $field);
-                    }, $fields);
-                    $methodLicense = new MethodLicense($methodName, $fields);
-                    
-                    $methodLicenses[$methodLicense->getMethodName()] = $methodLicense;
-                }
-            });
-            
-            if (!empty($methodLicenses)) {
-                $capacities  = Arrays::get($inputName, 'capacities');
-                $pageLicense = new PageLicense($pageName, $methodLicenses);
-                array_walk($capacities, function($capacity) use (&$pageLicense, $filterInputsKey, $pageName) {
-                    if (array_search($capacity, $filterInputsKey) !== FALSE) {
-                        $method     = str_replace($pageName . '_', '', $capacity);
-                        $method     = ucfirst(strtolower($method));
-                        $methodName = "setCan$method";
-                        
-                        if (method_exists($pageLicense, $methodName)) {
-                            call_user_func([
-                                $pageLicense,
-                                "setCan$method",
-                            ], TRUE);
-                        }
-                    }
-                });
-                $optionLicense[] = $pageLicense;
-            }
-        });
-        
-        return $optionLicense;
-    }
-    
     public function update($id) {
-        $optionsLicensesManager = new OptionsLicensesManager();
-        $licenseId              = Arrays::get($_GET, 'licenseId');
-        $optionLicense          = $optionsLicensesManager->searchByIdAndLicenseId($id, $licenseId);
+        /*
+         * NOTA: el parámetro ID sera el identificador del permisos.
+         * Esto se debe, por que, las pagina de configurar de los permisos
+         * se manejan todas las paginas al vez, en este caso no me sirve el ID de la tabla
+         * ya que el ID del permisos es único dato común para esa configuración.
+         */
         
-        if (empty($optionLicense)) {
+        $optionsLicensesManager = new OptionsLicensesManager();
+        $optionsLicenses        = $optionsLicensesManager->searchAllByLicenseId($id);
+        
+        if (empty($optionsLicenses)) {
             Messages::addDanger(__('La configuración del permiso no existe.'), TRUE);
             Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
         } elseif (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
@@ -256,9 +286,33 @@ class OptionLicenseController extends CUDControllerAbstract {
             if (empty($form)) {
                 Messages::addDanger(__('Error en los campos de la configuración del permiso.'));
             } else {
-                $optionLicense = Arrays::get($form, 'optionLicense');
+                $optionsLicenses = Arrays::get($form, 'optionsLicenses');
+                $len             = count($optionsLicenses);
+                $notError        = TRUE;
                 
-                if ($optionsLicensesManager->update($optionLicense)) {
+                if (empty($optionsLicenses)) {
+                    $notError = !empty($optionsLicensesManager->deleteByLicenseId($id));
+                    
+                    if ($notError) {
+                        Messages::addWarning(__('La configuración del permiso fue borrada al no tener asignado ningún campo.'), TRUE);
+                        Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
+                    }
+                }
+                
+                for ($i = 0; $i < $len && $notError; ++$i) {
+                    $optionLicense = Arrays::get($optionsLicenses, $i);
+                    
+                    if (empty($optionLicense->getId())) {
+                        $notError = $optionsLicensesManager->create($optionLicense);
+                    } elseif (empty($optionLicense->getOptionLicenseFieldsName())) {
+                        $notError = $optionsLicensesManager->delete($optionLicense->getId());
+                    } else {
+                        $notError = $optionsLicensesManager->update($optionLicense);
+                    }
+                }
+                
+                if ($notError) {
+                    $optionsLicenses = $optionsLicensesManager->searchAllByLicenseId($id);
                     Messages::addSuccess(__('Configuración del permiso actualizado correctamente.'));
                 } else {
                     Messages::addDanger(__('Error al actualizar la configuración del permiso.'));
@@ -266,10 +320,20 @@ class OptionLicenseController extends CUDControllerAbstract {
             }
         }
         
+        $optionsLicensesList = [];
+        array_walk($optionsLicenses, function(OptionLicense $optionLicense) use (&$optionsLicensesList) {
+            $optionsLicensesList[$optionLicense->getOptionLicenseControllerName()][$optionLicense->getOptionLicenseMethodName()] = [
+                'fields' => $optionLicense->getOptionLicenseFieldsName(),
+                'object' => $optionLicense,
+            ];
+            $optionsLicensesList[$optionLicense->getOptionLicenseControllerName()]['insert']                                     = $optionLicense->getOptionLicenseCanInsert();
+            $optionsLicensesList[$optionLicense->getOptionLicenseControllerName()]['update']                                     = $optionLicense->getOptionLicenseCanUpdate();
+            $optionsLicensesList[$optionLicense->getOptionLicenseControllerName()]['delete']                                     = $optionLicense->getOptionLicenseCanDelete();
+        });
+        
         $licensesManager = new LicensesManager();
-        $license         = $licensesManager->searchById($licenseId);
-        ViewController::sendViewData('optionLicense', $optionLicense);
-        ViewController::sendViewData('license', $license);
+        ViewController::sendViewData('optionsLicenses', $optionsLicensesList);
+        ViewController::sendViewData('license', $licensesManager->searchById($id));
         ViewController::sendViewData('licenses', $licensesManager->searchAllWithoutConfigured());
         ViewController::sendViewData('dataList', $this->getViewData());
         ViewController::sendViewData('title', __('Actualizar configuración del permiso'));
@@ -279,7 +343,7 @@ class OptionLicenseController extends CUDControllerAbstract {
     public function delete($id) {
         $optionsLicenses = new OptionsLicensesManager();
         
-        if (empty($optionsLicenses->delete($id))) {
+        if (empty($optionsLicenses->deleteByLicenseId($id))) {
             Messages::addDanger(__('Error al borrar la configuración del permiso.'));
         } else {
             Messages::addSuccess(__('Configuración del permiso borrado correctamente.'));
@@ -290,15 +354,15 @@ class OptionLicenseController extends CUDControllerAbstract {
     
     protected function read() {
         $filters         = [];
-        $optionsLicenses = new OptionsLicensesManager();
-        $count           = $optionsLicenses->count();
+        $licensesManager = new LicensesManager();
+        $count           = $licensesManager->configuredCount();
         $pagination      = parent::pagination($count);
         
         if ($pagination !== FALSE) {
             $filters['limit'] = $pagination;
         }
         
-        ViewController::sendViewData('optionLicenses', $optionsLicenses->read($filters));
+        ViewController::sendViewData('licenses', $licensesManager->searchAllConfigured($filters));
     }
     
 }

@@ -236,7 +236,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}menus` (
     ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `sn_licenses`
+-- Table `#{PREFIX}licenses`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#{PREFIX}licenses` (
     `id`                  INT         NOT NULL AUTO_INCREMENT,
@@ -251,7 +251,7 @@ CREATE UNIQUE INDEX `license_name_UNIQUE`
     ON `#{PREFIX}licenses` (`license_name` ASC);
 
 -- -----------------------------------------------------
--- Table `sn_pages`
+-- Table `#{PREFIX}pages`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#{PREFIX}pages` (
     `id`                  INT         NOT NULL AUTO_INCREMENT,
@@ -266,12 +266,17 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}pages` (
     ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `sn_options_licenses`
+-- Table `#{PREFIX}options_licenses`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `sn_options_licenses` (
-    `id`                    INT      NOT NULL AUTO_INCREMENT,
-    `option_license_object` LONGTEXT NOT NULL,
-    `license_id`            INT      NOT NULL,
+CREATE TABLE IF NOT EXISTS `#{PREFIX}options_licenses` (
+    `id`                             INT         NOT NULL AUTO_INCREMENT,
+    `option_license_controller_name` VARCHAR(45) NOT NULL,
+    `option_license_method_name`     VARCHAR(45) NOT NULL,
+    `option_license_can_insert`      TINYINT     NULL,
+    `option_license_can_update`      TINYINT     NULL,
+    `option_license_can_delete`      TINYINT     NULL,
+    `option_license_fields_name`     TEXT        NULL,
+    `license_id`                     INT         NOT NULL,
     PRIMARY KEY (`id`, `license_id`),
     CONSTRAINT `fk_options_licenses_licenses`
     FOREIGN KEY (`license_id`)
@@ -283,11 +288,10 @@ CREATE TABLE IF NOT EXISTS `sn_options_licenses` (
 
 CREATE INDEX `fk_options_licenses_license_id`
     ON `#{PREFIX}options_licenses` (`license_id` ASC);
-
 -- -----------------------------------------------------
--- Table `sn_profiles_licenses`
+-- Table `#{PREFIX}profiles_licenses`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `sn_profiles_licenses` (
+CREATE TABLE IF NOT EXISTS `#{PREFIX}profiles_licenses` (
     `profile_id` INT NOT NULL,
     `license_id` INT NOT NULL,
     PRIMARY KEY (`profile_id`, `license_id`),
@@ -310,7 +314,7 @@ CREATE INDEX `fk_profiles_licenses_license_id`
 CREATE INDEX `fk_profiles_licenses_profile_id`
     ON `#{PREFIX}profiles_licenses` (`profile_id` ASC);
 -- -----------------------------------------------------
--- Data for table `sn_options`
+-- Data for table `#{PREFIX}options`
 -- -----------------------------------------------------
 START TRANSACTION;
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionTitle', 'Lorem Ipsum');
