@@ -31,6 +31,14 @@ class OptionLicenseController extends CUDControllerAbstract {
     private $inputNames;
     
     public function create() {
+        $licensesManager = new LicensesManager();
+        $licenses        = $licensesManager->searchAllWithoutConfigured();
+        
+        if (empty($licenses)) {
+            Messages::addWarning(__('No hay permisos para configurar.'), TRUE);
+            Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
+        }
+        
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $optionsLicenseManager = new OptionsLicensesManager();
             $form                  = $this->form();
@@ -53,9 +61,8 @@ class OptionLicenseController extends CUDControllerAbstract {
             Messages::addDanger(__('Error al crear la configuración del permiso.'));
         }
         
-        $licensesManager = new LicensesManager();
         ViewController::sendViewData('license', new License());
-        ViewController::sendViewData('licenses', $licensesManager->searchAllWithoutConfigured());
+        ViewController::sendViewData('licenses', $licenses);
         ViewController::sendViewData('optionsLicenses', []);
         ViewController::sendViewData('dataList', $this->getViewData());
         ViewController::sendViewData('title', __('Nueva configuración de permisos'));

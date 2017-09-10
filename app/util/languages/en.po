@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SoftN-CMS v0.4-alpha\n"
-"POT-Creation-Date: 2017-09-10 12:45+0200\n"
-"PO-Revision-Date: 2017-09-10 12:46+0200\n"
+"POT-Creation-Date: 2017-09-10 13:14+0200\n"
+"PO-Revision-Date: 2017-09-10 13:15+0200\n"
 "Last-Translator: \n"
 "Language-Team: Nicolás Marulanda P.\n"
 "Language: en\n"
@@ -203,47 +203,51 @@ msgstr "Updated successfully."
 msgid "Error al actualizar."
 msgstr "Failed to update."
 
-#: controllers/admin/OptionLicenseController.php:48
+#: controllers/admin/OptionLicenseController.php:38
+msgid "No hay permisos para configurar."
+msgstr "There aren`t licenses to configure."
+
+#: controllers/admin/OptionLicenseController.php:56
 msgid "Permiso configurado correctamente."
 msgstr "License configured successfully."
 
-#: controllers/admin/OptionLicenseController.php:53
+#: controllers/admin/OptionLicenseController.php:61
 msgid "Error al crear la configuración del permiso."
 msgstr "Failed to create license configured."
 
-#: controllers/admin/OptionLicenseController.php:61
+#: controllers/admin/OptionLicenseController.php:68
 msgid "Nueva configuración de permisos"
 msgstr "New licenses configuration"
 
-#: controllers/admin/OptionLicenseController.php:282
+#: controllers/admin/OptionLicenseController.php:289
 msgid "La configuración del permiso no existe."
 msgstr "The license configuration does not exist."
 
-#: controllers/admin/OptionLicenseController.php:288
+#: controllers/admin/OptionLicenseController.php:295
 msgid "Error en los campos de la configuración del permiso."
 msgstr "Error in license configuration fields."
 
-#: controllers/admin/OptionLicenseController.php:312
+#: controllers/admin/OptionLicenseController.php:319
 msgid "La configuración del permiso fue borrada al no tener asignado ningún campo."
 msgstr "License configuration was deleted because no fields where assigned."
 
-#: controllers/admin/OptionLicenseController.php:316
+#: controllers/admin/OptionLicenseController.php:323
 msgid "Configuración del permiso actualizado correctamente."
 msgstr "License configuration updated successfully."
 
-#: controllers/admin/OptionLicenseController.php:319
+#: controllers/admin/OptionLicenseController.php:326
 msgid "Error al actualizar la configuración del permiso."
 msgstr "Failed to update license configuration."
 
-#: controllers/admin/OptionLicenseController.php:340
+#: controllers/admin/OptionLicenseController.php:347
 msgid "Actualizar configuración del permiso"
 msgstr "Update license configuration"
 
-#: controllers/admin/OptionLicenseController.php:348
+#: controllers/admin/OptionLicenseController.php:355
 msgid "Error al borrar la configuración del permiso."
 msgstr "Error deleting license configuration."
 
-#: controllers/admin/OptionLicenseController.php:350
+#: controllers/admin/OptionLicenseController.php:357
 msgid "Configuración del permiso borrado correctamente."
 msgstr "License configuration deleted correctly."
 

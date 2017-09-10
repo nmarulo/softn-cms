@@ -31,19 +31,23 @@ class OptionsLicensesManager extends CRUDManagerAbstract {
     
     const LICENSE_ID                     = 'license_id';
     
-    public function deleteByLicenseId($licenseId){
+    public function deleteByLicenseId($licenseId) {
         parent::parameterQuery(self::LICENSE_ID, $licenseId, \PDO::PARAM_INT);
         
         return parent::deleteBy();
     }
     
-    public function searchAllByLicenseId($licenseId){
+    public function searchAllByLicenseId($licenseId) {
         parent::parameterQuery(self::LICENSE_ID, $licenseId, \PDO::PARAM_INT);
         
         return parent::searchAllBy(self::LICENSE_ID);
     }
     
     public function searchAllByLicensesId($licensesId) {
+        if (empty($licenseId)) {
+            return [];
+        }
+        
         $where        = array_map(function($licenseId) {
             $param = self::LICENSE_ID . $licenseId;
             parent::parameterQuery($param, $licenseId, \PDO::PARAM_INT);
