@@ -33,7 +33,7 @@
     border: 1px solid #DDDDDD;
 }
 
-ul.list-unstyled > li > ul.list-unstyled{
+ul.list-unstyled > li > ul.list-unstyled {
     padding-left: 50px;
 }
 
@@ -162,7 +162,7 @@ h2 .label {
 }
 
 #messages .alert-warning {
-    border-color: #8a6d3b;
+    border-color: #8A6D3B;
 }
 
 /** views/ .php ========================================================== */
@@ -304,4 +304,24 @@ ul.list-group li {list-style: none;}
 
 ul.list-untyped:first-child {
     padding-left: 0;
+}
+
+#option-license .form-input-checkboxes .panel-heading {
+    padding: 0;
+}
+
+#option-license .form-input-checkboxes .panel-heading a {
+    padding: 20px 30px;
+    min-width: 100%;
+    display: block;
+}
+
+#option-license .form-input-checkboxes .panel-heading a:focus,
+#option-license .form-input-checkboxes .panel-heading a:hover {
+    text-decoration: none;
+}
+
+#option-license .panel-default.form-input-checkboxes > .panel-heading:hover {
+    background-color: #3f454c;
+    color: #FFFFFF;
 }

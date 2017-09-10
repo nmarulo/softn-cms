@@ -190,7 +190,7 @@ class OptionLicenseController extends CUDControllerAbstract {
         
         $dataList = array_map(function($licenseFileName) use ($nameSpaceControllerAdmin) {
             $licenseClassName    = Util::removeExtension($licenseFileName);
-            $className           = str_replace('License', '', $licenseClassName);
+            $className           = substr($licenseClassName, 0, strrpos($licenseClassName, 'License'));
             $nameSpaceManager    = call_user_func(NAMESPACES_LICENSES . $licenseClassName . '::getManagerClass');
             $nameSpaceController = $nameSpaceControllerAdmin . $className . 'Controller';
             $managerConstants    = $this->getManagerConstants($nameSpaceManager);
@@ -290,15 +290,6 @@ class OptionLicenseController extends CUDControllerAbstract {
                 $len             = count($optionsLicenses);
                 $notError        = TRUE;
                 
-                if (empty($optionsLicenses)) {
-                    $notError = !empty($optionsLicensesManager->deleteByLicenseId($id));
-                    
-                    if ($notError) {
-                        Messages::addWarning(__('La configuración del permiso fue borrada al no tener asignado ningún campo.'), TRUE);
-                        Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
-                    }
-                }
-                
                 for ($i = 0; $i < $len && $notError; ++$i) {
                     $optionLicense = Arrays::get($optionsLicenses, $i);
                     
@@ -313,6 +304,12 @@ class OptionLicenseController extends CUDControllerAbstract {
                 
                 if ($notError) {
                     $optionsLicenses = $optionsLicensesManager->searchAllByLicenseId($id);
+                    
+                    if (empty($optionsLicenses)) {
+                        Messages::addWarning(__('La configuración del permiso fue borrada al no tener asignado ningún campo.'), TRUE);
+                        Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
+                    }
+                    
                     Messages::addSuccess(__('Configuración del permiso actualizado correctamente.'));
                 } else {
                     Messages::addDanger(__('Error al actualizar la configuración del permiso.'));

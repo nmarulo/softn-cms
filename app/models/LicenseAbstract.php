@@ -16,7 +16,7 @@ use SoftnCMS\util\Arrays;
  * Class License
  * @author Nicolás Marulanda P.
  */
-abstract class LicenseAbstract {
+abstract class LicenseAbstract implements LicenseInterface {
     
     /** @var LicenseAbstract */
     private static $INSTANCE;
@@ -49,8 +49,6 @@ abstract class LicenseAbstract {
         $this->optionsLicenses      = [];
         $this->fields               = [];
     }
-    
-    public static abstract function getManagerClass();//Este método es static porque se usa en "OptionLicenseController".
     
     /**
      * @return LicenseAbstract

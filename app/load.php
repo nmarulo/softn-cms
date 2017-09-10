@@ -44,6 +44,7 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
 $router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
     $route = $router->getRoute();
     
+    //TODO: Permitir el acceso si no existe configurado ningún permiso absoluto.
     if ($route->getControllerDirectoryName() == Route::CONTROLLER_DIRECTORY_NAME_ADMIN) {
         $canCallUserFun = LicenseAbstract::initCheck($route, LoginManager::getSession());
         $router->setCanCallUserFunc($canCallUserFun);

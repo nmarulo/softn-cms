@@ -69,24 +69,40 @@ if (!empty($optionLicenses)) {
                         $inputValueClassMethodId = $object->getId();
                     }
                 } ?>
-                <div class="panel panel-default">
-                    <div class="panel-heading clearfix" role="tab" id="heading-<?php echo $classNameMethod; ?>">
+                <div class="panel panel-default form-input-checkboxes">
+                    <div class="panel-heading" role="tab" id="heading-<?php echo $classNameMethod; ?>">
+                        <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion-<?php echo $className; ?>" href="#collapse-<?php echo $classNameMethod; ?>" aria-controls="collapse-<?php echo $classNameMethod; ?>">
-                                <h4 class="panel-title"><?php echo $method; ?></h4>
+                                <?php echo $method; ?>
                             </a>
+                        </h4>
                     </div>
                     <div id="collapse-<?php echo $classNameMethod; ?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-<?php echo $classNameMethod; ?>">
                         <div class="panel-body">
-                            <?php array_walk($managerConstants, function($value) use ($className, $method, $fields) {
-                                $inputName     = sprintf('%1$s_%2$s_%3$s', $className, $method, $value);
-                                $checkedColumn = Arrays::valueExists($fields, $value) ? 'checked' : ''; ?>
-                                <div class="checkbox-inline">
-                                    <label>
-                                        <input type="checkbox" name="<?php echo $inputName; ?>" <?php echo $checkedColumn; ?>>
-                                        <?php echo $value; ?>
-                                    </label>
+                            <div class="row">
+                                <div class="col-sm-1">
+                                    <button class="btn btn-primary btn-check-all btn-action-sm" type="button">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                    <button class="btn btn-danger btn-uncheck-all btn-action-sm" type="button">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
                                 </div>
-                            <?php }); ?>
+                                <div class="col-sm-11">
+                                    <div class="row">
+                                        <?php array_walk($managerConstants, function($value) use ($className, $method, $fields) {
+                                            $inputName     = sprintf('%1$s_%2$s_%3$s', $className, $method, $value);
+                                            $checkedColumn = Arrays::valueExists($fields, $value) ? 'checked' : ''; ?>
+                                            <div class="col-sm-6">
+                                                <label>
+                                                    <input type="checkbox" name="<?php echo $inputName; ?>" <?php echo $checkedColumn; ?>>
+                                                    <?php echo $value; ?>
+                                                </label>
+                                            </div>
+                                        <?php }); ?>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

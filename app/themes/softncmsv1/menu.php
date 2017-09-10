@@ -19,8 +19,12 @@ $urlUserUpdate  = '';
 $user           = NULL;
 $optionMenu     = $optionsManager->searchByName(OPTION_MENU);
 $menu           = $menusManager->searchById($optionMenu->getOptionValue());
-$menuTemplate   = new MenuTemplate($menu, TRUE);
-$menuList       = $menuTemplate->getSubMenuList();
+$menuList       = [];
+
+if (!empty($menu)) {
+    $menuTemplate = new MenuTemplate($menu, TRUE);
+    $menuList     = $menuTemplate->getSubMenuList();
+}
 
 if ($isLogin) {
     $usersManager  = new UsersManager();
