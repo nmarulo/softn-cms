@@ -1,8 +1,8 @@
 <?php
 
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\ProfilesLicensesManager;
 use SoftnCMS\models\managers\ProfilesManager;
-use SoftnCMS\models\managers\LicensesProfilesManager;
 use SoftnCMS\models\tables\License;
 use SoftnCMS\util\Arrays;
 
@@ -30,7 +30,7 @@ $selectedLicensesId = ViewController::getViewData('selectedLicensesId');
                 </div>
                 <div class="form-group">
                     <label class="control-label"><?php echo __('Permisos'); ?></label>
-                    <select class="form-control" name="<?php echo LicensesProfilesManager::LICENSE_ID; ?>[]" multiple>
+                    <select class="form-control" name="<?php echo ProfilesLicensesManager::LICENSE_ID; ?>[]" multiple>
                         <?php array_walk($licenses, function(License $license) use ($selectedLicensesId) {
                             $licenseId = $license->getId();
                             $selected  = Arrays::valueExists($selectedLicensesId, $licenseId) ? 'selected' : '';

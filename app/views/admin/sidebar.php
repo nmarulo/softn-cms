@@ -1,5 +1,6 @@
 <?php
 
+//TODO: mejorar la barra lateral.
 $siteUrl           = \SoftnCMS\rute\Router::getSiteURL();
 $urlAdmin          = $siteUrl . 'admin/';
 $urlPost           = $urlAdmin . 'post/';
@@ -15,8 +16,10 @@ $urlSidebar        = $urlAdmin . 'sidebar/';
 $urlPage           = $urlAdmin . 'page/';
 $urlProfile        = $urlAdmin . 'profile/';
 $urlLicense        = $urlAdmin . 'license/';
+$urlOptionLicense  = $urlAdmin . 'optionlicense/';
 $strTranslatePosts = __('Entradas');
 $strTranslateUsers = __('Usuarios');
+//TODO: ocultar opciones de la barra lateral si no tiene permisos para visualizar la pagina.
 ?>
 <aside>
     <ul class="menu-content">
@@ -102,9 +105,22 @@ $strTranslateUsers = __('Usuarios');
             </ul>
         </li>
         <li>
-            <a href="<?php echo $urlOption; ?>">
+            <a data-toggle="collapse" href="#option">
                 <span class="glyphicon glyphicon-cog"></span> <?php echo __('Configuración'); ?>
+                <span class="pull-right glyphicon glyphicon-chevron-down"></span>
             </a>
+            <ul id="option" class="submenu-content collapse">
+                <li>
+                    <a href="<?php echo $urlOption; ?>">
+                        <span class="glyphicon glyphicon-cog"></span> <?php echo __('General'); ?>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo $urlOptionLicense; ?>">
+                        <span class="glyphicon glyphicon-cog"></span> <?php echo __('Permisos'); ?>
+                    </a>
+                </li>
+            </ul>
         </li>
     </ul>
 </aside>

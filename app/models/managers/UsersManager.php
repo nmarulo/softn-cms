@@ -36,6 +36,8 @@ class UsersManager extends CRUDManagerAbstract {
     
     const USER_POST_COUNT       = 'user_post_count';
     
+    const PROFILE_ID            = 'profile_id';
+    
     /**
      * @param int $id
      *
@@ -160,6 +162,7 @@ class UsersManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::USER_REGISTERED, $object->getUserRegistered(), \PDO::PARAM_STR);
         parent::parameterQuery(self::USER_URL, $object->getUserUrl(), \PDO::PARAM_STR);
         parent::parameterQuery(self::USER_POST_COUNT, $object->getUserPostCount(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::PROFILE_ID, $object->getProfileId(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {
@@ -182,6 +185,7 @@ class UsersManager extends CRUDManagerAbstract {
         $user->setUserEmail(Arrays::get($result, self::USER_EMAIL));
         $user->setUserPassword(Arrays::get($result, self::USER_PASSWORD));
         $user->setUserPostCount(Arrays::get($result, self::USER_POST_COUNT));
+        $user->setProfileId(Arrays::get($result, self::PROFILE_ID));
         
         return $user;
     }

@@ -1,18 +1,18 @@
 <?php
 /**
- * UserProfile.php
+ * LicenseProfile.php
  */
 
 namespace SoftnCMS\models\tables;
 
 /**
- * Class UserProfile
+ * Class LicenseProfile
  * @author Nicolás Marulanda P.
  */
-class UserProfile {
+class ProfileLicense {
     
     /** @var int */
-    private $userId;
+    private $licenseId;
     
     /** @var int */
     private $profileId;
@@ -20,15 +20,15 @@ class UserProfile {
     /**
      * @return int
      */
-    public function getUserId() {
-        return $this->userId;
+    public function getLicenseId() {
+        return $this->licenseId;
     }
     
     /**
-     * @param int $userId
+     * @param int $licenseId
      */
-    public function setUserId($userId) {
-        $this->userId = $userId;
+    public function setLicenseId($licenseId) {
+        $this->licenseId = $licenseId;
     }
     
     /**

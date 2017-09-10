@@ -13,6 +13,8 @@ use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\util\Util;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\util\Messages;
+use SoftnCMS\route\Route;
+use SoftnCMS\models\LicenseAbstract;
 
 session_start();
 
@@ -25,18 +27,32 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     $optionsManager      = new OptionsManager();
     
     if (defined('INSTALL') || $directoryController == 'install') {
-        $siteUrl = $optionsManager->getSiteUrl($router);
+        $siteUrl = Router::getSiteURL();
         
         if (file_exists(ABSPATH . 'config.php')) {
             Util::redirect($siteUrl);
-        } elseif ($directoryController != 'install') {
+        } elseif ($directoryController != Route::CONTROLLER_DIRECTORY_NAME_INSTALL) {
             Util::redirect($siteUrl . 'install');
         }
-    } elseif ($directoryController == 'admin' && !LoginManager::isLogin()) {
+    } elseif ($directoryController == Route::CONTROLLER_DIRECTORY_NAME_ADMIN && !LoginManager::isLogin()) {
         Messages::addWarning(__('Debes iniciar sesión.'), TRUE);
         Util::redirect($optionsManager->getSiteUrl(), 'login');
-    } elseif ($directoryController == 'login' && $directoryView == 'index' && LoginManager::isLogin()) {
+    } elseif ($directoryController == Route::CONTROLLER_DIRECTORY_NAME_LOGIN && $directoryView == 'index' && LoginManager::isLogin()) {
         Util::redirect($optionsManager->getSiteUrl(), 'admin');
+    }
+});
+$router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
+    $route = $router->getRoute();
+    
+    if ($route->getControllerDirectoryName() == Route::CONTROLLER_DIRECTORY_NAME_ADMIN) {
+        $canCallUserFun = LicenseAbstract::initCheck($route, LoginManager::getSession());
+        $router->setCanCallUserFunc($canCallUserFun);
+
+        //No redirecciona al borrar, porque este método ejecuta mediante AJAX.
+        if (!$canCallUserFun && $route->getMethodName() != 'delete' && $route->getMethodName() != 'reloadAJAX') {
+            Messages::addDanger(__('No tienes permisos para visualizar esta pagina.'), TRUE);
+            Util::redirect(Router::getSiteURL() . 'admin');
+        }
     }
 });
 $router->load();

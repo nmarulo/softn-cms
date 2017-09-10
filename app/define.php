@@ -28,11 +28,24 @@ define('APP_NAMESPACE', 'SoftnCMS\\');
 /** Espacio de nombre de los controladores. */
 define('NAMESPACE_CONTROLLERS', APP_NAMESPACE . 'controllers\\');
 
+/** Espacio de nombre de los modelos. */
+define('NAMESPACE_MODELS', APP_NAMESPACE . 'models\\');
+
+/** Espacio de nombre de los gestores de las tablas. */
+define('NAMESPACE_MANAGERS', NAMESPACE_MODELS . 'managers\\');
+
+define('NAMESPACES_LICENSES', NAMESPACE_MODELS . 'licenses\\');
+
 /** Ruta de los modulos de controladores. */
 define('CONTROLLERS', ABSPATH . 'controllers' . DIRECTORY_SEPARATOR);
 
 /** Ruta de los modulos de modelos. */
 define('MODELS', ABSPATH . 'models' . DIRECTORY_SEPARATOR);
+
+define('LICENSES', MODELS . 'licenses' . DIRECTORY_SEPARATOR);
+
+/** Ruta de los modulos de modelos. */
+define('MANAGERS', MODELS . 'managers' . DIRECTORY_SEPARATOR);
 
 /** Ruta de los modulos de vista. */
 define('VIEWS', ABSPATH . 'views' . DIRECTORY_SEPARATOR);
@@ -58,3 +71,14 @@ define('OPTION_THEME', 'optionTheme');
 define('OPTION_EMAIL_ADMIN', 'optionEmailAdmin');
 define('OPTION_MENU', 'optionMenu');
 define('OPTION_LANGUAGE', 'optionLanguage');
+define('OPTION_DEFAULT_PROFILE', 'optionDefaultProfile');
+
+define('LICENSE_DEFAULT_CODE', 0);
+define('LICENSE_READ_CODE', 1);
+define('LICENSE_READ_INSERT_CODE', 2);
+define('LICENSE_READ_UPDATE_CODE', 3);
+define('LICENSE_READ_DELETE_CODE', 4);
+define('LICENSE_READ_INSERT_UPDATE_CODE', 5);
+define('LICENSE_READ_INSERT_DELETE_CODE', 6);
+define('LICENSE_READ_UPDATE_DELETE_CODE', 7);
+define('LICENSE_READ_INSERT_UPDATE_DELETE_CODE', 8);

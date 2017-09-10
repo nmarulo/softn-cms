@@ -63,14 +63,17 @@ class RegisterController extends ControllerAbstract {
             return FALSE;
         }
         
-        $pass = Util::encrypt($pass, LOGGED_KEY);
-        $user = new User();
+        $optionsManager = new OptionsManager();
+        $defaultProfile = $optionsManager->searchByName(OPTION_DEFAULT_PROFILE);
+        $pass           = Util::encrypt($pass, LOGGED_KEY);
+        $user           = new User();
         $user->setUserPassword($pass);
         $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
         $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
         $user->setUserRegistered(Util::dateNow());
         $user->setUserName($user->getUserLogin());
         $user->setUserPostCount(0);
+        $user->setProfileId($defaultProfile->getOptionValue());
         
         return ['user' => $user];
     }
