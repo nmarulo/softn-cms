@@ -36,6 +36,9 @@ abstract class LicenseAbstract implements LicenseInterface {
     /** @var array */
     protected $fields;
     
+    /** @var bool Es True cuando no existe ningún permiso configurado. */
+    private $noLicenseConfigured;
+    
     /**
      * License constructor.
      *
@@ -81,7 +84,7 @@ abstract class LicenseAbstract implements LicenseInterface {
         $this->setOptionsLicenses($this->getLicensesByUserId($this->userId), $this->route);
         
         //Si no existe configurado ningún permiso, se permite el acceso total
-        return empty($this->optionsLicenses) || !empty($this->currentOptionLicense);
+        return $this->noLicenseConfigured || !empty($this->currentOptionLicense);
     }
     
     /**
@@ -92,6 +95,7 @@ abstract class LicenseAbstract implements LicenseInterface {
         $pageName                   = $route->getControllerName();
         $methodName                 = $route->getMethodName();
         $optionsLicensesManager     = new OptionsLicensesManager();
+        $this->noLicenseConfigured  = $optionsLicensesManager->count() == 0;
         $this->optionsLicenses      = $optionsLicensesManager->searchAllByLicensesId($licensesId);
         $currentOptionLicense       = array_filter($this->optionsLicenses, function(OptionLicense $optionLicense) use ($pageName, $methodName) {
             return $optionLicense->getOptionLicenseControllerName() == strtoupper($pageName) && $optionLicense->getOptionLicenseMethodName() == strtoupper($methodName);

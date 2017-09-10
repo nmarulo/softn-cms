@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SoftN-CMS v0.4-alpha\n"
-"POT-Creation-Date: 2017-09-10 11:25+0200\n"
-"PO-Revision-Date: 2017-09-10 11:25+0200\n"
+"POT-Creation-Date: 2017-09-10 12:45+0200\n"
+"PO-Revision-Date: 2017-09-10 12:46+0200\n"
 "Last-Translator: \n"
 "Language-Team: Nicolás Marulanda P.\n"
 "Language: en\n"
@@ -191,15 +191,15 @@ msgstr "Error deleting menu."
 msgid "Menu borrado correctamente."
 msgstr "Menu deleting correctly."
 
-#: controllers/admin/OptionController.php:41
+#: controllers/admin/OptionController.php:42
 msgid "Error en los campos de las opciones."
 msgstr "Error in options fields."
 
-#: controllers/admin/OptionController.php:53
+#: controllers/admin/OptionController.php:54
 msgid "Actualizado correctamente."
 msgstr "Updated successfully."
 
-#: controllers/admin/OptionController.php:55
+#: controllers/admin/OptionController.php:56
 msgid "Error al actualizar."
 msgstr "Failed to update."
 
@@ -215,35 +215,35 @@ msgstr "Failed to create license configured."
 msgid "Nueva configuración de permisos"
 msgstr "New licenses configuration"
 
-#: controllers/admin/OptionLicenseController.php:281
+#: controllers/admin/OptionLicenseController.php:282
 msgid "La configuración del permiso no existe."
 msgstr "The license configuration does not exist."
 
-#: controllers/admin/OptionLicenseController.php:287
+#: controllers/admin/OptionLicenseController.php:288
 msgid "Error en los campos de la configuración del permiso."
 msgstr "Error in license configuration fields."
 
-#: controllers/admin/OptionLicenseController.php:309
+#: controllers/admin/OptionLicenseController.php:312
 msgid "La configuración del permiso fue borrada al no tener asignado ningún campo."
 msgstr "License configuration was deleted because no fields where assigned."
 
-#: controllers/admin/OptionLicenseController.php:313
+#: controllers/admin/OptionLicenseController.php:316
 msgid "Configuración del permiso actualizado correctamente."
 msgstr "License configuration updated successfully."
 
-#: controllers/admin/OptionLicenseController.php:315
+#: controllers/admin/OptionLicenseController.php:319
 msgid "Error al actualizar la configuración del permiso."
 msgstr "Failed to update license configuration."
 
-#: controllers/admin/OptionLicenseController.php:336
+#: controllers/admin/OptionLicenseController.php:340
 msgid "Actualizar configuración del permiso"
 msgstr "Update license configuration"
 
-#: controllers/admin/OptionLicenseController.php:344
+#: controllers/admin/OptionLicenseController.php:348
 msgid "Error al borrar la configuración del permiso."
 msgstr "Error deleting license configuration."
 
-#: controllers/admin/OptionLicenseController.php:346
+#: controllers/admin/OptionLicenseController.php:350
 msgid "Configuración del permiso borrado correctamente."
 msgstr "License configuration deleted correctly."
 
@@ -560,6 +560,10 @@ msgstr "Failed to register user."
 msgid "Debes iniciar sesión."
 msgstr "You must log in."
 
+#: load.php:53
+msgid "No tienes permisos para visualizar esta pagina."
+msgstr "You can`t view this page."
+
 #: models/managers/InstallManager.php:46
 msgid "Error al establecer la conexión con la base de datos."
 msgstr "Failed to establish connection to database."
@@ -624,7 +628,7 @@ msgid "Nombre"
 msgstr "Name"
 
 #: views/admin/category/data.php:9 views/admin/index/index.php:17
-#: views/admin/post/index.php:11 views/admin/sidebar.php:19
+#: views/admin/post/index.php:11 views/admin/sidebar.php:20
 #: views/admin/term/data.php:11 views/admin/user/data.php:12
 msgid "Entradas"
 msgstr "Posts"
@@ -654,7 +658,7 @@ msgid "Publicar"
 msgstr "Publish"
 
 #: views/admin/category/index.php:11 views/admin/index/index.php:44
-#: views/admin/post/form.php:73 views/admin/sidebar.php:47
+#: views/admin/post/form.php:73 views/admin/sidebar.php:49
 msgid "Categorías"
 msgstr "Categories"
 
@@ -701,7 +705,7 @@ msgstr "Content of the comment"
 
 #: views/admin/comment/index.php:11 views/admin/index/index.php:18
 #: views/admin/page/data.php:9 views/admin/post/data.php:10
-#: views/admin/sidebar.php:74
+#: views/admin/sidebar.php:76
 msgid "Comentarios"
 msgstr "Comments"
 
@@ -752,27 +756,27 @@ msgid "Estadísticas Generales"
 msgstr "Statistics"
 
 #: views/admin/index/index.php:36 views/admin/page/index.php:11
-#: views/admin/sidebar.php:64
+#: views/admin/sidebar.php:66
 msgid "Paginas"
 msgstr "Pages"
 
 #: views/admin/index/index.php:48 views/admin/post/form.php:90
-#: views/admin/sidebar.php:52 views/admin/term/index.php:11
+#: views/admin/sidebar.php:54 views/admin/term/index.php:11
 msgid "Etiquetas"
 msgstr "Terms"
 
-#: views/admin/index/index.php:52 views/admin/sidebar.php:20
+#: views/admin/index/index.php:52 views/admin/sidebar.php:21
 #: views/admin/user/index.php:11
 msgid "Usuarios"
 msgstr "Users"
 
 #: views/admin/license/form.php:32 views/admin/profile/index.php:11
-#: views/admin/sidebar.php:95
+#: views/admin/sidebar.php:97
 msgid "Perfiles"
 msgstr "Profiles"
 
 #: views/admin/license/index.php:11 views/admin/profile/form.php:32
-#: views/admin/sidebar.php:100 views/admin/sidebar.php:118
+#: views/admin/sidebar.php:102 views/admin/sidebar.php:120
 msgid "Permisos"
 msgstr "Licenses"
 
@@ -803,47 +807,51 @@ msgstr "Select parent menu"
 msgid "Sin padre"
 msgstr "No father"
 
-#: views/admin/menu/index.php:12 views/admin/sidebar.php:59
+#: views/admin/menu/index.php:12 views/admin/sidebar.php:61
 msgid "Menus"
 msgstr "Menus"
 
-#: views/admin/option/index.php:23 views/admin/sidebar.php:107
+#: views/admin/option/index.php:27 views/admin/sidebar.php:109
 msgid "Configuración"
 msgstr "Option"
 
-#: views/admin/option/index.php:28
+#: views/admin/option/index.php:32
 msgid "Título del sitio"
 msgstr "Site Title"
 
-#: views/admin/option/index.php:34
+#: views/admin/option/index.php:38
 msgid "Descripción corta"
 msgstr "Short description"
 
-#: views/admin/option/index.php:40
+#: views/admin/option/index.php:44
 msgid "Correo electrónico del administrador"
 msgstr "Administrator Email"
 
-#: views/admin/option/index.php:46
+#: views/admin/option/index.php:50
 msgid "Dirección del sitio web"
 msgstr "Website address"
 
-#: views/admin/option/index.php:52
+#: views/admin/option/index.php:56
 msgid "Menu actual"
 msgstr "Current Menu"
 
-#: views/admin/option/index.php:69
+#: views/admin/option/index.php:73
 msgid "Datos a mostrar por pagina"
 msgstr "Data to show per page"
 
-#: views/admin/option/index.php:75
+#: views/admin/option/index.php:79
 msgid "Seleccionar plantilla"
 msgstr "Select template"
 
-#: views/admin/option/index.php:91
+#: views/admin/option/index.php:95
 msgid "Seleccionar idioma"
 msgstr "Select language"
 
-#: views/admin/option/index.php:109
+#: views/admin/option/index.php:112
+msgid "Perfil por defecto"
+msgstr "Default profile"
+
+#: views/admin/option/index.php:130
 msgid "Guardar"
 msgstr "Update"
 
@@ -887,23 +895,23 @@ msgstr "Enable comments"
 msgid "Visible"
 msgstr "Visible"
 
-#: views/admin/sidebar.php:26
+#: views/admin/sidebar.php:28
 msgid "Información"
 msgstr "Information"
 
-#: views/admin/sidebar.php:42
+#: views/admin/sidebar.php:44
 msgid "Nueva entrada"
 msgstr "New Post"
 
-#: views/admin/sidebar.php:69 views/admin/sidebar/index.php:10
+#: views/admin/sidebar.php:71 views/admin/sidebar/index.php:10
 msgid "Barras laterales"
 msgstr "Sidebars"
 
-#: views/admin/sidebar.php:90
+#: views/admin/sidebar.php:92
 msgid "Nuevo usuario"
 msgstr "New user"
 
-#: views/admin/sidebar.php:113
+#: views/admin/sidebar.php:115
 msgid "General"
 msgstr "General"
 

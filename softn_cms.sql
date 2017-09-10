@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}options_licenses` (
     CONSTRAINT `fk_options_licenses_licenses`
     FOREIGN KEY (`license_id`)
     REFERENCES `#{PREFIX}licenses` (`id`)
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
         ON UPDATE NO ACTION
 )
     ENGINE = InnoDB;
@@ -298,12 +298,12 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}profiles_licenses` (
     CONSTRAINT `fk_profiles_licenses_profiles`
     FOREIGN KEY (`profile_id`)
     REFERENCES `#{PREFIX}profiles` (`id`)
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_profiles_licenses_licenses`
     FOREIGN KEY (`license_id`)
     REFERENCES `#{PREFIX}licenses` (`id`)
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
         ON UPDATE NO ACTION
 )
     ENGINE = InnoDB;
@@ -313,6 +313,14 @@ CREATE INDEX `fk_profiles_licenses_license_id`
 
 CREATE INDEX `fk_profiles_licenses_profile_id`
     ON `#{PREFIX}profiles_licenses` (`profile_id` ASC);
+
+-- -----------------------------------------------------
+-- Data for table `#{PREFIX}profiles`
+-- -----------------------------------------------------
+START TRANSACTION;
+INSERT INTO `#{PREFIX}profiles` (`id`, `profile_name`, `profile_description`) VALUES (DEFAULT, 'SoftN', 'Basic profile');
+
+COMMIT;
 -- -----------------------------------------------------
 -- Data for table `#{PREFIX}options`
 -- -----------------------------------------------------
@@ -327,5 +335,6 @@ INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEF
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionMenu', '0');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`)
 VALUES (DEFAULT, 'optionEmailAdmin', 'localhost@localhost.com');
+INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionDefaultProfile', '1');
 
 COMMIT;

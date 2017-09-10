@@ -71,6 +71,7 @@ define('OPTION_THEME', 'optionTheme');
 define('OPTION_EMAIL_ADMIN', 'optionEmailAdmin');
 define('OPTION_MENU', 'optionMenu');
 define('OPTION_LANGUAGE', 'optionLanguage');
+define('OPTION_DEFAULT_PROFILE', 'optionDefaultProfile');
 
 define('LICENSE_DEFAULT_CODE', 0);
 define('LICENSE_READ_CODE', 1);

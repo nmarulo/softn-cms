@@ -1,5 +1,6 @@
 <?php
 
+//TODO: mejorar la barra lateral.
 $siteUrl           = \SoftnCMS\rute\Router::getSiteURL();
 $urlAdmin          = $siteUrl . 'admin/';
 $urlPost           = $urlAdmin . 'post/';
@@ -18,6 +19,7 @@ $urlLicense        = $urlAdmin . 'license/';
 $urlOptionLicense  = $urlAdmin . 'optionlicense/';
 $strTranslatePosts = __('Entradas');
 $strTranslateUsers = __('Usuarios');
+//TODO: ocultar opciones de la barra lateral si no tiene permisos para visualizar la pagina.
 ?>
 <aside>
     <ul class="menu-content">

@@ -2,21 +2,25 @@
 
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Menu;
+use SoftnCMS\models\tables\Profile;
 
-$optionTitle       = ViewController::getViewData('optionTitle');
-$optionDescription = ViewController::getViewData('optionDescription');
-$optionPaged       = ViewController::getViewData('optionPaged');
-$optionSiteUrl     = ViewController::getViewData('optionSiteUrl');
-$optionTheme       = ViewController::getViewData('optionTheme');
-$menuList          = ViewController::getViewData('menuList');
-$optionMenu        = ViewController::getViewData('optionMenu');
-$optionEmailAdmin  = ViewController::getViewData('optionEmailAdmin');
-$listThemes        = ViewController::getViewData('listThemes');
-$currentThemeName  = $optionTheme->getOptionValue();
-$currentMenuId     = $optionMenu->getOptionValue();
-$optionLanguage    = ViewController::getViewData('optionLanguage');
-$currentLanguage   = $optionLanguage->getOptionValue();
-$listLanguages     = ViewController::getViewData('listLanguages');
+$optionTitle          = ViewController::getViewData('optionTitle');
+$optionDescription    = ViewController::getViewData('optionDescription');
+$optionPaged          = ViewController::getViewData('optionPaged');
+$optionSiteUrl        = ViewController::getViewData('optionSiteUrl');
+$optionTheme          = ViewController::getViewData('optionTheme');
+$menuList             = ViewController::getViewData('menuList');
+$optionMenu           = ViewController::getViewData('optionMenu');
+$optionEmailAdmin     = ViewController::getViewData('optionEmailAdmin');
+$listThemes           = ViewController::getViewData('listThemes');
+$currentThemeName     = $optionTheme->getOptionValue();
+$currentMenuId        = $optionMenu->getOptionValue();
+$optionLanguage       = ViewController::getViewData('optionLanguage');
+$currentLanguage      = $optionLanguage->getOptionValue();
+$listLanguages        = ViewController::getViewData('listLanguages');
+$optionDefaultProfile = ViewController::getViewData('optionDefaultProfile');
+$profilesList         = ViewController::getViewData('profilesList');
+$currentProfileId     = $optionDefaultProfile->getOptionValue();
 ?>
 <div class="page-container" data-menu-collapse-id="option">
     <div>
@@ -100,6 +104,23 @@ $listLanguages     = ViewController::getViewData('listLanguages');
                             }
         
                             echo "<option value='$language' $selected>$language</option>";
+                        }); ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><?php echo __('Perfil por defecto'); ?></label>
+                <div class="col-sm-10">
+                    <select class="form-control" name="<?php echo $optionDefaultProfile->getOptionName(); ?>">
+                        <?php array_walk($profilesList, function(Profile $profile) use ($currentProfileId) {
+                            $selected = '';
+                            $id       = $profile->getId();
+    
+                            if ($id == $currentProfileId) {
+                                $selected = 'selected';
+                            }
+    
+                            echo "<option value='$id' $selected>" . $profile->getProfileName() . '</option>';
                         }); ?>
                     </select>
                 </div>

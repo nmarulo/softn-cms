@@ -10,6 +10,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\tables\Option;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
@@ -98,25 +99,30 @@ class OptionController extends ControllerAbstract {
                                   ->setAccents(FALSE)
                                   ->setSpecialChar(TRUE)
                                   ->build(),
+            InputIntegerBuilder::init(OPTION_DEFAULT_PROFILE)
+                               ->build(),
         ]);
         
         return Form::inputFilter();
     }
     
     protected function read() {
-        $menusManager      = new MenusManager();
-        $optionsManager    = new OptionsManager();
-        $optionTitle       = $optionsManager->searchByName(OPTION_TITLE);
-        $optionDescription = $optionsManager->searchByName(OPTION_DESCRIPTION);
-        $optionPaged       = $optionsManager->searchByName(OPTION_PAGED);
-        $optionSiteUrl     = $optionsManager->searchByName(OPTION_SITE_URL);
-        $optionTheme       = $optionsManager->searchByName(OPTION_THEME);
-        $optionMenu        = $optionsManager->searchByName(OPTION_MENU);
-        $optionEmailAdmin  = $optionsManager->searchByName(OPTION_EMAIL_ADMIN);
-        $optionLanguage    = $optionsManager->searchByName(OPTION_LANGUAGE);
-        $menuList          = $menusManager->searchAllParent();
-        $listLanguages     = Util::getFilesAndDirectories(LANGUAGES);
-        $listLanguages     = array_filter($listLanguages, function($language) {
+        $profilesManager      = new ProfilesManager();
+        $menusManager         = new MenusManager();
+        $optionsManager       = new OptionsManager();
+        $optionTitle          = $optionsManager->searchByName(OPTION_TITLE);
+        $optionDescription    = $optionsManager->searchByName(OPTION_DESCRIPTION);
+        $optionPaged          = $optionsManager->searchByName(OPTION_PAGED);
+        $optionSiteUrl        = $optionsManager->searchByName(OPTION_SITE_URL);
+        $optionTheme          = $optionsManager->searchByName(OPTION_THEME);
+        $optionMenu           = $optionsManager->searchByName(OPTION_MENU);
+        $optionEmailAdmin     = $optionsManager->searchByName(OPTION_EMAIL_ADMIN);
+        $optionLanguage       = $optionsManager->searchByName(OPTION_LANGUAGE);
+        $optionDefaultProfile = $optionsManager->searchByName(OPTION_DEFAULT_PROFILE);
+        $profilesList         = $profilesManager->read();
+        $menuList             = $menusManager->searchAllParent();
+        $listLanguages        = Util::getFilesAndDirectories(LANGUAGES);
+        $listLanguages        = array_filter($listLanguages, function($language) {
             $aux          = explode('.', $language);
             $lastPosition = count($aux) - 1;
             
@@ -126,7 +132,7 @@ class OptionController extends ControllerAbstract {
             
             return Arrays::get($aux, $lastPosition) == 'mo' && Arrays::get($aux, 0) != 'softncms';
         });
-        $listLanguages     = array_map(function($language) {
+        $listLanguages        = array_map(function($language) {
             return Arrays::get(explode('.', $language), 0);
         }, $listLanguages);
         
@@ -141,6 +147,8 @@ class OptionController extends ControllerAbstract {
         ViewController::sendViewData('optionSiteUrl', $optionSiteUrl);
         ViewController::sendViewData('optionTheme', $optionTheme);
         ViewController::sendViewData('optionEmailAdmin', $optionEmailAdmin);
+        ViewController::sendViewData('optionDefaultProfile', $optionDefaultProfile);
+        ViewController::sendViewData('profilesList', $profilesList);
     }
     
 }
