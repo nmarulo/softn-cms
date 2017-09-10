@@ -45,7 +45,7 @@ class OptionLicenseController extends CUDControllerAbstract {
                 }
                 
                 if ($notError) {
-                    Messages::addSuccess(__('Permiso configurado correctamente.', TRUE));
+                    Messages::addSuccess(__('Permiso configurado correctamente.'), TRUE);
                     Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
                 }
             }
@@ -138,6 +138,7 @@ class OptionLicenseController extends CUDControllerAbstract {
         
         return [
             'optionsLicenses' => $optionsLicenses,
+            'licenseId'       => $licenseId,
         ];
     }
     
@@ -303,6 +304,8 @@ class OptionLicenseController extends CUDControllerAbstract {
                 }
                 
                 if ($notError) {
+                    //En caso de que el Id del permiso cambie.
+                    $id              = Arrays::get($form, 'licenseId');
                     $optionsLicenses = $optionsLicensesManager->searchAllByLicenseId($id);
                     
                     if (empty($optionsLicenses)) {
@@ -310,7 +313,8 @@ class OptionLicenseController extends CUDControllerAbstract {
                         Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
                     }
                     
-                    Messages::addSuccess(__('Configuración del permiso actualizado correctamente.'));
+                    Messages::addSuccess(__('Configuración del permiso actualizado correctamente.'), TRUE);
+                    Util::redirect(Router::getSiteURL() . "admin/optionlicense/update/$id");
                 } else {
                     Messages::addDanger(__('Error al actualizar la configuración del permiso.'));
                 }

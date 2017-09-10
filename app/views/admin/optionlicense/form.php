@@ -13,7 +13,7 @@ $licenseSelected = ViewController::getViewData('license');
 $licenses        = ViewController::getViewData('licenses');
 $method          = ViewController::getViewData('method');
 $isUpdate        = $method == OptionsLicensesManager::FORM_UPDATE;
-$countBr = 0;
+$countBr         = 0;
 ?>
 <div class="page-container" data-menu-collapse-id="option">
     <div>
@@ -62,12 +62,12 @@ $countBr = 0;
                     ViewController::sendViewData('className', $className);
                     ViewController::sendViewData('controllerMethods', Arrays::get($data, 'controllerMethods'));
                     ViewController::sendViewData('managerConstants', Arrays::get($data, 'managerConstants'));
-                ?>
-                <div class="col-sm-6">
+                    ?>
+                    <div class="col-sm-6">
                     <?php ViewController::singleView('datapages'); ?>
                 </div>
-                <?php
-                    if(++$countBr == 2){
+                    <?php
+                    if (++$countBr == 2) {
                         $countBr = 0;
                         echo '<br style="clear: both"/>';
                     }
@@ -78,7 +78,6 @@ $countBr = 0;
             <?php } else { ?>
                 <button class="btn btn-primary" name="<?php echo OptionsLicensesManager::FORM_CREATE; ?>" value="<?php echo OptionsLicensesManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
             <?php } ?>
-            <input type="hidden" name="<?php echo OptionsLicensesManager::ID; ?>" value="<?php echo $licenseSelected->getId(); ?>"/>
         </form>
     </div>
 </div>

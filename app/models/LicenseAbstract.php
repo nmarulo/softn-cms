@@ -80,7 +80,8 @@ abstract class LicenseAbstract implements LicenseInterface {
     public function check() {
         $this->setOptionsLicenses($this->getLicensesByUserId($this->userId), $this->route);
         
-        return !empty($this->currentOptionLicense);
+        //Si no existe configurado ningún permiso, se permite el acceso total
+        return empty($this->optionsLicenses) || !empty($this->currentOptionLicense);
     }
     
     /**
