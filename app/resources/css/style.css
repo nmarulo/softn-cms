@@ -306,11 +306,11 @@ ul.list-untyped:first-child {
     padding-left: 0;
 }
 
-#option-license .form-input-checkboxes .panel-heading {
+#option-license .panel-heading {
     padding: 0;
 }
 
-#option-license .form-input-checkboxes .panel-heading a {
+#option-license .panel-heading a {
     padding: 20px 30px;
     min-width: 100%;
     display: block;
