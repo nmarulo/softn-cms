@@ -44,7 +44,7 @@ class OptionsLicensesManager extends CRUDManagerAbstract {
     }
     
     public function searchAllByLicensesId($licensesId) {
-        if (empty($licenseId)) {
+        if (empty($licensesId)) {
             return [];
         }
         
