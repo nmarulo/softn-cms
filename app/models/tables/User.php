@@ -37,6 +37,22 @@ class User extends TableAbstract {
     /** @var int */
     private $profileId;
     
+    private $userUrlImage;
+    
+    /**
+     * @return mixed
+     */
+    public function getUserUrlImage() {
+        return $this->userUrlImage;
+    }
+    
+    /**
+     * @param mixed $userUrlImage
+     */
+    public function setUserUrlImage($userUrlImage) {
+        $this->userUrlImage = $userUrlImage;
+    }
+    
     /**
      * @return int
      */

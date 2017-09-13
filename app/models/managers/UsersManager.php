@@ -38,6 +38,8 @@ class UsersManager extends CRUDManagerAbstract {
     
     const PROFILE_ID            = 'profile_id';
     
+    const USER_URL_IMAGE        = 'user_url_image';
+    
     /**
      * @param int $id
      *
@@ -163,6 +165,7 @@ class UsersManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::USER_URL, $object->getUserUrl(), \PDO::PARAM_STR);
         parent::parameterQuery(self::USER_POST_COUNT, $object->getUserPostCount(), \PDO::PARAM_INT);
         parent::parameterQuery(self::PROFILE_ID, $object->getProfileId(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::USER_URL_IMAGE, $object->getUserUrlImage(), \PDO::PARAM_STR);
     }
     
     protected function getTable() {
@@ -186,6 +189,7 @@ class UsersManager extends CRUDManagerAbstract {
         $user->setUserPassword(Arrays::get($result, self::USER_PASSWORD));
         $user->setUserPostCount(Arrays::get($result, self::USER_POST_COUNT));
         $user->setProfileId(Arrays::get($result, self::PROFILE_ID));
+        $user->setUserUrlImage(Arrays::get($result, self::USER_URL_IMAGE));
         
         return $user;
     }

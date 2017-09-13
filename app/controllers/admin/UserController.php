@@ -9,6 +9,7 @@ use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LoginManager;
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;
@@ -17,9 +18,9 @@ use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
-use SoftnCMS\util\form\builders\InputListIntegerBuilder;
 use SoftnCMS\util\form\builders\InputUrlBuilder;
 use SoftnCMS\util\form\Form;
+use SoftnCMS\util\Gravatar;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Util;
 
@@ -47,7 +48,12 @@ class UserController extends CUDControllerAbstract {
         }
         
         $this->sendViewProfiles();
-        ViewController::sendViewData('user', new User());
+        $user     = new User();
+        $gravatar = $this->getGravatar();
+        //En el panel de administración el tamaño sera 128px
+        $gravatar->setSize(128);
+        $user->setUserUrlImage($gravatar->get());
+        ViewController::sendViewData('user', $user);
         ViewController::sendViewData('title', __('Publicar nuevo usuario'));
         ViewController::view('form');
     }
@@ -72,7 +78,8 @@ class UserController extends CUDControllerAbstract {
             $pass = Util::encrypt($pass, LOGGED_KEY);
         }
         
-        $user = new User();
+        $gravatar = $this->getGravatar();
+        $user     = new User();
         $user->setId(Arrays::get($inputs, UsersManager::ID));
         $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
         $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
@@ -82,6 +89,8 @@ class UserController extends CUDControllerAbstract {
         $user->setUserPassword($pass);
         $user->setUserPostCount(NULL);
         $user->setProfileId(Arrays::get($inputs, UsersManager::PROFILE_ID));
+        $gravatar->setEmail($user->getUserEmail());
+        $user->setUserUrlImage($gravatar->get());
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $user->setUserRegistered(Util::dateNow());
@@ -118,10 +127,23 @@ class UserController extends CUDControllerAbstract {
                                     ->setRequire($isCreate)
                                     ->build(),
             InputIntegerBuilder::init(UsersManager::PROFILE_ID)
-                                   ->build(),
+                               ->build(),
         ]);
         
         return Form::inputFilter();
+    }
+    
+    private function getGravatar() {
+        $optionsManager = new OptionsManager();
+        $gravatarOption = $optionsManager->searchByName(OPTION_GRAVATAR);
+        
+        if (empty($gravatarOption->getOptionValue())) {
+            $gravatar = new Gravatar();
+        } else {
+            $gravatar = unserialize($gravatarOption->getOptionValue());
+        }
+        
+        return $gravatar;
     }
     
     private function sendViewProfiles() {
@@ -154,6 +176,11 @@ class UserController extends CUDControllerAbstract {
         }
         
         $this->sendViewProfiles();
+        $gravatar = $this->getGravatar();
+        //En el panel de administración el tamaño sera 128px
+        $gravatar->setSize(128);
+        $gravatar->setEmail($user->getUserEmail());
+        $user->setUserUrlImage($gravatar->get());
         ViewController::sendViewData('selectedProfileId', $user->getProfileId());
         ViewController::sendViewData('user', $user);
         ViewController::sendViewData('title', __('Actualizar usuario'));

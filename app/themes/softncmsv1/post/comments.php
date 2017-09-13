@@ -38,7 +38,7 @@ if (!empty($commentsTemplate)) {
                         $user = $userTemplate->getUser();
                         ?>
                         <a href="<?php echo $urlUser . $user->getId(); ?>">
-                            <img class="media-object" src="<?php echo $siteUrl; ?>app/themes/softncmsv1/resources/img/avatar.svg">
+                            <img class="media-object" src="<?php echo $user->getUserUrlImage(); ?>">
                         </a>
                     <?php } ?>
                 </div>

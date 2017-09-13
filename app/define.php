@@ -72,7 +72,9 @@ define('OPTION_EMAIL_ADMIN', 'optionEmailAdmin');
 define('OPTION_MENU', 'optionMenu');
 define('OPTION_LANGUAGE', 'optionLanguage');
 define('OPTION_DEFAULT_PROFILE', 'optionDefaultProfile');
+define('OPTION_GRAVATAR', 'optionGravatar');
 
+//TODO: borrar
 define('LICENSE_DEFAULT_CODE', 0);
 define('LICENSE_READ_CODE', 1);
 define('LICENSE_READ_INSERT_CODE', 2);
