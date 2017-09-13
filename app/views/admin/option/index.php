@@ -3,24 +3,31 @@
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Menu;
 use SoftnCMS\models\tables\Profile;
+use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\util\Gravatar;
 
-$optionTitle          = ViewController::getViewData('optionTitle');
-$optionDescription    = ViewController::getViewData('optionDescription');
-$optionPaged          = ViewController::getViewData('optionPaged');
-$optionSiteUrl        = ViewController::getViewData('optionSiteUrl');
-$optionTheme          = ViewController::getViewData('optionTheme');
-$menuList             = ViewController::getViewData('menuList');
-$optionMenu           = ViewController::getViewData('optionMenu');
-$optionEmailAdmin     = ViewController::getViewData('optionEmailAdmin');
-$listThemes           = ViewController::getViewData('listThemes');
-$currentThemeName     = $optionTheme->getOptionValue();
-$currentMenuId        = $optionMenu->getOptionValue();
-$optionLanguage       = ViewController::getViewData('optionLanguage');
-$currentLanguage      = $optionLanguage->getOptionValue();
-$listLanguages        = ViewController::getViewData('listLanguages');
-$optionDefaultProfile = ViewController::getViewData('optionDefaultProfile');
-$profilesList         = ViewController::getViewData('profilesList');
-$currentProfileId     = $optionDefaultProfile->getOptionValue();
+$optionTitle                 = ViewController::getViewData('optionTitle');
+$optionDescription           = ViewController::getViewData('optionDescription');
+$optionPaged                 = ViewController::getViewData('optionPaged');
+$optionSiteUrl               = ViewController::getViewData('optionSiteUrl');
+$optionTheme                 = ViewController::getViewData('optionTheme');
+$menuList                    = ViewController::getViewData('menuList');
+$optionMenu                  = ViewController::getViewData('optionMenu');
+$optionEmailAdmin            = ViewController::getViewData('optionEmailAdmin');
+$listThemes                  = ViewController::getViewData('listThemes');
+$currentThemeName            = $optionTheme->getOptionValue();
+$currentMenuId               = $optionMenu->getOptionValue();
+$optionLanguage              = ViewController::getViewData('optionLanguage');
+$currentLanguage             = $optionLanguage->getOptionValue();
+$listLanguages               = ViewController::getViewData('listLanguages');
+$optionDefaultProfile        = ViewController::getViewData('optionDefaultProfile');
+$profilesList                = ViewController::getViewData('profilesList');
+$currentProfileId            = $optionDefaultProfile->getOptionValue();
+$gravatar                    = ViewController::getViewData('gravatar');
+$gravatarSizeList            = ViewController::getViewData('gravatarSizeList');
+$gravatarDefaultImageList    = ViewController::getViewData('gravatarDefaultImageList');
+$gravatarRatingList          = ViewController::getViewData('gravatarRatingList');
+$gravatarCheckedForceDefault = $gravatar->getForceDefault() ? 'checked' : '';
 ?>
 <div class="page-container" data-menu-collapse-id="option">
     <div>
@@ -123,6 +130,55 @@ $currentProfileId     = $optionDefaultProfile->getOptionValue();
                             echo "<option value='$id' $selected>" . $profile->getProfileName() . '</option>';
                         }); ?>
                     </select>
+                </div>
+            </div>
+            <h3>Gravatar</h3>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">Tamaño</div>
+                <div class="col-sm-10">
+                    <?php array_walk($gravatarSizeList, function($size) use ($gravatar) {
+                        $checked = $gravatar->getSize() == $size ? 'checked' : '';
+                        ?>
+                        <label class="radio-inline">
+                            <input type="radio" name="<?php echo OptionsManager::OPTION_GRAVATAR_SIZE; ?>" value="<?php echo $size; ?>" <?php echo $checked; ?>/>
+                            <?php echo $size; ?>
+                        </label>
+                    <?php }); ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">Imagen por defecto</div>
+                <div class="col-sm-10">
+                    <?php array_walk($gravatarDefaultImageList, function($defaultImage) use ($gravatar) {
+                        $checked  = $gravatar->getDefaultImage() == $defaultImage ? 'checked' : '';
+                        $srcImage = Gravatar::URL . "?d=$defaultImage";
+                        ?>
+                        <label class="radio-inline">
+                            <input type="radio" name="<?php echo OptionsManager::OPTION_GRAVATAR_DEFAULT_IMAGE; ?>" value="<?php echo $defaultImage; ?>" <?php echo $checked; ?>/>
+                            <img src="<?php echo $srcImage; ?>"/>
+                        </label>
+                    <?php }); ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">Calificación</div>
+                <div class="col-sm-10">
+                    <?php array_walk($gravatarRatingList, function($rating) use ($gravatar) {
+                        $checked = $gravatar->getRating() == $rating ? 'checked' : '';
+                        ?>
+                        <label class="radio-inline">
+                            <input type="radio" name="<?php echo OptionsManager::OPTION_GRAVATAR_RATING; ?>" value="<?php echo $rating; ?>" <?php echo $checked; ?>/>
+                            <?php echo $rating; ?>
+                        </label>
+                    <?php }); ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">Forzar imagen por defecto</div>
+                <div class="col-sm-10">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" name="<?php echo OptionsManager::OPTION_GRAVATAR_FORCE_DEFAULT; ?>" <?php echo $gravatarCheckedForceDefault; ?>/>
+                    </label>
                 </div>
             </div>
             <div class="form-group">

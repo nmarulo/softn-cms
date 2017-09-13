@@ -9,6 +9,7 @@ use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LoginManager;
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;
@@ -47,8 +48,11 @@ class UserController extends CUDControllerAbstract {
         }
         
         $this->sendViewProfiles();
-        $user = new User();
-        $user->setUserUrlImage(Gravatar::URL);
+        $user     = new User();
+        $gravatar = $this->getGravatar();
+        //En el panel de administración el tamaño sera 128px
+        $gravatar->setSize(128);
+        $user->setUserUrlImage($gravatar->get());
         ViewController::sendViewData('user', $user);
         ViewController::sendViewData('title', __('Publicar nuevo usuario'));
         ViewController::view('form');
@@ -74,7 +78,7 @@ class UserController extends CUDControllerAbstract {
             $pass = Util::encrypt($pass, LOGGED_KEY);
         }
         
-        $gravatar = new Gravatar();
+        $gravatar = $this->getGravatar();
         $user     = new User();
         $user->setId(Arrays::get($inputs, UsersManager::ID));
         $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
@@ -129,6 +133,19 @@ class UserController extends CUDControllerAbstract {
         return Form::inputFilter();
     }
     
+    private function getGravatar() {
+        $optionsManager = new OptionsManager();
+        $gravatarOption = $optionsManager->searchByName(OPTION_GRAVATAR);
+        
+        if (empty($gravatarOption->getOptionValue())) {
+            $gravatar = new Gravatar();
+        } else {
+            $gravatar = unserialize($gravatarOption->getOptionValue());
+        }
+        
+        return $gravatar;
+    }
+    
     private function sendViewProfiles() {
         $profilesManager = new ProfilesManager();
         ViewController::sendViewData('profiles', $profilesManager->read());
@@ -159,11 +176,8 @@ class UserController extends CUDControllerAbstract {
         }
         
         $this->sendViewProfiles();
-        /*
-         * Por defecto es 64px y con ese tamaño se mostrara en la plantilla
-         * pero en el panel de administración el tamaño sera 128px
-         */
-        $gravatar = new Gravatar();
+        $gravatar = $this->getGravatar();
+        //En el panel de administración el tamaño sera 128px
         $gravatar->setSize(128);
         $gravatar->setEmail($user->getUserEmail());
         $user->setUserUrlImage($gravatar->get());

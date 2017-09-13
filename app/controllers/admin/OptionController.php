@@ -15,10 +15,12 @@ use SoftnCMS\models\tables\Option;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\util\form\builders\InputBooleanBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputUrlBuilder;
 use SoftnCMS\util\form\Form;
+use SoftnCMS\util\Gravatar;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Util;
 
@@ -66,6 +68,15 @@ class OptionController extends ControllerAbstract {
             return FALSE;
         }
         
+        $gravatar = new Gravatar();
+        $gravatar->setSize(Arrays::get($inputs, OptionsManager::OPTION_GRAVATAR_SIZE));
+        $gravatar->setForceDefault(Arrays::get($inputs, OptionsManager::OPTION_GRAVATAR_FORCE_DEFAULT));
+        $gravatar->setDefaultImage(Arrays::get($inputs, OptionsManager::OPTION_GRAVATAR_DEFAULT_IMAGE));
+        $gravatar->setRating(Arrays::get($inputs, OptionsManager::OPTION_GRAVATAR_RATING));
+        $gravatarOption = new Option();
+        $gravatarOption->setOptionName(OPTION_GRAVATAR);
+        $gravatarOption->setOptionValue(serialize($gravatar));
+        
         $inputKeys = array_keys($inputs);
         $options   = array_map(function($key, $value) {
             $option = new Option();
@@ -74,6 +85,7 @@ class OptionController extends ControllerAbstract {
             
             return $option;
         }, $inputKeys, $inputs);
+        $options[] = $gravatarOption;
         
         return ['options' => $options];
     }
@@ -100,6 +112,14 @@ class OptionController extends ControllerAbstract {
                                   ->setSpecialChar(TRUE)
                                   ->build(),
             InputIntegerBuilder::init(OPTION_DEFAULT_PROFILE)
+                               ->build(),
+            InputIntegerBuilder::init(OptionsManager::OPTION_GRAVATAR_SIZE)
+                               ->build(),
+            InputAlphabeticBuilder::init(OptionsManager::OPTION_GRAVATAR_RATING)
+                                  ->build(),
+            InputAlphabeticBuilder::init(OptionsManager::OPTION_GRAVATAR_DEFAULT_IMAGE)
+                                  ->build(),
+            InputBooleanBuilder::init(OptionsManager::OPTION_GRAVATAR_FORCE_DEFAULT)
                                ->build(),
         ]);
         
@@ -136,6 +156,7 @@ class OptionController extends ControllerAbstract {
             return Arrays::get(explode('.', $language), 0);
         }, $listLanguages);
         
+        $this->gravatar();
         ViewController::sendViewData('listLanguages', $listLanguages);
         ViewController::sendViewData('optionLanguage', $optionLanguage);
         ViewController::sendViewData('menuList', $menuList);
@@ -149,6 +170,50 @@ class OptionController extends ControllerAbstract {
         ViewController::sendViewData('optionEmailAdmin', $optionEmailAdmin);
         ViewController::sendViewData('optionDefaultProfile', $optionDefaultProfile);
         ViewController::sendViewData('profilesList', $profilesList);
+        
+    }
+    
+    private function gravatar() {
+        $optionsManager = new OptionsManager();
+        $optionGravatar = $optionsManager->searchByName(OPTION_GRAVATAR);
+        $gravatar       = unserialize($optionGravatar->getOptionValue());
+        
+        if (empty($gravatar)) {
+            $gravatar = new Gravatar();
+        }
+        
+        $gravatar->setSize($this->getDataGravatar($gravatar->getSize()), FALSE);
+        $gravatar->setRating($this->getDataGravatar($gravatar->getRating()), FALSE);
+        $gravatar->setDefaultImage($this->getDataGravatar($gravatar->getDefaultImage()), FALSE);
+        
+        $sizeList         = [
+            32,
+            64,
+            128,
+            256,
+        ];
+        $defaultImageList = [
+            Gravatar::DEFAULT_IMAGE_MM,
+            Gravatar::DEFAULT_IMAGE_BLANK,
+            Gravatar::DEFAULT_IMAGE_IDENTICON,
+            Gravatar::DEFAULT_IMAGE_MOSTERID,
+            Gravatar::DEFAULT_IMAGE_RETRO,
+            Gravatar::DEFAULT_IMAGE_WAVATAR,
+        ];
+        $ratingList       = [
+            Gravatar::RATING_G,
+            Gravatar::RATING_PG,
+            Gravatar::RATING_R,
+            Gravatar::RATING_X,
+        ];
+        ViewController::sendViewData('gravatarSizeList', $sizeList);
+        ViewController::sendViewData('gravatarDefaultImageList', $defaultImageList);
+        ViewController::sendViewData('gravatarRatingList', $ratingList);
+        ViewController::sendViewData('gravatar', $gravatar);
+    }
+    
+    private function getDataGravatar($string) {
+        return Arrays::get(explode('=', $string), 1);
     }
     
 }

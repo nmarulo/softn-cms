@@ -9,7 +9,7 @@ namespace SoftnCMS\util;
  * Class Gravatar
  * @author Nicolás Marulanda P.
  */
-class Gravatar {
+class Gravatar implements \Serializable {
     
     /** do not load any image if none is associated with the email hash, instead return an HTTP 404 (File Not Found) response */
     const DEFAULT_IMAGE_404 = '404';
@@ -52,13 +52,13 @@ class Gravatar {
     /** @var int Usar con "s=" o "size=" */
     private $size;
     
-    /** @var string Usar con "d=" or "default=" */
+    /** @var string Usar con "d=" o "default=" y uno de los valor de "DEFAULT_IMAGE_*" */
     private $defaultImage;
     
-    /** @var string Usar con "f=y" or "forcedefault=y" */
+    /** @var string Usar con "f=y" o "forcedefault=y" */
     private $forceDefault;
     
-    /** @var string Usar con "r=" or "rating=" */
+    /** @var string Usar con "r=" o "rating=" y uno de los valores "RATING_*" */
     private $rating;
     
     /** @var string */
@@ -75,25 +75,57 @@ class Gravatar {
         $this->setRating(self::RATING_G);
     }
     
+    public function serialize() {
+        return serialize([
+            $this->forceDefault,
+            $this->email,
+            $this->size,
+            $this->defaultImage,
+            $this->rating,
+        ]);
+    }
+    
+    public function unserialize($serialized) {
+        list($this->forceDefault, $this->email, $this->size, $this->defaultImage, $this->rating) = unserialize($serialized);
+    }
+    
     /**
-     * @param int $size
+     * @return int
      */
-    public function setSize($size) {
-        $this->size = "s=$size";
+    public function getSize() {
+        return $this->size;
+    }
+    
+    /**
+     * @param int  $size
+     * @param bool $addParam
+     */
+    public function setSize($size, $addParam = TRUE) {
+        $size       = $addParam ? "s=$size" : $size;
+        $this->size = $size;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getDefaultImage() {
+        return $this->defaultImage;
     }
     
     /**
      * @param string $defaultImage
+     * @param bool   $addParam
      */
-    public function setDefaultImage($defaultImage) {
-        $this->defaultImage = "d=$defaultImage";
+    public function setDefaultImage($defaultImage, $addParam = TRUE) {
+        $defaultImage       = $addParam ? "d=$defaultImage" : $defaultImage;
+        $this->defaultImage = $defaultImage;
     }
     
     /**
-     * @param string $rating
+     * @return string
      */
-    public function setRating($rating) {
-        $this->rating = "r=$rating";
+    public function getForceDefault() {
+        return $this->forceDefault;
     }
     
     /**
@@ -104,7 +136,23 @@ class Gravatar {
     }
     
     /**
-     * NOTA: previamente se debe validar el email.
+     * @return string
+     */
+    public function getRating() {
+        return $this->rating;
+    }
+    
+    /**
+     * @param string $rating
+     * @param bool   $addParam
+     */
+    public function setRating($rating, $addParam = TRUE) {
+        $rating       = $addParam ? "r=$rating" : $rating;
+        $this->rating = $rating;
+    }
+    
+    /**
+     * NOTA: previamente se debe estar validado el email.
      *
      * @param string $email
      */
@@ -113,10 +161,10 @@ class Gravatar {
     }
     
     public function get() {
-        $email = md5($this->email);
+        $email        = md5($this->email);
         $forceDefault = '';
         
-        if($this->forceDefault){
+        if ($this->forceDefault) {
             $forceDefault = self::FORCE_DEFAULT;
         }
         
