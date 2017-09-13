@@ -318,7 +318,7 @@ CREATE INDEX `fk_profiles_licenses_profile_id`
 -- Data for table `#{PREFIX}profiles`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `#{PREFIX}profiles` (`id`, `profile_name`, `profile_description`) VALUES (DEFAULT, 'SoftN', 'Basic profile');
+INSERT INTO `#{PREFIX}profiles` (`id`, `profile_name`, `profile_description`) VALUES (1, 'SoftN', 'Basic profile');
 
 COMMIT;
 -- -----------------------------------------------------
@@ -336,5 +336,7 @@ INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEF
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`)
 VALUES (DEFAULT, 'optionEmailAdmin', 'localhost@localhost.com');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionDefaultProfile', '1');
+INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionGravatar',
+                                                                       'C:22:\"SoftnCMS\\util\\Gravatar\":72:{a:5:{i:0;b:0;i:1;s:0:\"\";i:2;s:4:\"s=64\";i:3;s:7:\"d=retro\";i:4;s:3:\"r=g\";}}');
 
 COMMIT;
