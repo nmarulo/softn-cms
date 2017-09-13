@@ -134,7 +134,7 @@ $gravatarCheckedForceDefault = $gravatar->getForceDefault() ? 'checked' : '';
             </div>
             <h3>Gravatar</h3>
             <div class="form-group">
-                <div class="col-sm-2 control-label">Tamaño</div>
+                <div class="col-sm-2 control-label"><?php echo __('Tamaño'); ?></div>
                 <div class="col-sm-10">
                     <?php array_walk($gravatarSizeList, function($size) use ($gravatar) {
                         $checked = $gravatar->getSize() == $size ? 'checked' : '';
@@ -147,7 +147,7 @@ $gravatarCheckedForceDefault = $gravatar->getForceDefault() ? 'checked' : '';
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-2 control-label">Imagen por defecto</div>
+                <div class="col-sm-2 control-label"><?php echo __('Imagen por defecto'); ?></div>
                 <div class="col-sm-10">
                     <?php array_walk($gravatarDefaultImageList, function($defaultImage) use ($gravatar) {
                         $checked  = $gravatar->getDefaultImage() == $defaultImage ? 'checked' : '';
@@ -161,7 +161,7 @@ $gravatarCheckedForceDefault = $gravatar->getForceDefault() ? 'checked' : '';
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-2 control-label">Calificación</div>
+                <div class="col-sm-2 control-label"><?php echo __('Calificación'); ?></div>
                 <div class="col-sm-10">
                     <?php array_walk($gravatarRatingList, function($rating) use ($gravatar) {
                         $checked = $gravatar->getRating() == $rating ? 'checked' : '';
@@ -174,7 +174,7 @@ $gravatarCheckedForceDefault = $gravatar->getForceDefault() ? 'checked' : '';
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-2 control-label">Forzar imagen por defecto</div>
+                <div class="col-sm-2 control-label"><?php echo __('Forzar imagen por defecto'); ?></div>
                 <div class="col-sm-10">
                     <label class="checkbox-inline">
                         <input type="checkbox" name="<?php echo OptionsManager::OPTION_GRAVATAR_FORCE_DEFAULT; ?>" <?php echo $gravatarCheckedForceDefault; ?>/>
