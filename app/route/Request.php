@@ -87,7 +87,8 @@ class Request {
     
     private function setRuteController($controllerName) {
         if ($controllerName !== FALSE) {
-            $this->route->setControllerName(Sanitize::alphabetic($controllerName));
+            $controllerName = ucfirst(Sanitize::alphabetic($controllerName));
+            $this->route->setControllerName($controllerName);
         }
     }
     

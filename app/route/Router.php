@@ -11,6 +11,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\Util;
 
 /**
  * Class Router
@@ -147,14 +148,22 @@ class Router {
      * @return mixed
      */
     private function instanceController() {
-        $controllerName      = $this->route->getControllerName();
-        $controllerName      .= 'Controller';
+        $controllerName      = $this->route->getControllerName() . 'Controller';
         $controllerDirectory = $this->route->getControllerDirectoryName();
         $pathController      = CONTROLLERS . $controllerDirectory . DIRECTORY_SEPARATOR;
-        $pathController      .= "$controllerName.php";
+        $fileController      = "$controllerName.php";
         
-        if (!file_exists($pathController)) {
-            $this->events(self::EVENT_ERROR);
+        if (!file_exists($pathController . $fileController)) {
+            $filesControllersName = Util::getFilesAndDirectories($pathController);
+            $filter               = array_filter($filesControllersName, function($file) use ($fileController) {
+                return strcasecmp($file, $fileController) == 0;
+            });
+            
+            if (empty($filter)) {
+                $this->events(self::EVENT_ERROR);
+            } else {
+                $controllerName = Util::removeExtension(Arrays::get(array_merge($filter), 0));
+            }
         }
         
         $controller = NAMESPACE_CONTROLLERS . "$controllerDirectory\\$controllerName";

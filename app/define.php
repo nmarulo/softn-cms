@@ -73,14 +73,3 @@ define('OPTION_MENU', 'optionMenu');
 define('OPTION_LANGUAGE', 'optionLanguage');
 define('OPTION_DEFAULT_PROFILE', 'optionDefaultProfile');
 define('OPTION_GRAVATAR', 'optionGravatar');
-
-//TODO: borrar
-define('LICENSE_DEFAULT_CODE', 0);
-define('LICENSE_READ_CODE', 1);
-define('LICENSE_READ_INSERT_CODE', 2);
-define('LICENSE_READ_UPDATE_CODE', 3);
-define('LICENSE_READ_DELETE_CODE', 4);
-define('LICENSE_READ_INSERT_UPDATE_CODE', 5);
-define('LICENSE_READ_INSERT_DELETE_CODE', 6);
-define('LICENSE_READ_UPDATE_DELETE_CODE', 7);
-define('LICENSE_READ_INSERT_UPDATE_DELETE_CODE', 8);
