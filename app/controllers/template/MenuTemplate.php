@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\template;
 use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\tables\Menu;
+use SoftnCMS\util\Logger;
 
 /**
  * Class MenuTemplate
@@ -57,6 +58,8 @@ class MenuTemplate extends Template {
         $this->menu   = $menusManager->searchById($menuId);
         
         if (empty($this->menu)) {
+            Logger::getInstance()
+                  ->error('El menu no existe.', ['currentMenuId' => $menuId]);
             throw new \Exception("El menu no existe.");
         }
     }

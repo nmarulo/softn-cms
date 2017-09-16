@@ -10,6 +10,7 @@ use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\Term;
+use SoftnCMS\util\Logger;
 
 /**
  * Class TermTemplate
@@ -51,11 +52,13 @@ class TermTemplate extends Template {
         }, $this->posts);
     }
     
-    public function initCategory($categoryId) {
+    public function initTerm($termId) {
         $termsManager = new TermsManager();
-        $this->term   = $termsManager->searchById($categoryId);
+        $this->term   = $termsManager->searchById($termId);
         
         if (empty($this->term)) {
+            Logger::getInstance()
+                  ->error('La etiqueta no existe.', ['currentTermId' => $termId]);
             throw new \Exception("La etiqueta no existe.");
         }
     }

@@ -101,15 +101,25 @@ class MySQL {
             return FALSE;
         }
         
+        $output = false;
+        
         try {
-            return $this->prepareObject->execute();
+            $output = $this->prepareObject->execute();
+            
+            if (!$output) {
+                Logger::getInstance()
+                      ->error('No se logro ejecutar la consulta.');
+            }
         } catch (\PDOException $ex) {
             if (DEBUG) {
                 Messages::addDanger($ex->getMessage());
             }
+            
+            Logger::getInstance()
+                  ->error($ex->getMessage());
         }
         
-        return FALSE;
+        return $output;
     }
     
     /**
@@ -120,8 +130,8 @@ class MySQL {
      * @return bool Si es \TRUE la operación se realizado correctamente.
      */
     private function bindValue($parameterQuery) {
-        $count = \count($parameterQuery);
-        $error = \FALSE;
+        $count = count($parameterQuery);
+        $error = FALSE;
         
         for ($i = 0; $i < $count && !$error; ++$i) {
             $value          = $parameterQuery[$i];
@@ -130,21 +140,31 @@ class MySQL {
             
             try {
                 if (!$this->prepareObject->bindValue($parameter, $parameterValue, $value['dataType'])) {
-                    $error = \TRUE;
+                    $error = TRUE;
                 }
             } catch (\PDOException $ex) {
                 if (DEBUG) {
                     Messages::addDanger($ex->getMessage());
                 }
                 
-                $error = \TRUE;
+                $error = TRUE;
+                Logger::getInstance()
+                      ->error($ex->getMessage());
             }
             
-            if (!\is_numeric($parameterValue)) {
+            if (!is_numeric($parameterValue)) {
                 $parameterValue = "'$parameterValue'";
             }
             //Reemplaza los parámetros con sus valores correspondientes.
             $this->query = \str_replace($parameter, $parameterValue, $this->query);
+        }
+        
+        Logger::getInstance()
+              ->debug($this->query);
+        
+        if ($error) {
+            Logger::getInstance()
+                  ->error('Error al establecer los tipos de datos de los valores vinculados a un parámetro', ['currentParam' => $parameterQuery]);
         }
         
         return !$error;

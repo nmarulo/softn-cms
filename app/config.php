@@ -32,6 +32,9 @@ define('DEBUG', FALSE);
 
 define('DEFAULT_LANGUAGE', 'es');
 
+define('LOGGER', TRUE);
+define('FULL_LOGGER', TRUE);
+
 // Claves SALTED
 define('LOGGED_KEY', 'cN2eY0ik8pcbx1jwwhKyW96177s7V9pzGI3BfMZWWNjMELBQG7XnTRZ4CrL9IPTl');
 define('COOKIE_KEY', 'wvsRSq4q83Of8ng3dQy3drfZvDr3ToKYKaeZUWwMHbGAZRj87swCVUSMKHvPrOYu');

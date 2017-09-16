@@ -5,10 +5,10 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\Logger;
 
 /**
  * Class ViewController
@@ -94,15 +94,14 @@ class ViewController {
      * Método que incluye la ruta.
      *
      * @param string $path Ruta del fichero.
-     *
-     * @return bool|mixed
      */
     private static function includePath($path) {
         if (file_exists($path)) {
             require $path;
+        } else {
+            Logger::getInstance()
+                  ->error('La ruta de la vista no existe.', ['path' => $path]);
         }
-        
-        return FALSE;
     }
     
     private static function getPathView($fileName) {
@@ -180,7 +179,11 @@ class ViewController {
      * @return bool|mixed
      */
     public static function getViewData($key) {
-        //TODO: Mostrar un mensaje si el indice no existe.
+        if (!Arrays::keyExists(self::$VIEW_DATA, $key)) {
+            Logger::getInstance()
+                  ->debug('La variable enviada a la vista no existe', ['Clave' => $key]);
+        }
+        
         return Arrays::get(self::$VIEW_DATA, $key);
     }
     
@@ -212,6 +215,9 @@ class ViewController {
         
         if (Arrays::valueExists(self::$VIEW_SCRIPTS, $scriptRute) === FALSE) {
             self::$VIEW_SCRIPTS[] = $scriptRute;
+        } else {
+            Logger::getInstance()
+                  ->debug('El script ya existe.', ['scriptRute' => $scriptRute]);
         }
     }
     
@@ -237,6 +243,9 @@ class ViewController {
         
         if (Arrays::valueExists(self::$VIEW_STYLES, $styleRute) === FALSE) {
             self::$VIEW_STYLES[] = $styleRute;
+        } else {
+            Logger::getInstance()
+                  ->debug('El css ya existe.', ['styleRute' => $styleRute]);
         }
     }
 }

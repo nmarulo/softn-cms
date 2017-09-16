@@ -34,6 +34,11 @@ class Token {
         
         if (empty($token)) {
             Messages::addDanger(__('Error. Token no encontrado.'));
+            Logger::getInstance()
+                  ->debug('Token no encontrado.', [
+                      'post' => $_POST,
+                      'get'  => $_GET,
+                  ]);
             
             return FALSE;
         }
@@ -59,18 +64,33 @@ class Token {
                 $output = TRUE;
             } else {
                 Messages::addDanger(__('Error. El Token es invalido.'));
+                Logger::getInstance()
+                      ->debug('El Token es invalido.', [
+                          'currentToken' => $tokenDecode,
+                          'dataCheck'    => self::aud(),
+                      ]);
             }
             
         } catch (ExpiredException $expiredException) {
             Messages::addDanger(__('Error. El Token a caducado.'));
+            Logger::getInstance()
+                  ->debug('El Token a caducado.');
         } catch (SignatureInvalidException $invalidException) {
-            Messages::addDanger(__('Error. El Token invalido.'));
+            Messages::addDanger(__('Error. El Token es invalido.'));
+            Logger::getInstance()
+                  ->debug('El Token es invalido.');
         } catch (BeforeValidException $beforeValidException) {
             Messages::addDanger(__('Error. El Token no se puede usar.'));
+            Logger::getInstance()
+                  ->debug('El Token no se puede usar.');
         } catch (\DomainException $domainException) {
-            Messages::addDanger(__('Error en el formato del Token.'));
+            Messages::addDanger(__('Error. Formato del Token incorrecto.'));
+            Logger::getInstance()
+                  ->debug('Formato del Token incorrecto.');
         } catch (\Exception $exception) {
             Messages::addDanger(__('Error desconocido en el Token.'));
+            Logger::getInstance()
+                  ->debug('Error desconocido en el Token.');
         }
         
         self::regenerate();
@@ -81,7 +101,11 @@ class Token {
     private static function getTokenKey() {
         if (defined('TOKEN_KEY')) {
             return TOKEN_KEY;
+        } else {
+            Logger::getInstance()
+                  ->debug('Constante "TOKEN_KEY" no definida.');
         }
+        
         //TODO: Que devolver si no esta definido?
         return '';
     }

@@ -16,7 +16,6 @@ use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
-use SoftnCMS\util\Escape;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;

@@ -6,6 +6,7 @@
 namespace SoftnCMS\models;
 
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\Logger;
 use SoftnCMS\util\MySQL;
 
 /**
@@ -136,6 +137,8 @@ abstract class ManagerAbstract {
      */
     protected function buildObjectTable($result) {
         if (empty($result) || !is_array($result)) {
+            Logger::getInstance()
+                  ->error('No se puede construir el objeto.', ['data' => $result]);
             throw new \Exception('Error');
         }
         

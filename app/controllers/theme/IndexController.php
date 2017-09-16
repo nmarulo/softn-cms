@@ -10,7 +10,6 @@ use SoftnCMS\controllers\template\PostTemplate;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\tables\Post;
-use SoftnCMS\util\Escape;
 
 /**
  * Class IndexController

@@ -6,6 +6,7 @@
 namespace SoftnCMS\models\managers;
 
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\Logger;
 use SoftnCMS\util\Messages;
 
 /**
@@ -44,6 +45,9 @@ class InstallManager {
             $this->connection = new \PDO($dsn, $dbUser, $dbPass);
         } catch (\PDOException $pdoEx) {
             Messages::addDanger(__('Error al establecer la conexión con la base de datos.'));
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->error($pdoEx->getMessage());
             $result = FALSE;
         }
         
@@ -54,6 +58,9 @@ class InstallManager {
         //Compruebo si puedo escribir en la carpeta donde están los archivo
         if (!is_writable(ABSPATH)) {
             Messages::addDanger(__('No es posible escribir en el directorio %1$s.', ABSPATH));
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->debug('No es posible escribir en el directorio.', ['directory' => ABSPATH]);
             
             return FALSE;
         }
@@ -90,6 +97,8 @@ class InstallManager {
                 case 'LOGGED_KEY':
                 case 'COOKIE_KEY':
                 case 'TOKEN_KEY':
+                case 'LOGGER':
+                case 'FULL_LOGGER':
                     //$match[1] nombre de la constante
                     //$match[2] espacio
                     $configFile[$num] = "define('" . $match[1] . "'," . $match[2] . "'" . constant($match[1]) . "');\r\n";
@@ -110,6 +119,8 @@ class InstallManager {
         define('DB_CHARSET', Arrays::get($dataInput, self::INSTALL_CHARSET));
         define('DB_TYPE', 'mysql');
         define('APP_DEBUG', FALSE);
+        define('LOGGER', TRUE);
+        define('FULL_LOGGER', TRUE);
         define('LOGGED_KEY', $this->generateKey());
         define('COOKIE_KEY', $this->generateKey());
         define('SALTED_KEY', $this->generateKey());
@@ -121,6 +132,7 @@ class InstallManager {
         $random_str = '';
         $chars      = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $size       = strlen($chars) - 1;
+        
         for ($i = 0; $i < $len; $i++) {
             $random_str .= $chars[rand(0, $size)];
         }

@@ -16,8 +16,8 @@ use SoftnCMS\models\managers\OptionsManager;
 class Language {
     
     public static function load() {
-        $paramLan   = Arrays::get($_GET, PARAM_LANGUAGE);
-        $language   = empty($paramLan) ? self::getDefaultLan() : $paramLan;
+        $paramLan = Arrays::get($_GET, PARAM_LANGUAGE);
+        $language = empty($paramLan) ? self::getDefaultLan() : $paramLan;
         $translator = new Translator();
         $translator->register();
         
@@ -34,6 +34,12 @@ class Language {
         
         if (file_exists($pathMoFile)) {
             $translator->loadTranslations(Translations::fromMoFile($pathMoFile));
+        } else {
+            Logger::getInstance()
+                  ->debug('El fichero del idioma no existe.', [
+                      'currentLang' => $language,
+                      'path'        => $pathMoFile,
+                  ]);
         }
     }
     

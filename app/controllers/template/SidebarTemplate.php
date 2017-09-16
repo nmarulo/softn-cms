@@ -8,6 +8,7 @@ namespace SoftnCMS\controllers\template;
 use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\SidebarsManager;
 use SoftnCMS\models\tables\Sidebar;
+use SoftnCMS\util\Logger;
 
 /**
  * Class SidebarTemplate
@@ -35,6 +36,8 @@ class SidebarTemplate extends Template {
         $this->sidebar   = $sidebarsManager->searchById($sidebarId);
         
         if (empty($this->sidebar)) {
+            Logger::getInstance()
+                  ->error('La barra lateral no existe.', ['currentSidebarId' => $sidebarId]);
             throw new \Exception('La barra lateral no existe.');
         }
     }

@@ -15,9 +15,12 @@ use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\util\Messages;
 use SoftnCMS\route\Route;
 use SoftnCMS\models\LicenseAbstract;
+use SoftnCMS\util\Logger;
 
 session_start();
 
+Logger::getInstance()
+      ->debug('Inicio de la aplicación.');
 $router = new Router();
 $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     \SoftnCMS\util\Language::load();
@@ -32,6 +35,9 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
         if (file_exists(ABSPATH . 'config.php')) {
             Util::redirect($siteUrl);
         } elseif ($directoryController != Route::CONTROLLER_DIRECTORY_NAME_INSTALL) {
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->debug('Redireccionando a la pagina de instalación.');
             Util::redirect($siteUrl . 'install');
         }
     } elseif ($directoryController == Route::CONTROLLER_DIRECTORY_NAME_ADMIN && !LoginManager::isLogin()) {
@@ -47,7 +53,7 @@ $router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
     if ($route->getControllerDirectoryName() == Route::CONTROLLER_DIRECTORY_NAME_ADMIN) {
         $canCallUserFun = LicenseAbstract::initCheck($route, LoginManager::getSession());
         $router->setCanCallUserFunc($canCallUserFun);
-
+        
         //No redirecciona al borrar, porque este método ejecuta mediante AJAX.
         if (!$canCallUserFun && $route->getMethodName() != 'delete' && $route->getMethodName() != 'reloadAJAX') {
             Messages::addDanger(__('No tienes permisos para visualizar esta pagina.'), TRUE);

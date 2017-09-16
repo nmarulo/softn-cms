@@ -9,6 +9,7 @@ use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\PagesManager;
 use SoftnCMS\models\tables\Page;
 use SoftnCMS\util\Escape;
+use SoftnCMS\util\Logger;
 
 /**
  * Class PageTemplate
@@ -43,6 +44,8 @@ class PageTemplate extends Template {
         $this->page   = $pagesManager->searchById($pageId);
         
         if ($this->page === FALSE) {
+            Logger::getInstance()
+                  ->error('La pagina no existe.', ['currentPageId' => $pageId]);
             throw new \Exception(__('La pagina no existe.'));
         }
     }

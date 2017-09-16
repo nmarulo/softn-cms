@@ -5,12 +5,11 @@
 
 namespace SoftnCMS\rute;
 
-use Gettext\Translations;
-use Gettext\Translator;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\Logger;
 use SoftnCMS\util\Util;
 
 /**
@@ -139,8 +138,17 @@ class Router {
                 break;
         }
         
-        if ($callback !== FALSE && is_callable($callback)) {
-            $callback();
+        if ($callback !== FALSE) {
+            if (is_callable($callback)) {
+                $callback();
+            } else {
+                Logger::getInstance()
+                      ->debug('La función no es ejecutable.', [
+                          'function'  => $callback,
+                          'eventKey'  => $event,
+                          'eventList' => $this->events,
+                      ]);
+            }
         }
     }
     
@@ -154,12 +162,23 @@ class Router {
         $fileController      = "$controllerName.php";
         
         if (!file_exists($pathController . $fileController)) {
+            Logger::getInstance()
+                  ->warning('El controlador no existe.', [
+                      'path'               => $pathController,
+                      'fileControllerName' => $fileController,
+                  ]);
             $filesControllersName = Util::getFilesAndDirectories($pathController);
-            $filter               = array_filter($filesControllersName, function($file) use ($fileController) {
+            Logger::getInstance()
+                  ->debug('Comprobando lista de controladores.', [
+                      'filesControllersName' => $filesControllersName,
+                  ]);
+            $filter = array_filter($filesControllersName, function($file) use ($fileController) {
                 return strcasecmp($file, $fileController) == 0;
             });
             
             if (empty($filter)) {
+                Logger::getInstance()
+                      ->error('Controlador no encontrado.');
                 $this->events(self::EVENT_ERROR);
             } else {
                 $controllerName = Util::removeExtension(Arrays::get(array_merge($filter), 0));
@@ -180,7 +199,12 @@ class Router {
         $method = $this->route->getMethodName();
         
         if (!method_exists($instanceController, $method)) {
-            $method = 'index';
+            Logger::getInstance()
+                  ->debug('El método no existe. Estableciendo método por defecto.', [
+                      'currentMethod' => $method,
+                      'defaultMethod' => Route::DEFAULT_METHOD,
+                  ]);
+            $method = Route::DEFAULT_METHOD;
             $this->route->setMethodName($method);
         }
         
