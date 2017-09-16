@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}users` (
     COMMENT 'Fecha de registro',
     `user_url`        VARCHAR(100) NULL,
     `user_post_count` INT          NOT NULL,
+    `user_url_image`  VARCHAR(100) NULL,
     `profile_id`      INT          NOT NULL,
     PRIMARY KEY (`id`, `profile_id`),
     CONSTRAINT `fk_users_profiles`
@@ -330,13 +331,14 @@ INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`)
 VALUES (DEFAULT, 'optionDescription', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec mollis.');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionPaged', '10');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`)
-VALUES (DEFAULT, 'optionSiteUrl', 'http://localhost/');
+VALUES (DEFAULT, 'optionSiteUrl', '#{SITE_URL}');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionTheme', 'default');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionMenu', '0');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`)
 VALUES (DEFAULT, 'optionEmailAdmin', 'localhost@localhost.com');
+INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionLanguage', 'es');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionDefaultProfile', '1');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionGravatar',
-                                                                       'C:22:\"SoftnCMS\\util\\Gravatar\":72:{a:5:{i:0;b:0;i:1;s:0:\"\";i:2;s:4:\"s=64\";i:3;s:7:\"d=retro\";i:4;s:3:\"r=g\";}}');
+                                                                             'C:22:\"SoftnCMS\\util\\Gravatar\":72:{a:5:{i:0;b:0;i:1;s:0:\"\";i:2;s:4:\"s=64\";i:3;s:7:\"d=retro\";i:4;s:3:\"r=g\";}}');
 
 COMMIT;
