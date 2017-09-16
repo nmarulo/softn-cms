@@ -78,6 +78,7 @@ $countBr         = 0;
             <?php } else { ?>
                 <button class="btn btn-primary" name="<?php echo OptionsLicensesManager::FORM_CREATE; ?>" value="<?php echo OptionsLicensesManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
             <?php } ?>
+            <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>
 </div>

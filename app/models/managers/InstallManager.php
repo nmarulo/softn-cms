@@ -97,8 +97,6 @@ class InstallManager {
                 case 'LOGGED_KEY':
                 case 'COOKIE_KEY':
                 case 'TOKEN_KEY':
-                case 'LOGGER':
-                case 'FULL_LOGGER':
                     //$match[1] nombre de la constante
                     //$match[2] espacio
                     $configFile[$num] = "define('" . $match[1] . "'," . $match[2] . "'" . constant($match[1]) . "');\r\n";
@@ -119,8 +117,6 @@ class InstallManager {
         define('DB_CHARSET', Arrays::get($dataInput, self::INSTALL_CHARSET));
         define('DB_TYPE', 'mysql');
         define('APP_DEBUG', FALSE);
-        define('LOGGER', TRUE);
-        define('FULL_LOGGER', TRUE);
         define('LOGGED_KEY', $this->generateKey());
         define('COOKIE_KEY', $this->generateKey());
         define('SALTED_KEY', $this->generateKey());

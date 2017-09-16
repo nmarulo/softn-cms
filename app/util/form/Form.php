@@ -33,8 +33,7 @@ class Form {
     public static function submit($name) {
         Token::generate();
         
-        //TODO: temporalmente, si estamos instalando la aplicación no se comprobara el token.
-        return (isset($_POST[$name]) || isset($_GET[$name])) && (!defined('INSTALL') || Token::check());
+        return (isset($_POST[$name]) || isset($_GET[$name])) && (defined('INSTALL') || Token::check());
     }
     
     /**
@@ -76,7 +75,10 @@ class Form {
                 $output   = FALSE;
                 Token::regenerate();
                 Logger::getInstance()
-                      ->debug('No se logro validar todos los campos del formulario.', ['dataInput' => $data]);
+                      ->debug('No se logro validar todos los campos del formulario.', [
+                          'dataValue' => $data->getValue(),
+                          'dataName'  => $data->getName(),
+                      ]);
             } else {
                 /*
                  * El nombre del campo corresponde al indice
