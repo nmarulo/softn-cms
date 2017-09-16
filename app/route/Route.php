@@ -11,6 +11,8 @@ namespace SoftnCMS\route;
  */
 class Route {
     
+    const DEFAULT_METHOD                    = 'index';
+    
     const CONTROLLER_DIRECTORY_NAME_ADMIN   = 'admin';
     
     const CONTROLLER_DIRECTORY_NAME_LOGIN   = 'login';
@@ -59,7 +61,7 @@ class Route {
         $this->viewDirectoryName           = 'default';
         $this->directoryNameViewController = 'index';
         $this->controllerName              = 'Index';
-        $this->methodName                  = 'index';
+        $this->methodName                  = self::DEFAULT_METHOD;
         $this->parameter                   = '';
         $this->viewPath                    = VIEWS;
     }

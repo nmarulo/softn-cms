@@ -8,6 +8,7 @@
 namespace SoftnCMS\util\form;
 
 use SoftnCMS\util\form\inputs\Input;
+use SoftnCMS\util\Logger;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Token;
 
@@ -31,6 +32,7 @@ class Form {
      */
     public static function submit($name) {
         Token::generate();
+        
         //TODO: temporalmente, si estamos instalando la aplicación no se comprobara el token.
         return (isset($_POST[$name]) || isset($_GET[$name])) && (!defined('INSTALL') || Token::check());
     }
@@ -73,6 +75,8 @@ class Form {
                 $notError = FALSE;
                 $output   = FALSE;
                 Token::regenerate();
+                Logger::getInstance()
+                      ->debug('No se logro validar todos los campos del formulario.', ['dataInput' => $data]);
             } else {
                 /*
                  * El nombre del campo corresponde al indice

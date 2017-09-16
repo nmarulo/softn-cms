@@ -6,3 +6,4 @@ test-*
 *.vux
 *.temp.*
 app/config.php
+app/log/

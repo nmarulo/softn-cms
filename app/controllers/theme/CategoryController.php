@@ -9,13 +9,10 @@ use SoftnCMS\controllers\template\PostTemplate;
 use SoftnCMS\controllers\ThemeControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\CategoriesManager;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsCategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\tables\Post;
-use SoftnCMS\route\Route;
 use SoftnCMS\rute\Router;
-use SoftnCMS\util\Escape;
 use SoftnCMS\util\Util;
 
 /**

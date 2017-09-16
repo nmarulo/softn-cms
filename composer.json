@@ -9,7 +9,8 @@
         "ezyang/htmlpurifier": "4.8.*",
         "firebase/php-jwt": "v5.0.*",
         "phpunit/phpunit": "5.5.*",
-        "gettext/gettext": "v4.4.*"
+        "gettext/gettext": "v4.4.*",
+        "monolog/monolog": "1.23.*"
     },
     "autoload": {
         "psr-4": {

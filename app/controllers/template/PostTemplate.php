@@ -16,6 +16,7 @@ use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\Term;
 use SoftnCMS\util\Escape;
+use SoftnCMS\util\Logger;
 
 /**
  * Class PostTemplate
@@ -69,6 +70,8 @@ class PostTemplate extends Template {
         $user         = $usersManager->searchById($this->post->getUserId());
         
         if (empty($user)) {
+            Logger::getInstance()
+                  ->error('El usuario no existe.', ['currentUserId' => $this->post->getUserId()]);
             throw new \Exception("El usuario no existe.");
         }
         
@@ -112,6 +115,8 @@ class PostTemplate extends Template {
         $this->post   = $postsManager->searchById($postId);
         
         if ($this->post === FALSE) {
+            Logger::getInstance()
+                  ->error('La entrada no existe.', ['currentPostId' => $postId]);
             throw new \Exception("La entrada no existe.");
         }
     }

@@ -141,8 +141,6 @@ class OptionLicenseController extends CUDControllerAbstract {
             });
         });
         
-        //$optionLicense->setOptionLicenseObject($this->getOptionLicenseObject($filterInputs));
-        
         return [
             'optionsLicenses' => $optionsLicenses,
             'licenseId'       => $licenseId,

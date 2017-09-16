@@ -11,6 +11,7 @@ use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\util\Escape;
+use SoftnCMS\util\Logger;
 
 /**
  * Class CommentTemplate
@@ -55,6 +56,8 @@ class CommentTemplate extends Template {
         $post         = $postsManager->searchByCommentId($this->comment->getId());
         
         if (empty($post)) {
+            Logger::getInstance()
+                  ->error('La entrada no existe.', ['currentPostId' => $this->comment->getId()]);
             throw new \Exception('La entrada no existe.');
         }
         
@@ -66,7 +69,7 @@ class CommentTemplate extends Template {
         $user         = $usersManager->searchById($this->comment->getCommentUserId());
         
         //No lanza exception ya que un usuario no registrado puede comentar.
-        //TODO: agregar a la pagina de opciones.
+        //TODO: agregar a la pagina de opciones si un usuario no registrado puede comentar.
         if (!empty($user)) {
             $this->userTemplate = new UserTemplate($user);
         }
@@ -89,6 +92,8 @@ class CommentTemplate extends Template {
         $this->comment   = $commentsManager->searchById($commentId);
         
         if (empty($this->comment)) {
+            Logger::getInstance()
+                  ->error('El comentario no existe.', ['currentCommentId' => $commentId]);
             throw new \Exception('El comentario no existe.');
         }
     }

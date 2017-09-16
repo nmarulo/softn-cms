@@ -10,6 +10,7 @@ use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Post;
+use SoftnCMS\util\Logger;
 
 /**
  * Class CategoryTemplate
@@ -56,6 +57,8 @@ class CategoryTemplate extends Template {
         $this->category    = $categoriesManager->searchById($categoryId);
         
         if (empty($this->category)) {
+            Logger::getInstance()
+                  ->error('La categoría no existe.', ['currentCategoryId' => $categoryId]);
             throw new \Exception("La categoría no existe.");
         }
     }
