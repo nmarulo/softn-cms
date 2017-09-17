@@ -27,14 +27,23 @@ class CommentsManager extends CRUDManagerAbstract {
     
     const COMMENT_CONTENTS     = 'comment_contents';
     
-    const COMMENT_USER_ID      = 'comment_user_ID';
+    const COMMENT_USER_ID      = 'comment_user_id';
     
-    const POST_ID              = 'post_ID';
+    const POST_ID              = 'post_id';
     
     public function searchByPostId($postId) {
         parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
         
         return parent::searchAllBy(self::POST_ID, self::ID);
+    }
+    
+    public function searchByPostIdAndStatus($postId, $status){
+        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
+        parent::parameterQuery(self::COMMENT_STATUS, $status, \PDO::PARAM_INT);
+        $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s ORDER BY %4$s DESC';
+        $query = sprintf($query, $this->getTableWithPrefix(), self::COMMENT_STATUS, self::POST_ID, self::ID);
+        
+        return parent::readData($query);
     }
     
     public function delete($id) {
@@ -59,7 +68,7 @@ class CommentsManager extends CRUDManagerAbstract {
         
         if ($result) {
             $postsManager = new PostsManager();
-            $postsManager->updateCommentCount($object->getPostID(), 1);
+            $postsManager->updateCommentCount($object->getPostId(), 1);
         }
         
         return $result;
@@ -80,8 +89,8 @@ class CommentsManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::COMMENT_AUTHOR_EMAIL, $object->getCommentAuthorEmail(), \PDO::PARAM_STR);
         parent::parameterQuery(self::COMMENT_CONTENTS, $object->getCommentContents(), \PDO::PARAM_STR);
         parent::parameterQuery(self::COMMENT_DATE, $object->getCommentDate(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::COMMENT_USER_ID, $object->getCommentUserID(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::POST_ID, $object->getPostID(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::COMMENT_USER_ID, $object->getCommentUserId(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::POST_ID, $object->getPostId(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {
@@ -92,8 +101,8 @@ class CommentsManager extends CRUDManagerAbstract {
         parent::buildObjectTable($result);
         $comment = new Comment();
         $comment->setId(Arrays::get($result, self::ID));
-        $comment->setPostID(Arrays::get($result, self::POST_ID));
-        $comment->setCommentUserID(Arrays::get($result, self::COMMENT_USER_ID));
+        $comment->setPostId(Arrays::get($result, self::POST_ID));
+        $comment->setCommentUserId(Arrays::get($result, self::COMMENT_USER_ID));
         $comment->setCommentDate(Arrays::get($result, self::COMMENT_DATE));
         $comment->setCommentContents(Arrays::get($result, self::COMMENT_CONTENTS));
         $comment->setCommentAuthorEmail(Arrays::get($result, self::COMMENT_AUTHOR_EMAIL));

@@ -13,32 +13,33 @@ $siteUrl  = \SoftnCMS\rute\Router::getSiteURL();
                 <img class="center-block" src="<?php echo $siteUrl; ?>app/resources/img/softn.png" alt="CMS - SoftN"/>
             </div>
             <hr/>
-            <form role="form" method="post">
+            <form method="post">
                 <div class="form-group">
-                    <label class="control-label">Usuario:</label>
-                    <input type="text" class="form-control" name="<?php echo UsersManager::USER_LOGIN; ?>" placeholder="Usuario" autofocus="autofocus">
+                    <label class="control-label"><?php echo __('Usuario'); ?>:</label>
+                    <input class="form-control" name="<?php echo UsersManager::USER_LOGIN; ?>" autofocus>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Contraseña:</label>
-                    <input type="password" class="form-control" name="<?php echo UsersManager::USER_PASSWORD; ?>" placeholder="Contraseña">
+                    <label class="control-label"><?php echo __('Contraseña'); ?>:</label>
+                    <input type="password" class="form-control" name="<?php echo UsersManager::USER_PASSWORD; ?>">
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Repetir Contraseña:</label>
-                    <input type="password" class="form-control" name="<?php echo UsersManager::USER_PASSWORD_REWRITE; ?>" placeholder="Contraseña">
+                    <label class="control-label"><?php echo __('Repetir contraseña'); ?>:</label>
+                    <input type="password" class="form-control" name="<?php echo UsersManager::USER_PASSWORD_REWRITE; ?>">
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Correo electrónico:</label>
-                    <input type="email" class="form-control" name="<?php echo UsersManager::USER_EMAIL; ?>" placeholder="Correo electrónico">
+                    <label class="control-label"><?php echo __('Correo electrónico'); ?>:</label>
+                    <input type="email" class="form-control" name="<?php echo UsersManager::USER_EMAIL; ?>">
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary" name="<?php echo UsersManager::FORM_SUBMIT; ?>" value="<?php echo UsersManager::FORM_SUBMIT; ?>">Registrar</button>
+                    <button class="btn btn-primary" name="<?php echo UsersManager::FORM_SUBMIT; ?>" value="<?php echo UsersManager::FORM_SUBMIT; ?>"><?php echo __('Registrar'); ?></button>
                 </div>
+                <?php \SoftnCMS\util\Token::formField(); ?>
             </form>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-body">
-            <a href="<?php echo $urlLogin; ?>" class="btn btn-success btn-block">Conectar</a>
+            <a href="<?php echo $urlLogin; ?>" class="btn btn-success btn-block"><?php echo __('Conectar'); ?></a>
         </div>
     </div>
 </div>

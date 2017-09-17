@@ -33,13 +33,55 @@ class PostsManager extends CRUDManagerAbstract {
     
     const POST_COMMENT_COUNT  = 'post_comment_count';
     
-    const USER_ID             = 'user_ID';
+    const USER_ID             = 'user_id';
     
     /**
      * PostsManager constructor.
      */
     public function __construct() {
         parent::__construct();
+    }
+    
+    public function searchByIdAndStatus($id, $status) {
+        parent::parameterQuery(self::ID, $id, \PDO::PARAM_INT);
+        parent::parameterQuery(self::POST_STATUS, $status, \PDO::PARAM_INT);
+        $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s';
+        $query = sprintf($query, $this->getTableWithPrefix(), self::ID, self::POST_STATUS);
+        
+        return Arrays::get(parent::readData($query), 0);
+    }
+    
+    public function countByStatus($status) {
+        $table = $this->getTableWithPrefix();
+        $query = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s', $table, self::POST_STATUS);
+        parent::parameterQuery(self::POST_STATUS, $status, \PDO::PARAM_INT);
+        $result = $this->select($query);
+        $result = Arrays::get($result, 0);
+        $result = Arrays::get($result, 'COUNT');
+        
+        return $result === FALSE ? 0 : $result;
+    }
+    
+    public function countByUserIdAndStatus($userId, $status) {
+        $table = $this->getTableWithPrefix();
+        $query = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s', $table, self::POST_STATUS, self::USER_ID);
+        parent::parameterQuery(self::POST_STATUS, $status, \PDO::PARAM_INT);
+        parent::parameterQuery(self::USER_ID, $userId, \PDO::PARAM_INT);
+        $result = $this->select($query);
+        $result = Arrays::get($result, 0);
+        $result = Arrays::get($result, 'COUNT');
+        
+        return $result === FALSE ? 0 : $result;
+    }
+    
+    public function searchAllByStatus($status, $filters = []) {
+        $limit = Arrays::get($filters, 'limit');
+        $table = $this->getTableWithPrefix();
+        $query = sprintf('SELECT * FROM %1$s WHERE %3$s = :%3$s ORDER BY %2$s DESC', $table, self::ID, self::POST_STATUS);
+        $query .= $limit === FALSE ? '' : " LIMIT $limit";
+        parent::parameterQuery(self::POST_STATUS, $status, \PDO::PARAM_INT);
+        
+        return $this->readData($query);
     }
     
     public function delete($id) {
@@ -68,7 +110,7 @@ class PostsManager extends CRUDManagerAbstract {
         return $result;
     }
     
-    public function searchByCategoryId($categoryId, $filters = []) {
+    public function searchAllByCategoryId($categoryId, $filters = []) {
         $limit                = Arrays::get($filters, 'limit');
         $tablePostsCategories = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
         $query                = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s) ORDER BY %2$s DESC';
@@ -79,18 +121,42 @@ class PostsManager extends CRUDManagerAbstract {
         return parent::readData($query);
     }
     
-    public function searchByTermId($termId, $filters = []) {
+    public function searchAllByCategoryIdAndStatus($categoryId, $status, $filters = []) {
+        $limit                = Arrays::get($filters, 'limit');
+        $tablePostsCategories = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
+        $query                = 'SELECT * FROM %1$s WHERE %6$s = :%6$s AND %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s) ORDER BY %2$s DESC';
+        $query                = sprintf($query, parent::getTableWithPrefix(), self::ID, PostsCategoriesManager::POST_ID, $tablePostsCategories, PostsCategoriesManager::CATEGORY_ID, self::POST_STATUS);
+        $query                .= $limit === FALSE ? '' : " LIMIT $limit";
+        parent::parameterQuery(PostsCategoriesManager::CATEGORY_ID, $categoryId, \PDO::PARAM_INT);
+        parent::parameterQuery(self::POST_STATUS, $status, \PDO::PARAM_INT);
+        
+        return parent::readData($query);
+    }
+    
+    public function searchAllByTermId($termId, $filters = []) {
         $limit           = Arrays::get($filters, 'limit');
         $tablePostsTerms = parent::getTableWithPrefix(PostsTermsManager::TABLE);
         $query           = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s) ORDER BY %2$s DESC';
         $query           = sprintf($query, parent::getTableWithPrefix(), self::ID, PostsTermsManager::POST_ID, $tablePostsTerms, PostsTermsManager::TERM_ID);
-        $query           .= $limit === FALSE ? '' : "LIMIT $limit";
+        $query           .= $limit === FALSE ? '' : " LIMIT $limit";
         $this->parameterQuery(PostsTermsManager::TERM_ID, $termId, \PDO::PARAM_INT);
         
         return parent::readData($query);
     }
     
-    public function searchByUserId($userId, $filters = []) {
+    public function searchAllByTermIdAndStatus($termId, $status, $filters = []) {
+        $limit           = Arrays::get($filters, 'limit');
+        $tablePostsTerms = parent::getTableWithPrefix(PostsTermsManager::TABLE);
+        $query           = 'SELECT * FROM %1$s WHERE %6$s = :%6$s AND %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s) ORDER BY %2$s DESC';
+        $query           = sprintf($query, parent::getTableWithPrefix(), self::ID, PostsTermsManager::POST_ID, $tablePostsTerms, PostsTermsManager::TERM_ID, self::POST_STATUS);
+        $query           .= $limit === FALSE ? '' : " LIMIT $limit";
+        parent::parameterQuery(PostsTermsManager::TERM_ID, $termId, \PDO::PARAM_INT);
+        parent::parameterQuery(self::POST_STATUS, $status, \PDO::PARAM_INT);
+        
+        return parent::readData($query);
+    }
+    
+    public function searchAllByUserId($userId, $filters = []) {
         $limit = Arrays::get($filters, 'limit');
         parent::parameterQuery(self::USER_ID, $userId, \PDO::PARAM_INT);
         
@@ -100,6 +166,17 @@ class PostsManager extends CRUDManagerAbstract {
         
         $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s ORDER BY %3$s DESC LIMIT %4$s';
         $query = sprintf($query, parent::getTableWithPrefix(), self::USER_ID, self::ID, $limit);
+        
+        return parent::readData($query);
+    }
+    
+    public function searchByUserIdAndStatus($userId, $status, $filters = []) {
+        $limit = Arrays::get($filters, 'limit');
+        parent::parameterQuery(self::USER_ID, $userId, \PDO::PARAM_INT);
+        parent::parameterQuery(self::POST_STATUS, $status, \PDO::PARAM_INT);
+        $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %4$s = :%4$s ORDER BY %3$s DESC';
+        $query = sprintf($query, parent::getTableWithPrefix(), self::USER_ID, self::ID, self::POST_STATUS);
+        $query .= $limit === FALSE ? '' : " LIMIT $limit";
         
         return parent::readData($query);
     }
@@ -136,7 +213,7 @@ class PostsManager extends CRUDManagerAbstract {
         parent::parameterQuery(self::POST_CONTENTS, $object->getPostContents(), \PDO::PARAM_STR);
         parent::parameterQuery(self::POST_COMMENT_STATUS, $object->getPostCommentStatus(), \PDO::PARAM_INT);
         parent::parameterQuery(self::POST_COMMENT_COUNT, $object->getPostCommentCount(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::USER_ID, $object->getUserID(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::USER_ID, $object->getUserId(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {
@@ -147,7 +224,7 @@ class PostsManager extends CRUDManagerAbstract {
         parent::buildObjectTable($result);
         $post = new Post();
         $post->setId(Arrays::get($result, self::ID));
-        $post->setUserID(Arrays::get($result, self::USER_ID));
+        $post->setUserId(Arrays::get($result, self::USER_ID));
         $post->setPostCommentCount(Arrays::get($result, self::POST_COMMENT_COUNT));
         $post->setPostCommentStatus(Arrays::get($result, self::POST_COMMENT_STATUS));
         $post->setPostContents(Arrays::get($result, self::POST_CONTENTS));

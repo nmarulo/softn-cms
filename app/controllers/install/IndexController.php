@@ -31,10 +31,10 @@ class IndexController {
                 
                 if ($installManager->checkConnection($form) && $installManager->createFileConfig($form)) {
                     if ($installManager->createTables()) {
-                        Messages::addSuccess('El proceso de instalación se completo correctamente.', TRUE);
+                        Messages::addSuccess(__('El proceso de instalación se completo correctamente.'), TRUE);
                         Util::redirect(Arrays::get($form, InstallManager::INSTALL_SITE_URL) . 'login');
                     } else {
-                        Messages::addDanger('Error al crear las tablas de la base de datos.');
+                        Messages::addDanger(__('Error al crear las tablas de la base de datos.'));
                     }
                 }
             }
@@ -59,7 +59,7 @@ class IndexController {
     }
     
     private function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputUrlBuilder::init(InstallManager::INSTALL_SITE_URL)
                            ->build(),
             InputAlphanumericBuilder::init(InstallManager::INSTALL_DB_NAME)

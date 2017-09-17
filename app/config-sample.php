@@ -30,9 +30,15 @@ define('DB_TYPE', 'mysql');
 
 define('DEBUG', FALSE);
 
+define('DEFAULT_LANGUAGE', 'es');
+
+define('LOGGER', TRUE);
+
+define('FULL_LOGGER', TRUE);
+
 // Claves SALTED
-define('LOGGED_KEY', '5GLhueRQNTmlo8nY6XusgNN1JDSnQWRKsGiQTkjU0QuD9IVf9SdtmPrwDxc6irBs');
-define('COOKIE_KEY', 'bydiGj9QAG0Nh9RpzGjmPKtTTiUI6PI3iivDP9nEyoTQMtaqnmN7GxR8xXYci5dw');
-define('SALTED_KEY', '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
-define('TOKEN_KEY', '8s6IyXziV8T2Xlz1TpySqGjFM0PZGJyWmHt8vf2Dmde2DYwsykRtOEJbFM6bN3rz');
+define('LOGGED_KEY', 'LOGGED_KEY');
+define('COOKIE_KEY', 'COOKIE_KEY');
+define('SALTED_KEY', 'SALTED_KEY');
+define('TOKEN_KEY', 'TOKEN_KEY');
 define('COOKIE_EXPIRE', strtotime('+30 days'));//strtotime('+30 days')

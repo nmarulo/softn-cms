@@ -9,7 +9,7 @@ $siteUrlCreate = $siteUrlMenu . 'create/';
 ?>
 <div class="page-container" data-url="<?php echo $siteUrlMenu; ?>">
     <div>
-        <h1>Menus <a href="<?php echo $siteUrlCreate; ?>" class="btn btn-success">Nuevo menu</a></h1>
+        <h1><?php echo __('Menus'); ?> <a href="<?php echo $siteUrlCreate; ?>" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span></a></h1>
     </div>
     <div id="data-container">
         <?php ViewController::singleView('data'); ?>

@@ -10,6 +10,7 @@ use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Post;
+use SoftnCMS\util\Logger;
 
 /**
  * Class CategoryTemplate
@@ -45,7 +46,7 @@ class CategoryTemplate extends Template {
     
     public function initPosts() {
         $postsManager = new PostsManager();
-        $this->posts  = $postsManager->searchByCategoryId($this->category->getId());
+        $this->posts  = $postsManager->searchAllByCategoryId($this->category->getId());
         $this->posts  = array_map(function(Post $post) {
             return new PostTemplate($post);
         }, $this->posts);
@@ -56,6 +57,8 @@ class CategoryTemplate extends Template {
         $this->category    = $categoriesManager->searchById($categoryId);
         
         if (empty($this->category)) {
+            Logger::getInstance()
+                  ->error('La categoría no existe.', ['currentCategoryId' => $categoryId]);
             throw new \Exception("La categoría no existe.");
         }
     }

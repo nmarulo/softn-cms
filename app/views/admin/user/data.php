@@ -3,31 +3,34 @@
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\User;
 
-$users         = ViewController::getViewData('users');
-$siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/user/update/';
-ViewController::singleViewDirectory('pagination'); ?>
+$users                  = ViewController::getViewData('users');
+$siteUrlUpdate          = \SoftnCMS\rute\Router::getSiteURL() . 'admin/user/update/';
+$strTranslateUser       = __('Usuario');
+$strTranslateName       = __('Nombre');
+$strTranslateEmail      = __('Correo electrónico');
+$strTranslateRegistered = __('Registro');
+$strTranslatePosts      = __('Entradas');
+ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th></th>
-                <th>Usuario</th>
-                <th>Nombre</th>
-                <th>E-mail</th>
-                <th>Rol</th>
-                <th>Registro</th>
-                <th>Entradas</th>
+                <th><?php echo $strTranslateUser; ?></th>
+                <th><?php echo $strTranslateName; ?></th>
+                <th><?php echo $strTranslateEmail; ?></th>
+                <th><?php echo $strTranslateRegistered; ?></th>
+                <th><?php echo $strTranslatePosts; ?></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th></th>
-                <th>Usuario</th>
-                <th>Nombre</th>
-                <th>E-mail</th>
-                <th>Rol</th>
-                <th>Registro</th>
-                <th>Entradas</th>
+                <th><?php echo $strTranslateUser; ?></th>
+                <th><?php echo $strTranslateName; ?></th>
+                <th><?php echo $strTranslateEmail; ?></th>
+                <th><?php echo $strTranslateRegistered; ?></th>
+                <th><?php echo $strTranslatePosts; ?></th>
             </tr>
         </tfoot>
         <tbody>
@@ -40,7 +43,6 @@ ViewController::singleViewDirectory('pagination'); ?>
                 <td><?php echo $user->getUserLogin(); ?></td>
                 <td><?php echo $user->getUserName(); ?></td>
                 <td><?php echo $user->getUserEmail(); ?></td>
-                <td><?php echo $user->getUserRol(); ?></td>
                 <td><?php echo $user->getUserRegistered(); ?></td>
                 <td><?php echo $user->getUserPostCount(); ?></td>
             </tr>
@@ -48,4 +50,4 @@ ViewController::singleViewDirectory('pagination'); ?>
         </tbody>
     </table>
 </div>
-<?php ViewController::singleViewDirectory('pagination');
+<?php ViewController::singleViewByDirectory('pagination');

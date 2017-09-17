@@ -2,11 +2,11 @@
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 
-ViewController::registerStyle('normalize');
+ViewController::registerStyleRoute('app/resources/css/normalize');
 ViewController::registerStyleRoute('app/vendor/twbs/bootstrap/dist/css/bootstrap');
 //TODO: crear ruta para el tema.
 ViewController::registerStyleRoute('app/themes/softncmsv1/resources/css/style');
-ViewController::registerScript('jquery-3.2.1');
+ViewController::registerScriptRoute('app/resources/js/jquery-3.2.1');
 ViewController::registerScriptRoute('app/vendor/twbs/bootstrap/dist/js/bootstrap');
 $optionsManager = new OptionsManager();
 $siteTitle      = $optionsManager->searchByName(OPTION_TITLE)

@@ -8,11 +8,11 @@ namespace SoftnCMS\controllers\theme;
 use SoftnCMS\controllers\template\PostTemplate;
 use SoftnCMS\controllers\ThemeControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsManager;
+use SoftnCMS\models\managers\PostsTermsManager;
 use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\tables\Post;
-use SoftnCMS\util\Escape;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Util;
 
 /**
@@ -23,27 +23,24 @@ class TermController extends ThemeControllerAbstract {
     
     protected function read($id) {
         $termsManager = new TermsManager();
-        $term          = $termsManager->searchById($id);
+        $term         = $termsManager->searchById($id);
         
         if (empty($term)) {
-            $optionsManager = new OptionsManager();
-            Util::redirect($optionsManager->getSiteUrl());
+            Util::redirect(Router::getSiteURL());
         }
         
-        $count        = $term->getTermPostCount();
-        $postsManager = new PostsManager();
-        $pagination   = parent::pagination($count);
-        $filters      = [];
+        $postStatus        = TRUE;
+        $postsManager      = new PostsManager();
+        $postsTermsManager = new PostsTermsManager();
+        $count             = $postsTermsManager->countPostsByTermIdAndPostStatus($id, $postStatus);
+        $pagination        = parent::pagination($count);
+        $filters           = [];
         
         if ($pagination !== FALSE) {
             $filters['limit'] = $pagination;
         }
         
-        $posts = $postsManager->searchByTermId($term->getId(), $filters);
-        array_walk($posts, function(Post $post) {
-            $post->setPostContents(Escape::htmlDecode($post->getPostContents()));
-        });
-        
+        $posts         = $postsManager->searchAllByTermIdAndStatus($term->getId(), $postStatus, $filters);
         $postsTemplate = array_map(function(Post $post) {
             return new PostTemplate($post, TRUE);
         }, $posts);

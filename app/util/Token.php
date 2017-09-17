@@ -9,12 +9,15 @@ use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
+use SoftnCMS\models\managers\LoginManager;
 
 /**
  * Clase Token para autentificar formularios.
  * @author Nicolás Marulanda P.
  */
 class Token {
+    
+    const TOKEN_NAME = 'token_jwt';
     
     /**
      * @var bool|string Datos.
@@ -26,11 +29,16 @@ class Token {
      * @return bool
      */
     public static function check() {
-        $token = Arrays::get($_POST, 'token');
-        $token = empty($token) ? Arrays::get($_GET, 'token') : $token;
+        $token = Arrays::get($_POST, self::TOKEN_NAME);
+        $token = empty($token) ? Arrays::get($_GET, self::TOKEN_NAME) : $token;
         
         if (empty($token)) {
-            Messages::addError('Error. Token no encontrado.');
+            Messages::addDanger(__('Error. Token no encontrado.'));
+            Logger::getInstance()
+                  ->debug('Token no encontrado.', [
+                      'post' => $_POST,
+                      'get'  => $_GET,
+                  ]);
             
             return FALSE;
         }
@@ -46,34 +54,75 @@ class Token {
      * @return bool
      */
     private static function validate($token) {
-        $output = TRUE;
+        $output = FALSE;
         
         try {
-            $tokenDecode = (array)JWT::decode($token, TOKEN_KEY, ['HS256']);
-            $data        = (array)$tokenDecode['data'];
+            $tokenDecode = (array)JWT::decode($token, self::getTokenKey(), ['HS256']);
+            $data        = $tokenDecode['aud'];
             
-            if ($data['user'] != Login::getSession()) {
-                Messages::addError('Error. El Token es invalido.');
-                
-                $output = FALSE;
+            if ($data == self::aud()) {
+                $output = TRUE;
+            } else {
+                Messages::addDanger(__('Error. El Token es invalido.'));
+                Logger::getInstance()
+                      ->debug('El Token es invalido.', [
+                          'currentToken' => $tokenDecode,
+                          'dataCheck'    => self::aud(),
+                      ]);
             }
             
         } catch (ExpiredException $expiredException) {
-            Messages::addError('Error. El Token a caducado.');
-            $output = FALSE;
-            
+            Messages::addDanger(__('Error. El Token a caducado.'));
+            Logger::getInstance()
+                  ->debug('El Token a caducado.');
         } catch (SignatureInvalidException $invalidException) {
-            Messages::addError('Error. El Token invalido.');
-            $output = FALSE;
-            
+            Messages::addDanger(__('Error. El Token es invalido.'));
+            Logger::getInstance()
+                  ->debug('El Token es invalido.');
         } catch (BeforeValidException $beforeValidException) {
-            Messages::addError('Error. El Token no se puede usar.');
-            $output = FALSE;
+            Messages::addDanger(__('Error. El Token no se puede usar.'));
+            Logger::getInstance()
+                  ->debug('El Token no se puede usar.');
+        } catch (\DomainException $domainException) {
+            Messages::addDanger(__('Error. Formato del Token incorrecto.'));
+            Logger::getInstance()
+                  ->debug('Formato del Token incorrecto.');
+        } catch (\Exception $exception) {
+            Messages::addDanger(__('Error desconocido en el Token.'));
+            Logger::getInstance()
+                  ->debug('Error desconocido en el Token.');
         }
         
         self::regenerate();
         
         return $output;
+    }
+    
+    private static function getTokenKey() {
+        if (defined('TOKEN_KEY')) {
+            return TOKEN_KEY;
+        } else {
+            Logger::getInstance()
+                  ->debug('Constante "TOKEN_KEY" no definida.');
+        }
+        
+        //TODO: Que devolver si no esta definido?
+        return '';
+    }
+    
+    private static function aud() {
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $aud = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $aud = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $aud = $_SERVER['REMOTE_ADDR'];
+        }
+        
+        $aud .= @$_SERVER['HTTP_USER_AGENT'];
+        $aud .= gethostname();
+        
+        return sha1($aud);
     }
     
     /**
@@ -96,32 +145,33 @@ class Token {
                 //La hora, en segundos, en que el token caduca. Puede ser como máximo 3600 segundos posterior a iat.
                 'exp'  => $time + (60 * 60),
                 'nbf'  => $time,
+                'aud'  => self::aud(),
                 'data' => [
-                    'user' => Login::getSession(),
+                    'user' => LoginManager::getSession(),
                 ],
             ];
             
-            self::$TOKEN = JWT::encode($token, TOKEN_KEY, 'HS256');
+            self::$TOKEN = JWT::encode($token, self::getTokenKey(), 'HS256');
         }
     }
     
     /**
      * Método que obtiene el campo "input" con el TOKEN para agregar al formulario.
-     * @return string
      */
     public static function formField() {
-        return '<input type="hidden" name="token" value="' . self::$TOKEN . '">';
+        echo sprintf('<input type="hidden" name="%1$s" value="%2$s">', self::TOKEN_NAME, self::$TOKEN);
     }
     
     /**
      * Método que obtiene el token por url.
      *
-     * @param string $concat [Opcional]
+     * @param string $concat    [Opcional]
+     * @param string $separator [Opcional]
      *
      * @return string
      */
-    public static function urlField($concat = '?', $separator = '=') {
-        return "${concat}token${separator}" . self::$TOKEN;
+    public static function urlParameters($concat = '?', $separator = '=') {
+        return sprintf('%1$s%2$s$3$s%4$s', $concat, self::TOKEN_NAME, $separator, self::$TOKEN);
     }
     
 }

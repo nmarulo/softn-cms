@@ -10,6 +10,7 @@ use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\User;
+use SoftnCMS\util\Logger;
 
 /**
  * Class UserTemplate
@@ -45,7 +46,7 @@ class UserTemplate extends Template {
     
     public function initPosts() {
         $postsManager = new PostsManager();
-        $this->post   = $postsManager->searchByUserId($this->user->getId());
+        $this->post   = $postsManager->searchAllByUserId($this->user->getId());
         $this->post   = array_map(function(Post $post) {
             return new PostTemplate($post);
         }, $this->post);
@@ -56,6 +57,8 @@ class UserTemplate extends Template {
         $this->user   = $usersManager->searchById($userId);
         
         if (empty($this->user)) {
+            Logger::getInstance()
+                  ->error('El usuario no existe.', ['currentUserId' => $userId]);
             throw new \Exception("El usuario no existe.");
         }
     }

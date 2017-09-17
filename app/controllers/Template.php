@@ -5,7 +5,7 @@
 
 namespace SoftnCMS\controllers;
 
-use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\rute\Router;
 
 /**
  * Class Template
@@ -19,8 +19,7 @@ abstract class Template {
      * Template constructor.
      */
     public function __construct() {
-        $optionsManager = new OptionsManager();
-        $this->siteUrl  = $optionsManager->getSiteUrl();
+        $this->siteUrl = Router::getSiteURL();
     }
     
     /**

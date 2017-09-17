@@ -32,7 +32,7 @@ $siteTitle      = $optionsManager->searchByName(OPTION_TITLE)
             <?php ViewController::content(); ?>
         </div>
         <?php
-        ViewController::singleViewDirectory('messages');
+        ViewController::singleViewByDirectory('messages');
         ViewController::includeScripts();
         ?>
     </body>

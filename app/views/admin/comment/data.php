@@ -4,30 +4,35 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Comment;
 
-$comments       = ViewController::getViewData('comments');
-$optionsManager = new OptionsManager();
-$siteUrlUpdate  = \SoftnCMS\rute\Router::getSiteURL() . 'admin/comment/update/';
-ViewController::singleViewDirectory('pagination'); ?>
+$comments            = ViewController::getViewData('comments');
+$optionsManager      = new OptionsManager();
+$siteUrlUpdate       = \SoftnCMS\rute\Router::getSiteURL() . 'admin/comment/update/';
+$strTranslateAuthor  = __('Autor');
+$strTranslateComment = __('Comentario');
+$strTranslateState   = __('Estado');
+$strTranslatePost    = __('Entrada');
+$strTranslateDate    = __('Fecha');
+ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th></th>
-                <th>Autor</th>
-                <th>Comentario</th>
-                <th>Estado</th>
-                <th>Entrada</th>
-                <th>Fecha</th>
+                <th><?php echo $strTranslateAuthor; ?></th>
+                <th><?php echo $strTranslateComment; ?></th>
+                <th><?php echo $strTranslateState; ?></th>
+                <th><?php echo $strTranslatePost; ?></th>
+                <th><?php echo $strTranslateDate; ?></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th></th>
-                <th>Autor</th>
-                <th>Comentario</th>
-                <th>Estado</th>
-                <th>Entrada</th>
-                <th>Fecha</th>
+                <th><?php echo $strTranslateAuthor; ?></th>
+                <th><?php echo $strTranslateComment; ?></th>
+                <th><?php echo $strTranslateState; ?></th>
+                <th><?php echo $strTranslatePost; ?></th>
+                <th><?php echo $strTranslateDate; ?></th>
             </tr>
         </tfoot>
         <tbody>
@@ -40,11 +45,11 @@ ViewController::singleViewDirectory('pagination'); ?>
                 <td><?php echo $comment->getCommentAuthor(); ?></td>
                 <td><?php echo $comment->getCommentContents(); ?></td>
                 <td><?php echo $comment->getCommentStatus(); ?></td>
-                <td><?php echo $comment->getPostID(); ?></td>
+                <td><?php echo $comment->getPostId(); ?></td>
                 <td><?php echo $comment->getCommentDate(); ?></td>
             </tr>
         <?php }); ?>
         </tbody>
     </table>
 </div>
-<?php ViewController::singleViewDirectory('pagination');
+<?php ViewController::singleViewByDirectory('pagination');

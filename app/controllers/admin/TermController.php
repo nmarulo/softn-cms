@@ -33,17 +33,17 @@ class TermController extends CUDControllerAbstract {
                 $term         = Arrays::get($form, 'term');
                 
                 if ($termsManager->create($term)) {
-                    Messages::addSuccess('Etiqueta publicada correctamente.', TRUE);
+                    Messages::addSuccess(__('Etiqueta publicada correctamente.'), TRUE);
                     $optionsManager = new OptionsManager();
                     Util::redirect($optionsManager->getSiteUrl() . 'admin/term');
                 }
             }
             
-            Messages::addDanger('Error al publicar la etiqueta.');
+            Messages::addDanger(__('Error al publicar la etiqueta.'));
         }
         
         ViewController::sendViewData('term', new Term());
-        ViewController::sendViewData('title', 'Publicar nueva etiqueta');
+        ViewController::sendViewData('title', __('Publicar nueva etiqueta'));
         ViewController::view('form');
     }
     
@@ -68,7 +68,7 @@ class TermController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputIntegerBuilder::init(TermsManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(TermsManager::TERM_NAME)
@@ -87,28 +87,28 @@ class TermController extends CUDControllerAbstract {
         
         if (empty($term)) {
             $optionsManager = new OptionsManager();
-            Messages::addDanger('La etiqueta no existe.', TRUE);
+            Messages::addDanger(__('La etiqueta no existe.'), TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/term');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
-                    Messages::addDanger('Error en los campos de la etiqueta.');
+                    Messages::addDanger(__('Error en los campos de la etiqueta.'));
                 } else {
                     $term = Arrays::get($form, 'term');
                     
                     if ($termsManager->update($term)) {
-                        Messages::addSuccess('Etiqueta actualizada correctamente.');
+                        Messages::addSuccess(__('Etiqueta actualizada correctamente.'));
                     } else {
-                        Messages::addDanger('Error al actualizar la etiqueta.');
+                        Messages::addDanger(__('Error al actualizar la etiqueta.'));
                     }
                 }
                 
             }
             
             ViewController::sendViewData('term', $term);
-            ViewController::sendViewData('title', 'Actualizar etiqueta');
+            ViewController::sendViewData('title', __('Actualizar etiqueta'));
             ViewController::view('form');
         }
     }
@@ -117,9 +117,9 @@ class TermController extends CUDControllerAbstract {
         $termsManager = new TermsManager();
         
         if (empty($termsManager->delete($id))) {
-            Messages::addDanger('Error al borrar la etiqueta.');
+            Messages::addDanger(__('Error al borrar la etiqueta.'));
         } else {
-            Messages::addSuccess('Etiqueta borrada correctamente.');
+            Messages::addSuccess(__('Etiqueta borrada correctamente.'));
         }
         
         parent::delete($id);

@@ -10,14 +10,17 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputUrlBuilder;
 use SoftnCMS\util\form\Form;
+use SoftnCMS\util\Gravatar;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Util;
 
@@ -36,17 +39,22 @@ class UserController extends CUDControllerAbstract {
                 $user         = Arrays::get($form, 'user');
                 
                 if ($usersManager->create($user)) {
-                    Messages::addSuccess('Usuario creado correctamente.', TRUE);
-                    $optionsManager = new OptionsManager();
-                    Util::redirect($optionsManager->getSiteUrl() . 'admin/user');
+                    Messages::addSuccess(__('Usuario creado correctamente.'), TRUE);
+                    Util::redirect(Router::getSiteURL() . 'admin/user');
                 }
             }
             
-            Messages::addDanger('Error al publicar el usuario.');
+            Messages::addDanger(__('Error al publicar el usuario.'));
         }
         
-        ViewController::sendViewData('user', new User());
-        ViewController::sendViewData('title', 'Publicar nuevo usuario');
+        $this->sendViewProfiles();
+        $user     = new User();
+        $gravatar = $this->getGravatar();
+        //En el panel de administración el tamaño sera 128px
+        $gravatar->setSize(128);
+        $user->setUserUrlImage($gravatar->get());
+        ViewController::sendViewData('user', $user);
+        ViewController::sendViewData('title', __('Publicar nuevo usuario'));
         ViewController::view('form');
     }
     
@@ -70,29 +78,34 @@ class UserController extends CUDControllerAbstract {
             $pass = Util::encrypt($pass, LOGGED_KEY);
         }
         
-        $user = new User();
+        $gravatar = $this->getGravatar();
+        $user     = new User();
         $user->setId(Arrays::get($inputs, UsersManager::ID));
         $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
         $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
         $user->setUserName(Arrays::get($inputs, UsersManager::USER_NAME));
         $user->setUserRegistered(NULL);
-        $user->setUserRol(Arrays::get($inputs, UsersManager::USER_ROL));
         $user->setUserUrl(Arrays::get($inputs, UsersManager::USER_URL));
         $user->setUserPassword($pass);
         $user->setUserPostCount(NULL);
+        $user->setProfileId(Arrays::get($inputs, UsersManager::PROFILE_ID));
+        $gravatar->setEmail($user->getUserEmail());
+        $user->setUserUrlImage($gravatar->get());
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
             $user->setUserRegistered(Util::dateNow());
             $user->setUserPostCount(0);
         }
         
-        return ['user' => $user];
+        return [
+            'user' => $user,
+        ];
     }
     
     protected function filterInputs() {
         $isCreate = Form::submit(CRUDManagerAbstract::FORM_CREATE);
         
-        Form::setINPUT([
+        Form::setInput([
             InputIntegerBuilder::init(UsersManager::ID)
                                ->build(),
             InputEmailBuilder::init(UsersManager::USER_EMAIL)
@@ -104,8 +117,6 @@ class UserController extends CUDControllerAbstract {
                                     ->build(),
             InputAlphanumericBuilder::init(UsersManager::USER_NAME)
                                     ->build(),
-            InputIntegerBuilder::init(UsersManager::USER_ROL)
-                               ->build(),
             InputUrlBuilder::init(UsersManager::USER_URL)
                            ->setRequire(FALSE)
                            ->build(),
@@ -115,9 +126,29 @@ class UserController extends CUDControllerAbstract {
             InputAlphanumericBuilder::init(UsersManager::USER_PASSWORD_REWRITE)
                                     ->setRequire($isCreate)
                                     ->build(),
+            InputIntegerBuilder::init(UsersManager::PROFILE_ID)
+                               ->build(),
         ]);
         
         return Form::inputFilter();
+    }
+    
+    private function getGravatar() {
+        $optionsManager = new OptionsManager();
+        $gravatarOption = $optionsManager->searchByName(OPTION_GRAVATAR);
+        
+        if (empty($gravatarOption->getOptionValue())) {
+            $gravatar = new Gravatar();
+        } else {
+            $gravatar = unserialize($gravatarOption->getOptionValue());
+        }
+        
+        return $gravatar;
+    }
+    
+    private function sendViewProfiles() {
+        $profilesManager = new ProfilesManager();
+        ViewController::sendViewData('profiles', $profilesManager->read());
     }
     
     public function update($id) {
@@ -125,45 +156,50 @@ class UserController extends CUDControllerAbstract {
         $user         = $usersManager->searchById($id);
         
         if (empty($user)) {
-            $optionsManager = new OptionsManager();
-            Messages::addDanger('El usuario no existe.', TRUE);
-            Util::redirect($optionsManager->getSiteUrl() . 'admin/user');
-        } else {
-            if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
-                $form = $this->form();
+            Messages::addDanger(__('El usuario no existe.'), TRUE);
+            Util::redirect(Router::getSiteURL() . 'admin/user');
+        } elseif (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+            $form = $this->form();
+            
+            if (empty($form)) {
+                Messages::addDanger(__('Error en los campos del usuario.'));
+            } else {
+                $user = Arrays::get($form, 'user');
                 
-                if (empty($form)) {
-                    Messages::addDanger('Error en los campos del usuario.');
+                if ($usersManager->update($user)) {
+                    $user = $usersManager->searchById($id);
+                    Messages::addSuccess(__('Usuario actualizado correctamente.'));
                 } else {
-                    $user = Arrays::get($form, 'user');
-                    
-                    if ($usersManager->update($user)) {
-                        Messages::addSuccess('Usuario actualizado correctamente.');
-                    } else {
-                        Messages::addDanger('Error al actualizar el usuario.');
-                    }
+                    Messages::addDanger(__('Error al actualizar el usuario.'));
                 }
             }
-            
-            ViewController::sendViewData('user', $user);
-            ViewController::sendViewData('title', 'Actualizar usuario');
-            ViewController::view('form');
         }
+        
+        $this->sendViewProfiles();
+        $gravatar = $this->getGravatar();
+        //En el panel de administración el tamaño sera 128px
+        $gravatar->setSize(128);
+        $gravatar->setEmail($user->getUserEmail());
+        $user->setUserUrlImage($gravatar->get());
+        ViewController::sendViewData('selectedProfileId', $user->getProfileId());
+        ViewController::sendViewData('user', $user);
+        ViewController::sendViewData('title', __('Actualizar usuario'));
+        ViewController::view('form');
     }
     
     public function delete($id) {
         if ($id == LoginManager::getSession()) {
-            Messages::addDanger('No puedes eliminar este usuario.');
+            Messages::addDanger(__('No puedes eliminar este usuario.'));
         } else {
             $usersManager = new UsersManager();
             $result       = $usersManager->delete($id);
             
             if ($result === FALSE) {
-                Messages::addDanger('No se puede borrar un usuario con entradas publicadas.');
+                Messages::addDanger(__('No se puede borrar un usuario con entradas publicadas.'));
             } elseif ($result == 0) {
-                Messages::addDanger('Error al borrar el usuario.');
+                Messages::addDanger(__('Error al borrar el usuario.'));
             } elseif ($result > 0) {
-                Messages::addSuccess('Usuario borrado correctamente.');
+                Messages::addSuccess(__('Usuario borrado correctamente.'));
             }
         }
         
@@ -182,5 +218,4 @@ class UserController extends CUDControllerAbstract {
         
         ViewController::sendViewData('users', $usersManager->read($filters));
     }
-    
 }

@@ -4,24 +4,26 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Term;
 
-$terms          = ViewController::getViewData('terms');
-$optionsManager = new OptionsManager();
-$siteUrlUpdate  = \SoftnCMS\rute\Router::getSiteURL() . 'admin/term/update/';
-ViewController::singleViewDirectory('pagination'); ?>
+$terms             = ViewController::getViewData('terms');
+$optionsManager    = new OptionsManager();
+$siteUrlUpdate     = \SoftnCMS\rute\Router::getSiteURL() . 'admin/term/update/';
+$strTranslateName  = __('Nombre');
+$strTranslatePosts = __('Entradas');
+ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th></th>
-                <th>Nombre</th>
-                <th>Entradas</th>
+                <th><?php echo $strTranslateName; ?></th>
+                <th><?php echo $strTranslatePosts; ?></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th></th>
-                <th>Nombre</th>
-                <th>Entradas</th>
+                <th><?php echo $strTranslateName; ?></th>
+                <th><?php echo $strTranslatePosts; ?></th>
             </tr>
         </tfoot>
         <tbody>
@@ -29,7 +31,7 @@ ViewController::singleViewDirectory('pagination'); ?>
             <tr>
                 <td class="options">
                     <a class="btn-action-sm btn btn-primary" href="<?php echo $siteUrlUpdate . $term->getId(); ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
-                    <button class="btn-action-sm btn btn-danger" data-id="<?php echo $term->getId(); ?>" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button>
+                    <button class="btn-action-sm btn btn-danger" data-id="<?php echo $term->getId(); ?>" title="Borrar"><span class="glyphicon glyphicon-remove"></span></button>
                 </td>
                 <td><?php echo $term->getTermName(); ?></td>
                 <td><?php echo $term->getTermPostCount(); ?></td>
@@ -38,4 +40,4 @@ ViewController::singleViewDirectory('pagination'); ?>
         </tbody>
     </table>
 </div>
-<?php ViewController::singleViewDirectory('pagination');
+<?php ViewController::singleViewByDirectory('pagination');

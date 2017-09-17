@@ -9,6 +9,8 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\Logger;
+use SoftnCMS\util\Util;
 
 /**
  * Class Router
@@ -27,7 +29,7 @@ class Router {
     /** @var string */
     private static $SITE_URL;
     
-    /** @var string */
+    /** @var string Directorio del controlador actual. */
     private static $CURRENT_DIRECTORY;
     
     /** @var Request */
@@ -39,19 +41,23 @@ class Router {
     /** @var array */
     private $events;
     
+    /** @var bool */
+    private $canCallUserFunc;
+    
     /**
      * Router constructor.
      */
     public function __construct() {
-        $this->request  = new Request();
-        $this->route    = $this->request->getRoute();
-        $this->events   = [
+        $this->canCallUserFunc = TRUE;
+        $this->request         = new Request();
+        $this->route           = $this->request->getRoute();
+        $this->events          = [
             self::EVENT_ERROR => function() {
                 throw new \Exception('Error');
             },
         ];
-        $optionsManager = new OptionsManager();
-        self::$SITE_URL = $optionsManager->getSiteUrl($this);
+        $optionsManager        = new OptionsManager();
+        self::$SITE_URL        = $optionsManager->getSiteUrl($this);
     }
     
     /**
@@ -86,6 +92,13 @@ class Router {
         $this->events[$event] = $callback;
     }
     
+    /**
+     * @param bool $canCallUserFunc
+     */
+    public function setCanCallUserFunc($canCallUserFunc) {
+        $this->canCallUserFunc = $canCallUserFunc;
+    }
+    
     public function load() {
         $this->events(self::EVENT_INIT_LOAD);
         
@@ -97,10 +110,12 @@ class Router {
         $this->setDirectoryView();
         $this->events(self::EVENT_BEFORE_CALL_METHOD);
         
-        call_user_func_array([
-            $instanceController,
-            $method,
-        ], $parameter);
+        if ($this->canCallUserFunc) {
+            call_user_func_array([
+                $instanceController,
+                $method,
+            ], $parameter);
+        }
         
         $this->events(self::EVENT_AFTER_CALL_METHOD);
     }
@@ -123,8 +138,17 @@ class Router {
                 break;
         }
         
-        if ($callback !== FALSE && is_callable($callback)) {
-            $callback();
+        if ($callback !== FALSE) {
+            if (is_callable($callback)) {
+                $callback();
+            } else {
+                Logger::getInstance()
+                      ->debug('La función no es ejecutable.', [
+                          'function'  => $callback,
+                          'eventKey'  => $event,
+                          'eventList' => $this->events,
+                      ]);
+            }
         }
     }
     
@@ -132,14 +156,33 @@ class Router {
      * @return mixed
      */
     private function instanceController() {
-        $controllerName      = $this->route->getController();
-        $controllerName      .= 'Controller';
-        $controllerDirectory = $this->route->getDirectoryController();
+        $controllerName      = $this->route->getControllerName() . 'Controller';
+        $controllerDirectory = $this->route->getControllerDirectoryName();
         $pathController      = CONTROLLERS . $controllerDirectory . DIRECTORY_SEPARATOR;
-        $pathController      .= "$controllerName.php";
+        $fileController      = "$controllerName.php";
         
-        if (!file_exists($pathController)) {
-            $this->events(self::EVENT_ERROR);
+        if (!file_exists($pathController . $fileController)) {
+            Logger::getInstance()
+                  ->warning('El controlador no existe.', [
+                      'path'               => $pathController,
+                      'fileControllerName' => $fileController,
+                  ]);
+            $filesControllersName = Util::getFilesAndDirectories($pathController);
+            Logger::getInstance()
+                  ->debug('Comprobando lista de controladores.', [
+                      'filesControllersName' => $filesControllersName,
+                  ]);
+            $filter = array_filter($filesControllersName, function($file) use ($fileController) {
+                return strcasecmp($file, $fileController) == 0;
+            });
+            
+            if (empty($filter)) {
+                Logger::getInstance()
+                      ->error('Controlador no encontrado.');
+                $this->events(self::EVENT_ERROR);
+            } else {
+                $controllerName = Util::removeExtension(Arrays::get(array_merge($filter), 0));
+            }
         }
         
         $controller = NAMESPACE_CONTROLLERS . "$controllerDirectory\\$controllerName";
@@ -153,11 +196,16 @@ class Router {
      * @return string
      */
     private function getMethod($instanceController) {
-        $method = $this->route->getMethod();
+        $method = $this->route->getMethodName();
         
         if (!method_exists($instanceController, $method)) {
-            $method = 'index';
-            $this->route->setMethod($method);
+            Logger::getInstance()
+                  ->debug('El método no existe. Estableciendo método por defecto.', [
+                      'currentMethod' => $method,
+                      'defaultMethod' => Route::DEFAULT_METHOD,
+                  ]);
+            $method = Route::DEFAULT_METHOD;
+            $this->route->setMethodName($method);
         }
         
         return $method;
@@ -173,9 +221,9 @@ class Router {
     }
     
     private function setDirectoryView() {
-        self::$CURRENT_DIRECTORY = $this->route->getDirectoryController();
-        ViewController::setDirectoryViews($this->route->getDirectoryViews());
-        ViewController::setDirectoryViewsController($this->route->getDirectoryViewsController());
+        self::$CURRENT_DIRECTORY = $this->route->getControllerDirectoryName();
+        ViewController::setDirectoryViews($this->route->getViewDirectoryName());
+        ViewController::setDirectoryViewsController($this->route->getDirectoryNameViewController());
         ViewController::setViewPath($this->route->getViewPath());
     }
 }

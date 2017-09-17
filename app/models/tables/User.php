@@ -25,9 +25,6 @@ class User extends TableAbstract {
     /** @var string */
     private $userPassword;
     
-    /** @var int */
-    private $userRol;
-    
     /** @var string */
     private $userRegistered;
     
@@ -36,6 +33,39 @@ class User extends TableAbstract {
     
     /** @var int */
     private $userPostCount;
+    
+    /** @var int */
+    private $profileId;
+    
+    private $userUrlImage;
+    
+    /**
+     * @return mixed
+     */
+    public function getUserUrlImage() {
+        return $this->userUrlImage;
+    }
+    
+    /**
+     * @param mixed $userUrlImage
+     */
+    public function setUserUrlImage($userUrlImage) {
+        $this->userUrlImage = $userUrlImage;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getProfileId() {
+        return $this->profileId;
+    }
+    
+    /**
+     * @param int $profileId
+     */
+    public function setProfileId($profileId) {
+        $this->profileId = $profileId;
+    }
     
     /**
      * @return int
@@ -105,20 +135,6 @@ class User extends TableAbstract {
      */
     public function setUserPassword($userPassword) {
         $this->userPassword = $userPassword;
-    }
-    
-    /**
-     * @return int
-     */
-    public function getUserRol() {
-        return $this->userRol;
-    }
-    
-    /**
-     * @param int $userRol
-     */
-    public function setUserRol($userRol) {
-        $this->userRol = $userRol;
     }
     
     /**

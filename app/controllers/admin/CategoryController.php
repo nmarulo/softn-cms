@@ -11,6 +11,7 @@ use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Category;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
@@ -33,17 +34,16 @@ class CategoryController extends CUDControllerAbstract {
                 $category          = Arrays::get($form, 'category');
                 
                 if ($categoriesManager->create($category)) {
-                    $optionsManager = new OptionsManager();
-                    Messages::addSuccess('Categoría publicada correctamente.', TRUE);
-                    Util::redirect($optionsManager->getSiteUrl() . 'admin/category');
+                    Messages::addSuccess(__('Categoría publicada correctamente.'), TRUE);
+                    Util::redirect(Router::getSiteURL() . 'admin/category');
                 }
             }
             
-            Messages::addDanger('Error al publicar la categoría.');
+            Messages::addDanger(__('Error al publicar la categoría.'));
         }
         
         ViewController::sendViewData('category', new Category());
-        ViewController::sendViewData('title', 'Publicar nueva categoría');
+        ViewController::sendViewData('title', __('Publicar nueva categoría'));
         ViewController::view('form');
     }
     
@@ -68,7 +68,7 @@ class CategoryController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputIntegerBuilder::init(CategoriesManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(CategoriesManager::CATEGORY_NAME)
@@ -87,27 +87,27 @@ class CategoryController extends CUDControllerAbstract {
         
         if (empty($category)) {
             $optionsManager = new OptionsManager();
-            Messages::addDanger('La categoría no existe.', TRUE);
+            Messages::addDanger(__('La categoría no existe.'), TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/category');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
-                    Messages::addDanger('Error en los campos de la categoría.');
+                    Messages::addDanger(__('Error en los campos de la categoría.'));
                 } else {
                     $category = Arrays::get($form, 'category');
                     
                     if ($categoriesManager->update($category)) {
-                        Messages::addSuccess('Categoría actualizada correctamente.');
+                        Messages::addSuccess(__('Categoría actualizada correctamente.'));
                     } else {
-                        Messages::addDanger('Error al actualizar la categoría.');
+                        Messages::addDanger(__('Error al actualizar la categoría.'));
                     }
                 }
             }
             
             ViewController::sendViewData('category', $category);
-            ViewController::sendViewData('title', 'Actualizar categoría');
+            ViewController::sendViewData('title', __('Actualizar categoría'));
             ViewController::view('form');
         }
     }
@@ -116,9 +116,9 @@ class CategoryController extends CUDControllerAbstract {
         $categoriesManager = new CategoriesManager();
         
         if (empty($categoriesManager->delete($id))) {
-            Messages::addDanger('Error al borrar la categoría.');
+            Messages::addDanger(__('Error al borrar la categoría.'));
         } else {
-            Messages::addSuccess('Categoría borrada correctamente.');
+            Messages::addSuccess(__('Categoría borrada correctamente.'));
         }
         
         parent::delete($id);

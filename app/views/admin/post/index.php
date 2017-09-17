@@ -8,7 +8,7 @@ $siteUrl = \SoftnCMS\rute\Router::getSiteURL() . "admin/post/";
 ?>
 <div class="page-container" data-menu-collapse-id="post" data-url="<?php echo $siteUrl; ?>">
     <div>
-        <h1>Publicaciones <a href="<?php echo $siteUrl . 'create'; ?>" class="btn btn-success">Nueva entrada</a></h1>
+        <h1><?php echo __('Entradas'); ?> <a href="<?php echo $siteUrl . 'create'; ?>" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span></a></h1>
     </div>
     <div id="data-container">
         <?php ViewController::singleView('data'); ?>

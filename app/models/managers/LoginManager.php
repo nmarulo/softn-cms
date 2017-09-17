@@ -30,7 +30,7 @@ class LoginManager {
         $_SESSION[SESSION_USER] = $searchUser->getId();
         
         if ($rememberMe) {
-            setcookie(COOKIE_USER_REMEMBER, $searchUser->getID(), COOKIE_EXPIRE);
+            setcookie(COOKIE_USER_REMEMBER, $searchUser->getID(), COOKIE_EXPIRE, '/');
         }
         
         return TRUE;

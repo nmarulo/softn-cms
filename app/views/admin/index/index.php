@@ -4,50 +4,52 @@ use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\controllers\ViewController;
 
-ViewController::registerScript('api-github');
-$countPosts      = ViewController::getViewData('countPosts');
-$countPages      = ViewController::getViewData('countPages');
-$countComments   = ViewController::getViewData('countComments');
-$countCategories = ViewController::getViewData('countCategories');
-$countTerms      = ViewController::getViewData('countTerms');
-$countUsers      = ViewController::getViewData('countUsers');
-$posts           = ViewController::getViewData('posts');
-$comments        = ViewController::getViewData('comments');
-$siteUrl         = \SoftnCMS\rute\Router::getSiteURL() . "admin/index/";
+//ViewController::registerScript('api-github');
+$countPosts           = ViewController::getViewData('countPosts');
+$countPages           = ViewController::getViewData('countPages');
+$countComments        = ViewController::getViewData('countComments');
+$countCategories      = ViewController::getViewData('countCategories');
+$countTerms           = ViewController::getViewData('countTerms');
+$countUsers           = ViewController::getViewData('countUsers');
+$posts                = ViewController::getViewData('posts');
+$comments             = ViewController::getViewData('comments');
+$siteUrl              = \SoftnCMS\rute\Router::getSiteURL() . "admin/index/";
+$strTranslatePosts    = __('Entradas');
+$strTranslateComments = __('Comentarios');
 ?>
 <div class="page-container" data-url="<?php echo $siteUrl; ?>">
     <div>
-        <h1>Información general</h1>
+        <h1><?php echo __('Información general'); ?></h1>
     </div>
     <div class="row clearfix">
         <div class="col-sm-6">
             <div class="panel panel-primary">
-                <div class="panel-heading">Estadísticas Generales</div>
+                <div class="panel-heading"><?php echo __('Estadísticas Generales'); ?></div>
                 <div class="panel-body">
                     <ul class="list-group">
                         <li class="list-group-item">
                             <span class="badge"><?php echo $countPosts; ?></span>
-                            <span>Publicaciones</span>
+                            <span><?php echo $strTranslatePosts; ?></span>
                         </li>
                         <li class="list-group-item">
                             <span class="badge"><?php echo $countPages; ?></span>
-                            <span>Paginas</span>
+                            <span><?php echo __('Paginas'); ?></span>
                         </li>
                         <li class="list-group-item">
                             <span class="badge"><?php echo $countComments; ?></span>
-                            <span>Comentarios</span>
+                            <span><?php echo $strTranslateComments; ?></span>
                         </li>
                         <li class="list-group-item">
                             <span class="badge"><?php echo $countCategories; ?></span>
-                            <span>Categorías</span>
+                            <span><?php echo __('Categorías'); ?></span>
                         </li>
                         <li class="list-group-item">
                             <span class="badge"><?php echo $countTerms; ?></span>
-                            <span>Etiquetas</span>
+                            <span><?php echo __('Etiquetas'); ?></span>
                         </li>
                         <li class="list-group-item">
                             <span class="badge"><?php echo $countUsers; ?></span>
-                            <span>Usuarios</span>
+                            <span><?php echo __('Usuarios'); ?></span>
                         </li>
                     </ul>
                 </div>
@@ -56,7 +58,7 @@ $siteUrl         = \SoftnCMS\rute\Router::getSiteURL() . "admin/index/";
         </div>
         <div class="col-sm-6">
             <div class="panel panel-primary">
-                <div class="panel-heading">Publicaciones</div>
+                <div class="panel-heading"><?php echo $strTranslatePosts; ?></div>
                 <div class="panel-body">
                     <ul class="list-group">
                         <?php
@@ -70,7 +72,7 @@ $siteUrl         = \SoftnCMS\rute\Router::getSiteURL() . "admin/index/";
                 </div>
             </div>
             <div class="panel panel-primary">
-                <div class="panel-heading">Comentarios</div>
+                <div class="panel-heading"><?php echo $strTranslateComments; ?></div>
                 <div class="panel-body">
                     <ul class="list-group">
                         <?php array_walk($comments, function(Comment $comment) { ?>

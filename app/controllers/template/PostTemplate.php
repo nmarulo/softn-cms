@@ -15,6 +15,8 @@ use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\Term;
+use SoftnCMS\util\Escape;
+use SoftnCMS\util\Logger;
 
 /**
  * Class PostTemplate
@@ -45,6 +47,7 @@ class PostTemplate extends Template {
      */
     public function __construct(Post $post = NULL, $initRelationship = FALSE) {
         parent::__construct();
+        $post->setPostContents(Escape::htmlDecode($post->getPostContents()));
         $this->post               = $post;
         $this->categoriesTemplate = [];
         $this->termsTemplate      = [];
@@ -64,9 +67,11 @@ class PostTemplate extends Template {
     
     public function initUser() {
         $usersManager = new UsersManager();
-        $user         = $usersManager->searchById($this->post->getUserID());
+        $user         = $usersManager->searchById($this->post->getUserId());
         
         if (empty($user)) {
+            Logger::getInstance()
+                  ->error('El usuario no existe.', ['currentUserId' => $this->post->getUserId()]);
             throw new \Exception("El usuario no existe.");
         }
         
@@ -90,11 +95,14 @@ class PostTemplate extends Template {
     }
     
     public function initComments() {
+        $commentStatus          = TRUE;
         $commentsManager        = new CommentsManager();
-        $this->commentsTemplate = $commentsManager->searchByPostId($this->post->getId());
+        $this->commentsTemplate = $commentsManager->searchByPostIdAndStatus($this->post->getId(), $commentStatus);
         $this->commentsTemplate = array_map(function(Comment $comment) {
             return new CommentTemplate($comment);
         }, $this->commentsTemplate);
+        
+        $this->post->setPostCommentCount(count($this->commentsTemplate));
     }
     
     /**
@@ -107,6 +115,8 @@ class PostTemplate extends Template {
         $this->post   = $postsManager->searchById($postId);
         
         if ($this->post === FALSE) {
+            Logger::getInstance()
+                  ->error('La entrada no existe.', ['currentPostId' => $postId]);
             throw new \Exception("La entrada no existe.");
         }
     }

@@ -8,7 +8,9 @@
 namespace SoftnCMS\util\form;
 
 use SoftnCMS\util\form\inputs\Input;
+use SoftnCMS\util\Logger;
 use SoftnCMS\util\Messages;
+use SoftnCMS\util\Token;
 
 /**
  * Clase Form para los formularios de la aplicación.
@@ -29,7 +31,9 @@ class Form {
      * @return bool
      */
     public static function submit($name) {
-        return isset($_POST[$name]) || isset($_GET[$name]);
+        Token::generate();
+        
+        return (isset($_POST[$name]) || isset($_GET[$name])) && (defined('INSTALL') || Token::check());
     }
     
     /**
@@ -47,7 +51,7 @@ class Form {
      *
      * @param array $INPUT
      */
-    public static function setINPUT($INPUT) {
+    public static function setInput($INPUT) {
         self::$INPUT = $INPUT;
     }
     
@@ -57,18 +61,24 @@ class Form {
      * Retorna una lista donde su indice corresponde al nombre del campo "input" y su valor filtrado.
      */
     public static function inputFilter() {
-        $output = [];
-        $error  = FALSE;
-        $len    = count(self::$INPUT);
+        $output   = [];
+        $notError = TRUE;
+        $len      = count(self::$INPUT);
         
-        for ($i = 0; $i < $len && !$error; ++$i) {
+        for ($i = 0; $i < $len && $notError; ++$i) {
             $data  = self::$INPUT[$i];
             $value = $data->filter();
             
             if ($value === '' && $data->isRequire()) {
-                Messages::addDanger('El campo "' . $data->getName() . '" es obligatorio.');
-                $error  = TRUE;
-                $output = FALSE;
+                Messages::addDanger(__('El campo "%1$s" es obligatorio.', $data->getName()));
+                $notError = FALSE;
+                $output   = FALSE;
+                Token::regenerate();
+                Logger::getInstance()
+                      ->debug('No se logro validar todos los campos del formulario.', [
+                          'dataValue' => $data->getValue(),
+                          'dataName'  => $data->getName(),
+                      ]);
             } else {
                 /*
                  * El nombre del campo corresponde al indice

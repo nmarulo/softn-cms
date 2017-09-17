@@ -2,13 +2,14 @@
 
 use SoftnCMS\controllers\ViewController;
 
-$master            = ViewController::getViewData('master');
-$develop           = ViewController::getViewData('develop');
-$lastUpdateDevelop = ViewController::getViewData('lastUpdateDevelop');
-$lastUpdateMaster  = ViewController::getViewData('lastUpdateMaster');
+$master                 = ViewController::getViewData('master');
+$develop                = ViewController::getViewData('develop');
+$lastUpdateDevelop      = ViewController::getViewData('lastUpdateDevelop');
+$lastUpdateMaster       = ViewController::getViewData('lastUpdateMaster');
+$strTranslateLastUpdate = __('Ultima actualización');
 ?>
 <div class="panel panel-primary">
-    <div class="panel-heading">Noticias de SoftN CMS</div>
+    <div class="panel-heading"><?php echo __('Novedades'); ?></div>
     <div class="panel-body">
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation"><a href="#master" aria-controls="master" role="tab" data-toggle="tab">Master</a></li>
@@ -16,7 +17,7 @@ $lastUpdateMaster  = ViewController::getViewData('lastUpdateMaster');
         </ul>
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane" id="master">
-                <p>Ultima actualización: <?php echo $lastUpdateMaster; ?>
+                <p><?php echo $strTranslateLastUpdate; ?>: <?php echo $lastUpdateMaster; ?>
                     <a href="https://github.com/nmarulo/softn-cms" target="_blank">GitHub</a></p>
                 <ul class="list-group">
                     <?php array_walk($master, function($value) { ?>
@@ -28,7 +29,7 @@ $lastUpdateMaster  = ViewController::getViewData('lastUpdateMaster');
                 </ul>
             </div>
             <div role="tabpanel" class="tab-pane active" id="develop">
-                <p>Ultima actualización: <?php echo $lastUpdateDevelop; ?>
+                <p><?php echo $strTranslateLastUpdate; ?>: <?php echo $lastUpdateDevelop; ?>
                     <a href="https://github.com/nmarulo/softn-cms" target="_blank">GitHub</a></p>
                 <ul class="list-group">
                     <?php array_walk($develop, function($value) { ?>

@@ -21,13 +21,13 @@ class LogoutController {
             unset($_SESSION[SESSION_USER]);
             
             if (isset($_COOKIE[COOKIE_USER_REMEMBER])) {
-                setcookie(COOKIE_USER_REMEMBER, '', time() - 10);
+                setcookie(COOKIE_USER_REMEMBER, '', time() - 3600, '/');
                 //Tiempo de espera para que las cookies se eliminen.
                 usleep(2000);
             }
         }
         
-        Messages::addSuccess('Cierre de sesión correcto.', TRUE);
+        Messages::addSuccess(__('Cierre de sesión correcto.'), TRUE);
         $optionsManager = new OptionsManager();
         Util::redirect($optionsManager->getSiteUrl(), 'login');
     }

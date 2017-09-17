@@ -40,12 +40,12 @@ class RegisterController extends ControllerAbstract {
                 
                 if ($usersManager->create($user)) {
                     $optionsManager = new OptionsManager();
-                    Messages::addSuccess('Usuario registrado correctamente.', TRUE);
+                    Messages::addSuccess(__('Usuario registrado correctamente.'), TRUE);
                     Util::redirect($optionsManager->getSiteUrl(), 'login');
                 }
             }
             
-            Messages::addDanger('Error al registrar el usuario.');
+            Messages::addDanger(__('Error al registrar el usuario.'));
         }
     }
     
@@ -63,21 +63,23 @@ class RegisterController extends ControllerAbstract {
             return FALSE;
         }
         
-        $pass = Util::encrypt($pass, LOGGED_KEY);
-        $user = new User();
+        $optionsManager = new OptionsManager();
+        $defaultProfile = $optionsManager->searchByName(OPTION_DEFAULT_PROFILE);
+        $pass           = Util::encrypt($pass, LOGGED_KEY);
+        $user           = new User();
         $user->setUserPassword($pass);
         $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
         $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
         $user->setUserRegistered(Util::dateNow());
         $user->setUserName($user->getUserLogin());
-        $user->setUserRol(0);
         $user->setUserPostCount(0);
+        $user->setProfileId($defaultProfile->getOptionValue());
         
         return ['user' => $user];
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputAlphanumericBuilder::init(UsersManager::USER_LOGIN)
                                     ->setAccents(FALSE)
                                     ->setWithoutSpace(TRUE)

@@ -17,9 +17,22 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
     
     const TABLE       = 'posts_categories';
     
-    const POST_ID     = 'post_ID';
+    const POST_ID     = 'post_id';
     
-    const CATEGORY_ID = 'category_ID';
+    const CATEGORY_ID = 'category_id';
+    
+    public function countPostsByCategoryIdAndPostStatus($categoryId, $postStatus) {
+        $tablePosts = $this->getTableWithPrefix(PostsManager::TABLE);
+        $table      = $this->getTableWithPrefix();
+        $query      = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s IN (SELECT %4$s FROM %5$s WHERE %6$s = :%6$s)', $table, self::CATEGORY_ID, self::POST_ID, PostsManager::ID, $tablePosts, PostsManager::POST_STATUS);
+        parent::parameterQuery(self::CATEGORY_ID, $categoryId, \PDO::PARAM_INT);
+        parent::parameterQuery(PostsManager::POST_STATUS, $postStatus, \PDO::PARAM_INT);
+        $result = $this->select($query);
+        $result = Arrays::get($result, 0);
+        $result = Arrays::get($result, 'COUNT');
+        
+        return $result === FALSE ? 0 : $result;
+    }
     
     /**
      * @param PostCategory $object
@@ -30,7 +43,7 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
         $result = parent::create($object);
         
         if (!empty($result)) {
-            $this->updateCategoryPostCount($object->getCategoryID(), 1);
+            $this->updateCategoryPostCount($object->getCategoryId(), 1);
         }
         
         return $result;
@@ -55,7 +68,7 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
         
         if (!empty($result)) {
             array_walk($postsCategories, function(PostCategory $postCategory) {
-                $this->updateCategoryPostCount($postCategory->getCategoryID(), -1);
+                $this->updateCategoryPostCount($postCategory->getCategoryId(), -1);
             });
         }
         
@@ -95,8 +108,8 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
      * @param PostCategory $object
      */
     protected function addParameterQuery($object) {
-        parent::parameterQuery(self::CATEGORY_ID, $object->getCategoryID(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::POST_ID, $object->getPostID(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::CATEGORY_ID, $object->getCategoryId(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::POST_ID, $object->getPostId(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {
@@ -106,8 +119,8 @@ class PostsCategoriesManager extends CRUDManagerAbstract {
     protected function buildObjectTable($result) {
         parent::buildObjectTable($result);
         $postCategory = new PostCategory();
-        $postCategory->setPostID(Arrays::get($result, self::POST_ID));
-        $postCategory->setCategoryID(Arrays::get($result, self::CATEGORY_ID));
+        $postCategory->setPostId(Arrays::get($result, self::POST_ID));
+        $postCategory->setCategoryId(Arrays::get($result, self::CATEGORY_ID));
         
         return $postCategory;
     }

@@ -8,11 +8,10 @@ namespace SoftnCMS\controllers\theme;
 use SoftnCMS\controllers\template\PostTemplate;
 use SoftnCMS\controllers\ThemeControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
-use SoftnCMS\util\Escape;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Util;
 
 /**
@@ -23,15 +22,15 @@ class UserController extends ThemeControllerAbstract {
     
     protected function read($id) {
         $usersManager = new UsersManager();
-        $user          = $usersManager->searchById($id);
+        $user         = $usersManager->searchById($id);
         
         if (empty($user)) {
-            $optionsManager = new OptionsManager();
-            Util::redirect($optionsManager->getSiteUrl());
+            Util::redirect(Router::getSiteURL());
         }
         
-        $count        = $user->getUserPostcount();
+        $postStatus   = TRUE;
         $postsManager = new PostsManager();
+        $count        = $postsManager->countByUserIdAndStatus($id, $postStatus);
         $pagination   = parent::pagination($count);
         $filters      = [];
         
@@ -39,11 +38,7 @@ class UserController extends ThemeControllerAbstract {
             $filters['limit'] = $pagination;
         }
         
-        $posts = $postsManager->searchByUserId($user->getId(), $filters);
-        array_walk($posts, function(Post $post) {
-            $post->setPostContents(Escape::htmlDecode($post->getPostContents()));
-        });
-        
+        $posts         = $postsManager->searchByUserIdAndStatus($user->getId(), $postStatus, $filters);
         $postsTemplate = array_map(function(Post $post) {
             return new PostTemplate($post, TRUE);
         }, $posts);

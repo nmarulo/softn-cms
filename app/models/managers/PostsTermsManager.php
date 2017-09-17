@@ -17,9 +17,22 @@ class PostsTermsManager extends CRUDManagerAbstract {
     
     const TABLE   = 'posts_terms';
     
-    const POST_ID = 'post_ID';
+    const POST_ID = 'post_id';
     
-    const TERM_ID = 'term_ID';
+    const TERM_ID = 'term_id';
+    
+    public function countPostsByTermIdAndPostStatus($termId, $postStatus) {
+        $tablePosts = $this->getTableWithPrefix(PostsManager::TABLE);
+        $table      = $this->getTableWithPrefix();
+        $query      = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s IN (SELECT %4$s FROM %5$s WHERE %6$s = :%6$s)', $table, self::TERM_ID, self::POST_ID, PostsManager::ID, $tablePosts, PostsManager::POST_STATUS);
+        parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
+        parent::parameterQuery(PostsManager::POST_STATUS, $postStatus, \PDO::PARAM_INT);
+        $result = $this->select($query);
+        $result = Arrays::get($result, 0);
+        $result = Arrays::get($result, 'COUNT');
+        
+        return $result === FALSE ? 0 : $result;
+    }
     
     public function searchAllByTermId($termId) {
         parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
@@ -34,7 +47,7 @@ class PostsTermsManager extends CRUDManagerAbstract {
         
         if (!empty($result)) {
             array_walk($postsTerms, function(PostTerm $postTerm) {
-                $this->updateTermPostCount($postTerm->getTermID(), -1);
+                $this->updateTermPostCount($postTerm->getTermId(), -1);
             });
         }
         
@@ -73,7 +86,7 @@ class PostsTermsManager extends CRUDManagerAbstract {
         $result = parent::create($object);
         
         if (!empty($result)) {
-            $this->updateTermPostCount($object->getTermID(), 1);
+            $this->updateTermPostCount($object->getTermId(), 1);
         }
         
         return $result;
@@ -94,8 +107,8 @@ class PostsTermsManager extends CRUDManagerAbstract {
     protected function buildObjectTable($result) {
         parent::buildObjectTable($result);
         $postTerm = new PostTerm();
-        $postTerm->setPostID(Arrays::get($result, self::POST_ID));
-        $postTerm->setTermID(Arrays::get($result, self::TERM_ID));
+        $postTerm->setPostId(Arrays::get($result, self::POST_ID));
+        $postTerm->setTermId(Arrays::get($result, self::TERM_ID));
         
         return $postTerm;
     }
@@ -104,8 +117,8 @@ class PostsTermsManager extends CRUDManagerAbstract {
      * @param PostTerm $object
      */
     protected function addParameterQuery($object) {
-        parent::parameterQuery(self::TERM_ID, $object->getTermID(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::POST_ID, $object->getPostID(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::TERM_ID, $object->getTermId(), \PDO::PARAM_INT);
+        parent::parameterQuery(self::POST_ID, $object->getPostId(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {

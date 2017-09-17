@@ -19,6 +19,7 @@ use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\PostCategory;
 use SoftnCMS\models\tables\PostTerm;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
@@ -49,20 +50,20 @@ class PostController extends CUDControllerAbstract {
                     $postId         = $postsManager->getLastInsertId();
                     $terms          = Arrays::get($form, 'terms'); //Etiquetas nuevas
                     $categories     = Arrays::get($form, 'categories'); //Categorías nuevas
-                    $usersManager->updatePostCount($post->getUserID(), 1);
+                    $usersManager->updatePostCount($post->getUserId(), 1);
                     $this->createOrDeleteTerms($terms, $postId);
                     $this->createOrDeleteCategories($categories, $postId);
-                    Messages::addSuccess('Entrada publicada correctamente.', TRUE);
+                    Messages::addSuccess(__('Entrada publicada correctamente.'), TRUE);
                     Util::redirect($optionsManager->getSiteUrl() . 'admin/post');
                 }
             }
             
-            Messages::addDanger('Error al publicar la entrada.');
+            Messages::addDanger(__('Error al publicar la entrada.'));
         }
         
         $this->sendViewCategoriesAndTerms();
         ViewController::sendViewData('post', new Post());
-        ViewController::sendViewData('title', 'Publicar nueva entrada');
+        ViewController::sendViewData('title', __('Publicar nueva entrada'));
         ViewController::view('form');
     }
     
@@ -85,10 +86,10 @@ class PostController extends CUDControllerAbstract {
         $post->setPostStatus(Arrays::get($inputs, PostsManager::POST_STATUS));
         $post->setPostCommentStatus(Arrays::get($inputs, PostsManager::POST_COMMENT_STATUS));
         $post->setPostContents(Arrays::get($inputs, PostsManager::POST_CONTENTS));
-        $post->setUserID(NULL);
+        $post->setUserId(NULL);
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
-            $post->setUserID(LoginManager::getSession());
+            $post->setUserId(LoginManager::getSession());
             $post->setPostCommentCount(0);
             $post->setPostDate($date);
         }
@@ -101,10 +102,11 @@ class PostController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        Form::setINPUT([
+        Form::setInput([
             InputIntegerBuilder::init(PostsManager::ID)
                                ->build(),
             InputAlphanumericBuilder::init(PostsManager::POST_TITLE)
+                                    ->setSpecialChar(TRUE)
                                     ->build(),
             InputHtmlBuilder::init(PostsManager::POST_CONTENTS)
                             ->build(),
@@ -129,7 +131,7 @@ class PostController extends CUDControllerAbstract {
         
         if (empty($termsId)) {
             if ($postsTermsManager->deleteAllByPostId($postId) === FALSE) {
-                Messages::addDanger('Error al borrar las etiquetas.');
+                Messages::addDanger(__('Error al borrar las etiquetas.'));
             }
         } else {
             $numError = 0;
@@ -139,8 +141,8 @@ class PostController extends CUDControllerAbstract {
             });
             $newTerms = array_map(function($value) use ($postId) {
                 $object = new PostTerm();
-                $object->setTermID($value);
-                $object->setPostID($postId);
+                $object->setTermId($value);
+                $object->setPostId($postId);
                 
                 return $object;
             }, $newTerms);
@@ -163,7 +165,7 @@ class PostController extends CUDControllerAbstract {
             });
             
             if ($numError > 0) {
-                Messages::addDanger('Error al actualizar las etiquetas.');
+                Messages::addDanger(__('Error al actualizar las etiquetas.'));
             }
         }
     }
@@ -172,7 +174,7 @@ class PostController extends CUDControllerAbstract {
         $postsTermsManager = new PostsTermsManager();
         $postTerms         = $postsTermsManager->searchAllByPostId($postId); //Etiquetas actuales
         $currentTermsId    = array_map(function(PostTerm $value) {
-            return $value->getTermID();
+            return $value->getTermId();
         }, $postTerms);
         
         return $currentTermsId;
@@ -184,7 +186,7 @@ class PostController extends CUDControllerAbstract {
         
         if (empty($categoriesId)) {
             if ($postsCategoriesManager->deleteAllByPostId($postId) === FALSE) {
-                Messages::addDanger('Error al borrar las categorías.');
+                Messages::addDanger(__('Error al borrar las categorías.'));
             }
         } else {
             $numError = 0;
@@ -194,8 +196,8 @@ class PostController extends CUDControllerAbstract {
             });
             $newCategories = array_map(function($value) use ($postId) {
                 $object = new PostCategory();
-                $object->setCategoryID($value);
-                $object->setPostID($postId);
+                $object->setCategoryId($value);
+                $object->setPostId($postId);
                 
                 return $object;
             }, $newCategories);
@@ -218,7 +220,7 @@ class PostController extends CUDControllerAbstract {
             });
             
             if ($numError > 0) {
-                Messages::addDanger('Error al actualizar las categorías.');
+                Messages::addDanger(__('Error al actualizar las categorías.'));
             }
         }
     }
@@ -227,7 +229,7 @@ class PostController extends CUDControllerAbstract {
         $postsCategoriesManager = new PostsCategoriesManager();
         $postCategories         = $postsCategoriesManager->searchAllByPostId($postId); //Categorías actuales
         $CurrentCategoriesId    = array_map(function(PostCategory $value) {
-            return $value->getCategoryID();
+            return $value->getCategoryId();
         }, $postCategories);
         
         return $CurrentCategoriesId;
@@ -249,14 +251,14 @@ class PostController extends CUDControllerAbstract {
         
         if (empty($post)) {
             $optionsManager = new OptionsManager();
-            Messages::addDanger('La entrada no existe.', TRUE);
+            Messages::addDanger(__('La entrada no existe.'), TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/post');
         } else {
             if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
-                    Messages::addDanger('Error en los campos de la entrada.');
+                    Messages::addDanger(__('Error en los campos de la entrada.'));
                 } else {
                     $post = Arrays::get($form, 'post');
                     
@@ -266,16 +268,15 @@ class PostController extends CUDControllerAbstract {
                         $categories = Arrays::get($form, 'categories'); //Categorías nuevas
                         $this->createOrDeleteTerms($terms, $id);
                         $this->createOrDeleteCategories($categories, $id);
-                        Messages::addSuccess('Entrada actualizada correctamente.');
+                        Messages::addSuccess(__('Entrada actualizada correctamente.'));
                     } else {
-                        Messages::addDanger('Error al actualizar la entrada.');
+                        Messages::addDanger(__('Error al actualizar la entrada.'));
                     }
                 }
                 
             }
             
-            $optionsManager       = new OptionsManager();
-            $linkPost             = $optionsManager->getSiteUrl() . 'post/' . $id;
+            $linkPost             = Router::getSiteURL() . 'post/' . $id;
             $selectedCategoriesId = $this->getCurrentCategoriesId($id);
             $selectedTermsId      = $this->getCurrentTermsId($id);
             $this->sendViewCategoriesAndTerms();
@@ -283,7 +284,7 @@ class PostController extends CUDControllerAbstract {
             ViewController::sendViewData('selectedCategoriesId', $selectedCategoriesId);
             ViewController::sendViewData('selectedTermsId', $selectedTermsId);
             ViewController::sendViewData('post', $post);
-            ViewController::sendViewData('title', 'Actualizar entrada');
+            ViewController::sendViewData('title', __('Actualizar entrada'));
             ViewController::view('form');
         }
     }
@@ -292,9 +293,9 @@ class PostController extends CUDControllerAbstract {
         $postsManager = new PostsManager();
         
         if (empty($postsManager->delete($id))) {
-            Messages::addSuccess('Error al borrar la entrada.');
+            Messages::addSuccess(__('Error al borrar la entrada.'));
         } else {
-            Messages::addSuccess('Entrada borrada correctamente.');
+            Messages::addSuccess(__('Entrada borrada correctamente.'));
         }
         
         parent::delete($id);

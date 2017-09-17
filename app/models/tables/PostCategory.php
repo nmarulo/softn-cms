@@ -12,37 +12,37 @@ namespace SoftnCMS\models\tables;
 class PostCategory {
     
     /** @var int */
-    private $postID;
+    private $postId;
     
     /** @var int */
-    private $categoryID;
+    private $categoryId;
     
     /**
      * @return int
      */
-    public function getPostID() {
-        return $this->postID;
+    public function getPostId() {
+        return $this->postId;
     }
     
     /**
-     * @param int $postID
+     * @param int $postId
      */
-    public function setPostID($postID) {
-        $this->postID = $postID;
+    public function setPostId($postId) {
+        $this->postId = $postId;
     }
     
     /**
      * @return int
      */
-    public function getCategoryID() {
-        return $this->categoryID;
+    public function getCategoryId() {
+        return $this->categoryId;
     }
     
     /**
-     * @param int $categoryID
+     * @param int $categoryId
      */
-    public function setCategoryID($categoryID) {
-        $this->categoryID = $categoryID;
+    public function setCategoryId($categoryId) {
+        $this->categoryId = $categoryId;
     }
     
 }

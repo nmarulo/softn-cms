@@ -53,7 +53,7 @@ class Request {
             $this->setRuteController(Arrays::get($url, 0));
             $positionParam = 1;
             
-            if ($this->route->getDirectoryController() != Route::DIRECTORY_THEME) {
+            if ($this->route->getControllerDirectoryName() != Route::CONTROLLER_DIRECTORY_NAME_THEME) {
                 $this->setRuteMethod(Arrays::get($url, 1));
                 $positionParam = 2;
             }
@@ -67,12 +67,12 @@ class Request {
     private function setRuteDirectoryController($url) {
         $auxUrl       = $url;
         $urlDirectory = array_shift($url);
-        $directory    = Route::DIRECTORY_THEME;
+        $directory    = Route::CONTROLLER_DIRECTORY_NAME_THEME;
         
         switch ($urlDirectory) {
-            case Route::DIRECTORY_ADMIN:
-            case Route::DIRECTORY_LOGIN:
-            case Route::DIRECTORY_INSTALL:
+            case Route::CONTROLLER_DIRECTORY_NAME_ADMIN:
+            case Route::CONTROLLER_DIRECTORY_NAME_LOGIN:
+            case Route::CONTROLLER_DIRECTORY_NAME_INSTALL:
                 $directory = $urlDirectory;
                 break;
             default:
@@ -80,50 +80,54 @@ class Request {
                 break;
         }
         
-        $this->route->setDirectoryController($directory);
+        $this->route->setControllerDirectoryName($directory);
         
         return $url;
     }
     
     private function setRuteController($controllerName) {
         if ($controllerName !== FALSE) {
-            $controllerSanitize = Sanitize::alphabetic($controllerName);
-            //ucfirst(): Convierte el primer carácter en mayúscula.
-            $this->route->setController(ucfirst($controllerSanitize));
+            $controllerName = ucfirst(Sanitize::alphabetic($controllerName));
+            $this->route->setControllerName($controllerName);
         }
     }
     
     private function setRuteMethod($methodName) {
         if ($methodName !== FALSE) {
-            $methodSanitize = Sanitize::alphabetic($methodName);
-            $this->route->setMethod($methodSanitize);
+            $this->route->setMethodName(Sanitize::alphabetic($methodName));
         }
     }
     
     private function setRuteParameter($parameter) {
         if ($parameter !== FALSE) {
-            $parameterSanitize = Sanitize::integer($parameter);
-            $this->route->setParameter($parameterSanitize);
+            $this->route->setParameter(Sanitize::integer($parameter));
         }
     }
     
     private function setDirectoryView() {
-        $directoryViewController = strtolower($this->route->getController());
-        $directoryView           = $this->route->getDirectoryController();
+        /*
+         * Ejemplo:
+         *  Nombre del controlador = "post"
+         *  /ruta.../{nombre del controlador}/
+         *  /view/admin/post/
+         *  /themes/default/post/
+         */
+        $directoryNameViewController = strtolower($this->route->getControllerName());
+        $controllerDirectoryName     = $this->route->getControllerDirectoryName();
         
-        if ($directoryView === 'theme') {
+        if ($controllerDirectoryName == Route::CONTROLLER_DIRECTORY_NAME_THEME) {
             $optionsManager = new OptionsManager();
             
             if (!defined('INSTALL')) {
-                $directoryView = $optionsManager->searchByName(OPTION_THEME)
-                                                ->getOptionValue();
+                $controllerDirectoryName = $optionsManager->searchByName(OPTION_THEME)
+                                                          ->getOptionValue();
             }
             
             $this->route->setViewPath(THEMES);
         }
         
-        $this->route->setDirectoryViews($directoryView);
-        $this->route->setDirectoryViewsController($directoryViewController);
+        $this->route->setViewDirectoryName($controllerDirectoryName);
+        $this->route->setDirectoryNameViewController($directoryNameViewController);
     }
     
     /**

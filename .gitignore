@@ -4,4 +4,6 @@ app/vendor/
 test-*
 *.vpp*
 *.vux
-
+*.temp.*
+app/config.php
+app/log/

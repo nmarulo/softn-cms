@@ -1,5 +1,8 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\controllers\template\CategoryTemplate;
+use SoftnCMS\controllers\template\TermTemplate;
 
 $postTemplate       = ViewController::getViewData('post');
 $siteUrl            = $postTemplate->getSiteUrl();
@@ -29,26 +32,26 @@ $postId             = $post->getId();
                 <span class="glyphicon glyphicon-user"></span> Publicado por
                 <a href="<?php echo $urlUser . $user->getId(); ?>"><?php echo $user->getUserName(); ?></a>/
                 <span class=" glyphicon glyphicon-folder-open"></span> Archivado en
-                <?php foreach ($categoriesTemplate as $categoryTemplate) {
+                <?php array_walk($categoriesTemplate, function(CategoryTemplate $categoryTemplate) use ($urlCategory) {
                     $category = $categoryTemplate->getCategory();
                     ?>
                     <a class="label label-default" href="<?php echo $urlCategory . $category->getId(); ?>">
                         <?php echo $category->getCategoryName(); ?>
                     </a>
-                <?php } ?>
+                <?php }); ?>
             </p>
         </header>
         <section><?php echo $post->getPostContents(); ?></section>
         <footer>
             <p>
                 Etiquetas:
-                <?php foreach ($termsTemplate as $termTemplate) {
+                <?php array_walk($termsTemplate, function(TermTemplate $termTemplate) use ($urlTerm) {
                     $term = $termTemplate->getTerm();
                     ?>
                     <a class="label label-default" href="<?php echo $urlTerm . $term->getId(); ?>">
                         <?php echo $term->getTermName(); ?>
                     </a>
-                <?php } ?>
+                <?php }); ?>
             </p>
         </footer>
     </article>

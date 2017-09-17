@@ -1,8 +1,10 @@
 <?php
+
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\managers\CommentsManager;
+use SoftnCMS\controllers\template\CommentTemplate;
 
 $postTemplate     = ViewController::getViewData('post');
 $siteUrl          = $postTemplate->getSiteUrl();
@@ -23,7 +25,7 @@ if (!empty($commentsTemplate)) {
                 </span>
             </small>
         </h2>
-        <?php foreach ($commentsTemplate as $commentTemplate) {
+        <?php array_walk($commentsTemplate, function(CommentTemplate $commentTemplate) use ($siteUrl, $urlUser) {
             $commentTemplate->initUser();
             $comment      = $commentTemplate->getComment();
             $userTemplate = $commentTemplate->getUserTemplate();
@@ -36,7 +38,7 @@ if (!empty($commentsTemplate)) {
                         $user = $userTemplate->getUser();
                         ?>
                         <a href="<?php echo $urlUser . $user->getId(); ?>">
-                            <img class="media-object" src="<?php echo $siteUrl; ?>app/themes/softncmsv1/resources/img/avatar.svg">
+                            <img class="media-object" src="<?php echo $user->getUserUrlImage(); ?>">
                         </a>
                     <?php } ?>
                 </div>
@@ -50,7 +52,7 @@ if (!empty($commentsTemplate)) {
                     <p><?php echo $comment->getCommentContents(); ?></p>
                 </div>
             </div>
-        <?php } ?>
+        <?php }); ?>
     </div>
 <?php }
 
@@ -60,14 +62,12 @@ if ($post->getPostCommentStatus()) {
         <h2>Publicar comentario</h2>
         <form method="post">
             <?php if (LoginManager::isLogin()) { ?>
-                <p>
-                    Conectado como <strong><?php echo $userSession->getUserName(); ?></strong>
-                </p>
+                <p>Conectado como <strong><?php echo $userSession->getUserName(); ?></strong></p>
                 <input type="hidden" name="<?php echo CommentsManager::COMMENT_USER_ID; ?>" value="<?php echo $userSession->getId(); ?>"/>
             <?php } else { ?>
                 <div class="form-group">
                     <label class="control-label">Nombre</label>
-                    <input type="text" class="form-control" name="<?php echo CommentsManager::COMMENT_AUTHOR; ?>"/>
+                    <input class="form-control" name="<?php echo CommentsManager::COMMENT_AUTHOR; ?>"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label">Correo electrónico</label>
@@ -79,11 +79,10 @@ if ($post->getPostCommentStatus()) {
                 <textarea class="form-control" name="<?php echo CommentsManager::COMMENT_CONTENTS; ?>" rows="5"></textarea>
             </div>
             <input type="hidden" name="<?php echo CommentsManager::POST_ID; ?>" value="<?php echo $post->getId(); ?>"/>
-            <button class="btn btn-primary" name="<?php echo CommentsManager::FORM_SUBMIT; ?>" value="<?php echo CommentsManager::FORM_SUBMIT; ?>" type="submit">Publicar</button>
+            <button class="btn btn-primary" name="<?php echo CommentsManager::FORM_SUBMIT; ?>" value="<?php echo CommentsManager::FORM_SUBMIT; ?>">Publicar</button>
+            <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>
-<?php } else {
-    ?>
+<?php } else { ?>
     <div class="alert alert-info">Los comentarios están cerrados.</div>
-<?php
-}
+<?php }
