@@ -18,13 +18,28 @@ class HTML {
     
     private static $INPUT_ID = 1;
     
-    public static function inputHidden($name, $value, $data = []) {
-        self::input(array_merge($data, [
-            'name'  => $name,
-            'type'  => 'hidden',
-            'value' => $value,
-            'class' => '',
-        ]));
+    public static function inputRadio($name, $text, $value = 'on', $data = []) {
+        self::inputCheckBoxRadio('radio', $name, $text, $value, $data);
+    }
+    
+    private static function inputCheckBoxRadio($type, $name, $text, $value = 'on', $data = []) {
+        $data['name']  = $name;
+        $data['text']  = $text;
+        $data['value'] = $value;
+        $data['type']  = $type;
+        $class         = Arrays::get($data, 'labelClass');
+        
+        if (!empty($class)) {
+            $class = "class='$class'";
+        }
+        
+        if (!Arrays::keyExists($data, 'class')) {
+            $data['class'] = '';
+        }
+        
+        echo "<label $class>";
+        self::input($data);
+        echo '</label>';
     }
     
     public static function input($data = []) {
@@ -34,6 +49,7 @@ class HTML {
             'type'  => 'text',
             'name'  => '',
             'value' => '',
+            'text'  => '',
             /*
              * Si no tiene valor no se le agregara el "=".
              * EJ: ['placeholder' => 'text', 'autofocus' => '']
@@ -45,6 +61,10 @@ class HTML {
         $attr  = self::getAttributes(Arrays::get($data, 'data'));
         $class = Arrays::get($data, 'class');
         $id    = Arrays::get($data, 'id');
+        $name  = Arrays::get($data, 'name');
+        $type  = Arrays::get($data, 'type');
+        $value = Arrays::get($data, 'value');
+        $text  = Arrays::get($data, 'text');
         
         if (empty($id)) {
             $id = 'input-' . self::$INPUT_ID;
@@ -55,7 +75,7 @@ class HTML {
             $class = "class='$class'";
         }
         
-        echo sprintf('<input id="%1$s" %2$s type="%3$s" name="%4$s" value="%5$s" %6$s/>', $id, $class, Arrays::get($data, 'type'), Arrays::get($data, 'name'), Arrays::get($data, 'value'), $attr);
+        echo sprintf('<input id="%1$s" %2$s type="%3$s" name="%4$s" value="%5$s" %6$s/>%7$s', $id, $class, $type, $name, $value, $attr, $text);
     }
     
     private static function getAttributes($attr) {
@@ -73,6 +93,19 @@ class HTML {
         }
         
         return '';
+    }
+    
+    public static function inputCheckbox($name, $text, $value = 'on', $data = []) {
+        self::inputCheckBoxRadio('checkbox', $name, $text, $value, $data);
+    }
+    
+    public static function inputHidden($name, $value, $data = []) {
+        self::input(array_merge($data, [
+            'name'  => $name,
+            'type'  => 'hidden',
+            'value' => $value,
+            'class' => '',
+        ]));
     }
     
     public static function inputEmail($name, $labelText, $value = '', $data = []) {
@@ -317,11 +350,11 @@ class HTML {
         return implode('', $options);
     }
     
-    public static function createSelectOption($dataList, $closureGetValue, $closureGetText, $selected = '') {
-        if (is_callable($closureGetValue) && is_callable($closureGetText)) {
-            return array_map(function($data) use ($closureGetValue, $closureGetText, $selected) {
-                $value = $closureGetValue($data);
-                $text  = $closureGetText($data);
+    public static function createSelectOption($dataList, $closureGetValueAndGetText, $selected = '') {
+        if (is_callable($closureGetValueAndGetText)) {
+            return array_map(function($data) use ($closureGetValueAndGetText, $selected) {
+                $optionValueAndText = $closureGetValueAndGetText($data);
+                $value              = Arrays::get($optionValueAndText, 'optionValue');
                 
                 if (is_array($selected)) {
                     $isSelected = array_search($value, $selected) !== FALSE;
@@ -329,11 +362,9 @@ class HTML {
                     $isSelected = $value == $selected;
                 }
                 
-                return [
-                    'optionValue' => $value,
-                    'optionText'  => $text,
-                    'optionData'  => $isSelected ? ['selected' => ''] : [],
-                ];
+                $optionValueAndText['optionData'] = $isSelected ? ['selected' => ''] : [];
+                
+                return $optionValueAndText;
             }, $dataList);
         }
         
