@@ -5,9 +5,6 @@
 
 namespace SoftnCMS\util;
 
-use SoftnCMS\models\managers\OptionsManager;
-use SoftnCMS\models\tables\User;
-use SoftnCMS\route\Route;
 use SoftnCMS\rute\Router;
 
 /**
@@ -19,27 +16,31 @@ class HTML {
     private static $INPUT_ID = 1;
     
     public static function inputRadio($name, $text, $value = 'on', $data = []) {
-        self::inputCheckBoxRadio('radio', $name, $text, $value, $data);
+        self::inputTypeSelect('radio', $name, $text, $value, $data);
     }
     
-    private static function inputCheckBoxRadio($type, $name, $text, $value = 'on', $data = []) {
+    private static function inputTypeSelect($type, $name, $text, $value = 'on', $data = []) {
         $data['name']  = $name;
         $data['text']  = $text;
         $data['value'] = $value;
         $data['type']  = $type;
-        $class         = Arrays::get($data, 'labelClass');
-        
-        if (!empty($class)) {
-            $class = "class='$class'";
-        }
+        $labelClass    = self::getAttribute(Arrays::get($data, 'labelClass'), 'class');
         
         if (!Arrays::keyExists($data, 'class')) {
             $data['class'] = '';
         }
         
-        echo "<label $class>";
+        echo "<label $labelClass>";
         self::input($data);
         echo '</label>';
+    }
+    
+    private static function getAttribute($value, $attributeName) {
+        if (empty(trim($value))) {
+            return "";
+        }
+        
+        return "$attributeName='$value'";
     }
     
     public static function input($data = []) {
@@ -58,21 +59,17 @@ class HTML {
         ];
         
         $data  = array_merge($default, $data);
-        $attr  = self::getAttributes(Arrays::get($data, 'data'));
-        $class = Arrays::get($data, 'class');
+        $class = self::getAttribute(Arrays::get($data, 'class'), 'class');
         $id    = Arrays::get($data, 'id');
         $name  = Arrays::get($data, 'name');
         $type  = Arrays::get($data, 'type');
         $value = Arrays::get($data, 'value');
         $text  = Arrays::get($data, 'text');
+        $attr  = self::getAttributes(Arrays::get($data, 'data'));
         
         if (empty($id)) {
             $id = 'input-' . self::$INPUT_ID;
             ++self::$INPUT_ID;
-        }
-        
-        if (!empty($class)) {
-            $class = "class='$class'";
         }
         
         echo sprintf('<input id="%1$s" %2$s type="%3$s" name="%4$s" value="%5$s" %6$s/>%7$s', $id, $class, $type, $name, $value, $attr, $text);
@@ -96,7 +93,7 @@ class HTML {
     }
     
     public static function inputCheckbox($name, $text, $value = 'on', $data = []) {
-        self::inputCheckBoxRadio('checkbox', $name, $text, $value, $data);
+        self::inputTypeSelect('checkbox', $name, $text, $value, $data);
     }
     
     public static function inputHidden($name, $value, $data = []) {
@@ -136,12 +133,8 @@ class HTML {
         
         $data  = array_merge($default, $data);
         $id    = Arrays::get($data, 'id');
-        $class = Arrays::get($data, 'labelClass');
+        $class = self::getAttribute(Arrays::get($data, 'labelClass'), 'class');
         $attr  = self::getAttributes(Arrays::get($data, 'labelData'));
-        
-        if (!empty($class)) {
-            $class = "class='$class'";
-        }
         
         if (empty($id)) {
             $id = 'input-' . self::$INPUT_ID;
@@ -172,10 +165,39 @@ class HTML {
         self::inputType('text', $name, $value, $labelText, $data);
     }
     
-    public static function button($name, $value, $content, $type, $attributes = []) {
-        $attributesList = self::getAttributes($attributes);
+    public static function buttonSubmit($text, $name = '', $value = '', $data = []) {
+        $data['text']  = $text;
+        $data['name']  = $name;
+        $data['value'] = $value;
+        self::button($data);
+    }
+    
+    public static function button($data = []) {
+        $default = [
+            'text'  => '',
+            'name'  => '',
+            'value' => '',
+            'type'  => 'submit',
+            'id'    => '',
+            'class' => 'btn btn-primary',
+            'data'  => [],
+        ];
+        $data    = array_merge($default, $data);
+        $id      = self::getAttribute(Arrays::get($data, 'id'), 'id');
+        $class   = self::getAttribute(Arrays::get($data, 'class'), 'class');
+        $value   = self::getAttribute(Arrays::get($data, 'value'), 'value');
+        $name    = self::getAttribute(Arrays::get($data, 'name'), 'name');
+        $text    = Arrays::get($data, 'text');
+        $type    = Arrays::get($data, 'type');
+        $attr    = self::getAttributes(Arrays::get($data, 'data'));
         
-        echo sprintf('<button %1$s %2$s name="%3$s" value="%4$s" type="%6$s">%5$s</button>', $attributesList['id'], $attributesList['class'], $name, $value, $content, $type);
+        echo sprintf('<button %1$s %2$s %3$s %4$s type="%5$s" %6$s>%7$s</button>', $id, $class, $name, $value, $type, $attr, $text);
+    }
+    
+    public static function buttonButton($text, $data = []) {
+        $data['text'] = $text;
+        $data['type'] = 'button';
+        self::button($data);
     }
     
     public static function textAreaBasic($name, $content, $data = []) {
@@ -200,15 +222,11 @@ class HTML {
         ];
         $data    = array_merge($default, $data);
         $id      = Arrays::get($data, 'id');
-        $class   = Arrays::get($data, 'class');
+        $class   = self::getAttribute(Arrays::get($data, 'class'), 'class');
         $rows    = Arrays::get($data, 'rows');
         $name    = Arrays::get($data, 'name');
         $content = Arrays::get($data, 'content');
         $attr    = self::getAttributes(Arrays::get($data, 'data'));
-        
-        if (!empty($class)) {
-            $class = "class='$class'";
-        }
         
         if (empty($id)) {
             $id = 'textarea-' . self::$INPUT_ID;
@@ -258,17 +276,9 @@ class HTML {
         $action     = self::addSlashEnd(Arrays::get($data, 'action'));
         $url        = Arrays::get($data, 'url');
         $addParam   = Arrays::get($data, 'addParam');
-        $class      = Arrays::get($data, 'class');
-        $id         = Arrays::get($data, 'id');
+        $class      = self::getAttribute(Arrays::get($data, 'class'), 'class');
+        $id         = self::getAttribute(Arrays::get($data, 'id'), 'id');
         $text       = Arrays::get($data, 'text');
-        
-        if (!empty($class)) {
-            $class = "class='$class'";
-        }
-        
-        if (!empty($id)) {
-            $id = "id='$id'";
-        }
         
         if (!empty($addParam)) {
             if (is_array($addParam)) {
@@ -284,6 +294,7 @@ class HTML {
         
         $href = sprintf('%1$s%2$s%3$s%4$s%5$s%6$s', $url, $route, $controller, $action, Arrays::get($data, 'param'), $addParam);
         
+        //Si el texto a mostrar esta vacio se reemplaza por el enlace.
         if (empty($text)) {
             $text = $href;
         }
@@ -297,7 +308,7 @@ class HTML {
     
     public static function selectMultiple($name, $options, $data = []) {
         $data['data']['multiple'] = '';
-        self::selectOne($name, $options, $data);
+        self::selectOne($name . '[]', $options, $data);
     }
     
     public static function selectOne($name, $options, $data = []) {
@@ -321,14 +332,10 @@ class HTML {
         ];
         $data    = array_merge($default, $data);
         $id      = Arrays::get($data, 'id');
-        $class   = Arrays::get($data, 'class');
+        $class   = self::getAttribute(Arrays::get($data, 'class'), 'class');
         $name    = Arrays::get($data, 'name');
         $attr    = self::getAttributes(Arrays::get($data, 'data'));
         $options = self::selectOption(Arrays::get($data, 'options'));
-        
-        if (!empty($class)) {
-            $class = "class='$class'";
-        }
         
         if (empty($id)) {
             $id = 'select-' . self::$INPUT_ID;
@@ -371,23 +378,156 @@ class HTML {
         return [];
     }
     
-    public static function table() {
-    
+    public static function table($value, $columnData = [], $rowData = [], $data = []) {
+        $value['columnData'] = $columnData;
+        $value['rowData']    = $rowData;
+        //EJ: 'tBody' => [[col1, col2, col3], [row2-col1, row2-col2, row2-col3]]
+        $default            = [
+            'id'                 => '',
+            'class'              => '',
+            'data'               => [],
+            'tBody'              => [],
+            'tHead'              => [],
+            'tFoot'              => [],
+            'columnData'         => [
+                //Aplica a todas las columnas.
+                0 => [],
+                //Aplica a la columna 1
+                1 => [],
+                //2 => [],//Aplica a la columna 2
+                //3 => [],
+                //. => [],
+                //. => [],
+                //(n) => [],//Aplica a la columna (n)
+            ],
+            'rowData'            => [],
+            'columnDataHeadFoot' => [],
+            'rowDataHeadFoot'    => [],
+        ];
+        $data               = array_merge($data, $value);
+        $data               = array_merge($default, $data);
+        $columnData         = Arrays::get($data, 'columnData');
+        $rowData            = Arrays::get($data, 'rowData');
+        $columnDataHeadFoot = Arrays::get($data, 'columnDataHeadFoot');
+        $rowDataHeadFoot    = Arrays::get($data, 'rowDataHeadFoot');
+        $id                 = self::getAttribute(Arrays::get($data, 'id'), 'id');
+        $class              = self::getAttribute(Arrays::get($data, 'class'), 'class');
+        $attr               = self::getAttributes(Arrays::get($data, 'attr'));
+        $tFoot              = Arrays::get($data, 'tFoot');
+        $tHead              = self::getTableRows(Arrays::get($data, 'tHead'), 'th');
+        $tBody              = self::getTableRows(Arrays::get($data, 'tBody'), 'td', $columnData, $rowData);
+        
+        if ($tFoot == '') {
+            $tFoot = $tHead;
+        } elseif ($tFoot == NULL || (is_array($tFoot) && empty($tFoot))) {
+            $tFoot = '';
+        } else {
+            $tFoot = self::getTableRows($tFoot);
+        }
+        
+        echo sprintf('<table %1$s %2$s %3$s><thead>%4$s</thead><tfoot>%5$s</tfoot><tbody>%6$s</tbody></table>', $id, $class, $attr, $tHead, $tFoot, $tBody);
     }
     
-    public static function image($fileName, $alt = '', $title = '', $attributes = []) {
-        //        $attributesList = self::getAttributes($attributes);
-        //        $src            = 'app/resources/img/';
-        //
-        //        if (Router::getCurrentDirectory() == Route::DIRECTORY_THEME) {
-        //            $optionsManager = new OptionsManager();
-        //            $theme          = $optionsManager->searchByName(OPTION_THEME)
-        //                                             ->getOptionValue();
-        //            $src            = "app/themes/$theme/resources/img/";
-        //        }
-        //
-        //        $src = Router::getSiteURL() . $src . $fileName;
-        //
-        //        echo sprintf('<img %1$s %2$s src="%3$s" alt="%4$s" title="%5$s"/>', $attributesList['id'], $attributesList['class'], $src, $alt, $title);
+    private static function getTableRows($dataList, $tagColumnName = 'td', $columnData = [], $rowData = []) {
+        $rowPosition    = 0;
+        $columnPosition = 0;
+        $isArray        = FALSE;
+        $value          = array_map(function($data) use ($tagColumnName, &$isArray, $columnData, &$columnPosition) {
+            ++$columnPosition;
+            
+            if (is_array($data)) {
+                $isArray = TRUE;
+                
+                return implode('', self::getTableColumns($data, $tagColumnName, $columnData, $columnPosition));
+            }
+            
+            return self::getTableColumns($data, $tagColumnName, $columnData, $columnPosition);
+        }, $dataList);
+        
+        ++$rowPosition;
+        $classAll = self::getClassAttributeTable($rowData, 0);
+        $attrAll  = self::getAttributes(Arrays::get($rowData, 0));
+        $class    = "$classAll " . self::getClassAttributeTable($rowData, $rowPosition);
+        $attr     = "$attrAll " . self::getAttributes(Arrays::get($rowData, $rowPosition));
+        
+        if ($isArray) {
+            $value = array_map(function($data) use (&$rowPosition, $rowData, $classAll, $attrAll) {
+                ++$rowPosition;
+                $class = "$classAll " . self::getClassAttributeTable($rowData, $rowPosition);
+                $attr  = "$attrAll " . self::getAttributes(Arrays::get($rowData, $rowPosition));
+                
+                return sprintf('%1$s</tr><tr %2$s %3$s>', $data, self::getAttribute($class, 'class'), $attr);
+            }, $value);
+        }
+        
+        return sprintf('<tr %1$s %2$s>%3$s</tr>', self::getAttribute($class, 'class'), $attr, implode('', $value));
+    }
+    
+    private static function getTableColumns($dataColumns, $tagName = 'td', $columnData, $columnPosition) {
+        $value         = $dataColumns;
+        $auxColumnData = $columnData;
+        $classAll      = self::getClassAttributeTable($auxColumnData, 0);
+        $attrAll       = self::getAttributes(Arrays::get($auxColumnData, 0));
+        $class         = "$classAll " . self::getClassAttributeTable($auxColumnData, $columnPosition);
+        $attr          = "$attrAll " . self::getAttributes(Arrays::get($auxColumnData, $columnPosition));
+        
+        if (is_array($dataColumns)) {
+            return array_map(function($data) use ($tagName, $columnData, $columnPosition) {
+                return self::getTableColumns($data, $tagName, $columnData, $columnPosition);
+            }, $dataColumns);
+        }
+        
+        return sprintf('<%1$s %2$s %3$s>%4$s</%1$s>', $tagName, self::getAttribute($class, 'class'), $attr, $value);
+    }
+    
+    private static function getClassAttributeTable(&$data, $key) {
+        $class = Arrays::get(Arrays::get($data, $key), 'class');
+        
+        if (empty($class)) {
+            return '';
+        }
+        
+        unset($data[$key]['class']);
+        
+        return $class;
+    }
+    
+    public static function createTableValue($body, $head = [], $foot = []) {
+        return [
+            'tBody' => $body,
+            'tHead' => $head,
+            'tFoot' => $foot,
+        ];
+    }
+    
+    public static function imageLocal($src, $title, $data = []) {
+        $data['title'] = $title;
+        $data['src']   = Router::getSiteURL() . "app/resources/img/$src";
+        
+        if (!Arrays::keyExists($data, 'alt')) {
+            $data['alt'] = $title;
+        }
+        
+        self::image($data);
+    }
+    
+    public static function image($data = []) {
+        $default = [
+            'id'    => '',
+            'class' => '',
+            'src'   => '',
+            'alt'   => '',
+            'title' => '',
+            'data'  => [],
+        ];
+        $data    = array_merge($default, $data);
+        $id      = self::getAttribute(Arrays::get($data, 'id'), 'id');
+        $class   = self::getAttribute(Arrays::get($data, 'class'), 'class');
+        $src     = Arrays::get($data, 'src');
+        $alt     = self::getAttribute(Arrays::get($data, 'alt'), 'alt');
+        $title   = self::getAttribute(Arrays::get($data, 'title'), 'title');
+        $attr    = self::getAttributes(Arrays::get($data, 'data'));
+        
+        echo sprintf('<img %1$s %2$s src="%3$s" %4$s %5$s %6$s/>', $id, $class, $src, $alt, $title, $attr);
     }
 }
