@@ -414,15 +414,15 @@ class HTML {
         $class              = self::getAttribute(Arrays::get($data, 'class'), 'class');
         $attr               = self::getAttributes(Arrays::get($data, 'attr'));
         $tFoot              = Arrays::get($data, 'tFoot');
-        $tHead              = self::getTableRows(Arrays::get($data, 'tHead'), 'th');
+        $tHead              = self::getTableRows(Arrays::get($data, 'tHead'), 'th', $columnDataHeadFoot, $rowDataHeadFoot);
         $tBody              = self::getTableRows(Arrays::get($data, 'tBody'), 'td', $columnData, $rowData);
         
-        if ($tFoot == '') {
+        if ($tFoot === '') {
             $tFoot = $tHead;
         } elseif ($tFoot == NULL || (is_array($tFoot) && empty($tFoot))) {
             $tFoot = '';
         } else {
-            $tFoot = self::getTableRows($tFoot);
+            $tFoot = self::getTableRows($tFoot, 'th', $columnDataHeadFoot, $rowDataHeadFoot);
         }
         
         echo sprintf('<table %1$s %2$s %3$s><thead>%4$s</thead><tfoot>%5$s</tfoot><tbody>%6$s</tbody></table>', $id, $class, $attr, $tHead, $tFoot, $tBody);
@@ -451,12 +451,18 @@ class HTML {
         $attr     = "$attrAll " . self::getAttributes(Arrays::get($rowData, $rowPosition));
         
         if ($isArray) {
-            $value = array_map(function($data) use (&$rowPosition, $rowData, $classAll, $attrAll) {
+            $len = count($value) - 1;
+            $value = array_map(function($data) use (&$rowPosition, $rowData, $classAll, $attrAll, $len) {
                 ++$rowPosition;
                 $class = "$classAll " . self::getClassAttributeTable($rowData, $rowPosition);
                 $attr  = "$attrAll " . self::getAttributes(Arrays::get($rowData, $rowPosition));
+                $class = self::getAttribute($class, 'class');
+                //Para evitar crear una fila sin datos.
+                if($len == $rowPosition){
+                    return "$data</tr>";
+                }
                 
-                return sprintf('%1$s</tr><tr %2$s %3$s>', $data, self::getAttribute($class, 'class'), $attr);
+                return sprintf('%1$s</tr><tr %2$s %3$s>', $data, $class, $attr);
             }, $value);
         }
         
