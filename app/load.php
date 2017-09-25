@@ -22,6 +22,9 @@ session_start();
 Logger::getInstance()
       ->debug('Inicio de la aplicación.');
 $router = new Router();
+$router->setEvent(Router::EVENT_ERROR, function() {
+    Util::redirect(Router::getSiteURL());
+});
 $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     \SoftnCMS\util\Language::load();
     $route               = $router->getRoute();

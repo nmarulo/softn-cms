@@ -32,6 +32,9 @@ class Router {
     /** @var string Directorio del controlador actual. */
     private static $CURRENT_DIRECTORY;
     
+    /** @var string Nombre del controlador actual. */
+    private static $CURRENT_NAME_CONTROLLER;
+    
     /** @var Request */
     private $request;
     
@@ -72,6 +75,13 @@ class Router {
      */
     public static function getCurrentDirectory() {
         return self::$CURRENT_DIRECTORY;
+    }
+    
+    /**
+     * @return string
+     */
+    public static function getCurrentNameController() {
+        return self::$CURRENT_NAME_CONTROLLER;
     }
     
     /**
@@ -185,7 +195,8 @@ class Router {
             }
         }
         
-        $controller = NAMESPACE_CONTROLLERS . "$controllerDirectory\\$controllerName";
+        self::$CURRENT_NAME_CONTROLLER = str_replace('controller', '', strtolower($controllerName));
+        $controller                    = NAMESPACE_CONTROLLERS . "$controllerDirectory\\$controllerName";
         
         return new $controller();
     }
