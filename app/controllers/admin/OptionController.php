@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
@@ -74,7 +75,7 @@ class OptionController extends ControllerAbstract {
         $gravatar->setDefaultImage(Arrays::get($inputs, OptionsManager::OPTION_GRAVATAR_DEFAULT_IMAGE));
         $gravatar->setRating(Arrays::get($inputs, OptionsManager::OPTION_GRAVATAR_RATING));
         $gravatarOption = new Option();
-        $gravatarOption->setOptionName(OPTION_GRAVATAR);
+        $gravatarOption->setOptionName(OptionConstants::GRAVATAR);
         $gravatarOption->setOptionValue(serialize($gravatar));
         
         $inputKeys = array_keys($inputs);
@@ -92,26 +93,26 @@ class OptionController extends ControllerAbstract {
     
     protected function filterInputs() {
         Form::setInput([
-            InputAlphabeticBuilder::init(OPTION_TITLE)
+            InputAlphabeticBuilder::init(OptionConstants::SITE_TITLE)
                                   ->build(),
-            InputAlphabeticBuilder::init(OPTION_DESCRIPTION)
+            InputAlphabeticBuilder::init(OptionConstants::SITE_DESCRIPTION)
                                   ->setRequire(FALSE)
                                   ->build(),
-            InputEmailBuilder::init(OPTION_EMAIL_ADMIN)
+            InputEmailBuilder::init(OptionConstants::EMAIL_ADMIN)
                              ->build(),
-            InputUrlBuilder::init(OPTION_SITE_URL)
+            InputUrlBuilder::init(OptionConstants::SITE_URL)
                            ->build(),
-            InputIntegerBuilder::init(OPTION_PAGED)
+            InputIntegerBuilder::init(OptionConstants::PAGED)
                                ->build(),
-            InputAlphanumericBuilder::init(OPTION_THEME)
+            InputAlphanumericBuilder::init(OptionConstants::THEME)
                                     ->build(),
-            InputIntegerBuilder::init(OPTION_MENU)
+            InputIntegerBuilder::init(OptionConstants::MENU)
                                ->build(),
-            InputAlphabeticBuilder::init(OPTION_LANGUAGE)
+            InputAlphabeticBuilder::init(OptionConstants::LANGUAGE)
                                   ->setAccents(FALSE)
                                   ->setSpecialChar(TRUE)
                                   ->build(),
-            InputIntegerBuilder::init(OPTION_DEFAULT_PROFILE)
+            InputIntegerBuilder::init(OptionConstants::DEFAULT_PROFILE)
                                ->build(),
             InputIntegerBuilder::init(OptionsManager::OPTION_GRAVATAR_SIZE)
                                ->build(),
@@ -130,15 +131,15 @@ class OptionController extends ControllerAbstract {
         $profilesManager      = new ProfilesManager();
         $menusManager         = new MenusManager();
         $optionsManager       = new OptionsManager();
-        $optionTitle          = $optionsManager->searchByName(OPTION_TITLE);
-        $optionDescription    = $optionsManager->searchByName(OPTION_DESCRIPTION);
-        $optionPaged          = $optionsManager->searchByName(OPTION_PAGED);
-        $optionSiteUrl        = $optionsManager->searchByName(OPTION_SITE_URL);
-        $optionTheme          = $optionsManager->searchByName(OPTION_THEME);
-        $optionMenu           = $optionsManager->searchByName(OPTION_MENU);
-        $optionEmailAdmin     = $optionsManager->searchByName(OPTION_EMAIL_ADMIN);
-        $optionLanguage       = $optionsManager->searchByName(OPTION_LANGUAGE);
-        $optionDefaultProfile = $optionsManager->searchByName(OPTION_DEFAULT_PROFILE);
+        $optionTitle          = $optionsManager->searchByName(OptionConstants::SITE_TITLE);
+        $optionDescription    = $optionsManager->searchByName(OptionConstants::SITE_DESCRIPTION);
+        $optionPaged          = $optionsManager->searchByName(OptionConstants::PAGED);
+        $optionSiteUrl        = $optionsManager->searchByName(OptionConstants::SITE_URL);
+        $optionTheme          = $optionsManager->searchByName(OptionConstants::THEME);
+        $optionMenu           = $optionsManager->searchByName(OptionConstants::MENU);
+        $optionEmailAdmin     = $optionsManager->searchByName(OptionConstants::EMAIL_ADMIN);
+        $optionLanguage       = $optionsManager->searchByName(OptionConstants::LANGUAGE);
+        $optionDefaultProfile = $optionsManager->searchByName(OptionConstants::DEFAULT_PROFILE);
         $profilesList         = $profilesManager->read();
         $menuList             = $menusManager->searchAllParent();
         $listLanguages        = Util::getFilesAndDirectories(LANGUAGES);
@@ -175,7 +176,7 @@ class OptionController extends ControllerAbstract {
     
     private function gravatar() {
         $optionsManager = new OptionsManager();
-        $optionGravatar = $optionsManager->searchByName(OPTION_GRAVATAR);
+        $optionGravatar = $optionsManager->searchByName(OptionConstants::GRAVATAR);
         $gravatar       = unserialize($optionGravatar->getOptionValue());
         
         if (empty($gravatar)) {

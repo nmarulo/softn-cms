@@ -62,14 +62,3 @@ define('REPLACE_SQL_SITE_URL', '#{SITE_URL}');
 define('REPLACE_SQL_PREFIX', '#{PREFIX}');
 /** Nombre del parámetro enviado por url para establecer el idioma de la web. */
 define('PARAM_LANGUAGE', 'lan');
-
-define('OPTION_TITLE', 'optionTitle');
-define('OPTION_DESCRIPTION', 'optionDescription');
-define('OPTION_PAGED', 'optionPaged');
-define('OPTION_SITE_URL', 'optionSiteUrl');
-define('OPTION_THEME', 'optionTheme');
-define('OPTION_EMAIL_ADMIN', 'optionEmailAdmin');
-define('OPTION_MENU', 'optionMenu');
-define('OPTION_LANGUAGE', 'optionLanguage');
-define('OPTION_DEFAULT_PROFILE', 'optionDefaultProfile');
-define('OPTION_GRAVATAR', 'optionGravatar');
