@@ -1,12 +1,10 @@
 <?php
 
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Comment;
 
 $comments            = ViewController::getViewData('comments');
-$optionsManager      = new OptionsManager();
-$siteUrlUpdate       = \SoftnCMS\rute\Router::getSiteURL() . 'admin/comment/update/';
+$siteUrlUpdate       = ViewController::getViewData('siteUrl') . 'admin/comment/update/';
 $strTranslateAuthor  = __('Autor');
 $strTranslateComment = __('Comentario');
 $strTranslateState   = __('Estado');

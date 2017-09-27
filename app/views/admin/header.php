@@ -1,25 +1,17 @@
 <?php
 
-use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\models\managers\LoginManager;
-use SoftnCMS\models\managers\OptionsManager;
-use SoftnCMS\models\managers\UsersManager;
+use SoftnCMS\controllers\ViewController;
 
-$idUser            = LoginManager::getSession();
-$userManager       = new UsersManager();
-$optionsManager    = new OptionsManager();
-$siteUrl           = \SoftnCMS\rute\Router::getSiteURL();
+$siteUrl           = ViewController::getViewData('siteUrl');
+$siteTitle         = ViewController::getViewData('siteTitle');
+$userSession       = ViewController::getViewData('userSession');
 $urlAdmin          = $siteUrl . 'admin/';
 $urlPostCreate     = $urlAdmin . 'post/create';
 $urlCategoryCreate = $urlAdmin . 'category/create';
 $urlTermCreate     = $urlAdmin . 'term/create';
 $urlPageCreate     = $urlAdmin . 'page/create';
-$siteTitle         = $optionsManager->searchByName(OptionConstants::SITE_TITLE)
-                                    ->getOptionValue();
 $urlLogout         = $siteUrl . 'login/logout';
-$nameUser          = $userManager->searchById($idUser)
-                                 ->getUserName();
-$urlUpdateUser     = $urlAdmin . 'user/update/' . $idUser;
+$urlUpdateUser     = $urlAdmin . 'user/update/' . $userSession->getId();
 ?>
 <header>
     <nav class="navbar navbar-custom">
@@ -52,7 +44,7 @@ $urlUpdateUser     = $urlAdmin . 'user/update/' . $idUser;
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                             <span class="glyphicon glyphicon-user"></span>
-                            <?php echo __('Hola %1$s', $nameUser); ?>
+                            <?php echo __('Hola %1$s', $userSession->getUserName()); ?>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">

@@ -1,7 +1,7 @@
 <?php
-
+use SoftnCMS\controllers\ViewController;
 //TODO: mejorar la barra lateral.
-$siteUrl           = \SoftnCMS\rute\Router::getSiteURL();
+$siteUrl           = ViewController::getViewData('siteUrl');
 $urlAdmin          = $siteUrl . 'admin/';
 $urlPost           = $urlAdmin . 'post/';
 $urlPostCreate     = $urlPost . 'create/';

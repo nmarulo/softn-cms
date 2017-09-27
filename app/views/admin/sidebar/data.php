@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Sidebar;
 
 $sidebars             = ViewController::getViewData('sidebars');
-$siteUrlUpdate        = \SoftnCMS\rute\Router::getSiteURL() . 'admin/sidebar/update/';
+$siteUrlUpdate        = ViewController::getViewData('siteUrl') . 'admin/sidebar/update/';
 $strTranslateTitle    = __('Título');
 $strTranslatePosition = __('Posición');
 ?>

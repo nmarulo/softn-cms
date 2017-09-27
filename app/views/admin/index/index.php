@@ -13,7 +13,7 @@ $countTerms           = ViewController::getViewData('countTerms');
 $countUsers           = ViewController::getViewData('countUsers');
 $posts                = ViewController::getViewData('posts');
 $comments             = ViewController::getViewData('comments');
-$siteUrl              = \SoftnCMS\rute\Router::getSiteURL() . "admin/index/";
+$siteUrl              = ViewController::getViewData('siteUrl') . "admin/index/";
 $strTranslatePosts    = __('Entradas');
 $strTranslateComments = __('Comentarios');
 ?>

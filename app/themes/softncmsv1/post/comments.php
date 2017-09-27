@@ -1,18 +1,15 @@
 <?php
 
-use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\LoginManager;
-use SoftnCMS\models\managers\UsersManager;
-use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\controllers\template\CommentTemplate;
+use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\CommentsManager;
 
 $postTemplate     = ViewController::getViewData('post');
 $siteUrl          = $postTemplate->getSiteUrl();
 $urlUser          = $siteUrl . 'user/';
 $post             = $postTemplate->getPost();
 $commentsTemplate = $postTemplate->getCommentsTemplate();
-$usersManager     = new UsersManager();
-$userSession      = $usersManager->searchById(LoginManager::getSession());
+$userSession      = ViewController::getViewData('userSession');
 
 if (!empty($commentsTemplate)) {
     ?>
@@ -61,10 +58,7 @@ if ($post->getPostCommentStatus()) {
     <div id="container-comments-form" class="clearfix">
         <h2>Publicar comentario</h2>
         <form method="post">
-            <?php if (LoginManager::isLogin()) { ?>
-                <p>Conectado como <strong><?php echo $userSession->getUserName(); ?></strong></p>
-                <input type="hidden" name="<?php echo CommentsManager::COMMENT_USER_ID; ?>" value="<?php echo $userSession->getId(); ?>"/>
-            <?php } else { ?>
+            <?php if (empty($userSession)) { ?>
                 <div class="form-group">
                     <label class="control-label">Nombre</label>
                     <input class="form-control" name="<?php echo CommentsManager::COMMENT_AUTHOR; ?>"/>
@@ -73,6 +67,9 @@ if ($post->getPostCommentStatus()) {
                     <label class="control-label">Correo electrónico</label>
                     <input type="email" class="form-control" name="<?php echo CommentsManager::COMMENT_AUTHOR_EMAIL; ?>"/>
                 </div>
+            <?php } else { ?>
+                <p>Conectado como <strong><?php echo $userSession->getUserName(); ?></strong></p>
+                <input type="hidden" name="<?php echo CommentsManager::COMMENT_USER_ID; ?>" value="<?php echo $userSession->getId(); ?>"/>
             <?php } ?>
             <div class="form-group">
                 <label class="control-label">Comentario</label>

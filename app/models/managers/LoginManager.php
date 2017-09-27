@@ -37,32 +37,6 @@ class LoginManager {
     }
     
     /**
-     * Método que comprueba si el valor de la variable de sesión corresponde
-     * a un usuario valido.
-     * @return bool
-     */
-    public static function checkSession() {
-        $usersManager = new UsersManager();
-        $user         = $usersManager->searchById(self::getSession());
-        
-        if ($user === FALSE) {
-            unset($_SESSION[SESSION_USER]);
-            
-            return FALSE;
-        }
-        
-        return TRUE;
-    }
-    
-    /**
-     * Método que obtiene el identificador del usuario en sesión.
-     * @return int
-     */
-    public static function getSession() {
-        return isset($_SESSION[SESSION_USER]) ? $_SESSION[SESSION_USER] : 0;
-    }
-    
-    /**
      * Método que comprueba si ha iniciado sesión.
      * @return bool Si es FALSE, el usuario no tiene un sesión activa
      * ni tiene la opción de recordar sesión.
@@ -77,5 +51,31 @@ class LoginManager {
         }
         
         return self::checkSession();
+    }
+    
+    /**
+     * Método que comprueba si el valor de la variable de sesión corresponde
+     * a un usuario valido.
+     * @return bool
+     */
+    public static function checkSession() {
+        $usersManager = new UsersManager();
+        $session      = self::getSession();
+        
+        if ($session == 0 || $usersManager->searchById($session) === FALSE) {
+            unset($_SESSION[SESSION_USER]);
+            
+            return FALSE;
+        }
+        
+        return TRUE;
+    }
+    
+    /**
+     * Método que obtiene el identificador del usuario en sesión.
+     * @return int
+     */
+    public static function getSession() {
+        return isset($_SESSION[SESSION_USER]) ? $_SESSION[SESSION_USER] : 0;
     }
 }

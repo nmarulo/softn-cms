@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 
 ViewController::registerScript('pagination');
 ViewController::registerScript('delete-data');
-$siteUrl = \SoftnCMS\rute\Router::getSiteURL() . "admin/profile/";
+$siteUrl = ViewController::getViewData('siteUrl') . "admin/profile/";
 ?>
 <div class="page-container" data-menu-collapse-id="user" data-url="<?php echo $siteUrl; ?>">
     <div>

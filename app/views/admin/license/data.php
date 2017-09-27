@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\License;
 
 $licenses         = ViewController::getViewData('licenses');
-$siteUrlUpdate    = \SoftnCMS\rute\Router::getSiteURL() . 'admin/license/update/';
+$siteUrlUpdate    = ViewController::getViewData('siteUrl') . 'admin/license/update/';
 $strTranslateName = __('Nombre');
 ViewController::singleViewByDirectory('pagination'); ?>
     <div class="table-responsive">

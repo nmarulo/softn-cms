@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 
 ViewController::registerScript('pagination');
 ViewController::registerScript('delete-data');
-$siteUrl = \SoftnCMS\rute\Router::getSiteURL() . "admin/comment/";
+$siteUrl = ViewController::getViewData('siteUrl') . "admin/comment/";
 ?>
 <div class="page-container" data-url="<?php echo $siteUrl; ?>">
     <div>

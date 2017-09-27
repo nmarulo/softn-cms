@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\UsersManager;
 
 $urlLogin = ViewController::getViewData('urlLogin');
-$siteUrl  = \SoftnCMS\rute\Router::getSiteURL();
+$siteUrl  = ViewController::getViewData('siteUrl')
 ?>
 <div id="login" class="page-container center-block">
     <div class="panel panel-default clearfix">

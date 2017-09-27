@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\User;
 
 $users                  = ViewController::getViewData('users');
-$siteUrlUpdate          = \SoftnCMS\rute\Router::getSiteURL() . 'admin/user/update/';
+$siteUrlUpdate          = ViewController::getViewData('siteUrl') . 'admin/user/update/';
 $strTranslateUser       = __('Usuario');
 $strTranslateName       = __('Nombre');
 $strTranslateEmail      = __('Correo electrónico');

@@ -4,7 +4,7 @@ use SoftnCMS\models\tables\Page;
 use SoftnCMS\controllers\ViewController;
 
 $pages                = ViewController::getViewData('pages');
-$siteUrlUpdate        = \SoftnCMS\rute\Router::getSiteURL() . 'admin/page/update/';
+$siteUrlUpdate        = ViewController::getViewData('siteUrl') . 'admin/page/update/';
 $strTranslateTitle    = __('Título');
 $strTranslateComments = __('Comentarios');
 $strTranslateDate     = __('Fecha');
