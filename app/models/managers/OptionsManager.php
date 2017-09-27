@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\models\managers;
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Option;
 use SoftnCMS\rute\Router;
@@ -36,7 +37,7 @@ class OptionsManager extends CRUDManagerAbstract {
         $siteUrl = '';
         
         if (!defined('INSTALL')) {
-            $optionSiteUrl = $this->searchByName(OPTION_SITE_URL);
+            $optionSiteUrl = $this->searchByName(OptionConstants::SITE_URL);
             
             if ($optionSiteUrl !== FALSE) {
                 $siteUrl = $optionSiteUrl->getOptionValue();

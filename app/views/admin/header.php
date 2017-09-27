@@ -1,5 +1,6 @@
 <?php
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\UsersManager;
@@ -13,7 +14,7 @@ $urlPostCreate     = $urlAdmin . 'post/create';
 $urlCategoryCreate = $urlAdmin . 'category/create';
 $urlTermCreate     = $urlAdmin . 'term/create';
 $urlPageCreate     = $urlAdmin . 'page/create';
-$siteTitle         = $optionsManager->searchByName(OPTION_TITLE)
+$siteTitle         = $optionsManager->searchByName(OptionConstants::SITE_TITLE)
                                     ->getOptionValue();
 $urlLogout         = $siteUrl . 'login/logout';
 $nameUser          = $userManager->searchById($idUser)

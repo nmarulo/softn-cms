@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\controllers\login;
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\ManagerAbstract;
@@ -64,7 +65,6 @@ class RegisterController extends ControllerAbstract {
         }
         
         $optionsManager = new OptionsManager();
-        $defaultProfile = $optionsManager->searchByName(OPTION_DEFAULT_PROFILE);
         $pass           = Util::encrypt($pass, LOGGED_KEY);
         $user           = new User();
         $user->setUserPassword($pass);
@@ -73,7 +73,8 @@ class RegisterController extends ControllerAbstract {
         $user->setUserRegistered(Util::dateNow());
         $user->setUserName($user->getUserLogin());
         $user->setUserPostCount(0);
-        $user->setProfileId($defaultProfile->getOptionValue());
+        $user->setProfileId($optionsManager->searchByName(OptionConstants::DEFAULT_PROFILE)
+                                           ->getOptionValue());
         
         return ['user' => $user];
     }

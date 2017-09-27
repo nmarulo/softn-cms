@@ -1,5 +1,6 @@
 <?php
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\UsersManager;
@@ -8,7 +9,7 @@ use SoftnCMS\controllers\template\MenuTemplate;
 
 $menusManager   = new MenusManager();
 $optionsManager = new OptionsManager();
-$siteTitle      = $optionsManager->searchByName(OPTION_TITLE)
+$siteTitle      = $optionsManager->searchByName(OptionConstants::SITE_TITLE)
                                  ->getOptionValue();
 $siteUrl        = $optionsManager->getSiteUrl();
 $urlAdmin       = $siteUrl . 'admin';
@@ -17,7 +18,7 @@ $urlLogin       = $siteUrl . 'login';
 $urlLogout      = "$urlLogin/logout";
 $urlUserUpdate  = '';
 $user           = NULL;
-$optionMenu     = $optionsManager->searchByName(OPTION_MENU);
+$optionMenu     = $optionsManager->searchByName(OptionConstants::MENU);
 $menu           = $menusManager->searchById($optionMenu->getOptionValue());
 $menuList       = [];
 

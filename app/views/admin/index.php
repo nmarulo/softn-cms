@@ -1,4 +1,6 @@
 <?php
+
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\ViewController;
 
 ViewController::registerScript('jquery-3.2.1');
@@ -10,7 +12,7 @@ ViewController::registerStyleRoute('app/vendor/twbs/bootstrap/dist/css/bootstrap
 ViewController::registerStyleRoute('app/vendor/fortawesome/font-awesome/css/font-awesome.min');
 ViewController::registerStyle('style');
 $optionsManager = new \SoftnCMS\models\managers\OptionsManager();
-$siteTitle      = $optionsManager->searchByName(OPTION_TITLE)
+$siteTitle      = $optionsManager->searchByName(OptionConstants::SITE_TITLE)
                                  ->getOptionValue();
 ?>
 <!DOCTYPE html>

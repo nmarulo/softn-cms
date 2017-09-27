@@ -7,6 +7,7 @@ namespace SoftnCMS\util;
 
 use Gettext\Translations;
 use Gettext\Translator;
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\models\managers\OptionsManager;
 
 /**
@@ -23,7 +24,7 @@ class Language {
         
         if (!defined('INSTALL') && empty($paramLan)) {
             $optionsManager = new OptionsManager();
-            $optionLanguage = $optionsManager->searchByName(OPTION_LANGUAGE);
+            $optionLanguage = $optionsManager->searchByName(OptionConstants::LANGUAGE);
             
             if ($optionLanguage) {
                 $language = $optionLanguage->getOptionValue();

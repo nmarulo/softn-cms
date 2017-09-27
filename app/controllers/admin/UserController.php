@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\CRUDManagerAbstract;
@@ -135,7 +136,7 @@ class UserController extends CUDControllerAbstract {
     
     private function getGravatar() {
         $optionsManager = new OptionsManager();
-        $gravatarOption = $optionsManager->searchByName(OPTION_GRAVATAR);
+        $gravatarOption = $optionsManager->searchByName(OptionConstants::GRAVATAR);
         
         if (empty($gravatarOption->getOptionValue())) {
             $gravatar = new Gravatar();

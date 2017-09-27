@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\rute;
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
@@ -119,7 +120,7 @@ class Request {
             $optionsManager = new OptionsManager();
             
             if (!defined('INSTALL')) {
-                $controllerDirectoryName = $optionsManager->searchByName(OPTION_THEME)
+                $controllerDirectoryName = $optionsManager->searchByName(OptionConstants::THEME)
                                                           ->getOptionValue();
             }
             

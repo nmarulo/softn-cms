@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\controllers;
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\Pagination;
@@ -24,7 +25,7 @@ abstract class ThemeControllerAbstract {
     
     protected function pagination($count) {
         $optionsManager = new OptionsManager();
-        $optionPaged    = $optionsManager->searchByName(OPTION_PAGED);
+        $optionPaged    = $optionsManager->searchByName(OptionConstants::PAGED);
         $siteUrl        = $optionsManager->getSiteUrl();
         $paged          = InputIntegerBuilder::init('paged')
                                              ->setMethod($_GET)

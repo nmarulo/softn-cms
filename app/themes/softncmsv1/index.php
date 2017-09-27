@@ -1,4 +1,6 @@
 <?php
+
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 
@@ -9,7 +11,7 @@ ViewController::registerStyleRoute('app/themes/softncmsv1/resources/css/style');
 ViewController::registerScriptRoute('app/resources/js/jquery-3.2.1');
 ViewController::registerScriptRoute('app/vendor/twbs/bootstrap/dist/js/bootstrap');
 $optionsManager = new OptionsManager();
-$siteTitle      = $optionsManager->searchByName(OPTION_TITLE)
+$siteTitle      = $optionsManager->searchByName(OptionConstants::SITE_TITLE)
                                  ->getOptionValue();
 ?>
 <!DOCTYPE html>
