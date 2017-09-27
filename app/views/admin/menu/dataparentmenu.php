@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\tables\Menu;
 
-$siteUrl       = \SoftnCMS\rute\Router::getSiteURL();
+$siteUrl       = ViewController::getViewData('siteUrl');
 $siteUrlUpdate = $siteUrl . 'admin/menu/update/';
 $siteUrlCreate = $siteUrl . 'admin/menu/create/?parentMenu=';
 $subMenu       = ViewController::getViewData('subMenu');

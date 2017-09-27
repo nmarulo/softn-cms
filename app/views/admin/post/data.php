@@ -4,7 +4,7 @@ use SoftnCMS\models\tables\Post;
 use SoftnCMS\controllers\ViewController;
 
 $posts                = ViewController::getViewData('posts');
-$siteUrlUpdate        = \SoftnCMS\rute\Router::getSiteURL() . 'admin/post/update/';
+$siteUrlUpdate        = ViewController::getViewData('siteUrl') . 'admin/post/update/';
 $strTranslateTitle    = __('Título');
 $strTranslateAuthor   = __('Autor');
 $strTranslateComments = __('Comentarios');

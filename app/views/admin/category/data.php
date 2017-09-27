@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Category;
 
 $categories        = ViewController::getViewData('categories');
-$siteUrlUpdate     = \SoftnCMS\rute\Router::getSiteURL() . 'admin/category/update/';
+$siteUrlUpdate     = ViewController::getViewData('siteUrl') . 'admin/category/update/';
 $strTranslateName  = __('Nombre');
 $strTranslatePosts = __('Entradas');
 ViewController::singleViewByDirectory('pagination'); ?>

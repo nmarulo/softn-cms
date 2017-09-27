@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 
 ViewController::registerScript('pagination');
 ViewController::registerScript('delete-data');
-$siteUrlMenu   = \SoftnCMS\rute\Router::getSiteURL() . 'admin/menu/';
+$siteUrlMenu   = ViewController::getViewData('siteUrl') . 'admin/menu/';
 $siteUrlCreate = $siteUrlMenu . 'create/';
 ?>
 <div class="page-container" data-url="<?php echo $siteUrlMenu; ?>">

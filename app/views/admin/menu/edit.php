@@ -3,7 +3,7 @@
 use SoftnCMS\controllers\ViewController;
 
 ViewController::registerScript('delete-data');
-$siteUrl       = \SoftnCMS\rute\Router::getSiteURL();
+$siteUrl       = ViewController::getViewData('siteUrl');
 $siteUrlUpdate = $siteUrl . 'admin/menu/update/';
 $siteUrlCreate = $siteUrl . 'admin/menu/create/?parentMenu=';
 $siteUrlMenu   = $siteUrl . 'admin/menu/';

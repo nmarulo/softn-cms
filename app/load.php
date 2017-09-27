@@ -8,6 +8,12 @@
 require ABSPATH . 'define.php';
 require ABSPATH . 'vendor/autoload.php';
 
+use SoftnCMS\classes\constants\OptionConstants;
+use SoftnCMS\controllers\template\MenuTemplate;
+use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\MenusManager;
+use SoftnCMS\models\managers\SidebarsManager;
+use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\rute\Router;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\util\Util;
@@ -31,6 +37,36 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     $directoryController = $route->getControllerDirectoryName();
     $directoryView       = $route->getDirectoryNameViewController();
     $optionsManager      = new OptionsManager();
+    
+    ViewController::setViewDataBase(function() use ($optionsManager, $directoryController) {
+        $user     = NULL;
+        $menuList = [];
+        $sidebars = [];
+        
+        if ($directoryController == Route::CONTROLLER_DIRECTORY_NAME_THEME) {
+            $menusManager    = new MenusManager();
+            $optionMenu      = $optionsManager->searchByName(OptionConstants::MENU);
+            $menu            = $menusManager->searchById($optionMenu->getOptionValue());
+            $menuTemplate    = new MenuTemplate($menu, TRUE);
+            $menuList        = $menuTemplate->getSubMenuList();
+            $sidebarsManager = new SidebarsManager();
+            $sidebars        = $sidebarsManager->read();
+        }
+        
+        if (LoginManager::checkSession()) {
+            $usersManager = new UsersManager();
+            $user         = $usersManager->searchById(LoginManager::getSession());
+        }
+        
+        return [
+            'siteUrl'     => Router::getSiteURL(),
+            'siteTitle'   => $optionsManager->searchByName(OptionConstants::SITE_TITLE)
+                                            ->getOptionValue(),
+            'userSession' => $user,
+            'menuList'    => $menuList,
+            'sidebars'    => $sidebars,
+        ];
+    });
     
     if (defined('INSTALL') || $directoryController == 'install') {
         $siteUrl = Router::getSiteURL();

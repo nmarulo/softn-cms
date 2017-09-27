@@ -1,10 +1,9 @@
 <?php
 
-use SoftnCMS\models\managers\SidebarsManager;
+use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Sidebar;
 
-$sidebarsManager = new SidebarsManager();
-$sidebars        = $sidebarsManager->read();
+$sidebars = ViewController::getViewData('sidebars');
 ?>
 <aside>
     <?php array_walk($sidebars, function(Sidebar $sidebar) { ?>

@@ -1,36 +1,19 @@
 <?php
 
-use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\models\managers\LoginManager;
-use SoftnCMS\models\managers\OptionsManager;
-use SoftnCMS\models\managers\UsersManager;
-use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\controllers\template\MenuTemplate;
+use SoftnCMS\controllers\ViewController;
 
-$menusManager   = new MenusManager();
-$optionsManager = new OptionsManager();
-$siteTitle      = $optionsManager->searchByName(OptionConstants::SITE_TITLE)
-                                 ->getOptionValue();
-$siteUrl        = $optionsManager->getSiteUrl();
-$urlAdmin       = $siteUrl . 'admin';
-$isLogin        = LoginManager::isLogin();
-$urlLogin       = $siteUrl . 'login';
-$urlLogout      = "$urlLogin/logout";
-$urlUserUpdate  = '';
-$user           = NULL;
-$optionMenu     = $optionsManager->searchByName(OptionConstants::MENU);
-$menu           = $menusManager->searchById($optionMenu->getOptionValue());
-$menuList       = [];
+$siteTitle     = ViewController::getViewData('siteTitle');
+$siteUrl       = ViewController::getViewData('siteUrl');
+$userSession   = ViewController::getViewData('userSession');
+$menuList      = ViewController::getViewData('menuList');
+$urlAdmin      = $siteUrl . 'admin';
+$urlLogin      = $siteUrl . 'login';
+$urlLogout     = "$urlLogin/logout";
+$urlUserUpdate = '';
 
-if (!empty($menu)) {
-    $menuTemplate = new MenuTemplate($menu, TRUE);
-    $menuList     = $menuTemplate->getSubMenuList();
-}
-
-if ($isLogin) {
-    $usersManager  = new UsersManager();
-    $user          = $usersManager->searchById(LoginManager::getSession());
-    $urlUserUpdate = "$urlAdmin/user/update/" . $user->getId();
+if (!empty($userSession)) {
+    $urlUserUpdate = "$urlAdmin/user/update/" . $userSession->getId();
 }
 ?>
 
@@ -76,9 +59,9 @@ if ($isLogin) {
                 }); ?>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <?php if ($isLogin) { ?>
+                <?php if (!empty($userSession)) { ?>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user->getUserName(); ?>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $userSession->getUserName(); ?>
                             <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="<?php echo $urlAdmin; ?>">Administración</a></li>

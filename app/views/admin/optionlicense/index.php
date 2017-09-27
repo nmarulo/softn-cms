@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 
 ViewController::registerScript('pagination');
 ViewController::registerScript('delete-data');
-$siteUrl = \SoftnCMS\rute\Router::getSiteURL() . "admin/optionlicense/";
+$siteUrl = ViewController::getViewData('siteUrl') . "admin/optionlicense/";
 ?>
 <div class="page-container" data-menu-collapse-id="option" data-url="<?php echo $siteUrl; ?>">
     <div>

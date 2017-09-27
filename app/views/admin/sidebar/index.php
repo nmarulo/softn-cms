@@ -3,7 +3,7 @@
 use SoftnCMS\controllers\ViewController;
 
 ViewController::registerScript('delete-data');
-$siteUrl = \SoftnCMS\rute\Router::getSiteURL() . "admin/sidebar/";
+$siteUrl = ViewController::getViewData('siteUrl') . "admin/sidebar/";
 ?>
 <div class="page-container" data-url="<?php echo $siteUrl; ?>">
     <div>

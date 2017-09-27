@@ -4,10 +4,10 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Profile;
 
 $profiles         = ViewController::getViewData('profiles');
-$siteUrlUpdate    = \SoftnCMS\rute\Router::getSiteURL() . 'admin/profile/update/';
+$siteUrlUpdate    = ViewController::getViewData('siteUrl') . 'admin/profile/update/';
 $strTranslateName = __('Nombre');
 ViewController::singleViewByDirectory('pagination'); ?>
-    <div class="table-responsive">
+<div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>

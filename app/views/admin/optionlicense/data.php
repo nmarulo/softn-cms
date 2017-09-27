@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\License;
 
 $licenses      = ViewController::getViewData('licenses');
-$siteUrlUpdate = \SoftnCMS\rute\Router::getSiteURL() . 'admin/optionlicense/update/';
+$siteUrlUpdate = ViewController::getViewData('siteUrl') . 'admin/optionlicense/update/';
 ViewController::singleViewByDirectory('pagination'); ?>
 <div class="table-responsive">
     <table class="table table-striped">

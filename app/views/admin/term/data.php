@@ -1,12 +1,10 @@
 <?php
 
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Term;
 
 $terms             = ViewController::getViewData('terms');
-$optionsManager    = new OptionsManager();
-$siteUrlUpdate     = \SoftnCMS\rute\Router::getSiteURL() . 'admin/term/update/';
+$siteUrlUpdate     = ViewController::getViewData('siteUrl') . 'admin/term/update/';
 $strTranslateName  = __('Nombre');
 $strTranslatePosts = __('Entradas');
 ViewController::singleViewByDirectory('pagination'); ?>

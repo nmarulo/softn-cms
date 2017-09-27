@@ -37,6 +37,9 @@ class ViewController {
     /** @var string Ruta del directorio de las vistas. */
     private static $VIEW_PATH = '';
     
+    /** @var \Closure */
+    private static $VIEW_DATA_BASE_CLOSURE;
+    
     /**
      * @param string $viewPath
      */
@@ -66,6 +69,7 @@ class ViewController {
      * @param string $fileName Nombre de la vista.
      */
     public static function view($fileName) {
+        self::callViewDataBase();
         self::$CONTROLLER_VIEW_PATH = self::getControllerViewPath($fileName);
         self::includePath(self::getPathView('index'));
         self::$VIEW_DATA = [];
@@ -246,6 +250,23 @@ class ViewController {
         } else {
             Logger::getInstance()
                   ->debug('El css ya existe.', ['styleRute' => $styleRute]);
+        }
+    }
+    
+    /**
+     * @param \Closure $closure
+     */
+    public static function setViewDataBase($closure) {
+        self::$VIEW_DATA_BASE_CLOSURE = $closure;
+    }
+    
+    private static function callViewDataBase() {
+        if (is_callable(self::$VIEW_DATA_BASE_CLOSURE)) {
+            $data = call_user_func(self::$VIEW_DATA_BASE_CLOSURE);
+            
+            if (is_array($data)) {
+                self::$VIEW_DATA = array_merge($data, self::$VIEW_DATA);
+            }
         }
     }
 }

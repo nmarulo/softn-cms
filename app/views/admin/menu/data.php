@@ -4,7 +4,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Menu;
 
 $menus                = ViewController::getViewData('menus');
-$siteUrl              = \SoftnCMS\rute\Router::getSiteURL();
+$siteUrl              = ViewController::getViewData('siteUrl');
 $siteUrlUpdate        = $siteUrl . 'admin/menu/update/';
 $siteUrlEdit          = $siteUrl . 'admin/menu/edit/';
 $strTranslateTitle    = __('Título');

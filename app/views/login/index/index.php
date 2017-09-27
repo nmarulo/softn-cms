@@ -3,7 +3,7 @@
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\UsersManager;
 
-$siteUrl     = \SoftnCMS\rute\Router::getSiteURL();
+$siteUrl     = ViewController::getViewData('siteUrl');
 $urlRegister = ViewController::getViewData('urlRegister');
 ?>
 <div id="login" class="page-container center-block">
