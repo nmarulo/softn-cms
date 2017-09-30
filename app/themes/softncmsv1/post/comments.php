@@ -1,8 +1,8 @@
 <?php
 
+use SoftnCMS\controllers\template\CommentTemplate;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\CommentsManager;
-use SoftnCMS\controllers\template\CommentTemplate;
 
 $postTemplate     = ViewController::getViewData('post');
 $siteUrl          = $postTemplate->getSiteUrl();
@@ -30,7 +30,7 @@ if (!empty($commentsTemplate)) {
             <div id="comment-<?php echo $comment->getID(); ?>" class="media">
                 <div class="media-left">
                     <?php if (empty($userTemplate)) { ?>
-                        <img class="media-object" src="<?php echo $siteUrl; ?>app/themes/softncmsv1/resources/img/avatar.svg">
+                        <img class="media-object" src="<?php echo $commentTemplate->getDefaultUserImage(); ?>">
                     <?php } else {
                         $user = $userTemplate->getUser();
                         ?>
