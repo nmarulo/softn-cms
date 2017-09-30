@@ -1,8 +1,8 @@
 <?php
 
-use SoftnCMS\controllers\template\CommentTemplate;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\CommentsManager;
+use SoftnCMS\controllers\template\CommentTemplate;
 
 $postTemplate     = ViewController::getViewData('post');
 $siteUrl          = $postTemplate->getSiteUrl();
@@ -57,7 +57,8 @@ if ($post->getPostCommentStatus()) {
     ?>
     <div id="container-comments-form" class="clearfix">
         <h2>Publicar comentario</h2>
-        <form method="post">
+        <?php if ($postTemplate->isCanCommentAnyUser() || !empty($userSession)) { ?>
+            <form method="post">
             <?php if (empty($userSession)) { ?>
                 <div class="form-group">
                     <label class="control-label">Nombre</label>
@@ -71,14 +72,17 @@ if ($post->getPostCommentStatus()) {
                 <p>Conectado como <strong><?php echo $userSession->getUserName(); ?></strong></p>
                 <input type="hidden" name="<?php echo CommentsManager::COMMENT_USER_ID; ?>" value="<?php echo $userSession->getId(); ?>"/>
             <?php } ?>
-            <div class="form-group">
+                <div class="form-group">
                 <label class="control-label">Comentario</label>
                 <textarea class="form-control" name="<?php echo CommentsManager::COMMENT_CONTENTS; ?>" rows="5"></textarea>
             </div>
             <input type="hidden" name="<?php echo CommentsManager::POST_ID; ?>" value="<?php echo $post->getId(); ?>"/>
             <button class="btn btn-primary" name="<?php echo CommentsManager::FORM_SUBMIT; ?>" value="<?php echo CommentsManager::FORM_SUBMIT; ?>">Publicar</button>
-            <?php \SoftnCMS\util\Token::formField(); ?>
+                <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
+        <?php } else { ?>
+            <div class="alert alert-info">Debes iniciar sesión para comentar.</div>
+        <?php } ?>
     </div>
 <?php } else { ?>
     <div class="alert alert-info">Los comentarios están cerrados.</div>

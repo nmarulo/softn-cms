@@ -5,9 +5,11 @@
 
 namespace SoftnCMS\controllers\template;
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\CommentsManager;
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\managers\UsersManager;
@@ -39,6 +41,9 @@ class PostTemplate extends Template {
     /** @var array */
     private $commentsTemplate;
     
+    /** @var bool */
+    private $canCommentAnyUser;
+    
     /**
      * PostTemplate constructor.
      *
@@ -52,6 +57,9 @@ class PostTemplate extends Template {
         $this->categoriesTemplate = [];
         $this->termsTemplate      = [];
         $this->userTemplate       = NULL;
+        $optionsManager           = new OptionsManager();
+        $optionComment            = $optionsManager->searchByName(OptionConstants::COMMENT);
+        $this->canCommentAnyUser  = !empty($optionComment->getOptionValue());
         
         if ($initRelationship) {
             $this->initRelationship();
@@ -161,6 +169,13 @@ class PostTemplate extends Template {
      */
     public function getCommentsTemplate() {
         return $this->commentsTemplate;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isCanCommentAnyUser() {
+        return $this->canCommentAnyUser;
     }
     
 }
