@@ -156,7 +156,7 @@ class MySQL {
                 $parameterValue = "'$parameterValue'";
             }
             //Reemplaza los parámetros con sus valores correspondientes.
-            $this->query = \str_replace($parameter, $parameterValue, $this->query);
+            $this->query = preg_replace("/$parameter/", $parameterValue, $this->query, 1);
         }
         
         Logger::getInstance()
