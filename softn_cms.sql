@@ -338,6 +338,7 @@ INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`)
 VALUES (DEFAULT, 'optionEmailAdmin', 'localhost@localhost.com');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionLanguage', 'es');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionDefaultProfile', '1');
+INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionComment', '1');
 INSERT INTO `#{PREFIX}options` (`id`, `option_name`, `option_value`) VALUES (DEFAULT, 'optionGravatar',
                                                                              'C:22:\"SoftnCMS\\util\\Gravatar\":72:{a:5:{i:0;b:0;i:1;s:0:\"\";i:2;s:4:\"s=64\";i:3;s:7:\"d=retro\";i:4;s:3:\"r=g\";}}');
 

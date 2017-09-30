@@ -25,14 +25,6 @@ class OptionsManager extends CRUDManagerAbstract {
     
     const OPTION_VALUE                  = 'option_value';
     
-    const OPTION_GRAVATAR_SIZE          = 'option_gravatar_size';
-    
-    const OPTION_GRAVATAR_RATING        = 'option_gravatar_rating';
-    
-    const OPTION_GRAVATAR_DEFAULT_IMAGE = 'option_gravatar_default_image';
-    
-    const OPTION_GRAVATAR_FORCE_DEFAULT = 'option_gravatar_force_default';
-    
     public function getSiteUrl($router = NULL) {
         $siteUrl = '';
         

@@ -70,10 +70,10 @@ class OptionController extends ControllerAbstract {
         }
         
         $gravatar = new Gravatar();
-        $gravatar->setSize(Arrays::get($inputs, OptionsManager::OPTION_GRAVATAR_SIZE));
-        $gravatar->setForceDefault(Arrays::get($inputs, OptionsManager::OPTION_GRAVATAR_FORCE_DEFAULT));
-        $gravatar->setDefaultImage(Arrays::get($inputs, OptionsManager::OPTION_GRAVATAR_DEFAULT_IMAGE));
-        $gravatar->setRating(Arrays::get($inputs, OptionsManager::OPTION_GRAVATAR_RATING));
+        $gravatar->setSize(Arrays::get($inputs, OptionConstants::GRAVATAR_SIZE));
+        $gravatar->setForceDefault(Arrays::get($inputs, OptionConstants::GRAVATAR_FORCE_DEFAULT));
+        $gravatar->setDefaultImage(Arrays::get($inputs, OptionConstants::GRAVATAR_DEFAULT_IMAGE));
+        $gravatar->setRating(Arrays::get($inputs, OptionConstants::GRAVATAR_RATING));
         $gravatarOption = new Option();
         $gravatarOption->setOptionName(OptionConstants::GRAVATAR);
         $gravatarOption->setOptionValue(serialize($gravatar));
@@ -114,13 +114,15 @@ class OptionController extends ControllerAbstract {
                                   ->build(),
             InputIntegerBuilder::init(OptionConstants::DEFAULT_PROFILE)
                                ->build(),
-            InputIntegerBuilder::init(OptionsManager::OPTION_GRAVATAR_SIZE)
+            InputIntegerBuilder::init(OptionConstants::GRAVATAR_SIZE)
                                ->build(),
-            InputAlphabeticBuilder::init(OptionsManager::OPTION_GRAVATAR_RATING)
+            InputAlphabeticBuilder::init(OptionConstants::GRAVATAR_RATING)
                                   ->build(),
-            InputAlphabeticBuilder::init(OptionsManager::OPTION_GRAVATAR_DEFAULT_IMAGE)
+            InputAlphabeticBuilder::init(OptionConstants::GRAVATAR_DEFAULT_IMAGE)
                                   ->build(),
-            InputBooleanBuilder::init(OptionsManager::OPTION_GRAVATAR_FORCE_DEFAULT)
+            InputBooleanBuilder::init(OptionConstants::GRAVATAR_FORCE_DEFAULT)
+                               ->build(),
+            InputBooleanBuilder::init(OptionConstants::COMMENT)
                                ->build(),
         ]);
         
@@ -131,6 +133,7 @@ class OptionController extends ControllerAbstract {
         $profilesManager      = new ProfilesManager();
         $menusManager         = new MenusManager();
         $optionsManager       = new OptionsManager();
+        $optionComment        = $optionsManager->searchByName(OptionConstants::COMMENT);
         $optionTitle          = $optionsManager->searchByName(OptionConstants::SITE_TITLE);
         $optionDescription    = $optionsManager->searchByName(OptionConstants::SITE_DESCRIPTION);
         $optionPaged          = $optionsManager->searchByName(OptionConstants::PAGED);
@@ -158,6 +161,7 @@ class OptionController extends ControllerAbstract {
         }, $listLanguages);
         
         $this->gravatar();
+        ViewController::sendViewData('optionComment', $optionComment);
         ViewController::sendViewData('listLanguages', $listLanguages);
         ViewController::sendViewData('optionLanguage', $optionLanguage);
         ViewController::sendViewData('menuList', $menuList);

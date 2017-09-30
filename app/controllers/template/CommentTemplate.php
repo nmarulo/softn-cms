@@ -5,8 +5,10 @@
 
 namespace SoftnCMS\controllers\template;
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\CommentsManager;
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
@@ -28,6 +30,9 @@ class CommentTemplate extends Template {
     /** @var UserTemplate */
     private $userTemplate;
     
+    /** @var string */
+    private $defaultUserImage;
+    
     /**
      * CommentTemplate constructor.
      *
@@ -37,9 +42,13 @@ class CommentTemplate extends Template {
     public function __construct(Comment $comment = NULL, $initRelationship = FALSE) {
         parent::__construct();
         $comment->setCommentContents(Escape::htmlDecode($comment->getCommentContents()));
-        $this->comment      = $comment;
-        $this->post         = NULL;
-        $this->userTemplate = NULL;
+        $this->comment          = $comment;
+        $this->post             = NULL;
+        $this->userTemplate     = NULL;
+        $optionsManager         = new OptionsManager();
+        $optionGravatar         = $optionsManager->searchByName(OptionConstants::GRAVATAR);
+        $gravatar               = unserialize($optionGravatar->getOptionValue());
+        $this->defaultUserImage = $gravatar->get();
         
         if ($initRelationship) {
             $this->initRelationship();
@@ -110,6 +119,13 @@ class CommentTemplate extends Template {
      */
     public function getPost() {
         return $this->post;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getDefaultUserImage() {
+        return $this->defaultUserImage;
     }
     
 }

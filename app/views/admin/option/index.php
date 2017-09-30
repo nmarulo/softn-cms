@@ -1,5 +1,6 @@
 <?php
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Menu;
 use SoftnCMS\models\tables\Profile;
@@ -28,6 +29,8 @@ $gravatarSizeList            = ViewController::getViewData('gravatarSizeList');
 $gravatarDefaultImageList    = ViewController::getViewData('gravatarDefaultImageList');
 $gravatarRatingList          = ViewController::getViewData('gravatarRatingList');
 $gravatarCheckedForceDefault = $gravatar->getForceDefault() ? 'checked' : '';
+$optionComment               = ViewController::getViewData('optionComment');
+$commentChecked              = empty($optionComment->getOptionValue()) ? '' : 'checked';
 ?>
 <div class="page-container" data-menu-collapse-id="option">
     <div>
@@ -132,52 +135,61 @@ $gravatarCheckedForceDefault = $gravatar->getForceDefault() ? 'checked' : '';
                     </select>
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><?php echo __('Comentarios anónimos'); ?></label>
+                <div class="col-sm-10 checkbox">
+                    <label>
+                        <input type="checkbox" name="<?php echo $optionComment->getOptionName(); ?>" <?php echo $commentChecked; ?>/>
+                        <?php echo __('Permitir comentarios de usuarios no registrados'); ?>
+                    </label>
+                </div>
+            </div>
             <h3>Gravatar</h3>
             <div class="form-group">
-                <div class="col-sm-2 control-label"><?php echo __('Tamaño'); ?></div>
+                <label class="col-sm-2 control-label"><?php echo __('Tamaño'); ?></label>
                 <div class="col-sm-10">
                     <?php array_walk($gravatarSizeList, function($size) use ($gravatar) {
                         $checked = $gravatar->getSize() == $size ? 'checked' : '';
                         ?>
                         <label class="radio-inline">
-                            <input type="radio" name="<?php echo OptionsManager::OPTION_GRAVATAR_SIZE; ?>" value="<?php echo $size; ?>" <?php echo $checked; ?>/>
+                            <input type="radio" name="<?php echo OptionConstants::GRAVATAR_SIZE; ?>" value="<?php echo $size; ?>" <?php echo $checked; ?>/>
                             <?php echo $size; ?>
                         </label>
                     <?php }); ?>
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-2 control-label"><?php echo __('Imagen por defecto'); ?></div>
+                <label class="col-sm-2 control-label"><?php echo __('Imagen por defecto'); ?></label>
                 <div class="col-sm-10">
                     <?php array_walk($gravatarDefaultImageList, function($defaultImage) use ($gravatar) {
                         $checked  = $gravatar->getDefaultImage() == $defaultImage ? 'checked' : '';
                         $srcImage = Gravatar::URL . "?d=$defaultImage";
                         ?>
                         <label class="radio-inline">
-                            <input type="radio" name="<?php echo OptionsManager::OPTION_GRAVATAR_DEFAULT_IMAGE; ?>" value="<?php echo $defaultImage; ?>" <?php echo $checked; ?>/>
+                            <input type="radio" name="<?php echo OptionConstants::GRAVATAR_DEFAULT_IMAGE; ?>" value="<?php echo $defaultImage; ?>" <?php echo $checked; ?>/>
                             <img src="<?php echo $srcImage; ?>"/>
                         </label>
                     <?php }); ?>
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-2 control-label"><?php echo __('Calificación'); ?></div>
+                <label class="col-sm-2 control-label"><?php echo __('Calificación'); ?></label>
                 <div class="col-sm-10">
                     <?php array_walk($gravatarRatingList, function($rating) use ($gravatar) {
                         $checked = $gravatar->getRating() == $rating ? 'checked' : '';
                         ?>
                         <label class="radio-inline">
-                            <input type="radio" name="<?php echo OptionsManager::OPTION_GRAVATAR_RATING; ?>" value="<?php echo $rating; ?>" <?php echo $checked; ?>/>
+                            <input type="radio" name="<?php echo OptionConstants::GRAVATAR_RATING; ?>" value="<?php echo $rating; ?>" <?php echo $checked; ?>/>
                             <?php echo $rating; ?>
                         </label>
                     <?php }); ?>
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-2 control-label"><?php echo __('Forzar imagen por defecto'); ?></div>
-                <div class="col-sm-10">
-                    <label class="checkbox-inline">
-                        <input type="checkbox" name="<?php echo OptionsManager::OPTION_GRAVATAR_FORCE_DEFAULT; ?>" <?php echo $gravatarCheckedForceDefault; ?>/>
+                <label class="col-sm-2 control-label"><?php echo __('Forzar imagen por defecto'); ?></label>
+                <div class="col-sm-10 checkbox">
+                    <label>
+                        <input type="checkbox" name="<?php echo OptionConstants::GRAVATAR_FORCE_DEFAULT; ?>" <?php echo $gravatarCheckedForceDefault; ?>/>
                     </label>
                 </div>
             </div>
