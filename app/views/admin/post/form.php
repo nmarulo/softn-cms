@@ -2,11 +2,13 @@
 
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\PostsManager;
+use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\models\managers\PostsCategoriesManager;
 use SoftnCMS\models\managers\PostsTermsManager;
 use SoftnCMS\models\tables\Term;
 use SoftnCMS\models\tables\Category;
+use SoftnCMS\util\HTML;
 
 ViewController::registerScript('form');
 $title                = ViewController::getViewData('title');
@@ -18,6 +20,8 @@ $selectedTermsId      = ViewController::getViewData('selectedTermsId');
 $method               = ViewController::getViewData('method');
 $isUpdate             = $method == PostsManager::FORM_UPDATE;
 $linkPost             = ViewController::getViewData('linkPost');
+$usersList            = ViewController::getViewData('usersList');
+$selectedUserId       = ViewController::getViewData('selectedUserId');
 ?>
 <div class="page-container" data-menu-collapse-id="post">
     <div>
@@ -45,6 +49,20 @@ $linkPost             = ViewController::getViewData('linkPost');
                                 <label>
                                     <input name="<?php echo PostsManager::POST_COMMENT_STATUS; ?>" type="checkbox" <?php echo $post->getPostCommentStatus() ? 'checked' : ''; ?>> <?php echo __('Habilitar comentarios'); ?>
                                 </label>
+                            </div>
+                            <div class="form-group">
+                                <?php
+                                $options = HTML::createSelectOption($usersList, function(User $user) {
+                                    return [
+                                        'optionValue' => $user->getId(),
+                                        'optionText'  => $user->getUserName(),
+                                    ];
+                                }, $selectedUserId);
+                                HTML::selectOne(PostsManager::USER_ID, $options, [
+                                    'class'     => 'form-control',
+                                    'labelText' => __('Autor'),
+                                ]);
+                                ?>
                             </div>
                         </div>
                     </div>

@@ -204,6 +204,32 @@ class PostsManager extends CRUDManagerAbstract {
     
     /**
      * @param Post $object
+     *
+     * @return bool
+     */
+    public function update($object) {
+        $this->checkUpdateUser($object);
+        
+        return parent::update($object);
+    }
+    
+    /**
+     * @param Post $currentPost
+     */
+    private function checkUpdateUser($currentPost) {
+        $post          = $this->searchById($currentPost->getId());
+        $userId        = $post->getUserId();
+        $currentUserId = $currentPost->getUserId();
+        
+        if ($userId != $currentUserId) {
+            $userManager = new UsersManager();
+            $userManager->updatePostCount($userId, -1);
+            $userManager->updatePostCount($currentUserId, 1);
+        }
+    }
+    
+    /**
+     * @param Post $object
      */
     protected function addParameterQuery($object) {
         parent::parameterQuery(self::POST_TITLE, $object->getPostTitle(), \PDO::PARAM_STR);

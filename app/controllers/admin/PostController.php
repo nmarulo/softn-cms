@@ -62,6 +62,8 @@ class PostController extends CUDControllerAbstract {
         }
         
         $this->sendViewCategoriesAndTerms();
+        $this->sendViewUsers();
+        ViewController::sendViewData('selectedUserId', LoginManager::getSession());
         ViewController::sendViewData('post', new Post());
         ViewController::sendViewData('title', __('Publicar nueva entrada'));
         ViewController::view('form');
@@ -86,10 +88,9 @@ class PostController extends CUDControllerAbstract {
         $post->setPostStatus(Arrays::get($inputs, PostsManager::POST_STATUS));
         $post->setPostCommentStatus(Arrays::get($inputs, PostsManager::POST_COMMENT_STATUS));
         $post->setPostContents(Arrays::get($inputs, PostsManager::POST_CONTENTS));
-        $post->setUserId(NULL);
+        $post->setUserId(Arrays::get($inputs, PostsManager::USER_ID));
         
         if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
-            $post->setUserId(LoginManager::getSession());
             $post->setPostCommentCount(0);
             $post->setPostDate($date);
         }
@@ -120,6 +121,8 @@ class PostController extends CUDControllerAbstract {
             InputListIntegerBuilder::init(PostsTermsManager::TERM_ID)
                                    ->setRequire(FALSE)
                                    ->build(),
+            InputIntegerBuilder::init(PostsManager::USER_ID)
+                               ->build(),
         ]);
         
         return Form::inputFilter();
@@ -245,6 +248,11 @@ class PostController extends CUDControllerAbstract {
         ViewController::sendViewData('terms', $terms);
     }
     
+    private function sendViewUsers() {
+        $usersManager = new UsersManager();
+        ViewController::sendViewData('usersList', $usersManager->read());
+    }
+    
     public function update($id) {
         $postsManager = new PostsManager();
         $post         = $postsManager->searchById($id);
@@ -280,6 +288,8 @@ class PostController extends CUDControllerAbstract {
             $selectedCategoriesId = $this->getCurrentCategoriesId($id);
             $selectedTermsId      = $this->getCurrentTermsId($id);
             $this->sendViewCategoriesAndTerms();
+            $this->sendViewUsers();
+            ViewController::sendViewData('selectedUserId', $post->getUserId());
             ViewController::sendViewData('linkPost', $linkPost);
             ViewController::sendViewData('selectedCategoriesId', $selectedCategoriesId);
             ViewController::sendViewData('selectedTermsId', $selectedTermsId);
