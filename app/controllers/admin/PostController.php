@@ -5,9 +5,9 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\OptionsManager;
@@ -37,7 +37,7 @@ use SoftnCMS\util\Util;
 class PostController extends CUDControllerAbstract {
     
     public function create() {
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $postsManager = new PostsManager();
             $form         = $this->form();
             
@@ -63,6 +63,7 @@ class PostController extends CUDControllerAbstract {
         
         $this->sendViewCategoriesAndTerms();
         $this->sendViewUsers();
+        ViewController::sendViewData('isUpdate', FALSE);
         ViewController::sendViewData('selectedUserId', LoginManager::getSession());
         ViewController::sendViewData('post', new Post());
         ViewController::sendViewData('title', __('Publicar nueva entrada'));
@@ -80,7 +81,7 @@ class PostController extends CUDControllerAbstract {
         $date       = Util::dateNow();
         $terms      = Arrays::get($inputs, PostsTermsManager::TERM_ID);
         $categories = Arrays::get($inputs, PostsCategoriesManager::CATEGORY_ID);
-        $post->setId(Arrays::get($inputs, PostsManager::ID));
+        $post->setId(Arrays::get($inputs, PostsManager::COLUMN_ID));
         $post->setPostCommentCount(NULL);
         $post->setPostDate(NULL);
         $post->setPostUpdate($date);
@@ -90,7 +91,7 @@ class PostController extends CUDControllerAbstract {
         $post->setPostContents(Arrays::get($inputs, PostsManager::POST_CONTENTS));
         $post->setUserId(Arrays::get($inputs, PostsManager::USER_ID));
         
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $post->setPostCommentCount(0);
             $post->setPostDate($date);
         }
@@ -104,7 +105,7 @@ class PostController extends CUDControllerAbstract {
     
     protected function filterInputs() {
         Form::setInput([
-            InputIntegerBuilder::init(PostsManager::ID)
+            InputIntegerBuilder::init(PostsManager::COLUMN_ID)
                                ->build(),
             InputAlphanumericBuilder::init(PostsManager::POST_TITLE)
                                     ->setSpecialChar(TRUE)
@@ -241,7 +242,7 @@ class PostController extends CUDControllerAbstract {
     private function sendViewCategoriesAndTerms() {
         $termsManager      = new TermsManager();
         $categoriesManager = new CategoriesManager();
-        $categories        = $categoriesManager->read();
+        $categories        = $categoriesManager->searchAll();
         $terms             = $termsManager->read();
         
         ViewController::sendViewData('categories', $categories);
@@ -262,7 +263,7 @@ class PostController extends CUDControllerAbstract {
             Messages::addDanger(__('La entrada no existe.'), TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/post');
         } else {
-            if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+            if (Form::submit(Constants::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
@@ -289,6 +290,7 @@ class PostController extends CUDControllerAbstract {
             $selectedTermsId      = $this->getCurrentTermsId($id);
             $this->sendViewCategoriesAndTerms();
             $this->sendViewUsers();
+            ViewController::sendViewData('isUpdate', TRUE);
             ViewController::sendViewData('selectedUserId', $post->getUserId());
             ViewController::sendViewData('linkPost', $linkPost);
             ViewController::sendViewData('selectedCategoriesId', $selectedCategoriesId);
@@ -302,7 +304,7 @@ class PostController extends CUDControllerAbstract {
     public function delete($id) {
         $postsManager = new PostsManager();
         
-        if (empty($postsManager->delete($id))) {
+        if (empty($postsManager->deleteById($id))) {
             Messages::addSuccess(__('Error al borrar la entrada.'));
         } else {
             Messages::addSuccess(__('Entrada borrada correctamente.'));
@@ -312,16 +314,11 @@ class PostController extends CUDControllerAbstract {
     }
     
     protected function read() {
-        $filters      = [];
         $postsManager = new PostsManager();
         $count        = $postsManager->count();
-        $pagination   = parent::pagination($count);
+        $limit        = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('posts', $postsManager->read($filters));
+        ViewController::sendViewData('posts', $postsManager->searchAll($limit));
     }
     
 }

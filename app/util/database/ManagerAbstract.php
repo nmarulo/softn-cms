@@ -158,8 +158,8 @@ abstract class ManagerAbstract {
     }
     
     /**
-     * @param        $object
-     * @param string $addConditions
+     * @param mixed $object
+     * @param array $addConditions
      *
      * @return bool|array
      */
@@ -199,7 +199,7 @@ abstract class ManagerAbstract {
      *
      * @return int|bool
      */
-    public function saveNew($object) {
+    public function create($object) {
         if (empty($object)) {
             return FALSE;
         }
@@ -265,7 +265,7 @@ abstract class ManagerAbstract {
     /**
      * @return int
      */
-    protected function getLastInsertId() {
+    public function getLastInsertId() {
         return $this->db->getLastInsetId();
     }
     
