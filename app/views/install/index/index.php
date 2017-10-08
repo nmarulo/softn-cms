@@ -1,5 +1,6 @@
 <?php
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\ManagerAbstract;
 use SoftnCMS\models\managers\InstallManager;
@@ -59,7 +60,7 @@ $prefix  = ViewController::getViewData('prefix');
                     <input class="form-control" name="<?php echo InstallManager::INSTALL_CHARSET; ?>" placeholder="utf8" value="<?php echo $charset; ?>">
                 </div>
             </div>
-            <button class="btn btn-primary" name="<?php echo ManagerAbstract::FORM_SUBMIT; ?>" value="<?php echo ManagerAbstract::FORM_SUBMIT; ?>"><?php echo __('Siguiente'); ?></button>
+            <button class="btn btn-primary" name="<?php echo Constants::FORM_SUBMIT; ?>" value="<?php echo Constants::FORM_SUBMIT; ?>"><?php echo __('Siguiente'); ?></button>
             <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>

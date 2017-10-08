@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\controllers\login;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\ManagerAbstract;
@@ -32,7 +33,7 @@ class IndexController extends ControllerAbstract {
     }
     
     private function login() {
-        if (Form::submit(ManagerAbstract::FORM_SUBMIT)) {
+        if (Form::submit(Constants::FORM_SUBMIT)) {
             $form = $this->form();
             
             if (!empty($form)) {

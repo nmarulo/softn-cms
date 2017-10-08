@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\controllers\install;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\ManagerAbstract;
 use SoftnCMS\models\managers\InstallManager;
@@ -23,7 +24,7 @@ use SoftnCMS\util\Util;
 class IndexController {
     
     public function index() {
-        if (Form::submit(ManagerAbstract::FORM_SUBMIT)) {
+        if (Form::submit(Constants::FORM_SUBMIT)) {
             $form = $this->form();
             
             if (!empty($form)) {

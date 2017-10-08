@@ -1,5 +1,6 @@
 <?php
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\template\CommentTemplate;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\CommentsManager;
@@ -77,7 +78,7 @@ if ($post->getPostCommentStatus()) {
                 <textarea class="form-control" name="<?php echo CommentsManager::COMMENT_CONTENTS; ?>" rows="5"></textarea>
             </div>
             <input type="hidden" name="<?php echo CommentsManager::POST_ID; ?>" value="<?php echo $post->getId(); ?>"/>
-            <button class="btn btn-primary" name="<?php echo CommentsManager::FORM_SUBMIT; ?>" value="<?php echo CommentsManager::FORM_SUBMIT; ?>">Publicar</button>
+            <button class="btn btn-primary" name="<?php echo Constants::FORM_SUBMIT; ?>" value="<?php echo Constants::FORM_SUBMIT; ?>">Publicar</button>
                 <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
         <?php } else { ?>

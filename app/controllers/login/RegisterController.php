@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\controllers\login;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
@@ -32,7 +33,7 @@ class RegisterController extends ControllerAbstract {
     }
     
     private function register() {
-        if (Form::submit(ManagerAbstract::FORM_SUBMIT)) {
+        if (Form::submit(Constants::FORM_SUBMIT)) {
             $form = $this->form();
             
             if (!empty($form)) {

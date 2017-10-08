@@ -5,6 +5,7 @@
 
 namespace SoftnCMS\controllers\theme;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\template\PostTemplate;
 use SoftnCMS\controllers\ThemeControllerAbstract;
 use SoftnCMS\controllers\ViewController;
@@ -34,7 +35,7 @@ class PostController extends ThemeControllerAbstract {
     }
     
     private function comment() {
-        if (Form::submit(CRUDManagerAbstract::FORM_SUBMIT)) {
+        if (Form::submit(Constants::FORM_SUBMIT)) {
             $form = $this->form();
             
             if (!empty($form)) {

@@ -130,6 +130,7 @@ class ViewController {
      * @param string $directory
      */
     public static function singleViewByDirectory($fileName, $viewDirectory = '', $directory = '') {
+        self::callViewDataBase();
         self::includePath(self::getPath($fileName, $viewDirectory, $directory));
     }
     

@@ -1,5 +1,6 @@
 <?php
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\UsersManager;
 
@@ -31,7 +32,7 @@ $siteUrl  = ViewController::getViewData('siteUrl')
                     <input type="email" class="form-control" name="<?php echo UsersManager::USER_EMAIL; ?>">
                 </div>
                 <div class="form-group">
-                    <button class="btn btn-primary" name="<?php echo UsersManager::FORM_SUBMIT; ?>" value="<?php echo UsersManager::FORM_SUBMIT; ?>"><?php echo __('Registrar'); ?></button>
+                    <button class="btn btn-primary" name="<?php echo Constants::FORM_SUBMIT; ?>" value="<?php echo Constants::FORM_SUBMIT; ?>"><?php echo __('Registrar'); ?></button>
                 </div>
                 <?php \SoftnCMS\util\Token::formField(); ?>
             </form>
