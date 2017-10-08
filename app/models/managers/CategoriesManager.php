@@ -73,7 +73,7 @@ class CategoriesManager extends ManagerAbstract {
      * @return bool
      */
     private function nameExists($name, $id) {
-        $result = parent::searchAllByColumn($name, self::CATEGORY_NAME, \PDO::PARAM_STR);
+        $result = parent::searchAllByColumn($name, self::CATEGORY_NAME, \PDO::PARAM_STR, ['ORDER BY ' . self::COLUMN_ID . ' DESC']);
         $result = Arrays::findFirst($result);
         
         //Si el "id" es el mismo, estamos actualizando.

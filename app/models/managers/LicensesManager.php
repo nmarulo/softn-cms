@@ -5,15 +5,15 @@
 
 namespace SoftnCMS\models\managers;
 
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\License;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\ManagerAbstract;
 
 /**
  * Class LicensesManager
  * @author Nicolás Marulanda P.
  */
-class LicensesManager extends CRUDManagerAbstract {
+class LicensesManager extends ManagerAbstract {
     
     const TABLE               = 'licenses';
     
@@ -25,31 +25,29 @@ class LicensesManager extends CRUDManagerAbstract {
         $limit              = Arrays::get($filters, 'limit');
         $tableOptionLicense = parent::getTableWithPrefix(OptionsLicensesManager::TABLE);
         $query              = 'SELECT * FROM %1$s WHERE %2$s NOT IN (SELECT %3$s FROM %4$s)';
-        $query              = sprintf($query, $this->getTableWithPrefix(), self::ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
+        $query              = sprintf($query, $this->getTableWithPrefix(), self::COLUMN_ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
         $query              .= $limit === FALSE ? '' : " LIMIT $limit";
         
-        return parent::readData($query);
+        return parent::search($query);
     }
     
     public function searchAllConfigured($filters = []) {
         $limit              = Arrays::get($filters, 'limit');
         $tableOptionLicense = parent::getTableWithPrefix(OptionsLicensesManager::TABLE);
         $query              = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s)';
-        $query              = sprintf($query, $this->getTableWithPrefix(), self::ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
+        $query              = sprintf($query, $this->getTableWithPrefix(), self::COLUMN_ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
         $query              .= $limit === FALSE ? '' : " LIMIT $limit";
         
-        return parent::readData($query);
+        return parent::search($query);
     }
     
     public function configuredCount() {
         $tableOptionLicense = parent::getTableWithPrefix(OptionsLicensesManager::TABLE);
         $query              = 'SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s)';
-        $query              = sprintf($query, $this->getTableWithPrefix(), self::ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
-        $result             = $this->select($query);
-        $result             = Arrays::get($result, 0);
-        $result             = Arrays::get($result, 'COUNT');
+        $query              = sprintf($query, $this->getTableWithPrefix(), self::COLUMN_ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
+        $result             = Arrays::findFirst(parent::search($query));
         
-        return $result === FALSE ? 0 : $result;
+        return empty($result) ? 0 : $result;
     }
     
     public function create($object) {
@@ -79,29 +77,29 @@ class LicensesManager extends CRUDManagerAbstract {
     }
     
     private function nameExists($name, $id) {
-        parent::parameterQuery(self::LICENSE_NAME, $name, \PDO::PARAM_STR);
-        $result = parent::searchBy(self::LICENSE_NAME);
+        $result = parent::searchAllByColumn($name, self::LICENSE_NAME, \PDO::PARAM_STR, ['ORDER BY ' . self::COLUMN_ID . ' DESC']);
+        $result = Arrays::findFirst($result);
         
         //Si el "id" es el mismo, estamos actualizando.
-        return $result !== FALSE && $result->getId() != $id;
+        return !empty($result) && $result->getId() != $id;
     }
     
     /**
      * @param License $object
      */
-    protected function addParameterQuery($object) {
-        parent::parameterQuery(self::LICENSE_NAME, $object->getLicenseName(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::LICENSE_DESCRIPTION, $object->getLicenseDescription(), \PDO::PARAM_STR);
+    protected function prepareStatement($object) {
+        parent::addPrepareStatement(self::COLUMN_ID, $object->getId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::LICENSE_NAME, $object->getLicenseName(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::LICENSE_DESCRIPTION, $object->getLicenseDescription(), \PDO::PARAM_STR);
     }
     
     protected function getTable() {
         return self::TABLE;
     }
     
-    protected function buildObjectTable($result) {
-        parent::buildObjectTable($result);
+    protected function buildObject($result) {
         $license = new License();
-        $license->setId(Arrays::get($result, self::ID));
+        $license->setId(Arrays::get($result, self::COLUMN_ID));
         $license->setLicenseDescription(Arrays::get($result, self::LICENSE_DESCRIPTION));
         $license->setLicenseName(Arrays::get($result, self::LICENSE_NAME));
         
