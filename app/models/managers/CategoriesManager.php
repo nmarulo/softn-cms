@@ -5,16 +5,16 @@
 
 namespace SoftnCMS\models\managers;
 
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\ManagerAbstract;
 
 /**
  * Class CategoriesManager
  * @author Nicolás Marulanda P.
  */
-class CategoriesManager extends CRUDManagerAbstract {
+class CategoriesManager extends ManagerAbstract {
     
     const TABLE                = 'categories';
     
@@ -29,10 +29,10 @@ class CategoriesManager extends CRUDManagerAbstract {
         $tablePostsCategories = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
         $table                = parent::getTableWithPrefix();
         $query                = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s)';
-        $query                = sprintf($query, $table, self::ID, PostsCategoriesManager::CATEGORY_ID, $tablePostsCategories, $columnPostId);
-        $this->parameterQuery($columnPostId, $postId, \PDO::PARAM_INT);
+        $query                = sprintf($query, $table, self::COLUMN_ID, PostsCategoriesManager::CATEGORY_ID, $tablePostsCategories, $columnPostId);
+        parent::addPrepareStatement($columnPostId, $postId, \PDO::PARAM_INT);
         
-        return parent::readData($query);
+        return parent::search($query);
     }
     
     /**
@@ -43,7 +43,7 @@ class CategoriesManager extends CRUDManagerAbstract {
     public function create($object) {
         $object = $this->checkName($object);
         
-        return parent::create($object);
+        return parent::saveNew($object);
     }
     
     /**
@@ -73,11 +73,11 @@ class CategoriesManager extends CRUDManagerAbstract {
      * @return bool
      */
     private function nameExists($name, $id) {
-        parent::parameterQuery(self::CATEGORY_NAME, $name, \PDO::PARAM_STR);
-        $result = parent::searchBy(self::CATEGORY_NAME);
+        $result = parent::searchAllByColumn($name, self::CATEGORY_NAME, \PDO::PARAM_STR);
+        $result = Arrays::findFirst($result);
         
         //Si el "id" es el mismo, estamos actualizando.
-        return $result !== FALSE && $result->getId() != $id;
+        return !empty($result) && $result->getId() != $id;
     }
     
     public function updatePostCount($categoryId, $num) {
@@ -95,7 +95,7 @@ class CategoriesManager extends CRUDManagerAbstract {
     public function update($object) {
         $object = $this->checkName($object);
         
-        return parent::update($object);
+        return parent::updateByColumnId($object);
     }
     
     /**
@@ -111,7 +111,7 @@ class CategoriesManager extends CRUDManagerAbstract {
         $where = array_map(function($postId) {
             $columnPostId = PostsCategoriesManager::POST_ID;
             $param        = $columnPostId . "_$postId";
-            parent::parameterQuery($param, $postId, \PDO::PARAM_INT);
+            parent::addPrepareStatement($param, $postId, \PDO::PARAM_INT);
             
             return "$columnPostId = :$param";
         }, $postsId);
@@ -120,28 +120,28 @@ class CategoriesManager extends CRUDManagerAbstract {
         $tablePostsTerms = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
         $table           = parent::getTableWithPrefix();
         $query           = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s)';
-        $query           = sprintf($query, $table, self::ID, PostsCategoriesManager::CATEGORY_ID, $tablePostsTerms, $strWhere);
+        $query           = sprintf($query, $table, self::COLUMN_ID, PostsCategoriesManager::CATEGORY_ID, $tablePostsTerms, $strWhere);
         
-        return parent::readData($query);
+        return parent::search($query);
     }
     
     /**
      * @param Category $object
      */
-    protected function addParameterQuery($object) {
-        parent::parameterQuery(self::CATEGORY_POST_COUNT, $object->getCategoryPostCount(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::CATEGORY_NAME, $object->getCategoryName(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::CATEGORY_DESCRIPTION, $object->getCategoryDescription(), \PDO::PARAM_STR);
+    protected function prepareStatement($object) {
+        parent::addPrepareStatement(self::COLUMN_ID, $object->getId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::CATEGORY_POST_COUNT, $object->getCategoryPostCount(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::CATEGORY_NAME, $object->getCategoryName(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::CATEGORY_DESCRIPTION, $object->getCategoryDescription(), \PDO::PARAM_STR);
     }
     
     protected function getTable() {
         return self::TABLE;
     }
     
-    protected function buildObjectTable($result) {
-        parent::buildObjectTable($result);
+    protected function buildObject($result) {
         $category = new Category();
-        $category->setId(Arrays::get($result, self::ID));
+        $category->setId(Arrays::get($result, self::COLUMN_ID));
         $category->setCategoryPostCount(Arrays::get($result, self::CATEGORY_POST_COUNT));
         $category->setCategoryDescription(Arrays::get($result, self::CATEGORY_DESCRIPTION));
         $category->setCategoryName(Arrays::get($result, self::CATEGORY_NAME));
