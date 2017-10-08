@@ -5,12 +5,13 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Menu;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
@@ -29,7 +30,7 @@ class MenuController extends CUDControllerAbstract {
         $menusManager = new MenusManager();
         $parentMenuId = Arrays::get($_GET, 'parentMenu');
         
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $form = $this->form();
             
             if (!empty($form)) {
@@ -68,6 +69,7 @@ class MenuController extends CUDControllerAbstract {
             ViewController::sendViewData('parentMenuId', $parentMenuId);
         }
         
+        ViewController::sendViewData('isUpdate', FALSE);
         ViewController::sendViewData('menu', new Menu());
         ViewController::sendViewData('title', __('Publicar nuevo menu'));
         ViewController::view('form');
@@ -81,7 +83,7 @@ class MenuController extends CUDControllerAbstract {
         }
         
         $menu = new Menu();
-        $menu->setId(Arrays::get($inputs, MenusManager::ID));
+        $menu->setId(Arrays::get($inputs, MenusManager::COLUMN_ID));
         $menu->setMenuTitle(Arrays::get($inputs, MenusManager::MENU_TITLE));
         $menu->setMenuUrl(Arrays::get($inputs, MenusManager::MENU_URL));
         $menu->setMenuSub(Arrays::get($inputs, MenusManager::MENU_SUB));
@@ -93,7 +95,7 @@ class MenuController extends CUDControllerAbstract {
     
     protected function filterInputs() {
         Form::setInput([
-            InputIntegerBuilder::init(MenusManager::ID)
+            InputIntegerBuilder::init(MenusManager::COLUMN_ID)
                                ->build(),
             InputAlphanumericBuilder::init(MenusManager::MENU_TITLE)
                                     ->build(),
@@ -112,11 +114,10 @@ class MenuController extends CUDControllerAbstract {
         $menu         = $menusManager->searchById($id);
         
         if (empty($menu)) {
-            $optionsManager = new OptionsManager();
             Messages::addDanger(__('El menu no existe.'), TRUE);
-            Util::redirect($optionsManager->getSiteUrl() . 'admin/menu');
+            Util::redirect(Router::getSiteURL(), 'admin/menu');
         } else {
-            if (Form::submit(MenusManager::FORM_UPDATE)) {
+            if (Form::submit(Constants::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
@@ -124,7 +125,7 @@ class MenuController extends CUDControllerAbstract {
                 } else {
                     $menu = Arrays::get($form, 'menu');
                     
-                    if ($menusManager->update($menu)) {
+                    if ($menusManager->updateByColumnId($menu)) {
                         Messages::addSuccess(__('Menu actualizado correctamente.'));
                     } else {
                         Messages::addDanger(__('Error al actualizar el menu.'));
@@ -153,23 +154,21 @@ class MenuController extends CUDControllerAbstract {
             }
         }
         
+        ViewController::sendViewData('isUpdate', TRUE);
         ViewController::sendViewData('menu', $menu);
         ViewController::sendViewData('title', __('Actualizar menu'));
         ViewController::view('form');
     }
     
     public function edit($id) {
-        $optionsManager = new OptionsManager();
-        $menusManager   = new MenusManager();
-        $menu           = $menusManager->searchById($id);
+        $menusManager = new MenusManager();
+        $menu         = $menusManager->searchById($id);
         
         if (empty($menu)) {
-            $optionsManager = new OptionsManager();
             Messages::addDanger(__('El menu no existe.'), TRUE);
-            Util::redirect($optionsManager->getSiteUrl() . 'admin/menu');
+            Util::redirect(Router::getSiteURL(), 'admin/menu');
         }
         
-        ViewController::sendViewData('siteUrl', $optionsManager->getSiteUrl());
         ViewController::sendViewData('menu', $menu);
         ViewController::sendViewData('subMenus', $menusManager->searchByMenuSub($id));
         ViewController::view('edit');
@@ -178,7 +177,7 @@ class MenuController extends CUDControllerAbstract {
     public function delete($id) {
         $menusManager = new MenusManager();
         
-        if (empty($menusManager->delete($id))) {
+        if (empty($menusManager->deleteById($id))) {
             Messages::addDanger(__('Error al borrar el menu.'));
         } else {
             Messages::addSuccess(__('Menu borrado correctamente.'));
@@ -196,9 +195,7 @@ class MenuController extends CUDControllerAbstract {
         if (empty($id)) {
             parent::reloadAJAX();
         } else {
-            $menusManager   = new MenusManager();
-            $optionsManager = new OptionsManager();
-            ViewController::sendViewData('siteUrl', $optionsManager->getSiteUrl());
+            $menusManager = new MenusManager();
             ViewController::sendViewData('subMenus', $menusManager->searchByMenuSub($id));
             ViewController::singleView('dataedit');
         }
@@ -206,18 +203,11 @@ class MenuController extends CUDControllerAbstract {
     }
     
     protected function read() {
-        $filters        = [];
-        $menusManager   = new MenusManager();
-        $optionsManager = new OptionsManager();
-        $count          = $menusManager->count();
-        $pagination     = parent::pagination($count);
+        $menusManager = new MenusManager();
+        $count        = $menusManager->count();
+        $limit        = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('siteUrl', $optionsManager->getSiteUrl());
-        ViewController::sendViewData('menus', $menusManager->searchAllParent($filters));
+        ViewController::sendViewData('menus', $menusManager->searchAllParent($limit));
     }
     
 }

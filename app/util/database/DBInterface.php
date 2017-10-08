@@ -40,6 +40,13 @@ interface DBInterface {
     public function delete($query = '');
     
     /**
+     * @param string $allLogicalOperators
+     *
+     * @return bool
+     */
+    public function deleteByPrepareStatement($allLogicalOperators = 'AND');
+    
+    /**
      * @param string $query
      *
      * @return bool

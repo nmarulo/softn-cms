@@ -95,7 +95,7 @@ abstract class ManagerAbstract {
     /**
      * @return MySQL
      */
-    private function getDB() {
+    protected function getDB() {
         $db = new MySQL();
         $db->setTable($this->getTableWithPrefix());
         $db->setPrepareStatement($this->prepareStatement);
@@ -111,7 +111,7 @@ abstract class ManagerAbstract {
      * @return array|bool
      */
     private function checkResult($result) {
-        if (empty($result) || !is_array($result)) {
+        if (empty($result) && !is_array($result)) {
             return FALSE;
         }
         
@@ -220,6 +220,10 @@ abstract class ManagerAbstract {
      * @return bool
      */
     public function updateByColumnId($object) {
+        return $this->updateByColumn($object, self::COLUMN_ID);
+    }
+    
+    protected function updateByColumn($object, $columnName) {
         if (empty($object)) {
             return FALSE;
         }
@@ -227,7 +231,7 @@ abstract class ManagerAbstract {
         $this->prepareStatement($object);
         $db = $this->getDB();
         
-        return $db->updateByColumn(self::COLUMN_ID);
+        return $db->updateByColumn($columnName);
     }
     
     /**
@@ -267,6 +271,37 @@ abstract class ManagerAbstract {
      */
     public function getLastInsertId() {
         return $this->db->getLastInsetId();
+    }
+    
+    public function delete($query) {
+        if (empty($query)) {
+            return FALSE;
+        }
+        
+        $db = $this->getDB();
+        
+        return $db->delete($query);
+    }
+    
+    protected function deleteByColumn($value, $column, $dataType) {
+        if (empty($value)) {
+            return FALSE;
+        }
+        
+        $db = $this->getDB();
+        $db->prepareStatement($column, $value, $dataType);
+        
+        return $db->delete();
+    }
+    
+    protected function deleteByPrepareStatement($allLogicalOperators = 'AND') {
+        if (empty($this->prepareStatement)) {
+            return FALSE;
+        }
+        
+        $db = $this->getDB();
+        
+        return $db->deleteByPrepareStatement($allLogicalOperators);
     }
     
     /**

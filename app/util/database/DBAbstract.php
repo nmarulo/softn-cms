@@ -275,16 +275,22 @@ abstract class DBAbstract implements DBInterface {
         return TRUE;
     }
     
+    public function deleteByPrepareStatement($allLogicalOperators = 'AND') {
+        $where = $this->getKeyValue($this->prepareStatement);
+        $where = implode(" $allLogicalOperators ", $where);
+        $query = sprintf('DELETE FROM %1$s WHERE %2$s', $this->table, $where);
+        
+        return $this->delete($query);
+    }
+    
     /**
-     * @param $query
+     * @param string $query
      *
      * @return bool
      */
     public function delete($query = '') {
         if (empty($query)) {
-            $where = $this->getKeyValue($this->prepareStatement);
-            $where = implode(' AND ', $where);
-            $query = sprintf('DELETE FROM %1$s WHERE %2$s', $this->table, $where);
+            return FALSE;
         }
         
         $prepareObject = $this->execute($query);

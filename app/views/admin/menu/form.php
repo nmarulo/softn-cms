@@ -1,8 +1,9 @@
 <?php
 
-use SoftnCMS\models\tables\Menu;
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\MenusManager;
+use SoftnCMS\models\tables\Menu;
 
 $siteUrlEditParentMenu = ViewController::getViewData('siteUrlEditParentMenu');
 $parentMenuId          = ViewController::getViewData('parentMenuId');
@@ -10,7 +11,7 @@ $parentMenus           = ViewController::getViewData('parentMenus');
 $title                 = ViewController::getViewData('title');
 $menu                  = ViewController::getViewData('menu');
 $method                = ViewController::getViewData('method');
-$isUpdate              = $method === MenusManager::FORM_UPDATE;
+$isUpdate              = ViewController::getViewData('isUpdate');
 ?>
 <div class="page-container">
     <div>
@@ -66,14 +67,14 @@ $isUpdate              = $method === MenusManager::FORM_UPDATE;
                     <div class="panel-heading"><?php echo __('Publicación'); ?></div>
                     <div class="panel-body">
                         <?php if ($isUpdate) { ?>
-                            <button class="btn btn-primary btn-block" name="<?php echo MenusManager::FORM_UPDATE; ?>" value="<?php echo MenusManager::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
+                            <button class="btn btn-primary btn-block" name="<?php echo Constants::FORM_UPDATE; ?>" value="<?php echo Constants::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
                         <?php } else { ?>
-                            <button class="btn btn-primary btn-block" name="<?php echo MenusManager::FORM_CREATE; ?>" value="<?php echo MenusManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
+                            <button class="btn btn-primary btn-block" name="<?php echo Constants::FORM_CREATE; ?>" value="<?php echo Constants::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
                         <?php } ?>
                     </div>
                 </div>
             </div>
-            <input type="hidden" name="<?php echo MenusManager::ID; ?>" value="<?php echo $menu->getId(); ?>"/>
+            <input type="hidden" name="<?php echo MenusManager::COLUMN_ID; ?>" value="<?php echo $menu->getId(); ?>"/>
             <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>
