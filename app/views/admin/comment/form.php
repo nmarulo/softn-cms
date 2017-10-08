@@ -1,12 +1,13 @@
 <?php
+
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CommentsManager;
 
 $title          = ViewController::getViewData('title');
 $comment        = ViewController::getViewData('comment');
 $method         = ViewController::getViewData('method');
-$isUpdate       = $method == CRUDManagerAbstract::FORM_UPDATE;
+$isUpdate       = ViewController::getViewData('isUpdate');
 $disabledPostId = $isUpdate ? 'disabled="disabled"' : '';
 //Mostrara los campos inputs si es de un usuario no registrado.
 $showAuthorAndEmail = empty($comment->getCommentUserId());
@@ -60,14 +61,14 @@ $showAuthorAndEmail = empty($comment->getCommentUserId());
                         <div class="panel-heading"><?php echo __('Publicación'); ?></div>
                         <div class="panel-body">
                             <?php if ($isUpdate) { ?>
-                                <button class="btn btn-primary btn-block" name="<?php echo CommentsManager::FORM_UPDATE; ?>" value="<?php echo CommentsManager::FORM_UPDATE; ?>"><?php  echo __('Actualizar');?></button>
+                                <button class="btn btn-primary btn-block" name="<?php echo Constants::FORM_UPDATE; ?>" value="<?php echo Constants::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
                             <?php } else { ?>
-                                <button class="btn btn-primary btn-block" name="<?php echo CommentsManager::FORM_CREATE; ?>" value="<?php echo CommentsManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
+                                <button class="btn btn-primary btn-block" name="<?php echo Constants::FORM_CREATE; ?>" value="<?php echo Constants::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
                             <?php } ?>
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="<?php echo CommentsManager::ID; ?>" value="<?php echo $comment->getId(); ?>"/>
+                <input type="hidden" name="<?php echo CommentsManager::COLUMN_ID; ?>" value="<?php echo $comment->getId(); ?>"/>
                 <input type="hidden" name="<?php echo CommentsManager::COMMENT_USER_ID; ?>" value="<?php echo $comment->getCommentUserId(); ?>"/>
                 <?php \SoftnCMS\util\Token::formField(); ?>
             </form>

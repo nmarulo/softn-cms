@@ -5,9 +5,9 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\OptionsManager;
@@ -30,7 +30,7 @@ use SoftnCMS\util\Util;
 class CommentController extends CUDControllerAbstract {
     
     public function create() {
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $form = $this->form();
             
             if (!empty($form)) {
@@ -49,6 +49,7 @@ class CommentController extends CUDControllerAbstract {
         
         $comment = new Comment();
         $comment->setCommentUserId(LoginManager::getSession());
+        ViewController::sendViewData('isUpdate', FALSE);
         ViewController::sendViewData('comment', $comment);
         ViewController::sendViewData('title', __('Publicar nuevo comentario'));
         ViewController::view('form');
@@ -63,7 +64,7 @@ class CommentController extends CUDControllerAbstract {
         
         $userId  = Arrays::get($inputs, CommentsManager::COMMENT_USER_ID);
         $comment = new Comment();
-        $comment->setId(Arrays::get($inputs, CommentsManager::ID));
+        $comment->setId(Arrays::get($inputs, CommentsManager::COLUMN_ID));
         $comment->setCommentStatus(Arrays::get($inputs, CommentsManager::COMMENT_STATUS));
         $comment->setCommentContents(Arrays::get($inputs, CommentsManager::COMMENT_CONTENTS));
         $comment->setPostId(NULL);
@@ -77,7 +78,7 @@ class CommentController extends CUDControllerAbstract {
             $comment->setCommentAuthorEmail(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR_EMAIL));
         }
         
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $usersManager = new UsersManager();
             $user         = $usersManager->searchById(LoginManager::getSession());
             $comment->setCommentAuthor($user->getUserName());
@@ -100,7 +101,7 @@ class CommentController extends CUDControllerAbstract {
                              ->build(),
             InputIntegerBuilder::init(CommentsManager::COMMENT_USER_ID)
                                ->build(),
-            InputIntegerBuilder::init(CommentsManager::ID)
+            InputIntegerBuilder::init(CommentsManager::COLUMN_ID)
                                ->build(),
             InputIntegerBuilder::init(CommentsManager::POST_ID)
                                ->build(),
@@ -122,7 +123,7 @@ class CommentController extends CUDControllerAbstract {
             Messages::addDanger(__('El comentario no existe.'), TRUE);
             Util::redirect($optionsManager->getSiteUrl() . 'admin/comment');
         } else {
-            if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+            if (Form::submit(Constants::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
@@ -130,7 +131,7 @@ class CommentController extends CUDControllerAbstract {
                 } else {
                     $comment = Arrays::get($form, 'comment');
                     
-                    if ($commentsManager->update($comment)) {
+                    if ($commentsManager->updateByColumnId($comment)) {
                         Messages::addSuccess(__('Comentario actualizado correctamente.'));
                         $comment = $commentsManager->searchById($comment->getId());
                     } else {
@@ -139,6 +140,7 @@ class CommentController extends CUDControllerAbstract {
                 }
             }
             
+            ViewController::sendViewData('isUpdate', TRUE);
             ViewController::sendViewData('comment', $comment);
             ViewController::sendViewData('title', __('Actualizar comentario'));
             ViewController::view('form');
@@ -148,7 +150,7 @@ class CommentController extends CUDControllerAbstract {
     public function delete($id) {
         $commentsManager = new CommentsManager();
         
-        if (empty($commentsManager->delete($id))) {
+        if (empty($commentsManager->deleteById($id))) {
             Messages::addDanger(__('Error al borrar el comentario.'));
         } else {
             Messages::addSuccess(__('Comentario borrado correctamente.'));
@@ -158,16 +160,11 @@ class CommentController extends CUDControllerAbstract {
     }
     
     protected function read() {
-        $filters         = [];
         $commentsManager = new CommentsManager();
         $count           = $commentsManager->count();
-        $pagination      = parent::pagination($count);
+        $limit           = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('comments', $commentsManager->read($filters));
+        ViewController::sendViewData('comments', $commentsManager->searchAll($limit));
     }
     
 }
