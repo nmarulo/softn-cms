@@ -243,7 +243,7 @@ class PostController extends CUDControllerAbstract {
         $termsManager      = new TermsManager();
         $categoriesManager = new CategoriesManager();
         $categories        = $categoriesManager->searchAll();
-        $terms             = $termsManager->read();
+        $terms             = $termsManager->searchAll();
         
         ViewController::sendViewData('categories', $categories);
         ViewController::sendViewData('terms', $terms);
