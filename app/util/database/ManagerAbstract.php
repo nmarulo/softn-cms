@@ -42,12 +42,19 @@ abstract class ManagerAbstract {
      * @param mixed  $value
      * @param string $column
      * @param int    $dataType
+     * @param array  $addConditions
      *
      * @return array|bool
      */
-    protected function searchAllByColumn($value, $column, $dataType) {
+    protected function searchAllByColumn($value, $column, $dataType, $addConditions = []) {
+        $conditions = '';
+        
+        if (!empty($addConditions)) {
+            $conditions = ' ' . implode(' ', $addConditions);
+        }
+        
         $this->addPrepareStatement($column, $value, $dataType);
-        $query = sprintf('SELECT * FROM %1$s WHERE %2$s = :%2$s', $this->getTableWithPrefix(), $column);
+        $query = sprintf('SELECT * FROM %1$s WHERE %2$s = :%2$s%3$s', $this->getTableWithPrefix(), $column, $conditions);
         
         return $this->search($query);
     }
@@ -133,7 +140,59 @@ abstract class ManagerAbstract {
         return empty($result) ? 0 : $result;
     }
     
-    public abstract function searchAll($limit = '');
+    public function searchAll($limit = '', $orderBy = '') {
+        $addConditions = [];
+        $strOrderBy    = 'ORDER BY ';
+        
+        if (empty($orderBy)) {
+            $orderBy = self::COLUMN_ID . ' DESC';
+        }
+        
+        $addConditions[] = $strOrderBy . $orderBy;
+        
+        if (!empty($limit)) {
+            $addConditions[] = "LIMIT $limit";
+        }
+        
+        return $this->searchAllByObject(NULL, $addConditions);
+    }
+    
+    /**
+     * @param        $object
+     * @param string $addConditions
+     *
+     * @return bool|array
+     */
+    protected function searchAllByObject($object = NULL, $addConditions = []) {
+        $conditions = '';
+        
+        if (!empty($addConditions)) {
+            $conditions = ' ' . implode(' ', $addConditions);
+        }
+        
+        if (!empty($object)) {
+            $this->prepareStatement($object);
+            
+            if (!empty($this->prepareStatement)) {
+                $conditionsMap = array_map(function($key, $value) {
+                    $column = Arrays::get($value, 'column');
+                    
+                    return "$column = $key";
+                }, array_keys($this->prepareStatement), $this->prepareStatement);
+                
+                $conditions = ' WHERE ' . implode(" AND ", $conditionsMap) . $conditions;
+            }
+        }
+        
+        $query = sprintf('SELECT * FROM %1$s%2$s', $this->getTableWithPrefix(), $conditions);
+        
+        return $this->search($query);
+    }
+    
+    /**
+     * @param TableAbstract $object
+     */
+    protected abstract function prepareStatement($object);
     
     /**
      * @param mixed $object
@@ -154,11 +213,6 @@ abstract class ManagerAbstract {
         
         return FALSE;
     }
-    
-    /**
-     * @param TableAbstract $object
-     */
-    protected abstract function prepareStatement($object);
     
     /**
      * @param mixed $object
@@ -206,38 +260,6 @@ abstract class ManagerAbstract {
         $db->prepareStatement(self::COLUMN_ID, $id, \PDO::PARAM_INT);
         
         return $db->delete();
-    }
-    
-    /**
-     * @param        $object
-     * @param string $addConditions
-     *
-     * @return bool|array
-     */
-    protected function searchAllByObject($object = NULL, $addConditions = []) {
-        $conditions = '';
-        
-        if (!empty($addConditions)) {
-            $conditions = ' ' . implode(' ', $addConditions);
-        }
-        
-        if (!empty($object)) {
-            $this->prepareStatement($object);
-            
-            if (!empty($this->prepareStatement)) {
-                $conditionsMap = array_map(function($key, $value) {
-                    $column = Arrays::get($value, 'column');
-                    
-                    return "$column = $key";
-                }, array_keys($this->prepareStatement), $this->prepareStatement);
-                
-                $conditions = ' WHERE ' . implode(" AND ", $conditionsMap) . $conditions;
-            }
-        }
-        
-        $query = sprintf('SELECT * FROM %1$s%2$s', $this->getTableWithPrefix(), $conditions);
-        
-        return $this->search($query);
     }
     
     /**
