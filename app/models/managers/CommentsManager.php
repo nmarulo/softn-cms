@@ -62,7 +62,7 @@ class CommentsManager extends ManagerAbstract {
      * @return bool
      */
     public function create($object) {
-        $result = parent::saveNew($object);
+        $result = parent::create($object);
         
         if ($result) {
             $postsManager = new PostsManager();

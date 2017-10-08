@@ -43,7 +43,7 @@ class CategoriesManager extends ManagerAbstract {
     public function create($object) {
         $object = $this->checkName($object);
         
-        return parent::saveNew($object);
+        return parent::create($object);
     }
     
     /**
