@@ -5,15 +5,15 @@
 
 namespace SoftnCMS\models\managers;
 
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Profile;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\ManagerAbstract;
 
 /**
  * Class ProfilesManager
  * @author Nicolás Marulanda P.
  */
-class ProfilesManager extends CRUDManagerAbstract {
+class ProfilesManager extends ManagerAbstract {
     
     const TABLE               = 'profiles';
     
@@ -48,29 +48,29 @@ class ProfilesManager extends CRUDManagerAbstract {
     }
     
     private function nameExists($name, $id) {
-        parent::parameterQuery(self::PROFILE_NAME, $name, \PDO::PARAM_STR);
-        $result = parent::searchBy(self::PROFILE_NAME);
+        $result = parent::searchAllByColumn($name, self::PROFILE_NAME, \PDO::PARAM_STR);
+        $result = Arrays::findFirst($result);
         
         //Si el "id" es el mismo, estamos actualizando.
-        return $result !== FALSE && $result->getId() != $id;
+        return !empty($result) && $result->getId() != $id;
     }
     
     /**
      * @param Profile $object
      */
-    protected function addParameterQuery($object) {
-        parent::parameterQuery(self::PROFILE_DESCRIPTION, $object->getProfileDescription(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::PROFILE_NAME, $object->getProfileName(), \PDO::PARAM_STR);
+    protected function prepareStatement($object) {
+        parent::addPrepareStatement(self::COLUMN_ID, $object->getId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::PROFILE_DESCRIPTION, $object->getProfileDescription(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::PROFILE_NAME, $object->getProfileName(), \PDO::PARAM_STR);
     }
     
     protected function getTable() {
         return self::TABLE;
     }
     
-    protected function buildObjectTable($result) {
-        parent::buildObjectTable($result);
+    protected function buildObject($result) {
         $profile = new Profile();
-        $profile->setId(Arrays::get($result, self::ID));
+        $profile->setId(Arrays::get($result, self::COLUMN_ID));
         $profile->setProfileName(Arrays::get($result, self::PROFILE_NAME));
         $profile->setProfileDescription(Arrays::get($result, self::PROFILE_DESCRIPTION));
         
