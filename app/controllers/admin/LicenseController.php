@@ -122,7 +122,7 @@ class LicenseController extends CUDControllerAbstract {
             }
             
             array_walk($newLicensesProfiles, function(ProfileLicense $profileLicense) use (&$numError, $profilesLicensesManager) {
-                if (!$profilesLicensesManager->create($profileLicense)) {
+                if ($profilesLicensesManager->create($profileLicense) === FALSE) {
                     ++$numError;
                 }
             });
@@ -144,7 +144,7 @@ class LicenseController extends CUDControllerAbstract {
     
     private function sendViewProfiles() {
         $profilesManager = new ProfilesManager();
-        ViewController::sendViewData('profiles', $profilesManager->read());
+        ViewController::sendViewData('profiles', $profilesManager->searchAll());
     }
     
     public function update($id) {

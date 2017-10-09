@@ -1,6 +1,6 @@
 <?php
 /**
- * PostController.phproller.php
+ * PostController.php
  */
 
 namespace SoftnCMS\controllers\admin;
@@ -163,7 +163,7 @@ class PostController extends CUDControllerAbstract {
             });
             
             array_walk($newTerms, function(PostTerm $postTerm) use ($postsTermsManager, &$numError) {
-                if (!$postsTermsManager->create($postTerm)) {
+                if ($postsTermsManager->create($postTerm) === FALSE) {
                     $numError++;
                 }
             });
@@ -218,7 +218,7 @@ class PostController extends CUDControllerAbstract {
             });
             
             array_walk($newCategories, function(PostCategory $postCategory) use ($postsCategoriesManager, &$numError) {
-                if (!$postsCategoriesManager->create($postCategory)) {
+                if ($postsCategoriesManager->create($postCategory) === FALSE) {
                     $numError++;
                 }
             });

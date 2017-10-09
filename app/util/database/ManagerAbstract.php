@@ -245,9 +245,8 @@ abstract class ManagerAbstract {
         }
         
         $this->prepareStatement($object);
-        $db = $this->getDB();
         
-        return $db->delete();
+        return $this->deleteByPrepareStatement();
     }
     
     /**
@@ -260,10 +259,9 @@ abstract class ManagerAbstract {
             return FALSE;
         }
         
-        $db = $this->getDB();
-        $db->prepareStatement(self::COLUMN_ID, $id, \PDO::PARAM_INT);
+        $this->addPrepareStatement(self::COLUMN_ID, $id, \PDO::PARAM_INT);
         
-        return $db->delete();
+        return $this->deleteByPrepareStatement();
     }
     
     /**
@@ -288,10 +286,9 @@ abstract class ManagerAbstract {
             return FALSE;
         }
         
-        $db = $this->getDB();
-        $db->prepareStatement($column, $value, $dataType);
+        $this->addPrepareStatement($column, $value, $dataType);
         
-        return $db->delete();
+        return $this->deleteByPrepareStatement();
     }
     
     protected function deleteByPrepareStatement($allLogicalOperators = 'AND') {
