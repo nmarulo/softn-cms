@@ -1,7 +1,7 @@
 <?php
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\util\Arrays;
 
 $optionLicenses    = ViewController::getViewData('optionLicenses');
@@ -16,7 +16,7 @@ $checkedInsert     = '';
 $checkedUpdate     = '';
 $checkedDelete     = '';
 $method            = ViewController::getViewData('method');
-$isUpdate          = $method == CRUDManagerAbstract::FORM_UPDATE;
+$isUpdate          = ViewController::getViewData('isUpdate');
 
 if (!empty($optionLicenses)) {
     $checkedInsert = empty(Arrays::get($optionLicenses, 'insert')) ? '' : 'checked';
@@ -60,10 +60,10 @@ if (!empty($optionLicenses)) {
                     $inputNameClassMethodId  = $classNameMethod . '_ID';
                     $fields                  = [];
                     $inputValueClassMethodId = NULL;
-        
+    
                     if (!empty($optionLicenses)) {
                         $data = Arrays::get($optionLicenses, $method);
-            
+        
                         if (!empty($data)) {
                             $fields                  = Arrays::get($data, 'fields');
                             $object                  = Arrays::get($data, 'object');
@@ -111,9 +111,9 @@ if (!empty($optionLicenses)) {
                 <?php }); ?>
             </div>
             <?php if ($isUpdate) { ?>
-                <button class="btn btn-primary" name="<?php echo CRUDManagerAbstract::FORM_UPDATE; ?>" value="<?php echo CRUDManagerAbstract::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
+                <button class="btn btn-primary" name="<?php echo Constants::FORM_UPDATE; ?>" value="<?php echo Constants::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
             <?php } else { ?>
-                <button class="btn btn-primary" name="<?php echo CRUDManagerAbstract::FORM_CREATE; ?>" value="<?php echo CRUDManagerAbstract::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
+                <button class="btn btn-primary" name="<?php echo Constants::FORM_CREATE; ?>" value="<?php echo Constants::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
             <?php } ?>
         </div>
     </div>

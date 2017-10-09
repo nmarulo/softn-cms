@@ -21,22 +21,20 @@ class LicensesManager extends ManagerAbstract {
     
     const LICENSE_DESCRIPTION = 'license_description';
     
-    public function searchAllWithoutConfigured($filters = []) {
-        $limit              = Arrays::get($filters, 'limit');
+    public function searchAllWithoutConfigured($limit = '') {
         $tableOptionLicense = parent::getTableWithPrefix(OptionsLicensesManager::TABLE);
         $query              = 'SELECT * FROM %1$s WHERE %2$s NOT IN (SELECT %3$s FROM %4$s)';
         $query              = sprintf($query, $this->getTableWithPrefix(), self::COLUMN_ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
-        $query              .= $limit === FALSE ? '' : " LIMIT $limit";
+        $query              .= empty($limit) ? '' : " LIMIT $limit";
         
         return parent::search($query);
     }
     
-    public function searchAllConfigured($filters = []) {
-        $limit              = Arrays::get($filters, 'limit');
+    public function searchAllConfigured($limit = '') {
         $tableOptionLicense = parent::getTableWithPrefix(OptionsLicensesManager::TABLE);
-        $query              = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s)';
+        $query              = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s) ORDER BY %2$s DESC';
         $query              = sprintf($query, $this->getTableWithPrefix(), self::COLUMN_ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
-        $query              .= $limit === FALSE ? '' : " LIMIT $limit";
+        $query              .= empty($limit) ? '' : " LIMIT $limit";
         
         return parent::search($query);
     }

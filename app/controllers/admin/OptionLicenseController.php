@@ -5,9 +5,9 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LicensesManager;
 use SoftnCMS\models\managers\OptionsLicensesManager;
 use SoftnCMS\models\tables\License;
@@ -39,7 +39,7 @@ class OptionLicenseController extends CUDControllerAbstract {
             Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
         }
         
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $optionsLicenseManager = new OptionsLicensesManager();
             $form                  = $this->form();
             
@@ -61,6 +61,7 @@ class OptionLicenseController extends CUDControllerAbstract {
             Messages::addDanger(__('Error al crear la configuración del permiso.'));
         }
         
+        ViewController::sendViewData('isUpdate', FALSE);
         ViewController::sendViewData('license', new License());
         ViewController::sendViewData('licenses', $licenses);
         ViewController::sendViewData('optionsLicenses', []);
@@ -286,7 +287,7 @@ class OptionLicenseController extends CUDControllerAbstract {
         if (empty($optionsLicenses)) {
             Messages::addDanger(__('La configuración del permiso no existe.'), TRUE);
             Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
-        } elseif (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+        } elseif (Form::submit(Constants::FORM_UPDATE)) {
             $form = $this->form();
             
             if (empty($form)) {
@@ -302,9 +303,9 @@ class OptionLicenseController extends CUDControllerAbstract {
                     if (empty($optionLicense->getId())) {
                         $notError = $optionsLicensesManager->create($optionLicense);
                     } elseif (empty($optionLicense->getOptionLicenseFieldsName())) {
-                        $notError = $optionsLicensesManager->delete($optionLicense->getId());
+                        $notError = $optionsLicensesManager->deleteById($optionLicense->getId());
                     } else {
-                        $notError = $optionsLicensesManager->update($optionLicense);
+                        $notError = $optionsLicensesManager->updateByColumnId($optionLicense);
                     }
                 }
                 
@@ -328,16 +329,18 @@ class OptionLicenseController extends CUDControllerAbstract {
         
         $optionsLicensesList = [];
         array_walk($optionsLicenses, function(OptionLicense $optionLicense) use (&$optionsLicensesList) {
-            $optionsLicensesList[$optionLicense->getOptionLicenseControllerName()][$optionLicense->getOptionLicenseMethodName()] = [
+            $controllerName                                                                     = $optionLicense->getOptionLicenseControllerName();
+            $optionsLicensesList[$controllerName][$optionLicense->getOptionLicenseMethodName()] = [
                 'fields' => $optionLicense->getOptionLicenseFieldsName(),
                 'object' => $optionLicense,
             ];
-            $optionsLicensesList[$optionLicense->getOptionLicenseControllerName()]['insert']                                     = $optionLicense->getOptionLicenseCanInsert();
-            $optionsLicensesList[$optionLicense->getOptionLicenseControllerName()]['update']                                     = $optionLicense->getOptionLicenseCanUpdate();
-            $optionsLicensesList[$optionLicense->getOptionLicenseControllerName()]['delete']                                     = $optionLicense->getOptionLicenseCanDelete();
+            $optionsLicensesList[$controllerName]['insert']                                     = $optionLicense->getOptionLicenseCanInsert();
+            $optionsLicensesList[$controllerName]['update']                                     = $optionLicense->getOptionLicenseCanUpdate();
+            $optionsLicensesList[$controllerName]['delete']                                     = $optionLicense->getOptionLicenseCanDelete();
         });
         
         $licensesManager = new LicensesManager();
+        ViewController::sendViewData('isUpdate', TRUE);
         ViewController::sendViewData('optionsLicenses', $optionsLicensesList);
         ViewController::sendViewData('license', $licensesManager->searchById($id));
         ViewController::sendViewData('licenses', $licensesManager->searchAllWithoutConfigured());
@@ -359,16 +362,11 @@ class OptionLicenseController extends CUDControllerAbstract {
     }
     
     protected function read() {
-        $filters         = [];
         $licensesManager = new LicensesManager();
         $count           = $licensesManager->configuredCount();
-        $pagination      = parent::pagination($count);
+        $limit           = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('licenses', $licensesManager->searchAllConfigured($filters));
+        ViewController::sendViewData('licenses', $licensesManager->searchAllConfigured($limit));
     }
     
 }
