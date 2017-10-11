@@ -146,7 +146,7 @@ class OptionController extends ControllerAbstract {
         $optionEmailAdmin     = $optionsManager->searchByName(OptionConstants::EMAIL_ADMIN);
         $optionLanguage       = $optionsManager->searchByName(OptionConstants::LANGUAGE);
         $optionDefaultProfile = $optionsManager->searchByName(OptionConstants::DEFAULT_PROFILE);
-        $profilesList         = $profilesManager->read();
+        $profilesList         = $profilesManager->searchAll();
         $menuList             = $menusManager->searchAllParent();
         
         $this->sendViewOptionLanguage();
