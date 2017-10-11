@@ -5,15 +5,15 @@
 
 namespace SoftnCMS\models\managers;
 
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\ManagerAbstract;
 
 /**
  * Class CommentsManager
  * @author Nicolás Marulanda P.
  */
-class CommentsManager extends CRUDManagerAbstract {
+class CommentsManager extends ManagerAbstract {
     
     const TABLE                = 'comments';
     
@@ -32,24 +32,22 @@ class CommentsManager extends CRUDManagerAbstract {
     const POST_ID              = 'post_id';
     
     public function searchByPostId($postId) {
-        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
-        
-        return parent::searchAllBy(self::POST_ID, self::ID);
+        return parent::searchAllByColumn($postId, self::POST_ID, \PDO::PARAM_INT, ['ORDER BY ' . self::COLUMN_ID . ' DESC']);
     }
     
-    public function searchByPostIdAndStatus($postId, $status){
-        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
-        parent::parameterQuery(self::COMMENT_STATUS, $status, \PDO::PARAM_INT);
+    public function searchByPostIdAndStatus($postId, $status) {
+        parent::addPrepareStatement(self::POST_ID, $postId, \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::COMMENT_STATUS, $status, \PDO::PARAM_INT);
         $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s ORDER BY %4$s DESC';
-        $query = sprintf($query, $this->getTableWithPrefix(), self::COMMENT_STATUS, self::POST_ID, self::ID);
+        $query = sprintf($query, $this->getTableWithPrefix(), self::COMMENT_STATUS, self::POST_ID, self::COLUMN_ID);
         
-        return parent::readData($query);
+        return parent::search($query);
     }
     
     public function delete($id) {
         $postsManager = new PostsManager();
         $post         = $postsManager->searchByCommentId($id);
-        $result       = parent::delete($id);
+        $result       = parent::deleteById($id);
         
         if ($result) {
             $postsManager->updateCommentCount($post->getId(), -1);
@@ -75,32 +73,30 @@ class CommentsManager extends CRUDManagerAbstract {
     }
     
     public function searchByUserId($userId) {
-        parent::parameterQuery(self::COMMENT_USER_ID, $userId, \PDO::PARAM_INT);
-        
-        return parent::searchAllBy(self::COMMENT_USER_ID, self::ID);
+        return parent::searchAllByColumn($userId, self::COMMENT_USER_ID, \PDO::PARAM_INT, ['ORDER BY ' . self::COLUMN_ID . ' DESC']);
     }
     
     /**
      * @param Comment $object
      */
-    protected function addParameterQuery($object) {
-        parent::parameterQuery(self::COMMENT_STATUS, $object->getCommentStatus(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::COMMENT_AUTHOR, $object->getCommentAuthor(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::COMMENT_AUTHOR_EMAIL, $object->getCommentAuthorEmail(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::COMMENT_CONTENTS, $object->getCommentContents(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::COMMENT_DATE, $object->getCommentDate(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::COMMENT_USER_ID, $object->getCommentUserId(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::POST_ID, $object->getPostId(), \PDO::PARAM_INT);
+    protected function prepareStatement($object) {
+        parent::addPrepareStatement(self::COLUMN_ID, $object->getId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::COMMENT_STATUS, $object->getCommentStatus(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::COMMENT_AUTHOR, $object->getCommentAuthor(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::COMMENT_AUTHOR_EMAIL, $object->getCommentAuthorEmail(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::COMMENT_CONTENTS, $object->getCommentContents(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::COMMENT_DATE, $object->getCommentDate(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::COMMENT_USER_ID, $object->getCommentUserId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::POST_ID, $object->getPostId(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {
         return self::TABLE;
     }
     
-    protected function buildObjectTable($result) {
-        parent::buildObjectTable($result);
+    protected function buildObject($result) {
         $comment = new Comment();
-        $comment->setId(Arrays::get($result, self::ID));
+        $comment->setId(Arrays::get($result, self::COLUMN_ID));
         $comment->setPostId(Arrays::get($result, self::POST_ID));
         $comment->setCommentUserId(Arrays::get($result, self::COMMENT_USER_ID));
         $comment->setCommentDate(Arrays::get($result, self::COMMENT_DATE));

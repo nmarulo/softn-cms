@@ -5,12 +5,12 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\tables\Term;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
@@ -25,7 +25,7 @@ use SoftnCMS\util\Util;
 class TermController extends CUDControllerAbstract {
     
     public function create() {
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $form = $this->form();
             
             if (!empty($form)) {
@@ -34,14 +34,14 @@ class TermController extends CUDControllerAbstract {
                 
                 if ($termsManager->create($term)) {
                     Messages::addSuccess(__('Etiqueta publicada correctamente.'), TRUE);
-                    $optionsManager = new OptionsManager();
-                    Util::redirect($optionsManager->getSiteUrl() . 'admin/term');
+                    Util::redirect(Router::getSiteURL(), 'admin/term');
                 }
             }
             
             Messages::addDanger(__('Error al publicar la etiqueta.'));
         }
         
+        ViewController::sendViewData('isUpdate', FALSE);
         ViewController::sendViewData('term', new Term());
         ViewController::sendViewData('title', __('Publicar nueva etiqueta'));
         ViewController::view('form');
@@ -55,12 +55,12 @@ class TermController extends CUDControllerAbstract {
         }
         
         $term = new Term();
-        $term->setId(Arrays::get($inputs, TermsManager::ID));
+        $term->setId(Arrays::get($inputs, TermsManager::COLUMN_ID));
         $term->setTermPostCount(NULL);
         $term->setTermDescription(Arrays::get($inputs, TermsManager::TERM_DESCRIPTION));
         $term->setTermName(Arrays::get($inputs, TermsManager::TERM_NAME));
         
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $term->setTermPostCount(0);
         }
         
@@ -69,7 +69,7 @@ class TermController extends CUDControllerAbstract {
     
     protected function filterInputs() {
         Form::setInput([
-            InputIntegerBuilder::init(TermsManager::ID)
+            InputIntegerBuilder::init(TermsManager::COLUMN_ID)
                                ->build(),
             InputAlphanumericBuilder::init(TermsManager::TERM_NAME)
                                     ->build(),
@@ -86,11 +86,10 @@ class TermController extends CUDControllerAbstract {
         $term         = $termsManager->searchById($id);
         
         if (empty($term)) {
-            $optionsManager = new OptionsManager();
             Messages::addDanger(__('La etiqueta no existe.'), TRUE);
-            Util::redirect($optionsManager->getSiteUrl() . 'admin/term');
+            Util::redirect(Router::getSiteURL(), 'admin/term');
         } else {
-            if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+            if (Form::submit(Constants::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
@@ -106,7 +105,7 @@ class TermController extends CUDControllerAbstract {
                 }
                 
             }
-            
+            ViewController::sendViewData('isUpdate', TRUE);
             ViewController::sendViewData('term', $term);
             ViewController::sendViewData('title', __('Actualizar etiqueta'));
             ViewController::view('form');
@@ -116,7 +115,7 @@ class TermController extends CUDControllerAbstract {
     public function delete($id) {
         $termsManager = new TermsManager();
         
-        if (empty($termsManager->delete($id))) {
+        if (empty($termsManager->deleteById($id))) {
             Messages::addDanger(__('Error al borrar la etiqueta.'));
         } else {
             Messages::addSuccess(__('Etiqueta borrada correctamente.'));
@@ -126,16 +125,11 @@ class TermController extends CUDControllerAbstract {
     }
     
     protected function read() {
-        $filters      = [];
         $termsManager = new TermsManager();
         $count        = $termsManager->count();
-        $pagination   = parent::pagination($count);
+        $limit        = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('terms', $termsManager->read($filters));
+        ViewController::sendViewData('terms', $termsManager->searchAll($limit));
     }
     
 }

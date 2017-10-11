@@ -1,5 +1,6 @@
 <?php
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\ProfilesLicensesManager;
 use SoftnCMS\models\managers\ProfilesManager;
@@ -9,7 +10,7 @@ use SoftnCMS\util\Arrays;
 $profile            = ViewController::getViewData('profile');
 $title              = ViewController::getViewData('title');
 $method             = ViewController::getViewData('method');
-$isUpdate           = $method == ProfilesManager::FORM_UPDATE;
+$isUpdate           = ViewController::getViewData('isUpdate');
 $licenses           = ViewController::getViewData('licenses');
 $selectedLicensesId = ViewController::getViewData('selectedLicensesId');
 ?>
@@ -44,14 +45,14 @@ $selectedLicensesId = ViewController::getViewData('selectedLicensesId');
                     <div class="panel-heading"><?php echo __('Publicación'); ?></div>
                     <div class="panel-body">
                         <?php if ($isUpdate) { ?>
-                            <button class="btn btn-primary btn-block" name="<?php echo ProfilesManager::FORM_UPDATE; ?>" value="<?php echo ProfilesManager::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
+                            <button class="btn btn-primary btn-block" name="<?php echo Constants::FORM_UPDATE; ?>" value="<?php echo Constants::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
                         <?php } else { ?>
-                            <button class="btn btn-primary btn-block" name="<?php echo ProfilesManager::FORM_CREATE; ?>" value="<?php echo ProfilesManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
+                            <button class="btn btn-primary btn-block" name="<?php echo Constants::FORM_CREATE; ?>" value="<?php echo Constants::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
                         <?php } ?>
                     </div>
                 </div>
             </div>
-            <input type="hidden" name="<?php echo ProfilesManager::ID; ?>" value="<?php echo $profile->getId(); ?>"/>
+            <input type="hidden" name="<?php echo ProfilesManager::COLUMN_ID; ?>" value="<?php echo $profile->getId(); ?>"/>
             <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>

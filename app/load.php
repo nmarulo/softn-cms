@@ -50,7 +50,7 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
             $menuTemplate    = new MenuTemplate($menu, TRUE);
             $menuList        = $menuTemplate->getSubMenuList();
             $sidebarsManager = new SidebarsManager();
-            $sidebars        = $sidebarsManager->read();
+            $sidebars        = $sidebarsManager->searchAll();
         }
         
         if (LoginManager::checkSession()) {

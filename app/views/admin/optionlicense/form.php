@@ -1,5 +1,6 @@
 <?php
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsLicensesManager;
 use SoftnCMS\models\tables\License;
@@ -12,7 +13,7 @@ $dataList        = ViewController::getViewData('dataList');
 $licenseSelected = ViewController::getViewData('license');
 $licenses        = ViewController::getViewData('licenses');
 $method          = ViewController::getViewData('method');
-$isUpdate        = $method == OptionsLicensesManager::FORM_UPDATE;
+$isUpdate        = ViewController::getViewData('isUpdate');
 $countBr         = 0;
 ?>
 <div class="page-container" data-menu-collapse-id="option">
@@ -48,9 +49,9 @@ $countBr         = 0;
                 <span class="glyphicon glyphicon-remove"></span>
             </button>
             <?php if ($isUpdate) { ?>
-                <button class="btn btn-primary" name="<?php echo OptionsLicensesManager::FORM_UPDATE; ?>" value="<?php echo OptionsLicensesManager::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
+                <button class="btn btn-primary" name="<?php echo Constants::FORM_UPDATE; ?>" value="<?php echo Constants::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
             <?php } else { ?>
-                <button class="btn btn-primary" name="<?php echo OptionsLicensesManager::FORM_CREATE; ?>" value="<?php echo OptionsLicensesManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
+                <button class="btn btn-primary" name="<?php echo Constants::FORM_CREATE; ?>" value="<?php echo Constants::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
             <?php } ?>
             <br/>
             <br/>
@@ -74,9 +75,9 @@ $countBr         = 0;
                 }); ?>
             </div>
             <?php if ($isUpdate) { ?>
-                <button class="btn btn-primary" name="<?php echo OptionsLicensesManager::FORM_UPDATE; ?>" value="<?php echo OptionsLicensesManager::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
+                <button class="btn btn-primary" name="<?php echo Constants::FORM_UPDATE; ?>" value="<?php echo Constants::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
             <?php } else { ?>
-                <button class="btn btn-primary" name="<?php echo OptionsLicensesManager::FORM_CREATE; ?>" value="<?php echo OptionsLicensesManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
+                <button class="btn btn-primary" name="<?php echo Constants::FORM_CREATE; ?>" value="<?php echo Constants::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
             <?php } ?>
             <?php \SoftnCMS\util\Token::formField(); ?>
         </form>

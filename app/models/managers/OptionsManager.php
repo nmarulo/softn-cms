@@ -6,24 +6,23 @@
 namespace SoftnCMS\models\managers;
 
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Option;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
-use SoftnCMS\util\Sanitize;
+use SoftnCMS\util\database\ManagerAbstract;
 use SoftnCMS\util\Util;
 
 /**
  * Class OptionsManager
  * @author Nicolás Marulanda P.
  */
-class OptionsManager extends CRUDManagerAbstract {
+class OptionsManager extends ManagerAbstract {
     
-    const TABLE                         = 'options';
+    const TABLE        = 'options';
     
-    const OPTION_NAME                   = 'option_name';
+    const OPTION_NAME  = 'option_name';
     
-    const OPTION_VALUE                  = 'option_value';
+    const OPTION_VALUE = 'option_value';
     
     public function getSiteUrl($router = NULL) {
         $siteUrl = '';
@@ -37,7 +36,6 @@ class OptionsManager extends CRUDManagerAbstract {
         }
         
         if (empty($siteUrl)) {
-            
             if (empty($router)) {
                 $router = new Router();
             }
@@ -56,9 +54,9 @@ class OptionsManager extends CRUDManagerAbstract {
      * @return bool|Option
      */
     public function searchByName($name) {
-        parent::parameterQuery(self::OPTION_NAME, $name, \PDO::PARAM_STR);
+        $result = parent::searchAllByColumn($name, self::OPTION_NAME, \PDO::PARAM_STR, ['ORDER BY ' . self::COLUMN_ID . ' DESC']);
         
-        return parent::searchBy(self::OPTION_NAME);
+        return Arrays::findFirst($result);
     }
     
     /**
@@ -66,29 +64,26 @@ class OptionsManager extends CRUDManagerAbstract {
      *
      * @return bool
      */
-    public function update($option) {
-        //No es necesario agregar el "parameterQuery".
-        //El "OPTION_NAME" se agregara al llamar a "addParameterQuery".
-        
-        return parent::updateData($option, self::OPTION_NAME);
+    public function updateByColumnName($option) {
+        return parent::updateByColumn($option, self::OPTION_NAME);
     }
     
     /**
      * @param Option $object
      */
-    protected function addParameterQuery($object) {
-        parent::parameterQuery(self::OPTION_VALUE, $object->getOptionValue(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::OPTION_NAME, $object->getOptionName(), \PDO::PARAM_STR);
+    protected function prepareStatement($object) {
+        parent::addPrepareStatement(self::COLUMN_ID, $object->getId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::OPTION_VALUE, $object->getOptionValue(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::OPTION_NAME, $object->getOptionName(), \PDO::PARAM_STR);
     }
     
     protected function getTable() {
         return self::TABLE;
     }
     
-    protected function buildObjectTable($result) {
-        parent::buildObjectTable($result);
+    protected function buildObject($result) {
         $option = new Option();
-        $option->setId(Arrays::get($result, self::ID));
+        $option->setId(Arrays::get($result, self::COLUMN_ID));
         $option->setOptionName(Arrays::get($result, self::OPTION_NAME));
         $option->setOptionValue(Arrays::get($result, self::OPTION_VALUE));
         

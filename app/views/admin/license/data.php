@@ -7,7 +7,7 @@ $licenses         = ViewController::getViewData('licenses');
 $siteUrlUpdate    = ViewController::getViewData('siteUrl') . 'admin/license/update/';
 $strTranslateName = __('Nombre');
 ViewController::singleViewByDirectory('pagination'); ?>
-    <div class="table-responsive">
+<div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>

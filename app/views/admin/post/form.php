@@ -1,13 +1,14 @@
 <?php
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\PostsCategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
+use SoftnCMS\models\managers\PostsTermsManager;
+use SoftnCMS\models\tables\Category;
+use SoftnCMS\models\tables\Term;
 use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
-use SoftnCMS\models\managers\PostsCategoriesManager;
-use SoftnCMS\models\managers\PostsTermsManager;
-use SoftnCMS\models\tables\Term;
-use SoftnCMS\models\tables\Category;
 use SoftnCMS\util\HTML;
 
 ViewController::registerScript('form');
@@ -18,7 +19,7 @@ $terms                = ViewController::getViewData('terms');
 $selectedCategoriesId = ViewController::getViewData('selectedCategoriesId');
 $selectedTermsId      = ViewController::getViewData('selectedTermsId');
 $method               = ViewController::getViewData('method');
-$isUpdate             = $method == PostsManager::FORM_UPDATE;
+$isUpdate             = ViewController::getViewData('isUpdate');
 $linkPost             = ViewController::getViewData('linkPost');
 $usersList            = ViewController::getViewData('usersList');
 $selectedUserId       = ViewController::getViewData('selectedUserId');
@@ -81,9 +82,9 @@ $selectedUserId       = ViewController::getViewData('selectedUserId');
                                         <span class="glyphicon glyphicon-time"></span>
                                         <?php echo $post->getPostUpdate(); ?></span>
                                 </p>
-                                <button class="btn btn-primary btn-block" name="<?php echo PostsManager::FORM_UPDATE; ?>" value="<?php echo PostsManager::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
+                                <button class="btn btn-primary btn-block" name="<?php echo Constants::FORM_UPDATE; ?>" value="<?php echo Constants::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
                             <?php } else { ?>
-                                <button class="btn btn-primary btn-block" name="<?php echo PostsManager::FORM_CREATE; ?>" value="<?php echo PostsManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
+                                <button class="btn btn-primary btn-block" name="<?php echo Constants::FORM_CREATE; ?>" value="<?php echo Constants::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
                             <?php } ?>
                         </div>
                     </div>
@@ -122,7 +123,7 @@ $selectedUserId       = ViewController::getViewData('selectedUserId');
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="<?php echo PostsManager::ID; ?>" value="<?php echo $post->getId(); ?>"/>
+                <input type="hidden" name="<?php echo PostsManager::COLUMN_ID; ?>" value="<?php echo $post->getId(); ?>"/>
                 <?php \SoftnCMS\util\Token::formField(); ?>
             </form>
         </div>

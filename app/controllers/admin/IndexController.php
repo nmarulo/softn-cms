@@ -36,9 +36,9 @@ class IndexController extends ControllerAbstract {
         $categoriesManager = new CategoriesManager();
         $termsManager      = new TermsManager();
         $usersManager      = new UsersManager();
-        $pagesManager = new PagesManager();
-        $posts             = $postsManager->read(['limit' => 5]);
-        $comments          = $commentsManager->read(['limit' => 5]);
+        $pagesManager      = new PagesManager();
+        $posts             = $postsManager->searchAll(5);
+        $comments          = $commentsManager->searchAll(5);
         
         $posts = array_map(function(Post $post) {
             $title = $post->getPostTitle();

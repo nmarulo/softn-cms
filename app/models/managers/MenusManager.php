@@ -5,16 +5,16 @@
 
 namespace SoftnCMS\models\managers;
 
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Menu;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\ManagerAbstract;
 use SoftnCMS\util\Messages;
 
 /**
  * Class MenusManager
  * @author Nicolás Marulanda P.
  */
-class MenusManager extends CRUDManagerAbstract {
+class MenusManager extends ManagerAbstract {
     
     const TABLE               = 'menus';
     
@@ -31,42 +31,44 @@ class MenusManager extends CRUDManagerAbstract {
     const MENU_SUB_PARENT     = 0;
     
     /**
-     * @param array $filters
+     * @param string $limit
      *
      * @return array
      */
-    public function searchAllParent($filters = []) {
-        return $this->searchByMenuSub(self::MENU_SUB_PARENT, $filters);
+    public function searchAllParent($limit = '') {
+        return $this->searchByMenuSub(self::MENU_SUB_PARENT, $limit);
     }
     
     /**
      * Método que obtiene todos los hijos directos de un menu padre.
      *
-     * @param int   $menuSub Identificador del menu padre.
-     * @param array $filters
+     * @param int    $menuSub Identificador del menu padre.
+     * @param string $limit
      *
      * @return array
      */
-    public function searchByMenuSub($menuSub, $filters = []) {
-        $limit         = Arrays::get($filters, 'limit');
-        $columnMenuSub = self::MENU_SUB;
-        parent::parameterQuery($columnMenuSub, $menuSub, \PDO::PARAM_INT);
-        $orderBy = 'ORDER BY ' . self::MENU_SUB . ' ASC ';
+    public function searchByMenuSub($menuSub, $limit = '') {
+        $orderBy = 'ORDER BY ' . self::MENU_SUB . ' ASC';
         
         if ($menuSub == self::MENU_SUB_PARENT) {
-            $orderBy = 'ORDER BY ' . self::ID . ' DESC ';
+            $orderBy = 'ORDER BY ' . self::COLUMN_ID . ' DESC';
         }
         
-        $query = sprintf('SELECT * FROM %1$s WHERE %2$s = :%2$s %3$s', parent::getTableWithPrefix(), $columnMenuSub, $orderBy);
+        $addConditions = [$orderBy];
         
         if (!empty($limit)) {
-            $query .= " LIMIT $limit";
+            $addConditions[] = "LIMIT $limit";
         }
         
-        return parent::readData($query);
+        return parent::searchAllByColumn($menuSub, self::MENU_SUB, \PDO::PARAM_INT, $addConditions);
     }
     
-    public function delete($id) {
+    /**
+     * @param int $id
+     *
+     * @return bool
+     */
+    public function deleteById($id) {
         $menu = $this->searchById($id);
         
         if (empty($menu)) {
@@ -76,10 +78,10 @@ class MenusManager extends CRUDManagerAbstract {
         $menuIdList = [];
         $menuIdList = $this->getAllChildrenId($id, $menuIdList);
         array_walk($menuIdList, function($menuId) {
-            $this->parameterQuery(self::ID . $menuId, $menuId, \PDO::PARAM_INT, self::ID);
+            parent::addPrepareStatement(self::COLUMN_ID . $menuId, $menuId, \PDO::PARAM_INT, self::COLUMN_ID);
         });
         
-        if (!parent::deleteBy('OR')) {
+        if (!parent::deleteByPrepareStatement('OR')) {
             return FALSE;
         }
         
@@ -153,7 +155,7 @@ class MenusManager extends CRUDManagerAbstract {
             }
         }
         
-        return $this->update($parentMenu);
+        return $this->updateByColumnId($parentMenu);
     }
     
     /**
@@ -161,10 +163,10 @@ class MenusManager extends CRUDManagerAbstract {
      *
      * @return bool
      */
-    public function update($object) {
+    public function updateByColumnId($object) {
         $currentMenu = $this->searchById($object->getId());
         
-        if (empty($currentMenu) || !parent::update($object)) {
+        if (empty($currentMenu) || !parent::updateByColumnId($object)) {
             return FALSE;
         }
         
@@ -198,7 +200,7 @@ class MenusManager extends CRUDManagerAbstract {
                 $position = $menu->getMenuPosition();
                 $menu->setMenuPosition($i + 1);
                 
-                if ($position != $i + 1 && !$this->update($menu)) {
+                if ($position != $i + 1 && !$this->updateByColumnId($menu)) {
                     $notError = FALSE;
                 }
             }
@@ -230,13 +232,12 @@ class MenusManager extends CRUDManagerAbstract {
     
     public function count() {
         $columnMenuSub = self::MENU_SUB;
-        parent::parameterQuery($columnMenuSub, self::MENU_SUB_PARENT, \PDO::PARAM_INT);
+        parent::addPrepareStatement($columnMenuSub, self::MENU_SUB_PARENT, \PDO::PARAM_INT);
         $query  = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s', parent::getTableWithPrefix(), $columnMenuSub);
-        $result = parent::select($query);
-        $result = Arrays::get($result, 0);
-        $result = Arrays::get($result, 'COUNT');
+        $result = Arrays::findFirst(parent::getDB()
+                                          ->select($query));
         
-        return $result === FALSE ? 0 : $result;
+        return empty($result) ? 0 : $result;
     }
     
     /**
@@ -264,35 +265,32 @@ class MenusManager extends CRUDManagerAbstract {
     
     private function getLastPosition($parentMenuId) {
         $query = 'SELECT %1$s AS POSITION FROM %2$s WHERE %3$s = :%3$s ORDER BY %1$s DESC LIMIT 1';
-        
         $query = sprintf($query, self::MENU_POSITION, parent::getTableWithPrefix(), self::MENU_SUB);
-        parent::parameterQuery(self::MENU_SUB, $parentMenuId, \PDO::PARAM_INT);
-        $result = parent::select($query);
-        $result = Arrays::get($result, 0);
-        $result = Arrays::get($result, 'POSITION');
+        parent::addPrepareStatement(self::MENU_SUB, $parentMenuId, \PDO::PARAM_INT);
+        $result = Arrays::findFirst(parent::search($query));
         
-        return $result === FALSE ? 0 : $result;
+        return empty($result) ? 0 : $result;
     }
     
     /**
      * @param Menu $object
      */
-    protected function addParameterQuery($object) {
-        parent::parameterQuery(self::MENU_POSITION, $object->getMenuPosition(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::MENU_SUB, $object->getMenuSub(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::MENU_TITLE, $object->getMenuTitle(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::MENU_URL, $object->getMenuUrl(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::MENU_TOTAL_CHILDREN, $object->getMenuTotalChildren(), \PDO::PARAM_INT);
+    protected function prepareStatement($object) {
+        parent::addPrepareStatement(self::COLUMN_ID, $object->getId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::MENU_POSITION, $object->getMenuPosition(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::MENU_SUB, $object->getMenuSub(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::MENU_TITLE, $object->getMenuTitle(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::MENU_URL, $object->getMenuUrl(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::MENU_TOTAL_CHILDREN, $object->getMenuTotalChildren(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {
         return self::TABLE;
     }
     
-    protected function buildObjectTable($result) {
-        parent::buildObjectTable($result);
+    protected function buildObject($result) {
         $menu = new Menu();
-        $menu->setId(Arrays::get($result, self::ID));
+        $menu->setId(Arrays::get($result, self::COLUMN_ID));
         $menu->setMenuPosition(Arrays::get($result, self::MENU_POSITION));
         $menu->setMenuSub(Arrays::get($result, self::MENU_SUB));
         $menu->setMenuTitle(Arrays::get($result, self::MENU_TITLE));

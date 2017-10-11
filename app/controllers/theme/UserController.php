@@ -31,14 +31,9 @@ class UserController extends ThemeControllerAbstract {
         $postStatus   = TRUE;
         $postsManager = new PostsManager();
         $count        = $postsManager->countByUserIdAndStatus($id, $postStatus);
-        $pagination   = parent::pagination($count);
-        $filters      = [];
+        $limit   = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        $posts         = $postsManager->searchByUserIdAndStatus($user->getId(), $postStatus, $filters);
+        $posts         = $postsManager->searchByUserIdAndStatus($user->getId(), $postStatus, $limit);
         $postsTemplate = array_map(function(Post $post) {
             return new PostTemplate($post, TRUE);
         }, $posts);

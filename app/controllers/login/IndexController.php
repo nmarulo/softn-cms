@@ -8,7 +8,6 @@ namespace SoftnCMS\controllers\login;
 use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\ManagerAbstract;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\UsersManager;

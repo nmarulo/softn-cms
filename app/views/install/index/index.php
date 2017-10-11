@@ -2,7 +2,6 @@
 
 use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\ManagerAbstract;
 use SoftnCMS\models\managers\InstallManager;
 
 $host    = ViewController::getViewData('host');

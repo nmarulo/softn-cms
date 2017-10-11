@@ -1,10 +1,10 @@
 <?php
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\tables\Menu;
 use SoftnCMS\models\tables\Profile;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\util\Gravatar;
 
 $optionTitle                 = ViewController::getViewData('optionTitle');
@@ -195,7 +195,7 @@ $commentChecked              = empty($optionComment->getOptionValue()) ? '' : 'c
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button class="btn btn-primary" name="update" value="update"><?php echo __('Guardar'); ?></button>
+                    <button class="btn btn-primary" name="<?php echo Constants::FORM_UPDATE ?>" value="<?php echo Constants::FORM_UPDATE ?>"><?php echo __('Guardar'); ?></button>
                 </div>
             </div>
             <?php \SoftnCMS\util\Token::formField(); ?>

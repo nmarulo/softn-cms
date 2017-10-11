@@ -5,14 +5,14 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LicensesManager;
 use SoftnCMS\models\managers\ProfilesLicensesManager;
 use SoftnCMS\models\managers\ProfilesManager;
-use SoftnCMS\models\tables\ProfileLicense;
 use SoftnCMS\models\tables\Profile;
+use SoftnCMS\models\tables\ProfileLicense;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
@@ -29,7 +29,7 @@ use SoftnCMS\util\Util;
 class ProfileController extends CUDControllerAbstract {
     
     public function create() {
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $form = $this->form();
             
             if (!empty($form)) {
@@ -48,6 +48,7 @@ class ProfileController extends CUDControllerAbstract {
         }
         
         $this->sendViewLicenses();
+        ViewController::sendViewData('isUpdate', FALSE);
         ViewController::sendViewData('profile', new Profile());
         ViewController::sendViewData('title', __('Crear nuevo perfil'));
         ViewController::view('form');
@@ -62,7 +63,7 @@ class ProfileController extends CUDControllerAbstract {
         
         $profile  = new Profile();
         $licenses = Arrays::get($inputs, ProfilesLicensesManager::LICENSE_ID);
-        $profile->setId(Arrays::get($inputs, ProfilesManager::ID));
+        $profile->setId(Arrays::get($inputs, ProfilesManager::COLUMN_ID));
         $profile->setProfileName(Arrays::get($inputs, ProfilesManager::PROFILE_NAME));
         $profile->setProfileDescription(Arrays::get($inputs, ProfilesManager::PROFILE_DESCRIPTION));
         
@@ -74,7 +75,7 @@ class ProfileController extends CUDControllerAbstract {
     
     protected function filterInputs() {
         Form::setInput([
-            InputIntegerBuilder::init(ProfilesManager::ID)
+            InputIntegerBuilder::init(ProfilesManager::COLUMN_ID)
                                ->build(),
             InputAlphanumericBuilder::init(ProfilesManager::PROFILE_NAME)
                                     ->setSpecialChar(TRUE)
@@ -87,44 +88,6 @@ class ProfileController extends CUDControllerAbstract {
         ]);
         
         return Form::inputFilter();
-    }
-    
-    private function sendViewLicenses() {
-        $licensesManager = new LicensesManager();
-        ViewController::sendViewData('licenses', $licensesManager->read());
-    }
-    
-    public function update($id) {
-        $profilesManager = new ProfilesManager();
-        $profile         = $profilesManager->searchById($id);
-        
-        if (empty($profile)) {
-            Messages::addDanger(__('El perfil no existe.'), TRUE);
-            Util::redirect(Router::getSiteURL() . 'admin/profile');
-        } elseif (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
-            $form = $this->form();
-            
-            if (empty($form)) {
-                Messages::addDanger(__('Error en los campos del perfil.'));
-            } else {
-                $profile = Arrays::get($form, 'profile');
-                
-                if ($profilesManager->update($profile)) {
-                    $profile  = $profilesManager->searchById($id);
-                    $licenses = Arrays::get($form, 'licenses');
-                    $this->createOrDeleteLicenses($licenses, $id);
-                    Messages::addSuccess(__('Perfil actualizado correctamente.'));
-                } else {
-                    Messages::addDanger(__('Error al actualizar el perfil.'));
-                }
-            }
-        }
-        
-        $this->sendViewLicenses();
-        ViewController::sendViewData('selectedLicensesId', $this->getLicensesIdByProfileId($id));
-        ViewController::sendViewData('profile', $profile);
-        ViewController::sendViewData('title', __('Actualizar perfil'));
-        ViewController::view('form');
     }
     
     private function createOrDeleteLicenses($licensesId, $profileId) {
@@ -159,7 +122,7 @@ class ProfileController extends CUDControllerAbstract {
             }
             
             array_walk($newLicensesProfiles, function(ProfileLicense $licenseProfile) use (&$numError, $licensesProfilesManager) {
-                if (!$licensesProfilesManager->create($licenseProfile)) {
+                if ($licensesProfilesManager->create($licenseProfile) === FALSE) {
                     ++$numError;
                 }
             });
@@ -179,10 +142,49 @@ class ProfileController extends CUDControllerAbstract {
         }, $licensesProfile);
     }
     
+    private function sendViewLicenses() {
+        $licensesManager = new LicensesManager();
+        ViewController::sendViewData('licenses', $licensesManager->searchAll());
+    }
+    
+    public function update($id) {
+        $profilesManager = new ProfilesManager();
+        $profile         = $profilesManager->searchById($id);
+        
+        if (empty($profile)) {
+            Messages::addDanger(__('El perfil no existe.'), TRUE);
+            Util::redirect(Router::getSiteURL() . 'admin/profile');
+        } elseif (Form::submit(Constants::FORM_UPDATE)) {
+            $form = $this->form();
+            
+            if (empty($form)) {
+                Messages::addDanger(__('Error en los campos del perfil.'));
+            } else {
+                $profile = Arrays::get($form, 'profile');
+                
+                if ($profilesManager->updateByColumnId($profile)) {
+                    $profile  = $profilesManager->searchById($id);
+                    $licenses = Arrays::get($form, 'licenses');
+                    $this->createOrDeleteLicenses($licenses, $id);
+                    Messages::addSuccess(__('Perfil actualizado correctamente.'));
+                } else {
+                    Messages::addDanger(__('Error al actualizar el perfil.'));
+                }
+            }
+        }
+        
+        $this->sendViewLicenses();
+        ViewController::sendViewData('isUpdate', TRUE);
+        ViewController::sendViewData('selectedLicensesId', $this->getLicensesIdByProfileId($id));
+        ViewController::sendViewData('profile', $profile);
+        ViewController::sendViewData('title', __('Actualizar perfil'));
+        ViewController::view('form');
+    }
+    
     public function delete($id) {
         $profilesManager = new ProfilesManager();
         
-        if (empty($profilesManager->delete($id))) {
+        if (empty($profilesManager->deleteById($id))) {
             Messages::addDanger(__('Error al borrar el perfil.'));
         } else {
             Messages::addSuccess(__('Perfil borrado correctamente.'));
@@ -192,16 +194,11 @@ class ProfileController extends CUDControllerAbstract {
     }
     
     protected function read() {
-        $filters         = [];
         $profilesManager = new ProfilesManager();
         $count           = $profilesManager->count();
-        $pagination      = parent::pagination($count);
+        $limit           = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('profiles', $profilesManager->read($filters));
+        ViewController::sendViewData('profiles', $profilesManager->searchAll($limit));
     }
     
 }

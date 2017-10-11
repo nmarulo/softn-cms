@@ -33,14 +33,9 @@ class TermController extends ThemeControllerAbstract {
         $postsManager      = new PostsManager();
         $postsTermsManager = new PostsTermsManager();
         $count             = $postsTermsManager->countPostsByTermIdAndPostStatus($id, $postStatus);
-        $pagination        = parent::pagination($count);
-        $filters           = [];
+        $limit        = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        $posts         = $postsManager->searchAllByTermIdAndStatus($term->getId(), $postStatus, $filters);
+        $posts         = $postsManager->searchAllByTermIdAndStatus($term->getId(), $postStatus, $limit);
         $postsTemplate = array_map(function(Post $post) {
             return new PostTemplate($post, TRUE);
         }, $posts);

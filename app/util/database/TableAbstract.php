@@ -3,7 +3,7 @@
  * TableAbstract.php
  */
 
-namespace SoftnCMS\models;
+namespace SoftnCMS\util\database;
 
 /**
  * Class TableAbstract

@@ -5,10 +5,10 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\ProfilesManager;
@@ -37,7 +37,7 @@ class OptionController extends ControllerAbstract {
     }
     
     private function update() {
-        if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+        if (Form::submit(Constants::FORM_UPDATE)) {
             $optionsManager = new OptionsManager();
             $form           = $this->form();
             
@@ -45,15 +45,14 @@ class OptionController extends ControllerAbstract {
                 Messages::addDanger(__('Error en los campos de las opciones.'));
             } else {
                 $options  = Arrays::get($form, 'options');
-                $numError = 0;
+                $notError = TRUE;
+                $len      = count($options);
                 
-                array_walk($options, function(Option $option) use ($optionsManager, &$numError) {
-                    if (!$optionsManager->update($option)) {
-                        ++$numError;
-                    }
-                });
+                for ($i = 0; $i < $len && $notError; ++$i) {
+                    $notError = $optionsManager->updateByColumnName(Arrays::get($options, $i));
+                }
                 
-                if ($numError === 0) {
+                if ($notError) {
                     Messages::addSuccess(__('Actualizado correctamente.'));
                 } else {
                     Messages::addDanger(__('Error al actualizar.'));
@@ -69,15 +68,6 @@ class OptionController extends ControllerAbstract {
             return FALSE;
         }
         
-        $gravatar = new Gravatar();
-        $gravatar->setSize(Arrays::get($inputs, OptionConstants::GRAVATAR_SIZE));
-        $gravatar->setForceDefault(Arrays::get($inputs, OptionConstants::GRAVATAR_FORCE_DEFAULT));
-        $gravatar->setDefaultImage(Arrays::get($inputs, OptionConstants::GRAVATAR_DEFAULT_IMAGE));
-        $gravatar->setRating(Arrays::get($inputs, OptionConstants::GRAVATAR_RATING));
-        $gravatarOption = new Option();
-        $gravatarOption->setOptionName(OptionConstants::GRAVATAR);
-        $gravatarOption->setOptionValue(serialize($gravatar));
-        
         $inputKeys = array_keys($inputs);
         $options   = array_map(function($key, $value) {
             $option = new Option();
@@ -86,7 +76,7 @@ class OptionController extends ControllerAbstract {
             
             return $option;
         }, $inputKeys, $inputs);
-        $options[] = $gravatarOption;
+        $options[] = $this->formGravatar($inputs);
         
         return ['options' => $options];
     }
@@ -129,6 +119,19 @@ class OptionController extends ControllerAbstract {
         return Form::inputFilter();
     }
     
+    private function formGravatar($inputs) {
+        $gravatar = new Gravatar();
+        $gravatar->setSize(Arrays::get($inputs, OptionConstants::GRAVATAR_SIZE));
+        $gravatar->setForceDefault(Arrays::get($inputs, OptionConstants::GRAVATAR_FORCE_DEFAULT));
+        $gravatar->setDefaultImage(Arrays::get($inputs, OptionConstants::GRAVATAR_DEFAULT_IMAGE));
+        $gravatar->setRating(Arrays::get($inputs, OptionConstants::GRAVATAR_RATING));
+        $gravatarOption = new Option();
+        $gravatarOption->setOptionName(OptionConstants::GRAVATAR);
+        $gravatarOption->setOptionValue(serialize($gravatar));
+        
+        return $gravatarOption;
+    }
+    
     protected function read() {
         $profilesManager      = new ProfilesManager();
         $menusManager         = new MenusManager();
@@ -143,26 +146,12 @@ class OptionController extends ControllerAbstract {
         $optionEmailAdmin     = $optionsManager->searchByName(OptionConstants::EMAIL_ADMIN);
         $optionLanguage       = $optionsManager->searchByName(OptionConstants::LANGUAGE);
         $optionDefaultProfile = $optionsManager->searchByName(OptionConstants::DEFAULT_PROFILE);
-        $profilesList         = $profilesManager->read();
+        $profilesList         = $profilesManager->searchAll();
         $menuList             = $menusManager->searchAllParent();
-        $listLanguages        = Util::getFilesAndDirectories(LANGUAGES);
-        $listLanguages        = array_filter($listLanguages, function($language) {
-            $aux          = explode('.', $language);
-            $lastPosition = count($aux) - 1;
-            
-            if (Arrays::get($aux, $lastPosition) === FALSE || Arrays::get($aux, 0) === FALSE) {
-                return FALSE;
-            }
-            
-            return Arrays::get($aux, $lastPosition) == 'mo' && Arrays::get($aux, 0) != 'softncms';
-        });
-        $listLanguages        = array_map(function($language) {
-            return Arrays::get(explode('.', $language), 0);
-        }, $listLanguages);
         
-        $this->gravatar();
+        $this->sendViewOptionLanguage();
+        $this->sendViewOptionGravatar();
         ViewController::sendViewData('optionComment', $optionComment);
-        ViewController::sendViewData('listLanguages', $listLanguages);
         ViewController::sendViewData('optionLanguage', $optionLanguage);
         ViewController::sendViewData('menuList', $menuList);
         ViewController::sendViewData('optionMenu', $optionMenu);
@@ -178,7 +167,26 @@ class OptionController extends ControllerAbstract {
         
     }
     
-    private function gravatar() {
+    private function sendViewOptionLanguage() {
+        $listLanguages = Util::getFilesAndDirectories(LANGUAGES);
+        $listLanguages = array_filter($listLanguages, function($language) {
+            $aux          = explode('.', $language);
+            $lastPosition = count($aux) - 1;
+            
+            if (Arrays::get($aux, $lastPosition) === FALSE || Arrays::get($aux, 0) === FALSE) {
+                return FALSE;
+            }
+            
+            return Arrays::get($aux, $lastPosition) == 'mo' && Arrays::get($aux, 0) != 'softncms';
+        });
+        $listLanguages = array_map(function($language) {
+            return Arrays::get(explode('.', $language), 0);
+        }, $listLanguages);
+        
+        ViewController::sendViewData('listLanguages', $listLanguages);
+    }
+    
+    private function sendViewOptionGravatar() {
         $optionsManager = new OptionsManager();
         $optionGravatar = $optionsManager->searchByName(OptionConstants::GRAVATAR);
         $gravatar       = unserialize($optionGravatar->getOptionValue());

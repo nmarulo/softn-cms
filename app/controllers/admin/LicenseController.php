@@ -5,9 +5,9 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LicensesManager;
 use SoftnCMS\models\managers\ProfilesLicensesManager;
 use SoftnCMS\models\managers\ProfilesManager;
@@ -29,7 +29,7 @@ use SoftnCMS\util\Util;
 class LicenseController extends CUDControllerAbstract {
     
     public function create() {
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $form = $this->form();
             
             if (!empty($form)) {
@@ -48,6 +48,7 @@ class LicenseController extends CUDControllerAbstract {
         }
         
         $this->sendViewProfiles();
+        ViewController::sendViewData('isUpdate', FALSE);
         ViewController::sendViewData('license', new License());
         ViewController::sendViewData('title', __('Crear nuevo permiso'));
         ViewController::view('form');
@@ -62,7 +63,7 @@ class LicenseController extends CUDControllerAbstract {
         
         $license  = new License();
         $profiles = Arrays::get($inputs, ProfilesLicensesManager::PROFILE_ID);
-        $license->setId(Arrays::get($inputs, LicensesManager::ID));
+        $license->setId(Arrays::get($inputs, LicensesManager::COLUMN_ID));
         $license->setLicenseName(Arrays::get($inputs, LicensesManager::LICENSE_NAME));
         $license->setLicenseDescription(Arrays::get($inputs, LicensesManager::LICENSE_DESCRIPTION));
         
@@ -74,7 +75,7 @@ class LicenseController extends CUDControllerAbstract {
     
     protected function filterInputs() {
         Form::setInput([
-            InputIntegerBuilder::init(LicensesManager::ID)
+            InputIntegerBuilder::init(LicensesManager::COLUMN_ID)
                                ->build(),
             InputAlphanumericBuilder::init(LicensesManager::LICENSE_NAME)
                                     ->setSpecialChar(TRUE)
@@ -121,7 +122,7 @@ class LicenseController extends CUDControllerAbstract {
             }
             
             array_walk($newLicensesProfiles, function(ProfileLicense $profileLicense) use (&$numError, $profilesLicensesManager) {
-                if (!$profilesLicensesManager->create($profileLicense)) {
+                if ($profilesLicensesManager->create($profileLicense) === FALSE) {
                     ++$numError;
                 }
             });
@@ -143,7 +144,7 @@ class LicenseController extends CUDControllerAbstract {
     
     private function sendViewProfiles() {
         $profilesManager = new ProfilesManager();
-        ViewController::sendViewData('profiles', $profilesManager->read());
+        ViewController::sendViewData('profiles', $profilesManager->searchAll());
     }
     
     public function update($id) {
@@ -153,7 +154,7 @@ class LicenseController extends CUDControllerAbstract {
         if (empty($license)) {
             Messages::addDanger(__('El permiso no existe.'), TRUE);
             Util::redirect(Router::getSiteURL() . 'admin/license');
-        } elseif (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+        } elseif (Form::submit(Constants::FORM_UPDATE)) {
             $form = $this->form();
             
             if (empty($form)) {
@@ -161,7 +162,7 @@ class LicenseController extends CUDControllerAbstract {
             } else {
                 $license = Arrays::get($form, 'license');
                 
-                if ($licensesManager->update($license)) {
+                if ($licensesManager->updateByColumnId($license)) {
                     $license  = $licensesManager->searchById($id);
                     $profiles = Arrays::get($form, 'profiles');
                     $this->createOrDeleteProfiles($profiles, $id);
@@ -173,6 +174,7 @@ class LicenseController extends CUDControllerAbstract {
         }
         
         $this->sendViewProfiles();
+        ViewController::sendViewData('isUpdate', TRUE);
         ViewController::sendViewData('selectedProfilesId', $this->getProfilesIdByLicenseId($id));
         ViewController::sendViewData('license', $license);
         ViewController::sendViewData('title', __('Actualizar permiso'));
@@ -182,7 +184,7 @@ class LicenseController extends CUDControllerAbstract {
     public function delete($id) {
         $licensesManager = new LicensesManager();
         
-        if (empty($licensesManager->delete($id))) {
+        if (empty($licensesManager->deleteById($id))) {
             Messages::addDanger(__('Error al borrar el permiso.'));
         } else {
             Messages::addSuccess(__('Permiso borrado correctamente.'));
@@ -192,15 +194,10 @@ class LicenseController extends CUDControllerAbstract {
     }
     
     protected function read() {
-        $filters         = [];
         $licensesManager = new LicensesManager();
         $count           = $licensesManager->count();
-        $pagination      = parent::pagination($count);
+        $limit           = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('licenses', $licensesManager->read($filters));
+        ViewController::sendViewData('licenses', $licensesManager->searchAll($limit));
     }
 }

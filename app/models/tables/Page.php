@@ -5,7 +5,7 @@
 
 namespace SoftnCMS\models\tables;
 
-use SoftnCMS\models\TableAbstract;
+use SoftnCMS\util\database\TableAbstract;
 
 /**
  * Class Page

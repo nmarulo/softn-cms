@@ -5,15 +5,15 @@
 
 namespace SoftnCMS\models\managers;
 
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\PostTerm;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\ManagerAbstract;
 
 /**
  * Class PostsTermsManager
  * @author Nicolás Marulanda P.
  */
-class PostsTermsManager extends CRUDManagerAbstract {
+class PostsTermsManager extends ManagerAbstract {
     
     const TABLE   = 'posts_terms';
     
@@ -24,26 +24,22 @@ class PostsTermsManager extends CRUDManagerAbstract {
     public function countPostsByTermIdAndPostStatus($termId, $postStatus) {
         $tablePosts = $this->getTableWithPrefix(PostsManager::TABLE);
         $table      = $this->getTableWithPrefix();
-        $query      = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s IN (SELECT %4$s FROM %5$s WHERE %6$s = :%6$s)', $table, self::TERM_ID, self::POST_ID, PostsManager::ID, $tablePosts, PostsManager::POST_STATUS);
-        parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
-        parent::parameterQuery(PostsManager::POST_STATUS, $postStatus, \PDO::PARAM_INT);
-        $result = $this->select($query);
-        $result = Arrays::get($result, 0);
-        $result = Arrays::get($result, 'COUNT');
+        $query      = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s IN (SELECT %4$s FROM %5$s WHERE %6$s = :%6$s)', $table, self::TERM_ID, self::POST_ID, PostsManager::COLUMN_ID, $tablePosts, PostsManager::POST_STATUS);
+        parent::addPrepareStatement(self::TERM_ID, $termId, \PDO::PARAM_INT);
+        parent::addPrepareStatement(PostsManager::POST_STATUS, $postStatus, \PDO::PARAM_INT);
+        $result = Arrays::findFirst(parent::getDB()
+                                          ->select($query));
         
-        return $result === FALSE ? 0 : $result;
+        return empty($result) ? 0 : $result;
     }
     
     public function searchAllByTermId($termId) {
-        parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
-        
-        return parent::searchAllBy(self::TERM_ID);
+        return parent::searchAllByColumn($termId, self::TERM_ID, \PDO::PARAM_INT);
     }
     
     public function deleteAllByPostId($postId) {
         $postsTerms = $this->searchAllByPostId($postId);
-        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
-        $result = parent::deleteBy();
+        $result     = parent::deleteByColumn($postId, self::POST_ID, \PDO::PARAM_INT);
         
         if (!empty($result)) {
             array_walk($postsTerms, function(PostTerm $postTerm) {
@@ -55,9 +51,7 @@ class PostsTermsManager extends CRUDManagerAbstract {
     }
     
     public function searchAllByPostId($postId) {
-        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
-        
-        return parent::searchAllBy(self::POST_ID);
+        return parent::searchAllByColumn($postId, self::POST_ID, \PDO::PARAM_INT);
     }
     
     private function updateTermPostCount($termId, $num) {
@@ -67,8 +61,7 @@ class PostsTermsManager extends CRUDManagerAbstract {
     }
     
     public function deleteAllByTermId($termId) {
-        parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
-        $result = parent::deleteBy();
+        $result = parent::deleteByColumn($termId, self::TERM_ID, \PDO::PARAM_INT);
         
         if (!empty($result)) {
             $this->updateTermPostCount($termId, -1);
@@ -93,9 +86,9 @@ class PostsTermsManager extends CRUDManagerAbstract {
     }
     
     public function deleteByPostAndTerm($postId, $termId) {
-        parent::parameterQuery(self::POST_ID, $postId, \PDO::PARAM_INT);
-        parent::parameterQuery(self::TERM_ID, $termId, \PDO::PARAM_INT);
-        $result = parent::deleteBy();
+        parent::addPrepareStatement(self::POST_ID, $postId, \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::TERM_ID, $termId, \PDO::PARAM_INT);
+        $result = parent::deleteByPrepareStatement();
         
         if (!empty($result)) {
             $this->updateTermPostCount($termId, -1);
@@ -104,8 +97,7 @@ class PostsTermsManager extends CRUDManagerAbstract {
         return $result;
     }
     
-    protected function buildObjectTable($result) {
-        parent::buildObjectTable($result);
+    protected function buildObject($result) {
         $postTerm = new PostTerm();
         $postTerm->setPostId(Arrays::get($result, self::POST_ID));
         $postTerm->setTermId(Arrays::get($result, self::TERM_ID));
@@ -116,9 +108,9 @@ class PostsTermsManager extends CRUDManagerAbstract {
     /**
      * @param PostTerm $object
      */
-    protected function addParameterQuery($object) {
-        parent::parameterQuery(self::TERM_ID, $object->getTermId(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::POST_ID, $object->getPostId(), \PDO::PARAM_INT);
+    protected function prepareStatement($object) {
+        parent::addPrepareStatement(self::TERM_ID, $object->getTermId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::POST_ID, $object->getPostId(), \PDO::PARAM_INT);
     }
     
     protected function getTable() {

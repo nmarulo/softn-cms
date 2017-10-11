@@ -5,16 +5,16 @@
 
 namespace SoftnCMS\models\managers;
 
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\ManagerAbstract;
 
 /**
  * Class UsersManager
  * @author Nicolás Marulanda P.
  */
-class UsersManager extends CRUDManagerAbstract {
+class UsersManager extends ManagerAbstract {
     
     const TABLE                 = 'users';
     
@@ -45,11 +45,11 @@ class UsersManager extends CRUDManagerAbstract {
      *
      * @return bool
      */
-    public function delete($id) {
+    public function deleteById($id) {
         $user = $this->searchById($id);
         
         if ($user->getUserPostCount() == 0) {
-            return parent::delete($id);
+            return parent::deleteById($id);
         }
         
         return FALSE;
@@ -61,7 +61,7 @@ class UsersManager extends CRUDManagerAbstract {
      * @return bool
      */
     public function create($object) {
-        if ($this->canCreate($object)) {
+        if ($this->checkLoginAndEmail($object)) {
             return parent::create($object);
         }
         
@@ -73,12 +73,19 @@ class UsersManager extends CRUDManagerAbstract {
      *
      * @return bool
      */
-    private function canCreate($object) {
-        if ($this->searchByLogin($object->getUserLogin()) === FALSE && $this->searchByEmail($object->getUserEmail()) === FALSE) {
-            return TRUE;
-        }
+    private function checkLoginAndEmail($object) {
+        $result = $this->searchByLoginAndEmail($object->getUserLogin(), $object->getUserEmail());
         
-        return FALSE;
+        return empty($result);
+    }
+    
+    private function searchByLoginAndEmail($login, $email) {
+        parent::addPrepareStatement(self::USER_LOGIN, $login, \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::USER_EMAIL, $email, \PDO::PARAM_STR);
+        $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s';
+        $query = sprintf($query, parent::getTableWithPrefix(), self::USER_LOGIN, self::USER_EMAIL);
+        
+        return Arrays::findFirst(parent::search($query));
     }
     
     /**
@@ -87,9 +94,9 @@ class UsersManager extends CRUDManagerAbstract {
      * @return bool|User
      */
     public function searchByLogin($userLogin) {
-        parent::parameterQuery(self::USER_LOGIN, $userLogin, \PDO::PARAM_STR);
+        $result = parent::searchAllByColumn($userLogin, self::USER_LOGIN, \PDO::PARAM_STR);
         
-        return parent::searchBy(self::USER_LOGIN);
+        return Arrays::findFirst($result);
     }
     
     /**
@@ -98,9 +105,9 @@ class UsersManager extends CRUDManagerAbstract {
      * @return bool|User
      */
     public function searchByEmail($userEmail) {
-        parent::parameterQuery(self::USER_EMAIL, $userEmail, \PDO::PARAM_STR);
+        $result = parent::searchAllByColumn($userEmail, self::USER_EMAIL, \PDO::PARAM_STR);
         
-        return parent::searchBy(self::USER_EMAIL);
+        return Arrays::findFirst($result);
     }
     
     /**
@@ -113,7 +120,7 @@ class UsersManager extends CRUDManagerAbstract {
         $user = $this->searchById($userId);
         $user->setUserPostCount($user->getUserPostCount() + $num);
         
-        return parent::update($user);
+        return parent::updateByColumnId($user);
     }
     
     /**
@@ -122,13 +129,13 @@ class UsersManager extends CRUDManagerAbstract {
      * @return User
      */
     public function searchByPostId($postId) {
-        $columnPostId = PostsManager::ID;
-        parent::parameterQuery($columnPostId, $postId, \PDO::PARAM_INT);
+        $columnPostId = PostsManager::COLUMN_ID;
+        parent::addPrepareStatement($columnPostId, $postId, \PDO::PARAM_INT);
         $tablePosts = parent::getTableWithPrefix(PostsManager::TABLE);
         $query      = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s)';
-        $query      = sprintf($query, parent::getTableWithPrefix(), self::ID, PostsManager::USER_ID, $tablePosts, PostsManager::ID);
+        $query      = sprintf($query, parent::getTableWithPrefix(), self::COLUMN_ID, PostsManager::USER_ID, $tablePosts, PostsManager::COLUMN_ID);
         
-        return Arrays::get(parent::readData($query), 0);
+        return Arrays::findFirst(parent::search($query));
     }
     
     /**
@@ -136,8 +143,12 @@ class UsersManager extends CRUDManagerAbstract {
      *
      * @return bool
      */
-    public function update($object) {
-        $result = parent::update($object);
+    public function updateByColumnId($object) {
+        if (!$this->checkLoginAndEmail($object)) {
+            return FALSE;
+        }
+        
+        $result = parent::updateByColumnId($object);
         
         if ($result) {
             $commentsManager = new CommentsManager();
@@ -146,7 +157,7 @@ class UsersManager extends CRUDManagerAbstract {
             array_walk($comments, function(Comment $comment) use ($commentsManager, $object) {
                 $comment->setCommentAuthor($object->getUserName());
                 $comment->setCommentAuthorEmail($object->getUserEmail());
-                $commentsManager->update($comment);
+                $commentsManager->updateByColumnId($comment);
             });
         }
         
@@ -156,16 +167,17 @@ class UsersManager extends CRUDManagerAbstract {
     /**
      * @param User $object
      */
-    protected function addParameterQuery($object) {
-        parent::parameterQuery(self::USER_EMAIL, $object->getUserEmail(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::USER_LOGIN, $object->getUserLogin(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::USER_NAME, $object->getUserName(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::USER_PASSWORD, $object->getUserPassword(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::USER_REGISTERED, $object->getUserRegistered(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::USER_URL, $object->getUserUrl(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::USER_POST_COUNT, $object->getUserPostCount(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::PROFILE_ID, $object->getProfileId(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::USER_URL_IMAGE, $object->getUserUrlImage(), \PDO::PARAM_STR);
+    protected function prepareStatement($object) {
+        parent::addPrepareStatement(self::COLUMN_ID, $object->getId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::USER_EMAIL, $object->getUserEmail(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::USER_LOGIN, $object->getUserLogin(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::USER_NAME, $object->getUserName(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::USER_PASSWORD, $object->getUserPassword(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::USER_REGISTERED, $object->getUserRegistered(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::USER_URL, $object->getUserUrl(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::USER_POST_COUNT, $object->getUserPostCount(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::PROFILE_ID, $object->getProfileId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::USER_URL_IMAGE, $object->getUserUrlImage(), \PDO::PARAM_STR);
     }
     
     protected function getTable() {
@@ -177,10 +189,9 @@ class UsersManager extends CRUDManagerAbstract {
      *
      * @return User
      */
-    protected function buildObjectTable($result) {
-        parent::buildObjectTable($result);
+    protected function buildObject($result) {
         $user = new User();
-        $user->setId(Arrays::get($result, self::ID));
+        $user->setId(Arrays::get($result, self::COLUMN_ID));
         $user->setUserUrl(Arrays::get($result, self::USER_URL));
         $user->setUserRegistered(Arrays::get($result, self::USER_REGISTERED));
         $user->setUserName(Arrays::get($result, self::USER_NAME));

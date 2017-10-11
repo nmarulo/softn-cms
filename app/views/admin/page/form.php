@@ -1,5 +1,6 @@
 <?php
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\PagesManager;
 
@@ -7,7 +8,7 @@ ViewController::registerScript('form');
 $title    = ViewController::getViewData('title');
 $page     = ViewController::getViewData('page');
 $method   = ViewController::getViewData('method');
-$isUpdate = $method == PagesManager::FORM_UPDATE;
+$isUpdate = ViewController::getViewData('isUpdate');
 $linkPage = ViewController::getViewData('linkPage');
 ?>
 <div class="page-container">
@@ -50,14 +51,14 @@ $linkPage = ViewController::getViewData('linkPage');
                                 </label>
                             </div>
                             <?php if ($isUpdate) { ?>
-                                <button class="btn btn-primary btn-block" name="<?php echo PagesManager::FORM_UPDATE; ?>" value="<?php echo PagesManager::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
+                                <button class="btn btn-primary btn-block" name="<?php echo Constants::FORM_UPDATE; ?>" value="<?php echo Constants::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
                             <?php } else { ?>
-                                <button class="btn btn-primary btn-block" name="<?php echo PagesManager::FORM_CREATE; ?>" value="<?php echo PagesManager::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
+                                <button class="btn btn-primary btn-block" name="<?php echo Constants::FORM_CREATE; ?>" value="<?php echo Constants::FORM_CREATE; ?>"><?php echo __('Publicar'); ?></button>
                             <?php } ?>
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="<?php echo PagesManager::ID; ?>" value="<?php echo $page->getId(); ?>"/>
+                <input type="hidden" name="<?php echo PagesManager::COLUMN_ID; ?>" value="<?php echo $page->getId(); ?>"/>
                 <?php \SoftnCMS\util\Token::formField(); ?>
             </form>
         </div>
