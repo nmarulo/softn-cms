@@ -8,7 +8,6 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\tables\Category;
 use SoftnCMS\rute\Router;
@@ -61,7 +60,7 @@ class CategoryController extends CUDControllerAbstract {
         $category->setCategoryDescription(Arrays::get($inputs, CategoriesManager::CATEGORY_DESCRIPTION));
         $category->setCategoryPostCount(NULL);
         
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $category->setCategoryPostCount(0);
         }
         

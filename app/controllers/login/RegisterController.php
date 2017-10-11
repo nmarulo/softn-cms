@@ -9,7 +9,6 @@ use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\ManagerAbstract;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;

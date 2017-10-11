@@ -9,7 +9,6 @@ use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\template\PostTemplate;
 use SoftnCMS\controllers\ThemeControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\PostsManager;

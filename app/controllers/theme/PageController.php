@@ -9,7 +9,6 @@ use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\template\PageTemplate;
 use SoftnCMS\controllers\ThemeControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\PagesManager;
@@ -99,7 +98,7 @@ class PageController extends ThemeControllerAbstract {
     }
     
     protected function read($id) {
-        $pageStatus = true;
+        $pageStatus   = TRUE;
         $pagesManager = new PagesManager();
         $page         = $pagesManager->searchByIdAndStatus($id, $pageStatus);
         
