@@ -43,8 +43,8 @@ class LicensesManager extends ManagerAbstract {
         $tableOptionLicense = parent::getTableWithPrefix(OptionsLicensesManager::TABLE);
         $query              = 'SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s)';
         $query              = sprintf($query, $this->getTableWithPrefix(), self::COLUMN_ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
-        $db                 = parent::getDB();
-        $result             = Arrays::findFirst($db->select($query));
+        $result             = Arrays::findFirst(parent::getDB()
+                                                      ->select($query));
         
         return empty($result) ? 0 : $result;
     }

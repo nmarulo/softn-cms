@@ -251,7 +251,7 @@ class PostController extends CUDControllerAbstract {
     
     private function sendViewUsers() {
         $usersManager = new UsersManager();
-        ViewController::sendViewData('usersList', $usersManager->read());
+        ViewController::sendViewData('usersList', $usersManager->searchAll());
     }
     
     public function update($id) {

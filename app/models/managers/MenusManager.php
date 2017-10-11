@@ -234,8 +234,8 @@ class MenusManager extends ManagerAbstract {
         $columnMenuSub = self::MENU_SUB;
         parent::addPrepareStatement($columnMenuSub, self::MENU_SUB_PARENT, \PDO::PARAM_INT);
         $query  = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s', parent::getTableWithPrefix(), $columnMenuSub);
-        $db     = $this->getDB();
-        $result = Arrays::findFirst($db->select($query));
+        $result = Arrays::findFirst(parent::getDB()
+                                          ->select($query));
         
         return empty($result) ? 0 : $result;
     }

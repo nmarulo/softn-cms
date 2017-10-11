@@ -27,7 +27,8 @@ class PostsCategoriesManager extends ManagerAbstract {
         $query      = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s IN (SELECT %4$s FROM %5$s WHERE %6$s = :%6$s)', $table, self::CATEGORY_ID, self::POST_ID, PostsManager::COLUMN_ID, $tablePosts, PostsManager::POST_STATUS);
         parent::addPrepareStatement(self::CATEGORY_ID, $categoryId, \PDO::PARAM_INT);
         parent::addPrepareStatement(PostsManager::POST_STATUS, $postStatus, \PDO::PARAM_INT);
-        $result = Arrays::findFirst(parent::search($query));
+        $result = Arrays::findFirst(parent::getDB()
+                                          ->select($query));
         
         return empty($result) ? 0 : $result;
     }

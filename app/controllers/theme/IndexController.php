@@ -26,14 +26,9 @@ class IndexController extends ControllerAbstract {
         $postStatus   = TRUE;
         $postsManager = new PostsManager();
         $count        = $postsManager->countByStatus($postStatus);
-        $pagination   = parent::pagination($count);
-        $filters      = [];
+        $limit        = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        $posts         = $postsManager->searchAllByStatus($postStatus, $filters);
+        $posts         = $postsManager->searchAllByStatus($postStatus, $limit);
         $postsTemplate = array_map(function(Post $post) {
             return new PostTemplate($post, TRUE);
         }, $posts);

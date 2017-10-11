@@ -55,10 +55,10 @@ class PostsManager extends ManagerAbstract {
         $table = parent::getTableWithPrefix();
         $query = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s', $table, self::POST_STATUS);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
-        $result = parent::search($query);
-        $result = Arrays::findFirst($result);
-    
-        return !empty($result) ? 0 : $result;
+        $result = Arrays::findFirst(parent::getDB()
+                                          ->select($query));
+        
+        return empty($result) ? 0 : $result;
     }
     
     public function countByUserIdAndStatus($userId, $status) {
@@ -66,23 +66,23 @@ class PostsManager extends ManagerAbstract {
         $query = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s', $table, self::POST_STATUS, self::USER_ID);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
         parent::addPrepareStatement(self::USER_ID, $userId, \PDO::PARAM_INT);
-        $result = parent::search($query);
-        $result = Arrays::findFirst($result);
+        $result = Arrays::findFirst(parent::getDB()
+                                          ->select($query));
         
-        return !empty($result) ? 0 : $result;
+        return empty($result) ? 0 : $result;
     }
     
-    public function searchAllByStatus($status, $filters = []) {
-        $limit = Arrays::get($filters, 'limit');
-        $table = $this->getTableWithPrefix();
-        $query = sprintf('SELECT * FROM %1$s WHERE %3$s = :%3$s ORDER BY %2$s DESC', $table, self::COLUMN_ID, self::POST_STATUS);
-        $query .= $limit === FALSE ? '' : " LIMIT $limit";
-        parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
+    public function searchAllByStatus($status, $limit = '') {
+        $addConditions = ['ORDER BY ' . self::COLUMN_ID . ' DESC'];
         
-        return parent::search($query);
+        if (!empty($limit)) {
+            $addConditions[] = "LIMIT $limit";
+        }
+        
+        return parent::searchAllByColumn($status, self::POST_STATUS, \PDO::PARAM_INT, $addConditions);
     }
     
-    public function delete($id) {
+    public function deleteById($id) {
         $usersManager           = new UsersManager();
         $postsCategoriesManager = new PostsCategoriesManager();
         $postsTermsManager      = new PostsTermsManager();
@@ -108,46 +108,42 @@ class PostsManager extends ManagerAbstract {
         return $result;
     }
     
-    public function searchAllByCategoryId($categoryId, $filters = []) {
-        $limit                = Arrays::get($filters, 'limit');
+    public function searchAllByCategoryId($categoryId, $limit = '') {
         $tablePostsCategories = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
         $query                = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s) ORDER BY %2$s DESC';
         $query                = sprintf($query, parent::getTableWithPrefix(), self::COLUMN_ID, PostsCategoriesManager::POST_ID, $tablePostsCategories, PostsCategoriesManager::CATEGORY_ID);
-        $query                .= $limit === FALSE ? '' : " LIMIT $limit";
+        $query                .= empty($limit) ? '' : " LIMIT $limit";
         parent::addPrepareStatement(PostsCategoriesManager::CATEGORY_ID, $categoryId, \PDO::PARAM_INT);
         
         return parent::search($query);
     }
     
-    public function searchAllByCategoryIdAndStatus($categoryId, $status, $filters = []) {
-        $limit                = Arrays::get($filters, 'limit');
+    public function searchAllByCategoryIdAndStatus($categoryId, $status, $limit = '') {
         $tablePostsCategories = parent::getTableWithPrefix(PostsCategoriesManager::TABLE);
         $query                = 'SELECT * FROM %1$s WHERE %6$s = :%6$s AND %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s) ORDER BY %2$s DESC';
         $query                = sprintf($query, parent::getTableWithPrefix(), self::COLUMN_ID, PostsCategoriesManager::POST_ID, $tablePostsCategories, PostsCategoriesManager::CATEGORY_ID, self::POST_STATUS);
-        $query                .= $limit === FALSE ? '' : " LIMIT $limit";
+        $query                .= empty($limit) ? '' : " LIMIT $limit";
         parent::addPrepareStatement(PostsCategoriesManager::CATEGORY_ID, $categoryId, \PDO::PARAM_INT);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
         
         return parent::search($query);
     }
     
-    public function searchAllByTermId($termId, $filters = []) {
-        $limit           = Arrays::get($filters, 'limit');
+    public function searchAllByTermId($termId, $limit = '') {
         $tablePostsTerms = parent::getTableWithPrefix(PostsTermsManager::TABLE);
         $query           = 'SELECT * FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s) ORDER BY %2$s DESC';
         $query           = sprintf($query, parent::getTableWithPrefix(), self::COLUMN_ID, PostsTermsManager::POST_ID, $tablePostsTerms, PostsTermsManager::TERM_ID);
-        $query           .= $limit === FALSE ? '' : " LIMIT $limit";
+        $query           .= empty($limit) ? '' : " LIMIT $limit";
         parent::addPrepareStatement(PostsTermsManager::TERM_ID, $termId, \PDO::PARAM_INT);
         
         return parent::search($query);
     }
     
-    public function searchAllByTermIdAndStatus($termId, $status, $filters = []) {
-        $limit           = Arrays::get($filters, 'limit');
+    public function searchAllByTermIdAndStatus($termId, $status, $limit = '') {
         $tablePostsTerms = parent::getTableWithPrefix(PostsTermsManager::TABLE);
         $query           = 'SELECT * FROM %1$s WHERE %6$s = :%6$s AND %2$s IN (SELECT %3$s FROM %4$s WHERE %5$s = :%5$s) ORDER BY %2$s DESC';
         $query           = sprintf($query, parent::getTableWithPrefix(), self::COLUMN_ID, PostsTermsManager::POST_ID, $tablePostsTerms, PostsTermsManager::TERM_ID, self::POST_STATUS);
-        $query           .= $limit === FALSE ? '' : " LIMIT $limit";
+        $query           .= empty($limit) ? '' : " LIMIT $limit";
         parent::addPrepareStatement(PostsTermsManager::TERM_ID, $termId, \PDO::PARAM_INT);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
         
@@ -164,13 +160,12 @@ class PostsManager extends ManagerAbstract {
         return parent::searchAllByColumn(self::USER_ID, $userId, \PDO::PARAM_INT, $addConditions);
     }
     
-    public function searchByUserIdAndStatus($userId, $status, $filters = []) {
-        $limit = Arrays::get($filters, 'limit');
+    public function searchByUserIdAndStatus($userId, $status, $limit = '') {
         parent::addPrepareStatement(self::USER_ID, $userId, \PDO::PARAM_INT);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
         $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %4$s = :%4$s ORDER BY %3$s DESC';
         $query = sprintf($query, parent::getTableWithPrefix(), self::USER_ID, self::COLUMN_ID, self::POST_STATUS);
-        $query .= $limit === FALSE ? '' : " LIMIT $limit";
+        $query .= empty($limit) ? '' : " LIMIT $limit";
         
         return parent::search($query);
     }
