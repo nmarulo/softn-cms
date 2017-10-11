@@ -5,10 +5,10 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\ProfilesManager;
@@ -32,7 +32,7 @@ use SoftnCMS\util\Util;
 class UserController extends CUDControllerAbstract {
     
     public function create() {
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $form = $this->form();
             
             if (!empty($form)) {
@@ -54,6 +54,7 @@ class UserController extends CUDControllerAbstract {
         //En el panel de administración el tamaño sera 128px
         $gravatar->setSize(128);
         $user->setUserUrlImage($gravatar->get());
+        ViewController::sendViewData('isUpdate', FALSE);
         ViewController::sendViewData('user', $user);
         ViewController::sendViewData('title', __('Publicar nuevo usuario'));
         ViewController::view('form');
@@ -81,7 +82,7 @@ class UserController extends CUDControllerAbstract {
         
         $gravatar = $this->getGravatar();
         $user     = new User();
-        $user->setId(Arrays::get($inputs, UsersManager::ID));
+        $user->setId(Arrays::get($inputs, UsersManager::COLUMN_ID));
         $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
         $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
         $user->setUserName(Arrays::get($inputs, UsersManager::USER_NAME));
@@ -93,7 +94,7 @@ class UserController extends CUDControllerAbstract {
         $gravatar->setEmail($user->getUserEmail());
         $user->setUserUrlImage($gravatar->get());
         
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $user->setUserRegistered(Util::dateNow());
             $user->setUserPostCount(0);
         }
@@ -104,10 +105,10 @@ class UserController extends CUDControllerAbstract {
     }
     
     protected function filterInputs() {
-        $isCreate = Form::submit(CRUDManagerAbstract::FORM_CREATE);
+        $isCreate = Form::submit(Constants::FORM_CREATE);
         
         Form::setInput([
-            InputIntegerBuilder::init(UsersManager::ID)
+            InputIntegerBuilder::init(UsersManager::COLUMN_ID)
                                ->build(),
             InputEmailBuilder::init(UsersManager::USER_EMAIL)
                              ->build(),
@@ -149,7 +150,7 @@ class UserController extends CUDControllerAbstract {
     
     private function sendViewProfiles() {
         $profilesManager = new ProfilesManager();
-        ViewController::sendViewData('profiles', $profilesManager->read());
+        ViewController::sendViewData('profiles', $profilesManager->searchAll());
     }
     
     public function update($id) {
@@ -159,7 +160,7 @@ class UserController extends CUDControllerAbstract {
         if (empty($user)) {
             Messages::addDanger(__('El usuario no existe.'), TRUE);
             Util::redirect(Router::getSiteURL() . 'admin/user');
-        } elseif (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+        } elseif (Form::submit(Constants::FORM_UPDATE)) {
             $form = $this->form();
             
             if (empty($form)) {
@@ -167,7 +168,7 @@ class UserController extends CUDControllerAbstract {
             } else {
                 $user = Arrays::get($form, 'user');
                 
-                if ($usersManager->update($user)) {
+                if ($usersManager->updateByColumnId($user)) {
                     $user = $usersManager->searchById($id);
                     Messages::addSuccess(__('Usuario actualizado correctamente.'));
                 } else {
@@ -182,6 +183,7 @@ class UserController extends CUDControllerAbstract {
         $gravatar->setSize(128);
         $gravatar->setEmail($user->getUserEmail());
         $user->setUserUrlImage($gravatar->get());
+        ViewController::sendViewData('isUpdate', TRUE);
         ViewController::sendViewData('selectedProfileId', $user->getProfileId());
         ViewController::sendViewData('user', $user);
         ViewController::sendViewData('title', __('Actualizar usuario'));
@@ -193,13 +195,14 @@ class UserController extends CUDControllerAbstract {
             Messages::addDanger(__('No puedes eliminar este usuario.'));
         } else {
             $usersManager = new UsersManager();
-            $result       = $usersManager->delete($id);
+            $result       = $usersManager->deleteById($id);
+            $rowCount     = $usersManager->getRowCount();
             
             if ($result === FALSE) {
                 Messages::addDanger(__('No se puede borrar un usuario con entradas publicadas.'));
-            } elseif ($result == 0) {
+            } elseif ($rowCount == 0) {
                 Messages::addDanger(__('Error al borrar el usuario.'));
-            } elseif ($result > 0) {
+            } elseif ($rowCount > 0) {
                 Messages::addSuccess(__('Usuario borrado correctamente.'));
             }
         }
@@ -208,15 +211,10 @@ class UserController extends CUDControllerAbstract {
     }
     
     protected function read() {
-        $filters      = [];
         $usersManager = new UsersManager();
         $count        = $usersManager->count();
-        $pagination   = parent::pagination($count);
+        $limit        = parent::pagination($count);
         
-        if ($pagination !== FALSE) {
-            $filters['limit'] = $pagination;
-        }
-        
-        ViewController::sendViewData('users', $usersManager->read($filters));
+        ViewController::sendViewData('users', $usersManager->searchAll($limit));
     }
 }

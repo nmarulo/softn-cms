@@ -1,5 +1,6 @@
 <?php
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Profile;
@@ -7,7 +8,7 @@ use SoftnCMS\models\tables\Profile;
 $title             = ViewController::getViewData('title');
 $user              = ViewController::getViewData('user');
 $method            = ViewController::getViewData('method');
-$isUpdate          = $method == UsersManager::FORM_UPDATE;
+$isUpdate          = ViewController::getViewData('isUpdate');
 $profiles          = ViewController::getViewData('profiles');
 $selectedProfileId = ViewController::getViewData('selectedProfileId');
 ?>
@@ -69,9 +70,9 @@ $selectedProfileId = ViewController::getViewData('selectedProfileId');
                 <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <?php if ($isUpdate) { ?>
-                        <button class="btn btn-primary" name="<?php echo UsersManager::FORM_UPDATE; ?>" value="<?php echo UsersManager::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
+                        <button class="btn btn-primary" name="<?php echo Constants::FORM_UPDATE; ?>" value="<?php echo Constants::FORM_UPDATE; ?>"><?php echo __('Actualizar'); ?></button>
                     <?php } else { ?>
-                        <button class="btn btn-primary" name="<?php echo UsersManager::FORM_CREATE; ?>" value="<?php echo UsersManager::FORM_CREATE; ?>"><?php echo __('Agregar'); ?></button>
+                        <button class="btn btn-primary" name="<?php echo Constants::FORM_CREATE; ?>" value="<?php echo Constants::FORM_CREATE; ?>"><?php echo __('Agregar'); ?></button>
                     <?php } ?>
                 </div>
             </div>
@@ -79,7 +80,7 @@ $selectedProfileId = ViewController::getViewData('selectedProfileId');
             <div class="col-sm-3">
                 <img src="<?php echo $user->getUserUrlImage(); ?>" class="img-responsive"/>
             </div>
-            <input type="hidden" name="<?php echo UsersManager::ID; ?>" value="<?php echo $user->getId(); ?>"/>
+            <input type="hidden" name="<?php echo UsersManager::COLUMN_ID; ?>" value="<?php echo $user->getId(); ?>"/>
             <?php \SoftnCMS\util\Token::formField(); ?>
         </form>
     </div>

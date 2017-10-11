@@ -249,6 +249,16 @@ abstract class ManagerAbstract {
         return $this->deleteByPrepareStatement();
     }
     
+    protected function deleteByPrepareStatement($allLogicalOperators = 'AND') {
+        if (empty($this->prepareStatement)) {
+            return FALSE;
+        }
+        
+        $db = $this->getDB();
+        
+        return $db->deleteByPrepareStatement($allLogicalOperators);
+    }
+    
     /**
      * @param int $id
      *
@@ -281,6 +291,13 @@ abstract class ManagerAbstract {
         return $db->delete($query);
     }
     
+    /**
+     * @return int
+     */
+    public function getRowCount() {
+        return $this->db->getRowCount();
+    }
+    
     protected function deleteByColumn($value, $column, $dataType) {
         if (empty($value)) {
             return FALSE;
@@ -289,23 +306,6 @@ abstract class ManagerAbstract {
         $this->addPrepareStatement($column, $value, $dataType);
         
         return $this->deleteByPrepareStatement();
-    }
-    
-    protected function deleteByPrepareStatement($allLogicalOperators = 'AND') {
-        if (empty($this->prepareStatement)) {
-            return FALSE;
-        }
-        
-        $db = $this->getDB();
-        
-        return $db->deleteByPrepareStatement($allLogicalOperators);
-    }
-    
-    /**
-     * @return int
-     */
-    protected function getRowCount() {
-        return $this->db->getRowCount();
     }
     
     /**
