@@ -5,16 +5,16 @@
 
 namespace SoftnCMS\models\managers;
 
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\tables\Sidebar;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\ManagerAbstract;
 use SoftnCMS\util\Messages;
 
 /**
  * Class SidebarsManager
  * @author Nicolás Marulanda P.
  */
-class SidebarsManager extends CRUDManagerAbstract {
+class SidebarsManager extends ManagerAbstract {
     
     const TABLE            = 'sidebars';
     
@@ -35,8 +35,8 @@ class SidebarsManager extends CRUDManagerAbstract {
         return parent::create($object);
     }
     
-    public function delete($id) {
-        if (!parent::delete($id)) {
+    public function deleteById($id) {
+        if (!parent::deleteById($id)) {
             return FALSE;
         }
         
@@ -48,7 +48,7 @@ class SidebarsManager extends CRUDManagerAbstract {
     }
     
     private function updatePositions() {
-        $sidebars = $this->read();
+        $sidebars = $this->searchAll();
         
         $len      = count($sidebars);
         $notError = TRUE;
@@ -62,7 +62,7 @@ class SidebarsManager extends CRUDManagerAbstract {
                 $position = $sidebar->getSidebarPosition();
                 $sidebar->setSidebarPosition($i + 1);
                 
-                if ($position != $i + 1 && !$this->update($sidebar)) {
+                if ($position != $i + 1 && !$this->updateByColumnId($sidebar)) {
                     $notError = FALSE;
                 }
             }
@@ -71,30 +71,27 @@ class SidebarsManager extends CRUDManagerAbstract {
         return $notError;
     }
     
-    public function read($filters = []) {
-        $table = $this->getTableWithPrefix();
-        $query = sprintf('SELECT * FROM %1$s ORDER BY %2$s ASC', $table, self::SIDEBAR_POSITION);
-        
-        return parent::readData($query);
+    public function searchAll($limit = '', $orderBy = '') {
+        return parent::searchAll('', self::SIDEBAR_POSITION . ' ASC');
     }
     
     /**
      * @param Sidebar $object
      */
-    protected function addParameterQuery($object) {
-        parent::parameterQuery(self::SIDEBAR_CONTENTS, $object->getSidebarContents(), \PDO::PARAM_STR);
-        parent::parameterQuery(self::SIDEBAR_POSITION, $object->getSidebarPosition(), \PDO::PARAM_INT);
-        parent::parameterQuery(self::SIDEBAR_TITLE, $object->getSidebarTitle(), \PDO::PARAM_STR);
+    protected function prepareStatement($object) {
+        parent::addPrepareStatement(self::COLUMN_ID, $object->getId(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::SIDEBAR_CONTENTS, $object->getSidebarContents(), \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::SIDEBAR_POSITION, $object->getSidebarPosition(), \PDO::PARAM_INT);
+        parent::addPrepareStatement(self::SIDEBAR_TITLE, $object->getSidebarTitle(), \PDO::PARAM_STR);
     }
     
     protected function getTable() {
         return self::TABLE;
     }
     
-    protected function buildObjectTable($result) {
-        parent::buildObjectTable($result);
+    protected function buildObject($result) {
         $sidebar = new Sidebar();
-        $sidebar->setId(Arrays::get($result, self::ID));
+        $sidebar->setId(Arrays::get($result, self::COLUMN_ID));
         $sidebar->setSidebarTitle(Arrays::get($result, self::SIDEBAR_TITLE));
         $sidebar->setSidebarPosition(Arrays::get($result, self::SIDEBAR_POSITION));
         $sidebar->setSidebarContents(Arrays::get($result, self::SIDEBAR_CONTENTS));

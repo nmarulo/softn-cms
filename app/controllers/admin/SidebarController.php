@@ -5,9 +5,9 @@
 
 namespace SoftnCMS\controllers\admin;
 
+use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\controllers\CUDControllerAbstract;
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\CRUDManagerAbstract;
 use SoftnCMS\models\managers\SidebarsManager;
 use SoftnCMS\models\tables\Sidebar;
 use SoftnCMS\rute\Router;
@@ -25,7 +25,7 @@ use SoftnCMS\util\Util;
 class SidebarController extends CUDControllerAbstract {
     
     public function create() {
-        if (Form::submit(CRUDManagerAbstract::FORM_CREATE)) {
+        if (Form::submit(Constants::FORM_CREATE)) {
             $form = $this->form();
             
             if (!empty($form)) {
@@ -41,6 +41,7 @@ class SidebarController extends CUDControllerAbstract {
             Messages::addDanger(__('Error al crear el sidebar.'));
         }
         
+        ViewController::sendViewData('isUpdate', FALSE);
         ViewController::sendViewData('sidebar', new Sidebar());
         ViewController::sendViewData('title', __('Crear nuevo'));
         ViewController::view('form');
@@ -54,7 +55,7 @@ class SidebarController extends CUDControllerAbstract {
         }
         
         $sidebar = new Sidebar();
-        $sidebar->setId(Arrays::get($inputs, SidebarsManager::ID));
+        $sidebar->setId(Arrays::get($inputs, SidebarsManager::COLUMN_ID));
         $sidebar->setSidebarTitle(Arrays::get($inputs, SidebarsManager::SIDEBAR_TITLE));
         $sidebar->setSidebarContents(Arrays::get($inputs, SidebarsManager::SIDEBAR_CONTENTS));
         $sidebar->setSidebarPosition(NULL);
@@ -64,7 +65,7 @@ class SidebarController extends CUDControllerAbstract {
     
     protected function filterInputs() {
         Form::setInput([
-            InputIntegerBuilder::init(SidebarsManager::ID)
+            InputIntegerBuilder::init(SidebarsManager::COLUMN_ID)
                                ->build(),
             InputAlphanumericBuilder::init(SidebarsManager::SIDEBAR_TITLE)
                                     ->setRequire(FALSE)
@@ -85,7 +86,7 @@ class SidebarController extends CUDControllerAbstract {
             Messages::addDanger(__('La barra lateral no existe.'), TRUE);
             Util::redirect(Router::getSiteURL() . 'admin/sidebar');
         } else {
-            if (Form::submit(CRUDManagerAbstract::FORM_UPDATE)) {
+            if (Form::submit(Constants::FORM_UPDATE)) {
                 $form = $this->form();
                 
                 if (empty($form)) {
@@ -93,7 +94,7 @@ class SidebarController extends CUDControllerAbstract {
                 } else {
                     $sidebar = Arrays::get($form, 'sidebar');
                     
-                    if ($sidebarsManager->update($sidebar)) {
+                    if ($sidebarsManager->updateByColumnId($sidebar)) {
                         Messages::addSuccess(__('Barra lateral actualizada correctamente.'));
                     } else {
                         Messages::addDanger(__('Error al actualizar la barra lateral.'));
@@ -101,6 +102,7 @@ class SidebarController extends CUDControllerAbstract {
                 }
             }
             
+            ViewController::sendViewData('isUpdate', TRUE);
             ViewController::sendViewData('sidebar', $sidebar);
             ViewController::sendViewData('title', __('Actualizar'));
             ViewController::view('form');
@@ -110,7 +112,7 @@ class SidebarController extends CUDControllerAbstract {
     public function delete($id) {
         $sidebarsManager = new SidebarsManager();
         
-        if (empty($sidebarsManager->delete($id))) {
+        if (empty($sidebarsManager->deleteById($id))) {
             Messages::addDanger(__('Error al borrar la barra lateral.'));
         } else {
             Messages::addSuccess(__('Barra lateral borrada correctamente.'));
@@ -121,7 +123,7 @@ class SidebarController extends CUDControllerAbstract {
     
     protected function read() {
         $sidebarsManager = new SidebarsManager();
-        ViewController::sendViewData('sidebars', $sidebarsManager->read());
+        ViewController::sendViewData('sidebars', $sidebarsManager->searchAll());
     }
     
 }
