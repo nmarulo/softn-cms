@@ -166,9 +166,9 @@ class UserController extends CUDControllerAbstract {
             if (empty($form)) {
                 Messages::addDanger(__('Error en los campos del usuario.'));
             } else {
-                $user = Arrays::get($form, 'user');
+                $userForm = Arrays::get($form, 'user');
                 
-                if ($usersManager->updateByColumnId($user)) {
+                if ($usersManager->updateByColumnId($userForm)) {
                     $user = $usersManager->searchById($id);
                     Messages::addSuccess(__('Usuario actualizado correctamente.'));
                 } else {

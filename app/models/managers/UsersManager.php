@@ -74,18 +74,33 @@ class UsersManager extends ManagerAbstract {
      * @return bool
      */
     private function checkLoginAndEmail($object) {
-        $result = $this->searchByLoginAndEmail($object->getUserLogin(), $object->getUserEmail());
+        $result = $this->searchByLoginAndEmail($object->getUserLogin(), $object->getUserEmail(), $object->getId());
         
+        //Si no esta vació, existe otro usuario con el mismo login o email.
         return empty($result);
     }
     
-    private function searchByLoginAndEmail($login, $email) {
+    /**
+     * @param string $login
+     * @param string $email
+     * @param int    $id
+     *
+     * @return bool|array
+     */
+    private function searchByLoginAndEmail($login, $email, $id = NULL) {
+        $whereId = '';
+        
+        if (!empty($id)) {
+            parent::addPrepareStatement(self::COLUMN_ID, $id, \PDO::PARAM_INT);
+            $whereId = sprintf('%1$s != :%1$s AND ', self::COLUMN_ID);
+        }
+        
         parent::addPrepareStatement(self::USER_LOGIN, $login, \PDO::PARAM_STR);
         parent::addPrepareStatement(self::USER_EMAIL, $email, \PDO::PARAM_STR);
-        $query = 'SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s';
-        $query = sprintf($query, parent::getTableWithPrefix(), self::USER_LOGIN, self::USER_EMAIL);
+        $query = 'SELECT * FROM %1$s WHERE %4$s(%2$s = :%2$s OR %3$s = :%3$s)';
+        $query = sprintf($query, parent::getTableWithPrefix(), self::USER_LOGIN, self::USER_EMAIL, $whereId);
         
-        return Arrays::findFirst(parent::search($query));
+        return parent::search($query);
     }
     
     /**
