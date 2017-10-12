@@ -1,116 +1,158 @@
 <?php
-
 /**
- * Modulo del controlador de la pagina de inicio del panel de administración.
+ * IndexController.php
  */
 
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\controllers\Controller;
-use SoftnCMS\models\admin\Posts;
-use SoftnCMS\models\admin\Users;
-use SoftnCMS\models\admin\Comments;
-use SoftnCMS\models\admin\Categories;
+use SoftnCMS\controllers\ControllerAbstract;
+use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\CategoriesManager;
+use SoftnCMS\models\managers\CommentsManager;
+use SoftnCMS\models\managers\PagesManager;
+use SoftnCMS\models\managers\PostsManager;
+use SoftnCMS\models\managers\TermsManager;
+use SoftnCMS\models\managers\UsersManager;
+use SoftnCMS\models\tables\Comment;
+use SoftnCMS\models\tables\Post;
+use SoftnCMS\util\Arrays;
+use SoftnCMS\util\Sanitize;
+use SoftnCMS\util\Util;
 
 /**
- * Clase del controlador de la pagina de inicio del panel de administración.
- *
+ * Class IndexController
  * @author Nicolás Marulanda P.
  */
-class IndexController extends Controller {
-
-    /**
-     * Metodo llamado por la funcion index.
-     * @return array
-     */
-    protected function dataIndex() {
-        $posts = new Posts();
-        $users = new Users();
-        $comments = new Comments();
-        $categories = new Categories();
-        $lastPosts = $posts->lastData(5);
-        $lastComments = $comments->lastData(5);
-
-        foreach ($lastPosts as $value) {
-            $title = $value->getPostTitle();
-
+class IndexController extends ControllerAbstract {
+    
+    public function index() {
+        $this->read();
+        ViewController::view('index');
+    }
+    
+    protected function read() {
+        $postsManager      = new PostsManager();
+        $commentsManager   = new CommentsManager();
+        $categoriesManager = new CategoriesManager();
+        $termsManager      = new TermsManager();
+        $usersManager      = new UsersManager();
+        $pagesManager      = new PagesManager();
+        $posts             = $postsManager->searchAll(5);
+        $comments          = $commentsManager->searchAll(5);
+        
+        $posts = array_map(function(Post $post) {
+            $title = $post->getPostTitle();
+            
             if (isset($title{30})) {
-                $title = substr($title, 0, 30) . ' [...]';
+                $title = substr($title, 0, 30) . '...';
             }
-            $value->setPostTitle($title);
-        }
-
-        foreach ($lastComments as $value) {
-            //Borra las etiquetas html
-            $contents = strip_tags($value->getCommentContents());
-
+            
+            $post->setPostTitle($title);
+            
+            return $post;
+        }, $posts);
+        
+        $comments = array_map(function(Comment $comment) {
+            $contents = Sanitize::clearTags($comment->getCommentContents());
+            
             if (isset($contents{30})) {
-                $contents = substr($contents, 0, 30) . ' [...]';
+                $contents = substr($contents, 0, 30) . '...';
             }
-            $value->setCommentContents($contents);
+            
+            $comment->setCommentContents($contents);
+            
+            return $comment;
+        }, $comments);
+        
+        ViewController::sendViewData('posts', $posts);
+        ViewController::sendViewData('comments', $comments);
+        ViewController::sendViewData('countPosts', $postsManager->count());
+        ViewController::sendViewData('countComments', $commentsManager->count());
+        ViewController::sendViewData('countCategories', $categoriesManager->count());
+        ViewController::sendViewData('countTerms', $termsManager->count());
+        ViewController::sendViewData('countUsers', $usersManager->count());
+        ViewController::sendViewData('countPages', $pagesManager->count());
+    }
+    
+    public function apiGitHub() {
+        $url                  = "https://api.github.com/repos/nmarulo/softn-cms/branches";
+        $lastCommitUrlMaster  = $this->lastCommitListBranch($url, 'master');
+        $lastCommitUrlDevelop = $this->lastCommitListBranch($url, 'develop');
+        
+        if ($lastCommitUrlDevelop !== FALSE && $lastCommitUrlMaster !== FALSE) {
+            $commitsMaster     = $this->getDataGitHub($lastCommitUrlMaster);
+            $commitsDevelop    = $this->getDataGitHub($lastCommitUrlDevelop);
+            $lastUpdateMaster  = array_map(function($value) {
+                return $value['commitDate'];
+            }, $commitsMaster);
+            $lastUpdateDevelop = array_map(function($value) {
+                return $value['commitDate'];
+            }, $commitsDevelop);
+            
+            ViewController::sendViewData('lastUpdateMaster', array_shift($lastUpdateMaster));
+            ViewController::sendViewData('lastUpdateDevelop', array_shift($lastUpdateDevelop));
+            ViewController::sendViewData('master', $commitsMaster);
+            ViewController::sendViewData('develop', $commitsDevelop);
+            ViewController::singleView('apigithub');
         }
-
-        return [
-            'github' => $this->lastUpdateGitHub(),
-            'lastPosts' => $lastPosts,
-            'lastComments' => $lastComments,
-            'count' => [
-                'post' => $posts->count(),
-                'page' => 0,
-                'category' => $categories->count(),
-                'comment' => $comments->count(),
-                'user' => $users->count(),
-            ],
-        ];
     }
-
-    /**
-     * Metodo que obtiene las ultimas 5 actualizaciones de las rama Master y la 
-     * rama Develop de GitHub.
-     * @return array
-     */
-    private function lastUpdateGitHub() {
-        //api https://api.github.com/repos/nmarulo/softn-cms/branches/develop
-        $xmlUrlDevelop = 'https://github.com/nmarulo/softn-cms/commits/develop.atom';
-        $xmlUrlMaster = 'https://github.com/nmarulo/softn-cms/commits/master.atom';
-
-        return [
-            'master' => $this->xmlGitHub($xmlUrlMaster),
-            'develop' => $this->xmlGitHub($xmlUrlDevelop),
-        ];
+    
+    private function lastCommitListBranch($url, $nameBranch) {
+        $branches = Util::curl($url);
+        
+        if ($branches === FALSE) {
+            return FALSE;
+        }
+        
+        $branches = json_decode($branches, TRUE);
+        $data     = array_filter($branches, function($value) use ($nameBranch) {
+            return Arrays::get($value, 'name') == $nameBranch;
+        });
+        $data     = array_map(function($value) {
+            $commit = Arrays::get($value, 'commit');
+            
+            return Arrays::get($commit, 'url');
+        }, $data);
+        
+        return array_shift($data);
     }
-
-    /**
-     * Metod que obtiene las actualizaciones de la url de GitHub.
-     * @param string $xmlUrl
-     * @return array
-     */
-    private function xmlGitHub($xmlUrl) {
-        $github = \get_object_vars(\simplexml_load_file($xmlUrl));
-        $leng = \count($github['entry']);
-        $forEnd = $leng > 5 ? 5 : $leng;
-        $dataGitHub = [
-            'lastUpdate' => $github['updated'],
-            'entry' => [],
-        ];
-
-        /*
-         * Indices de $elements "id", "link"=>"@attributes"=>"href", "title",
-         * "updated", "author"=>"name", "author"=>"uri", "content"
-         */
-        for ($i = 0; $i < $forEnd; ++$i) {
-            $element = \get_object_vars($github['entry'][$i]);
-            $element['link'] = \get_object_vars($element['link']);
-            $element['author'] = \get_object_vars($element['author']);
-            $dataGitHub['entry'][] = [
-                'authorName' => $element['author']['name'],
-                'authorUri' => $element['author']['uri'],
-                'linkHref' => $element['link']['@attributes']['href'],
-                'title' => $element['title'],
+    
+    private function getDataGitHub($commitUrl, $actual = 1, $total = 5) {
+        $dataCommits = [];
+        $data        = [];
+        $this->parentCommit($commitUrl, $actual, $total, $dataCommits);
+        
+        array_walk($dataCommits, function($value) use (&$data) {
+            $author      = $value['author']['login'];
+            $authorUrl   = $value['author']['html_url'];
+            $commitUrl   = $value['html_url'];
+            $commitTitle = $value['commit']['message'];
+            $commitDate  = $value['commit']['author']['date'];
+            $data[]      = [
+                'author'      => $author,
+                'authorUrl'   => $authorUrl,
+                'commitUrl'   => $commitUrl,
+                'commitTitle' => $commitTitle,
+                'commitDate'  => $commitDate,
             ];
-        }
-
-        return $dataGitHub;
+        });
+        
+        return $data;
     }
-
+    
+    private function parentCommit($commitUrl, $actual, $total, &$data) {
+        $dataCommits = Util::curl($commitUrl);
+        
+        if ($dataCommits !== FALSE) {
+            $dataCommits = json_decode($dataCommits, TRUE);
+            $data[]      = $dataCommits;
+            $parent      = array_shift(Arrays::get($dataCommits, 'parents'));
+            
+            if ($actual < $total) {
+                ++$actual;
+                $commitUrl = Arrays::get($parent, 'url');
+                $this->parentCommit($commitUrl, $actual, $total, $data);
+            }
+        }
+    }
 }

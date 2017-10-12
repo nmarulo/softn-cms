@@ -1,150 +1,135 @@
 <?php
-
 /**
- * Modulo del controlador de la pagina de categorías.
+ * CategoryController.php
  */
 
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\controllers\BaseController;
-use SoftnCMS\controllers\Messages;
-use SoftnCMS\models\admin\Categories;
-use SoftnCMS\models\admin\Category;
-use SoftnCMS\models\admin\CategoryDelete;
-use SoftnCMS\models\admin\CategoryInsert;
-use SoftnCMS\models\admin\CategoryUpdate;
+use SoftnCMS\classes\constants\Constants;
+use SoftnCMS\controllers\CUDControllerAbstract;
+use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\CategoriesManager;
+use SoftnCMS\models\tables\Category;
+use SoftnCMS\rute\Router;
+use SoftnCMS\util\Arrays;
+use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\util\form\builders\InputIntegerBuilder;
+use SoftnCMS\util\form\Form;
+use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
 
 /**
- * Clase del controlador de la pagina de categorías.
- *
+ * Class CategoryController
  * @author Nicolás Marulanda P.
  */
-class CategoryController extends BaseController {
-
-    /**
-     * Metodo llamado por la función INDEX.
-     * @return array
-     */
-    protected function dataIndex() {
-        $categories = Categories::selectAll();
-        $output = [];
+class CategoryController extends CUDControllerAbstract {
+    
+    public function create() {
+        if (Form::submit(Constants::FORM_CREATE)) {
+            $form = $this->form();
+            
+            if (!empty($form)) {
+                $categoriesManager = new CategoriesManager();
+                $category          = Arrays::get($form, 'category');
+                
+                if ($categoriesManager->create($category)) {
+                    Messages::addSuccess(__('Categoría publicada correctamente.'), TRUE);
+                    Util::redirect(Router::getSiteURL() . 'admin/category');
+                }
+            }
+            
+            Messages::addDanger(__('Error al publicar la categoría.'));
+        }
         
-        if($categories !== \FALSE){
-            $output = $categories->getAll();
-        }
-
-        return ['categories' => $output];
+        ViewController::sendViewData('isUpdate', FALSE);
+        ViewController::sendViewData('category', new Category());
+        ViewController::sendViewData('title', __('Publicar nueva categoría'));
+        ViewController::view('form');
     }
-
-    /**
-     * Metodo llamado por la función INSERT.
-     * @return array
-     */
-    protected function dataInsert() {
-        global $urlSite;
-
-        if (filter_input(\INPUT_POST, 'publish')) {
-            $dataInput = $this->getDataInput();
-            $insert = new CategoryInsert($dataInput['categoryName'], $dataInput['categoryDescription']);
-
-            if ($insert->insert()) {
-                Messages::addSuccess('Categoría publicada correctamente.');
-                //Si todo es correcto se muestra la pagina de edición.
-                header("Location: $urlSite" . 'admin/category/update/' . $insert->getLastInsertId());
-                exit();
-            }
-            Messages::addError('Error al publicar categoría');
+    
+    protected function form() {
+        $inputs = $this->filterInputs();
+        
+        if (empty($inputs)) {
+            return FALSE;
         }
-
-        return [
-            //Datos por defecto a mostrar en el formulario.
-            'category' => Category::defaultInstance(),
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Publicar nuevo" si es FALSE 
-             * o "Actualizar" si es TRUE
-             */
-            'actionUpdate' => \FALSE
-        ];
+        
+        $category = new Category();
+        $category->setId(Arrays::get($inputs, CategoriesManager::COLUMN_ID));
+        $category->setCategoryName(Arrays::get($inputs, CategoriesManager::CATEGORY_NAME));
+        $category->setCategoryDescription(Arrays::get($inputs, CategoriesManager::CATEGORY_DESCRIPTION));
+        $category->setCategoryPostCount(NULL);
+        
+        if (Form::submit(Constants::FORM_CREATE)) {
+            $category->setCategoryPostCount(0);
+        }
+        
+        return ['category' => $category];
     }
-
-    /**
-     * Metodo llamado por la función UPDATE.
-     * @param int $id
-     * @return array
-     */
-    protected function dataUpdate($id) {
-        global $urlSite;
-
-        $category = Category::selectByID($id);
-
-        //En caso de que no exista.
+    
+    protected function filterInputs() {
+        Form::setInput([
+            InputIntegerBuilder::init(CategoriesManager::COLUMN_ID)
+                               ->build(),
+            InputAlphanumericBuilder::init(CategoriesManager::CATEGORY_NAME)
+                                    ->build(),
+            InputAlphanumericBuilder::init(CategoriesManager::CATEGORY_DESCRIPTION)
+                                    ->setRequire(FALSE)
+                                    ->build(),
+        ]);
+        
+        return Form::inputFilter();
+    }
+    
+    public function update($id) {
+        $categoriesManager = new CategoriesManager();
+        $category          = $categoriesManager->searchById($id);
+        
         if (empty($category)) {
-            Messages::addError('Error. La categoría no existe.');
-            header("Location: $urlSite" . 'admin/category');
-            exit();
-        }
-
-        if (filter_input(\INPUT_POST, 'update')) {
-            $dataInput = $this->getDataInput();
-            $update = new CategoryUpdate($category, $dataInput['categoryName'], $dataInput['categoryDescription']);
-
-            //Si ocurre un error la función "$update->update()" retorna FALSE.
-            if ($update->update()) {
-                Messages::addSuccess('Categoría actualizada correctamente.');
-                $category = $update->getDataUpdate();
-            } else {
-                Messages::addError('Error al actualizar la categoría.');
-            }
-        }
-
-        return [
-            //Instancia Category
-            'category' => $category,
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Publicar nuevo" si es FALSE 
-             * o "Actualizar" si es TRUE
-             */
-            'actionUpdate' => \TRUE
-        ];
-    }
-
-    /**
-     * Metodo llamado por la función DELETE.
-     * @param int $id
-     * @return array
-     */
-    protected function dataDelete($id) {
-        /*
-         * Ya que este metodo no tiene modulo vista propio
-         * se carga el modulo vista INDEX, asi que se retornan los datos
-         * para esta vista.
-         */
-
-        $delete = new CategoryDelete($id);
-        $output = $delete->delete();
-
-        if ($output) {
-            Messages::addSuccess('Categoría borrada correctamente.');
-        } elseif ($output === 0) {
-            Messages::addWarning('La Categoría no existe.');
+            Messages::addDanger(__('La categoría no existe.'), TRUE);
+            Util::redirect(Router::getSiteURL(), 'admin/category');
         } else {
-            Messages::addError('Error al borrar la categoría.');
+            if (Form::submit(Constants::FORM_UPDATE)) {
+                $form = $this->form();
+                
+                if (empty($form)) {
+                    Messages::addDanger(__('Error en los campos de la categoría.'));
+                } else {
+                    $category = Arrays::get($form, 'category');
+                    
+                    if ($categoriesManager->update($category)) {
+                        Messages::addSuccess(__('Categoría actualizada correctamente.'));
+                    } else {
+                        Messages::addDanger(__('Error al actualizar la categoría.'));
+                    }
+                }
+            }
+            
+            ViewController::sendViewData('isUpdate', TRUE);
+            ViewController::sendViewData('category', $category);
+            ViewController::sendViewData('title', __('Actualizar categoría'));
+            ViewController::view('form');
         }
-
-        return $this->dataIndex();
     }
-
-    /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
-     * @return array
-     */
-    protected function getDataInput() {
-        return [
-            'categoryName' => \filter_input(\INPUT_POST, 'categoryName'),
-            'categoryDescription' => \filter_input(\INPUT_POST, 'categoryDescription'),
-        ];
+    
+    public function delete($id) {
+        $categoriesManager = new CategoriesManager();
+        
+        if (empty($categoriesManager->deleteById($id))) {
+            Messages::addDanger(__('Error al borrar la categoría.'));
+        } else {
+            Messages::addSuccess(__('Categoría borrada correctamente.'));
+        }
+        
+        parent::delete($id);
     }
-
+    
+    protected function read() {
+        $categoriesManager = new CategoriesManager();
+        $count             = $categoriesManager->count();
+        $limit             = parent::pagination($count);
+        
+        ViewController::sendViewData('categories', $categoriesManager->searchAll($limit));
+    }
+    
 }

@@ -1,0 +1,9 @@
+.idea
+app/vendor/
+*.mwb*
+test-*
+*.vpp*
+*.vux
+*.temp.*
+app/config.php
+app/log/

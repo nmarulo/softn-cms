@@ -1,150 +1,135 @@
 <?php
-
 /**
- * Modulo del controlador de la pagina de etiquetas.
+ * TermController.php
  */
 
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\controllers\BaseController;
-use SoftnCMS\controllers\Messages;
-use SoftnCMS\models\admin\Terms;
-use SoftnCMS\models\admin\Term;
-use SoftnCMS\models\admin\TermDelete;
-use SoftnCMS\models\admin\TermInsert;
-use SoftnCMS\models\admin\TermUpdate;
+use SoftnCMS\classes\constants\Constants;
+use SoftnCMS\controllers\CUDControllerAbstract;
+use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\TermsManager;
+use SoftnCMS\models\tables\Term;
+use SoftnCMS\rute\Router;
+use SoftnCMS\util\Arrays;
+use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\util\form\builders\InputIntegerBuilder;
+use SoftnCMS\util\form\Form;
+use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
 
 /**
- * Clase del controlador de la pagina de etiquetas.
- *
+ * Class TermController
  * @author Nicolás Marulanda P.
  */
-class TermController extends BaseController {
-
-    /**
-     * Metodo llamado por la función INDEX.
-     * @return array
-     */
-    protected function dataIndex() {
-        $terms = Terms::selectAll();
-        $output = [];
+class TermController extends CUDControllerAbstract {
+    
+    public function create() {
+        if (Form::submit(Constants::FORM_CREATE)) {
+            $form = $this->form();
+            
+            if (!empty($form)) {
+                $termsManager = new TermsManager();
+                $term         = Arrays::get($form, 'term');
+                
+                if ($termsManager->create($term)) {
+                    Messages::addSuccess(__('Etiqueta publicada correctamente.'), TRUE);
+                    Util::redirect(Router::getSiteURL(), 'admin/term');
+                }
+            }
+            
+            Messages::addDanger(__('Error al publicar la etiqueta.'));
+        }
         
-        if($terms !== \FALSE){
-            $output = $terms->getAll();
-        }
-
-        return ['terms' => $output];
+        ViewController::sendViewData('isUpdate', FALSE);
+        ViewController::sendViewData('term', new Term());
+        ViewController::sendViewData('title', __('Publicar nueva etiqueta'));
+        ViewController::view('form');
     }
-
-    /**
-     * Metodo llamado por la función INSERT.
-     * @return array
-     */
-    protected function dataInsert() {
-        global $urlSite;
-
-        if (filter_input(\INPUT_POST, 'publish')) {
-            $dataInput = $this->getDataInput();
-            $insert = new TermInsert($dataInput['termName'], $dataInput['termDescription']);
-
-            if ($insert->insert()) {
-                Messages::addSuccess('Etiqueta publicada correctamente.');
-                //Si todo es correcto se muestra la pagina de edición.
-                header("Location: $urlSite" . 'admin/term/update/' . $insert->getLastInsertId());
-                exit();
-            }
-            Messages::addError('Error al publicar la etiqueta.');
+    
+    protected function form() {
+        $inputs = $this->filterInputs();
+        
+        if (empty($inputs)) {
+            return FALSE;
         }
-
-        return [
-            //Datos por defecto a mostrar en el formulario.
-            'term' => Term::defaultInstance(),
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Publicar nuevo" si es FALSE 
-             * o "Actualizar" si es TRUE
-             */
-            'actionUpdate' => \FALSE
-        ];
+        
+        $term = new Term();
+        $term->setId(Arrays::get($inputs, TermsManager::COLUMN_ID));
+        $term->setTermPostCount(NULL);
+        $term->setTermDescription(Arrays::get($inputs, TermsManager::TERM_DESCRIPTION));
+        $term->setTermName(Arrays::get($inputs, TermsManager::TERM_NAME));
+        
+        if (Form::submit(Constants::FORM_CREATE)) {
+            $term->setTermPostCount(0);
+        }
+        
+        return ['term' => $term];
     }
-
-    /**
-     * Metodo llamado por la función UPDATE.
-     * @param int $id
-     * @return array
-     */
-    protected function dataUpdate($id) {
-        global $urlSite;
-
-        $term = Term::selectByID($id);
-
-        //En caso de que no exista.
+    
+    protected function filterInputs() {
+        Form::setInput([
+            InputIntegerBuilder::init(TermsManager::COLUMN_ID)
+                               ->build(),
+            InputAlphanumericBuilder::init(TermsManager::TERM_NAME)
+                                    ->build(),
+            InputAlphanumericBuilder::init(TermsManager::TERM_DESCRIPTION)
+                                    ->setRequire(FALSE)
+                                    ->build(),
+        ]);
+        
+        return Form::inputFilter();
+    }
+    
+    public function update($id) {
+        $termsManager = new TermsManager();
+        $term         = $termsManager->searchById($id);
+        
         if (empty($term)) {
-            Messages::addError('Error. La etiqueta no existe.');
-            header("Location: $urlSite" . 'admin/term');
-            exit();
-        }
-
-        if (filter_input(\INPUT_POST, 'update')) {
-            $dataInput = $this->getDataInput();
-            $update = new TermUpdate($term, $dataInput['termName'], $dataInput['termDescription']);
-
-            //Si ocurre un error la función "$update->update()" retorna FALSE.
-            if ($update->update()) {
-                Messages::addSuccess('Etiqueta actualizada correctamente.');
-                $term = $update->getDataUpdate();
-            } else {
-                Messages::addError('Error al actualizar la etiqueta.');
-            }
-        }
-
-        return [
-            //Instancia Term
-            'term' => $term,
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Publicar nuevo" si es FALSE 
-             * o "Actualizar" si es TRUE
-             */
-            'actionUpdate' => \TRUE
-        ];
-    }
-
-    /**
-     * Metodo llamado por la función DELETE.
-     * @param int $id
-     * @return array
-     */
-    protected function dataDelete($id) {
-        /*
-         * Ya que este metodo no tiene modulo vista propio
-         * se carga el modulo vista INDEX, asi que se retornan los datos
-         * para esta vista.
-         */
-
-        $delete = new TermDelete($id);
-        $output = $delete->delete();
-
-        if ($output) {
-            Messages::addSuccess('Etiqueta borrada correctamente.');
-        } elseif ($output === 0) {
-            Messages::addWarning('La etiqueta no existe.');
+            Messages::addDanger(__('La etiqueta no existe.'), TRUE);
+            Util::redirect(Router::getSiteURL(), 'admin/term');
         } else {
-            Messages::addError('Error al borrar la etiqueta.');
+            if (Form::submit(Constants::FORM_UPDATE)) {
+                $form = $this->form();
+                
+                if (empty($form)) {
+                    Messages::addDanger(__('Error en los campos de la etiqueta.'));
+                } else {
+                    $term = Arrays::get($form, 'term');
+                    
+                    if ($termsManager->update($term)) {
+                        Messages::addSuccess(__('Etiqueta actualizada correctamente.'));
+                    } else {
+                        Messages::addDanger(__('Error al actualizar la etiqueta.'));
+                    }
+                }
+                
+            }
+            ViewController::sendViewData('isUpdate', TRUE);
+            ViewController::sendViewData('term', $term);
+            ViewController::sendViewData('title', __('Actualizar etiqueta'));
+            ViewController::view('form');
         }
-
-        return $this->dataIndex();
     }
-
-    /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
-     * @return array
-     */
-    protected function getDataInput() {
-        return [
-            'termName' => \filter_input(\INPUT_POST, 'termName'),
-            'termDescription' => \filter_input(\INPUT_POST, 'termDescription'),
-        ];
+    
+    public function delete($id) {
+        $termsManager = new TermsManager();
+        
+        if (empty($termsManager->deleteById($id))) {
+            Messages::addDanger(__('Error al borrar la etiqueta.'));
+        } else {
+            Messages::addSuccess(__('Etiqueta borrada correctamente.'));
+        }
+        
+        parent::delete($id);
     }
-
+    
+    protected function read() {
+        $termsManager = new TermsManager();
+        $count        = $termsManager->count();
+        $limit        = parent::pagination($count);
+        
+        ViewController::sendViewData('terms', $termsManager->searchAll($limit));
+    }
+    
 }

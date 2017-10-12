@@ -1,82 +1,232 @@
 <?php
-
 /**
- * Modulo del controlador de la pagina de configuración.
+ * OptionController.php
  */
 
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\controllers\Controller;
-use SoftnCMS\controllers\Messages;
-use SoftnCMS\models\admin\Options;
-use SoftnCMS\models\admin\OptionUpdate;
+use SoftnCMS\classes\constants\Constants;
+use SoftnCMS\classes\constants\OptionConstants;
+use SoftnCMS\controllers\ControllerAbstract;
+use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\MenusManager;
+use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\managers\ProfilesManager;
+use SoftnCMS\models\tables\Option;
+use SoftnCMS\util\Arrays;
+use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
+use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\util\form\builders\InputBooleanBuilder;
+use SoftnCMS\util\form\builders\InputEmailBuilder;
+use SoftnCMS\util\form\builders\InputIntegerBuilder;
+use SoftnCMS\util\form\builders\InputUrlBuilder;
+use SoftnCMS\util\form\Form;
+use SoftnCMS\util\Gravatar;
+use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
 
 /**
- * Clase del controlador de la pagina de configuración.
- *
+ * Class OptionController
  * @author Nicolás Marulanda P.
  */
-class OptionController extends Controller {
-
-    /**
-     * Metodo llamado por la funcion index.
-     * @return array
-     */
-    protected function dataIndex() {
-        //comprueba si hay datos para actualizar.
-        $this->dataUpdate();
-        $options = Options::selectAll();
-        
-        return $options->getAll();
+class OptionController extends ControllerAbstract {
+    
+    public function index() {
+        $this->update();
+        parent::index();
     }
-
-    /**
-     * Metodo que actualiza los datos configurables del sitio.
-     */
-    private function dataUpdate() {
-        if (\filter_input(\INPUT_POST, 'update')) {
-            $options = Options::selectAll();
-            $dataInput = $this->getDataInput();
-            /*
-             * Usando el indices de $DATAINPUT, se obtiene
-             * de $OPTIONS cada instancia OPTION con sus datos,
-             * luego en OPTIONUPDATE se comprueba que datos seran actualizados.
-             */
-            $keys = \array_keys($dataInput);
-            $count = \count($keys);
-            $error = \FALSE;
-            $optionName = '';//En caso de error, contiene el nombre de la opción
-
-            for ($i = 0; $i < $count && !$error; ++$i) {
-                $optionName = $keys[$i];
-                $optionValue = $dataInput[$optionName];
-                $option = $options->getByID($optionName);
-                $update = new OptionUpdate($option, $optionValue);
-                $error = !$update->update();
-            }
-
-            if ($error) {
-                Messages::addError("Error al actualizar '$optionName'");
+    
+    private function update() {
+        if (Form::submit(Constants::FORM_UPDATE)) {
+            $optionsManager = new OptionsManager();
+            $form           = $this->form();
+            
+            if (empty($form)) {
+                Messages::addDanger(__('Error en los campos de las opciones.'));
             } else {
-                Messages::addSuccess('Actualizado correctamente.');
+                $options  = Arrays::get($form, 'options');
+                $notError = TRUE;
+                $len      = count($options);
+                
+                for ($i = 0; $i < $len && $notError; ++$i) {
+                    $notError = $optionsManager->updateByColumnName(Arrays::get($options, $i));
+                }
+                
+                if ($notError) {
+                    Messages::addSuccess(__('Actualizado correctamente.'));
+                } else {
+                    Messages::addDanger(__('Error al actualizar.'));
+                }
             }
         }
     }
-
-    /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
-     * @return array
-     */
-    private function getDataInput() {
-        return [
-            'optionTitle' => \filter_input(\INPUT_POST, 'optionTitle'),
-            'optionDescription' => \filter_input(\INPUT_POST, 'optionDescription'),
-            'optionEmailAdmin' => \filter_input(\INPUT_POST, 'optionEmailAdmin'),
-            'optionSiteUrl' => \filter_input(\INPUT_POST, 'optionSiteUrl'),
-            'optionPaged' => \filter_input(\INPUT_POST, 'optionPaged'),
-            'optionTheme' => \filter_input(\INPUT_POST, 'optionTheme'),
-            'optionMenu' => \filter_input(\INPUT_POST, 'optionMenu'),
-        ];
+    
+    protected function form() {
+        $inputs = $this->filterInputs();
+        
+        if (empty($inputs)) {
+            return FALSE;
+        }
+        
+        $inputKeys = array_keys($inputs);
+        $options   = array_map(function($key, $value) {
+            $option = new Option();
+            $option->setOptionName($key);
+            $option->setOptionValue($value);
+            
+            return $option;
+        }, $inputKeys, $inputs);
+        $options[] = $this->formGravatar($inputs);
+        
+        return ['options' => $options];
     }
-
+    
+    protected function filterInputs() {
+        Form::setInput([
+            InputAlphabeticBuilder::init(OptionConstants::SITE_TITLE)
+                                  ->build(),
+            InputAlphabeticBuilder::init(OptionConstants::SITE_DESCRIPTION)
+                                  ->setRequire(FALSE)
+                                  ->build(),
+            InputEmailBuilder::init(OptionConstants::EMAIL_ADMIN)
+                             ->build(),
+            InputUrlBuilder::init(OptionConstants::SITE_URL)
+                           ->build(),
+            InputIntegerBuilder::init(OptionConstants::PAGED)
+                               ->build(),
+            InputAlphanumericBuilder::init(OptionConstants::THEME)
+                                    ->build(),
+            InputIntegerBuilder::init(OptionConstants::MENU)
+                               ->build(),
+            InputAlphabeticBuilder::init(OptionConstants::LANGUAGE)
+                                  ->setAccents(FALSE)
+                                  ->setSpecialChar(TRUE)
+                                  ->build(),
+            InputIntegerBuilder::init(OptionConstants::DEFAULT_PROFILE)
+                               ->build(),
+            InputIntegerBuilder::init(OptionConstants::GRAVATAR_SIZE)
+                               ->build(),
+            InputAlphabeticBuilder::init(OptionConstants::GRAVATAR_RATING)
+                                  ->build(),
+            InputAlphabeticBuilder::init(OptionConstants::GRAVATAR_DEFAULT_IMAGE)
+                                  ->build(),
+            InputBooleanBuilder::init(OptionConstants::GRAVATAR_FORCE_DEFAULT)
+                               ->build(),
+            InputBooleanBuilder::init(OptionConstants::COMMENT)
+                               ->build(),
+        ]);
+        
+        return Form::inputFilter();
+    }
+    
+    private function formGravatar($inputs) {
+        $gravatar = new Gravatar();
+        $gravatar->setSize(Arrays::get($inputs, OptionConstants::GRAVATAR_SIZE));
+        $gravatar->setForceDefault(Arrays::get($inputs, OptionConstants::GRAVATAR_FORCE_DEFAULT));
+        $gravatar->setDefaultImage(Arrays::get($inputs, OptionConstants::GRAVATAR_DEFAULT_IMAGE));
+        $gravatar->setRating(Arrays::get($inputs, OptionConstants::GRAVATAR_RATING));
+        $gravatarOption = new Option();
+        $gravatarOption->setOptionName(OptionConstants::GRAVATAR);
+        $gravatarOption->setOptionValue(serialize($gravatar));
+        
+        return $gravatarOption;
+    }
+    
+    protected function read() {
+        $profilesManager      = new ProfilesManager();
+        $menusManager         = new MenusManager();
+        $optionsManager       = new OptionsManager();
+        $optionComment        = $optionsManager->searchByName(OptionConstants::COMMENT);
+        $optionTitle          = $optionsManager->searchByName(OptionConstants::SITE_TITLE);
+        $optionDescription    = $optionsManager->searchByName(OptionConstants::SITE_DESCRIPTION);
+        $optionPaged          = $optionsManager->searchByName(OptionConstants::PAGED);
+        $optionSiteUrl        = $optionsManager->searchByName(OptionConstants::SITE_URL);
+        $optionTheme          = $optionsManager->searchByName(OptionConstants::THEME);
+        $optionMenu           = $optionsManager->searchByName(OptionConstants::MENU);
+        $optionEmailAdmin     = $optionsManager->searchByName(OptionConstants::EMAIL_ADMIN);
+        $optionLanguage       = $optionsManager->searchByName(OptionConstants::LANGUAGE);
+        $optionDefaultProfile = $optionsManager->searchByName(OptionConstants::DEFAULT_PROFILE);
+        $profilesList         = $profilesManager->searchAll();
+        $menuList             = $menusManager->searchAllParent();
+        
+        $this->sendViewOptionLanguage();
+        $this->sendViewOptionGravatar();
+        ViewController::sendViewData('optionComment', $optionComment);
+        ViewController::sendViewData('optionLanguage', $optionLanguage);
+        ViewController::sendViewData('menuList', $menuList);
+        ViewController::sendViewData('optionMenu', $optionMenu);
+        ViewController::sendViewData('listThemes', Util::getFilesAndDirectories(THEMES));
+        ViewController::sendViewData('optionTitle', $optionTitle);
+        ViewController::sendViewData('optionDescription', $optionDescription);
+        ViewController::sendViewData('optionPaged', $optionPaged);
+        ViewController::sendViewData('optionSiteUrl', $optionSiteUrl);
+        ViewController::sendViewData('optionTheme', $optionTheme);
+        ViewController::sendViewData('optionEmailAdmin', $optionEmailAdmin);
+        ViewController::sendViewData('optionDefaultProfile', $optionDefaultProfile);
+        ViewController::sendViewData('profilesList', $profilesList);
+        
+    }
+    
+    private function sendViewOptionLanguage() {
+        $listLanguages = Util::getFilesAndDirectories(LANGUAGES);
+        $listLanguages = array_filter($listLanguages, function($language) {
+            $aux          = explode('.', $language);
+            $lastPosition = count($aux) - 1;
+            
+            if (Arrays::get($aux, $lastPosition) === FALSE || Arrays::get($aux, 0) === FALSE) {
+                return FALSE;
+            }
+            
+            return Arrays::get($aux, $lastPosition) == 'mo' && Arrays::get($aux, 0) != 'softncms';
+        });
+        $listLanguages = array_map(function($language) {
+            return Arrays::get(explode('.', $language), 0);
+        }, $listLanguages);
+        
+        ViewController::sendViewData('listLanguages', $listLanguages);
+    }
+    
+    private function sendViewOptionGravatar() {
+        $optionsManager = new OptionsManager();
+        $optionGravatar = $optionsManager->searchByName(OptionConstants::GRAVATAR);
+        $gravatar       = unserialize($optionGravatar->getOptionValue());
+        
+        if (empty($gravatar)) {
+            $gravatar = new Gravatar();
+        }
+        
+        $gravatar->setSize($this->getDataGravatar($gravatar->getSize()), FALSE);
+        $gravatar->setRating($this->getDataGravatar($gravatar->getRating()), FALSE);
+        $gravatar->setDefaultImage($this->getDataGravatar($gravatar->getDefaultImage()), FALSE);
+        
+        $sizeList         = [
+            32,
+            64,
+            128,
+            256,
+        ];
+        $defaultImageList = [
+            Gravatar::DEFAULT_IMAGE_MM,
+            Gravatar::DEFAULT_IMAGE_BLANK,
+            Gravatar::DEFAULT_IMAGE_IDENTICON,
+            Gravatar::DEFAULT_IMAGE_MOSTERID,
+            Gravatar::DEFAULT_IMAGE_RETRO,
+            Gravatar::DEFAULT_IMAGE_WAVATAR,
+        ];
+        $ratingList       = [
+            Gravatar::RATING_G,
+            Gravatar::RATING_PG,
+            Gravatar::RATING_R,
+            Gravatar::RATING_X,
+        ];
+        ViewController::sendViewData('gravatarSizeList', $sizeList);
+        ViewController::sendViewData('gravatarDefaultImageList', $defaultImageList);
+        ViewController::sendViewData('gravatarRatingList', $ratingList);
+        ViewController::sendViewData('gravatar', $gravatar);
+    }
+    
+    private function getDataGravatar($string) {
+        return Arrays::get(explode('=', $string), 1);
+    }
+    
 }

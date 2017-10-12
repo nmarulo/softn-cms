@@ -3,19 +3,15 @@ SoftN CMS
 
 SoftN CMS es un sistema de gestión de contenido con el que puedes crear sitios web dinámicos e interactivos, con una interfaces amigable e intuitiva que se adapta a cualquier tipo de resolución. Desarrollado en PHP como lenguaje de programación y MySQL como gestor de base de datos.
 
-> **Versión 0.3 Alfa - Fenix** Este proyecto está todavía en fase de desarrollo.
+> **Versión 0.4 Alfa - Fenix** Este proyecto está todavía en fase de desarrollo.
 
-> **Versión 0.2.1 Beta** https://github.com/nmarulo/softn-cms/tree/v0.2.1-Final
-
-> **branch:develop** Ultimos cambios realizados. https://github.com/nmarulo/softn-cms/tree/develop
+> **branch:develop** Últimos cambios realizados. https://github.com/nmarulo/softn-cms/tree/develop
 
 ----------
 
-Steaming https://www.livecoding.tv/marulo/
+**DEMO:** http://cms.softn.red/ **User/Pass:** admin
 
-----------
-
-Más información: http://www.softn.red/softn-cms.html
+**Más información:** http://www.softn.red/softn-cms.html
 
 ----------
 
@@ -35,41 +31,46 @@ Funcionalidades
 
 #### Panel de administración
 
-- Publicar contenido o artículos.
-- Publicar paginas. (No disponible)
-- Crear categorías.
-- Crear etiquetas.
-- Crear sidebars o barra lateral. (No disponible)
-- Crear menús. (No disponible)
-- Gestionar comentarios.
-- Crear usuarios.
-- Inicio de sesión.
-- Registro de usuario
-- Configuraciones generales.
-- Listado de información de artículos, paginas, categorías, usuarios, etc.
+- Modulo de publicaciones.
+- Modulo de paginas.
+- Modulo de categorías.
+- Modulo de etiquetas.
+- Modulo de la barra lateral de la plantilla/tema.
+- Modulo de menú de la plantilla/tema.
+- Modulo de comentarios.
+- Modulo de usuarios.
+- Modulo de inicio de sesión.
+- Modulo de registro de usuarios.
+- Modulo de permisos.
+- Modulo de perfiles.
+- Modulo de configuración de permisos.
+- Modulo de configuraciones generales.
+- Modulo de instalación.
+- Modulo de información a mostrar en plantilla/tema.
+- Modulo de Log.
+- Modulo de idioma de la aplicación.
+- Modulo de acceso a base de datos.
+- Modulo de Token.
+- Modulo de control de formularios.
+- Modulo de rutas.
+- Modulo de vistas.
+- Modulo de paginación.
 
 #### Tema o plantilla web
 
-- Lista de artículos publicados.
-- Publicar comentarios. (No disponible)
+- Ultimas publicaciones.
+- Publicaciones individuales.
+- Publicaciones por categoría.
+- Publicaciones por etiqueta.
+- Publicaciones por usuario.
+- Comentarios en las publicaciones.
 
 ----------
 
 Instalación
 -------------------
 
-- Instalación manual: 
-En el fichero **"app/config.php"** configurar los datos de conexión a la base de datos:
-```
-define('DB_USER', 'root');
-define('DB_PASSWORD', 'root');
-```
-
-Abrir el script SQL **"softn_cms.sql"** buscar y reemplazar la siguiente ruta **"http://localhost/ProyectosWeb/htdocsxampp/SoftN-CMS/"** con la ruta tu localhost.
-
-Por ultimo **ejecutar el script "softn_cms.sql"**, por ejemplo, usando PHPMyAdmin.
-
-Acceder usando el usuario **"admin"** y contraseña **"admin"** o crear un usuario.
+Primero crear una base de datos y luego acceder a la aplicación, automáticamente se cargara la pagina de instalación, por ultimo completar la información del formulario. (http://localhost/install).
 
 ----------
 
@@ -86,28 +87,24 @@ SoftN CMS fue probado en XAMP v3.2.2 (PHP v5.6.21, Apache v2.4.12, MySQL v5.6.25
 
 ----------
 
-Ficheros
+Imágenes
 --------------------
-
-- **/** - Composer, tablas SQL, datos demo SQL.
-- **app/** - Configuración, declaración de constantes, autoload.
-- **app/controllers/** - Controladores de la aplicación, Router, Request.
-- **app/defaults/** - Datos base de la aplicación. (Sin implementar)
-- **app/install/** - Pagina de instalación de la aplicación. (No disponible)
-- **app/models/** - Modelos de la aplicación, MySQL, plantilla de modelos.
-- **app/themes/** - Plantillas o temas de la aplicación.
-- **app/vendor/** - Librerias de la aplicación, autoload (composer).
-- **app/views/** - Vistas de la aplicación, script JS, CSS.
-
-----------
-
-Imagenes
---------------------
-
-#### Panel de administración [img](http://i392.photobucket.com/albums/pp4/nmarulo/2_zpszycfoycl.png "Panel de administración")
-![Panel de administración](http://i392.photobucket.com/albums/pp4/nmarulo/2_zpszycfoycl.png "Panel de administración")
-#### Lista de publicaciones [img](http://i392.photobucket.com/albums/pp4/nmarulo/3_zpspjzjw5y4.png "Lista de publicaciones")
-![Lista de publicaciones](http://i392.photobucket.com/albums/pp4/nmarulo/3_zpspjzjw5y4.png "Lista de publicaciones")
+#### Panel de administración [link img](http://i392.photobucket.com/albums/pp4/nmarulo/1_zpsrfkszqs4.png "Panel de administración")
+![Panel de administración](http://i392.photobucket.com/albums/pp4/nmarulo/1_zpsrfkszqs4.png "Panel de administración")
+#### Lista de publicaciones [link img](http://i392.photobucket.com/albums/pp4/nmarulo/6_zpsuhuejffa.png "Lista de publicaciones")
+![Lista de publicaciones](http://i392.photobucket.com/albums/pp4/nmarulo/6_zpsuhuejffa.png "Lista de publicaciones")
+#### Inicio de sesión [link img](http://i392.photobucket.com/albums/pp4/nmarulo/8_zpsghafmypt.png "Inicio de sesión")
+![Inicio de sesión](http://i392.photobucket.com/albums/pp4/nmarulo/8_zpsghafmypt.png "Inicio de sesión")
+#### Instalación [link img](http://i392.photobucket.com/albums/pp4/nmarulo/7_zpsmxlwm0bc.png "Instalación")
+![Instalación](http://i392.photobucket.com/albums/pp4/nmarulo/7_zpsmxlwm0bc.png "Instalación")
+#### Publicación [link img](http://i392.photobucket.com/albums/pp4/nmarulo/2_zpswjhhvjgm.png "Publicación")
+![Publicación](http://i392.photobucket.com/albums/pp4/nmarulo/2_zpswjhhvjgm.png "Publicación")
+#### Configuraciones generales [link img](http://i392.photobucket.com/albums/pp4/nmarulo/5_zpsyuwc928c.png "Configuraciones generales")
+![Configuraciones generales](http://i392.photobucket.com/albums/pp4/nmarulo/5_zpsyuwc928c.png "Configuraciones generales")
+#### Ultimas publicaciones [link img](http://i392.photobucket.com/albums/pp4/nmarulo/3_zpskg4foxxs.png "Ultimas publicaciones")
+![Ultimas publicaciones](http://i392.photobucket.com/albums/pp4/nmarulo/3_zpskg4foxxs.png "Ultimas publicaciones")
+#### Elementos del menu [link img](http://i392.photobucket.com/albums/pp4/nmarulo/4_zpsf7mzmd4e.png "Elementos del menu")
+![Elementos del menu](http://i392.photobucket.com/albums/pp4/nmarulo/4_zpsf7mzmd4e.png "Elementos del menu")
 
 ----------
 
@@ -115,7 +112,7 @@ Licencia (MIT https://opensource.org/licenses/MIT)
 --------------------
 
 
-Copyright (c) 2016 Nicolás Marulanda P.
+Copyright (c) 2017 Nicolás Marulanda P.
 
 Por la presente se autoriza, de forma gratuita, a cualquier persona que haya obtenido una copia de este software y archivos de documentación asociados (el "Software"), a utilizar el Software sin restricción, incluyendo sin limitación los derechos de usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar, y/o vender copias de este Software, y permitir lo mismo a las personas a las que se les proporcione el Software, de acuerdo con las siguientes condiciones:
 

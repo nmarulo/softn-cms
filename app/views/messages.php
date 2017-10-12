@@ -1,22 +1,20 @@
-<?php if (!empty($data['messages'])) { ?>
+<?php
+
+use SoftnCMS\util\Messages;
+
+$messages = Messages::getMessages();
+
+if (!empty($messages)) { ?>
     <div id="messages">
-        <div id="messages-content" class="modal-dialog">
-            <?php foreach ($data['messages'] as $message) { ?>
-                <div class="alert alert-<?php echo $message['type']; ?> alert-dismissible" role="alert">
+        <?php foreach ($messages as $value) { ?>
+            <div class="modal-dialog messages-content">
+                <div class="message-alert alert alert-<?php echo Messages::getTypeMessage($value); ?> alert-dismissible" role="alert">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span>&times;</span>
                     </button>
-                    <?php echo $message['message']; ?>
+                    <?php echo Messages::getMessage($value); ?>
                 </div>
-            <?php } ?>
-            <script>
-                if (timeout != undefined) {
-                    clearTimeout(timeout);
-                }
-                var timeout = setTimeout(function () {
-                    $("#messages").remove();
-                }, 5000);
-            </script>
-        </div>
+            </div>
+        <?php } ?>
     </div>
-<?php } ?>
+<?php }

@@ -1,162 +1,220 @@
 <?php
-
 /**
- * Modulo del controlador de la pagina de usuarios.
+ * UserController.php
  */
 
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\controllers\BaseController;
-use SoftnCMS\controllers\Messages;
-use SoftnCMS\models\admin\User;
-use SoftnCMS\models\admin\Users;
-use SoftnCMS\models\admin\UserInsert;
-use SoftnCMS\models\admin\UserDelete;
-use SoftnCMS\models\admin\UserUpdate;
+use SoftnCMS\classes\constants\Constants;
+use SoftnCMS\classes\constants\OptionConstants;
+use SoftnCMS\controllers\CUDControllerAbstract;
+use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\LoginManager;
+use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\managers\ProfilesManager;
+use SoftnCMS\models\managers\UsersManager;
+use SoftnCMS\models\tables\User;
+use SoftnCMS\rute\Router;
+use SoftnCMS\util\Arrays;
+use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\util\form\builders\InputEmailBuilder;
+use SoftnCMS\util\form\builders\InputIntegerBuilder;
+use SoftnCMS\util\form\builders\InputUrlBuilder;
+use SoftnCMS\util\form\Form;
+use SoftnCMS\util\Gravatar;
+use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
 
 /**
- * Clase del controlador de la pagina de usuarios.
- *
+ * Class UserController
  * @author Nicolás Marulanda P.
  */
-class UserController extends BaseController {
-
-    /**
-     * Metodo llamado por la funcion INDEX.
-     * @return array
-     */
-    protected function dataIndex() {
-        $users = Users::selectAll();
-        $output = [];
+class UserController extends CUDControllerAbstract {
+    
+    public function create() {
+        if (Form::submit(Constants::FORM_CREATE)) {
+            $form = $this->form();
+            
+            if (!empty($form)) {
+                $usersManager = new UsersManager();
+                $user         = Arrays::get($form, 'user');
+                
+                if ($usersManager->create($user)) {
+                    Messages::addSuccess(__('Usuario creado correctamente.'), TRUE);
+                    Util::redirect(Router::getSiteURL() . 'admin/user');
+                }
+            }
+            
+            Messages::addDanger(__('Error al publicar el usuario.'));
+        }
         
-        if($users !== \FALSE){
-            $output = $users->getAll();
-        }
-
-        return ['users' => $output];
+        $this->sendViewProfiles();
+        $user     = new User();
+        $gravatar = $this->getGravatar();
+        //En el panel de administración el tamaño sera 128px
+        $gravatar->setSize(128);
+        $user->setUserUrlImage($gravatar->get());
+        ViewController::sendViewData('isUpdate', FALSE);
+        ViewController::sendViewData('user', $user);
+        ViewController::sendViewData('title', __('Publicar nuevo usuario'));
+        ViewController::view('form');
     }
-
-    /**
-     * Metodo llamado por la función INSERT.
-     * @return array
-     */
-    protected function dataInsert() {
-        global $urlSite;
-
-        if (filter_input(\INPUT_POST, 'publish')) {
-
-            $dataInput = $this->getDataInput();
-            if ($dataInput['userPass'] == $dataInput['userPassR']) {
-                $insert = new UserInsert($dataInput['userLogin'], $dataInput['userName'], $dataInput['userEmail'], $dataInput['userPass'], $dataInput['userRol'], $dataInput['userUrl']);
-
-                if ($insert->insert()) {
-                    Messages::addSuccess('Usuario registrado correctamente.');
-                    //Si todo es correcto se muestra el USER en la pagina de edición.
-                    header("Location: $urlSite" . 'admin/user/update/' . $insert->getLastInsertId());
-                    exit();
-                }
-
-                Messages::addError('Error al registrar el usuario.');
-            }
+    
+    protected function form() {
+        $inputs = $this->filterInputs();
+        
+        if (empty($inputs)) {
+            return FALSE;
         }
-
-        return [
-            //Datos por defecto a mostrar en el formulario.
-            'user' => User::defaultInstance(),
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Agregar nuevo usuario" si es FALSE 
-             * o "Actualizar usuario" si es TRUE
-             */
-            'actionUpdate' => \FALSE,
-        ];
-    }
-
-    /**
-     * Metodo llamado por la función UPDATE.
-     * @param int $id
-     * @return array
-     */
-    protected function dataUpdate($id) {
-        global $urlSite;
-
-        $user = User::selectByID($id);
-
-        //En caso de que no exista.
-        if (empty($user)) {
-            Messages::addError('Error. El usuario no existe.');
-            header("Location: $urlSite" . 'admin/user');
-            exit();
-        }
-
-        if (filter_input(\INPUT_POST, 'update')) {
-            $dataInput = $this->getDataInput();
-
-            if ($dataInput['userPass'] == $dataInput['userPassR']) {
-                $update = new UserUpdate($user, $dataInput['userLogin'], $dataInput['userName'], $dataInput['userEmail'], $dataInput['userPass'], $dataInput['userRol'], $dataInput['userUrl']);
-
-                //Si ocurre un error la función "$update->update()" retorna FALSE.
-                if ($update->update()) {
-                    Messages::addSuccess('Usuario actualizado correctamente.');
-                    $user = $update->getDataUpdate();
-                } else {
-                    Messages::addError('Error al actualizar el usuario.');
-                }
-            }
-        }
-
-        return [
-            //Instancia USER
-            'user' => $user,
-            /*
-             * Booleano que indica si muestra el encabezado
-             * "Agregar nuevo usuario" si es FALSE 
-             * o "Actualizar usuario" si es TRUE
-             */
-            'actionUpdate' => \TRUE,
-        ];
-    }
-
-    /**
-     * Metodo llamado por la función DELETE.
-     * @param int $id
-     * @return array
-     */
-    protected function dataDelete($id) {
-        /*
-         * Ya que este metodo no tiene modulo vista propio
-         * se carga el modulo vista INDEX, asi que se retornan los datos
-         * para esta vista.
-         */
-
-        $delete = new UserDelete($id);
-        $output = $delete->delete();
-
-        if ($output) {
-            Messages::addSuccess('Usuario borrado correctamente.');
-        } elseif ($output === 0) {
-            Messages::addWarning('El usuario no existe.');
+        
+        $pass  = Arrays::get($inputs, UsersManager::USER_PASSWORD);
+        $passR = Arrays::get($inputs, UsersManager::USER_PASSWORD_REWRITE);
+        
+        if (empty($pass) || empty($passR)) {
+            $pass = NULL;
         } else {
-            Messages::addError('Error al borrar el usuario.');
+            if ($pass != $passR) {
+                return FALSE;
+            }
+            
+            $pass = Util::encrypt($pass, LOGGED_KEY);
         }
-
-        return $this->dataIndex();
-    }
-
-    /**
-     * Metodo que obtiene los datos de los campos INPUT del formulario.
-     * @return array
-     */
-    protected function getDataInput() {
+        
+        $gravatar = $this->getGravatar();
+        $user     = new User();
+        $user->setId(Arrays::get($inputs, UsersManager::COLUMN_ID));
+        $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
+        $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
+        $user->setUserName(Arrays::get($inputs, UsersManager::USER_NAME));
+        $user->setUserRegistered(NULL);
+        $user->setUserUrl(Arrays::get($inputs, UsersManager::USER_URL));
+        $user->setUserPassword($pass);
+        $user->setUserPostCount(NULL);
+        $user->setProfileId(Arrays::get($inputs, UsersManager::PROFILE_ID));
+        $gravatar->setEmail($user->getUserEmail());
+        $user->setUserUrlImage($gravatar->get());
+        
+        if (Form::submit(Constants::FORM_CREATE)) {
+            $user->setUserRegistered(Util::dateNow());
+            $user->setUserPostCount(0);
+        }
+        
         return [
-            'userLogin' => \filter_input(\INPUT_POST, 'userLogin'),
-            'userName' => \filter_input(\INPUT_POST, 'userName'),
-            'userEmail' => \filter_input(\INPUT_POST, 'userEmail'),
-            'userPass' => \filter_input(\INPUT_POST, 'userPass'),
-            'userPassR' => \filter_input(\INPUT_POST, 'userPassR'),
-            'userRol' => \filter_input(\INPUT_POST, 'userRol'),
-            'userUrl' => \filter_input(\INPUT_POST, 'userUrl'),
+            'user' => $user,
         ];
     }
-
+    
+    protected function filterInputs() {
+        $isCreate = Form::submit(Constants::FORM_CREATE);
+        
+        Form::setInput([
+            InputIntegerBuilder::init(UsersManager::COLUMN_ID)
+                               ->build(),
+            InputEmailBuilder::init(UsersManager::USER_EMAIL)
+                             ->build(),
+            InputAlphanumericBuilder::init(UsersManager::USER_LOGIN)
+                                    ->setAccents(FALSE)
+                                    ->setWithoutSpace(TRUE)
+                                    ->setReplaceSpace('')
+                                    ->build(),
+            InputAlphanumericBuilder::init(UsersManager::USER_NAME)
+                                    ->build(),
+            InputUrlBuilder::init(UsersManager::USER_URL)
+                           ->setRequire(FALSE)
+                           ->build(),
+            InputAlphanumericBuilder::init(UsersManager::USER_PASSWORD)
+                                    ->setRequire($isCreate)
+                                    ->build(),
+            InputAlphanumericBuilder::init(UsersManager::USER_PASSWORD_REWRITE)
+                                    ->setRequire($isCreate)
+                                    ->build(),
+            InputIntegerBuilder::init(UsersManager::PROFILE_ID)
+                               ->build(),
+        ]);
+        
+        return Form::inputFilter();
+    }
+    
+    private function getGravatar() {
+        $optionsManager = new OptionsManager();
+        $gravatarOption = $optionsManager->searchByName(OptionConstants::GRAVATAR);
+        
+        if (empty($gravatarOption->getOptionValue())) {
+            $gravatar = new Gravatar();
+        } else {
+            $gravatar = unserialize($gravatarOption->getOptionValue());
+        }
+        
+        return $gravatar;
+    }
+    
+    private function sendViewProfiles() {
+        $profilesManager = new ProfilesManager();
+        ViewController::sendViewData('profiles', $profilesManager->searchAll());
+    }
+    
+    public function update($id) {
+        $usersManager = new UsersManager();
+        $user         = $usersManager->searchById($id);
+        
+        if (empty($user)) {
+            Messages::addDanger(__('El usuario no existe.'), TRUE);
+            Util::redirect(Router::getSiteURL() . 'admin/user');
+        } elseif (Form::submit(Constants::FORM_UPDATE)) {
+            $form = $this->form();
+            
+            if (empty($form)) {
+                Messages::addDanger(__('Error en los campos del usuario.'));
+            } else {
+                $userForm = Arrays::get($form, 'user');
+                
+                if ($usersManager->updateByColumnId($userForm)) {
+                    $user = $usersManager->searchById($id);
+                    Messages::addSuccess(__('Usuario actualizado correctamente.'));
+                } else {
+                    Messages::addDanger(__('Error al actualizar el usuario.'));
+                }
+            }
+        }
+        
+        $this->sendViewProfiles();
+        $gravatar = $this->getGravatar();
+        //En el panel de administración el tamaño sera 128px
+        $gravatar->setSize(128);
+        $gravatar->setEmail($user->getUserEmail());
+        $user->setUserUrlImage($gravatar->get());
+        ViewController::sendViewData('isUpdate', TRUE);
+        ViewController::sendViewData('selectedProfileId', $user->getProfileId());
+        ViewController::sendViewData('user', $user);
+        ViewController::sendViewData('title', __('Actualizar usuario'));
+        ViewController::view('form');
+    }
+    
+    public function delete($id) {
+        if ($id == LoginManager::getSession()) {
+            Messages::addDanger(__('No puedes eliminar este usuario.'));
+        } else {
+            $usersManager = new UsersManager();
+            $result       = $usersManager->deleteById($id);
+            $rowCount     = $usersManager->getRowCount();
+            
+            if ($result === FALSE) {
+                Messages::addDanger(__('No se puede borrar un usuario con entradas publicadas.'));
+            } elseif ($rowCount == 0) {
+                Messages::addDanger(__('Error al borrar el usuario.'));
+            } elseif ($rowCount > 0) {
+                Messages::addSuccess(__('Usuario borrado correctamente.'));
+            }
+        }
+        
+        parent::delete($id);
+    }
+    
+    protected function read() {
+        $usersManager = new UsersManager();
+        $count        = $usersManager->count();
+        $limit        = parent::pagination($count);
+        
+        ViewController::sendViewData('users', $usersManager->searchAll($limit));
+    }
 }

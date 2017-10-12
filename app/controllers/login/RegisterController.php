@@ -1,0 +1,108 @@
+<?php
+/**
+ * RegisterController.php
+ */
+
+namespace SoftnCMS\controllers\login;
+
+use SoftnCMS\classes\constants\Constants;
+use SoftnCMS\classes\constants\OptionConstants;
+use SoftnCMS\controllers\ControllerAbstract;
+use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\models\managers\UsersManager;
+use SoftnCMS\models\tables\User;
+use SoftnCMS\util\Arrays;
+use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
+use SoftnCMS\util\form\builders\InputEmailBuilder;
+use SoftnCMS\util\form\Form;
+use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
+
+/**
+ * Class RegisterController
+ * @author Nicolás Marulanda P.
+ */
+class RegisterController extends ControllerAbstract {
+    
+    public function index() {
+        $this->register();
+        $this->read();
+        ViewController::view('index');
+    }
+    
+    private function register() {
+        if (Form::submit(Constants::FORM_SUBMIT)) {
+            $form = $this->form();
+            
+            if (!empty($form)) {
+                $usersManager = new UsersManager();
+                $user         = Arrays::get($form, 'user');
+                
+                if ($usersManager->create($user)) {
+                    $optionsManager = new OptionsManager();
+                    Messages::addSuccess(__('Usuario registrado correctamente.'), TRUE);
+                    Util::redirect($optionsManager->getSiteUrl(), 'login');
+                }
+            }
+            
+            Messages::addDanger(__('Error al registrar el usuario.'));
+        }
+    }
+    
+    protected function form() {
+        $inputs = $this->filterInputs();
+        
+        if (empty($inputs)) {
+            return FALSE;
+        }
+        
+        $pass  = Arrays::get($inputs, UsersManager::USER_PASSWORD);
+        $passR = Arrays::get($inputs, UsersManager::USER_PASSWORD_REWRITE);
+        
+        if ($pass != $passR) {
+            return FALSE;
+        }
+        
+        $optionsManager = new OptionsManager();
+        $pass           = Util::encrypt($pass, LOGGED_KEY);
+        $user           = new User();
+        $user->setUserPassword($pass);
+        $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
+        $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
+        $user->setUserRegistered(Util::dateNow());
+        $user->setUserName($user->getUserLogin());
+        $user->setUserPostCount(0);
+        $user->setProfileId($optionsManager->searchByName(OptionConstants::DEFAULT_PROFILE)
+                                           ->getOptionValue());
+        
+        return ['user' => $user];
+    }
+    
+    protected function filterInputs() {
+        Form::setInput([
+            InputAlphanumericBuilder::init(UsersManager::USER_LOGIN)
+                                    ->setAccents(FALSE)
+                                    ->setWithoutSpace(TRUE)
+                                    ->setReplaceSpace('')
+                                    ->build(),
+            InputAlphanumericBuilder::init(UsersManager::USER_PASSWORD)
+                                    ->build(),
+            InputAlphanumericBuilder::init(UsersManager::USER_PASSWORD_REWRITE)
+                                    ->build(),
+            InputEmailBuilder::init(UsersManager::USER_EMAIL)
+                             ->build(),
+        ]);
+        
+        return Form::inputFilter();
+    }
+    
+    protected function read() {
+        $optionsManager = new OptionsManager();
+        $siteUrl        = $optionsManager->getSiteUrl();
+        $urlLogin       = $siteUrl . 'login';
+        ViewController::sendViewData('siteUrl', $siteUrl);
+        ViewController::sendViewData('urlLogin', $urlLogin);
+    }
+    
+}
