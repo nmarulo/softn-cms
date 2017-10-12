@@ -36,12 +36,37 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     $route               = $router->getRoute();
     $directoryController = $route->getControllerDirectoryName();
     $directoryView       = $route->getDirectoryNameViewController();
-    $optionsManager      = new OptionsManager();
+    $siteUrl             = Router::getSiteURL();
+    $isInstall           = defined('INSTALL') || $directoryController == 'install';
     
-    ViewController::setViewDataBase(function() use ($optionsManager, $directoryController) {
-        $user     = NULL;
-        $menuList = [];
-        $sidebars = [];
+    if ($isInstall) {
+        if (file_exists(ABSPATH . 'config.php')) {
+            Util::redirect($siteUrl);
+        } elseif ($directoryController != Route::CONTROLLER_DIRECTORY_NAME_INSTALL) {
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->debug('Redireccionando a la pagina de instalación.');
+            Util::redirect($siteUrl . 'install');
+        }
+    } elseif ($directoryController == Route::CONTROLLER_DIRECTORY_NAME_ADMIN && !LoginManager::isLogin()) {
+        Messages::addWarning(__('Debes iniciar sesión.'), TRUE);
+        Util::redirect($siteUrl, 'login');
+    } elseif ($directoryController == Route::CONTROLLER_DIRECTORY_NAME_LOGIN && $directoryView == 'index' && LoginManager::isLogin()) {
+        Util::redirect($siteUrl, 'admin');
+    }
+    
+    ViewController::setViewDataBase(function() use ($directoryController, $isInstall, $siteUrl) {
+        if ($isInstall) {
+            return [
+                'siteUrl'   => $siteUrl,
+                'siteTitle' => 'SoftN CMS',
+            ];
+        }
+        
+        $optionsManager = new OptionsManager();
+        $user           = NULL;
+        $menuList       = [];
+        $sidebars       = [];
         
         if ($directoryController == Route::CONTROLLER_DIRECTORY_NAME_THEME) {
             $menusManager    = new MenusManager();
@@ -59,7 +84,7 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
         }
         
         return [
-            'siteUrl'     => Router::getSiteURL(),
+            'siteUrl'     => $siteUrl,
             'siteTitle'   => $optionsManager->searchByName(OptionConstants::SITE_TITLE)
                                             ->getOptionValue(),
             'userSession' => $user,
@@ -67,24 +92,6 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
             'sidebars'    => $sidebars,
         ];
     });
-    
-    if (defined('INSTALL') || $directoryController == 'install') {
-        $siteUrl = Router::getSiteURL();
-        
-        if (file_exists(ABSPATH . 'config.php')) {
-            Util::redirect($siteUrl);
-        } elseif ($directoryController != Route::CONTROLLER_DIRECTORY_NAME_INSTALL) {
-            Logger::getInstance()
-                  ->withName('INSTALL')
-                  ->debug('Redireccionando a la pagina de instalación.');
-            Util::redirect($siteUrl . 'install');
-        }
-    } elseif ($directoryController == Route::CONTROLLER_DIRECTORY_NAME_ADMIN && !LoginManager::isLogin()) {
-        Messages::addWarning(__('Debes iniciar sesión.'), TRUE);
-        Util::redirect($optionsManager->getSiteUrl(), 'login');
-    } elseif ($directoryController == Route::CONTROLLER_DIRECTORY_NAME_LOGIN && $directoryView == 'index' && LoginManager::isLogin()) {
-        Util::redirect($optionsManager->getSiteUrl(), 'admin');
-    }
 });
 $router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
     $route = $router->getRoute();
