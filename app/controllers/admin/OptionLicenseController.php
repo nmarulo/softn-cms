@@ -213,9 +213,8 @@ class OptionLicenseController extends CUDControllerAbstract {
     }
     
     private function getManagerConstants($nameSpaceManager) {
-        $reflectionManagerAbstractClass     = new \ReflectionClass(NAMESPACE_MODELS . 'CRUDManagerAbstract');
         $reflectionManagerClass             = new \ReflectionClass($nameSpaceManager);
-        $constantsIgnore                    = $reflectionManagerAbstractClass->getConstants();
+        $constantsIgnore                    = [];
         $managerConstants                   = $reflectionManagerClass->getConstants();
         $constantsIgnore['MENU_SUB_PARENT'] = 0;
         $constantsIgnore['TABLE']           = '';
