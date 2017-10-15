@@ -29,7 +29,9 @@ $strTranslatePosition = __('Posición');
             <tr>
                 <td class="options">
                     <a class="btn-action-sm btn btn-primary" href="<?php echo $siteUrlUpdate . $sidebar->getId(); ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
-                    <button class="btn-action-sm btn btn-danger" data-id="<?php echo $sidebar->getId(); ?>" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button>
+                    <button type="button" class="btn-action-sm btn btn-danger" data-toggle="modal" data-target="#modal-data-delete" data-id="<?php echo $sidebar->getId(); ?>" title="Borrar">
+                        <span class="glyphicon glyphicon-remove-sign"></span>
+                    </button>
                 </td>
                 <td><?php echo $sidebar->getSidebarTitle(); ?></td>
                 <td><?php echo $sidebar->getSidebarPosition(); ?></td>

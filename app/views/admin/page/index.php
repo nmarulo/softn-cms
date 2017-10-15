@@ -13,4 +13,5 @@ $siteUrl = ViewController::getViewData('siteUrl') . "admin/page/";
     <div id="data-container">
         <?php ViewController::singleView('data'); ?>
     </div>
+    <?php ViewController::singleRootView('modaldelete'); ?>
 </div>

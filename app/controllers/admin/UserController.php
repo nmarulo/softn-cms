@@ -200,10 +200,10 @@ class UserController extends CUDControllerAbstract {
             
             if ($result === FALSE) {
                 Messages::addDanger(__('No se puede borrar un usuario con entradas publicadas.'));
-            } elseif ($rowCount == 0) {
-                Messages::addDanger(__('Error al borrar el usuario.'));
             } elseif ($rowCount > 0) {
                 Messages::addSuccess(__('Usuario borrado correctamente.'));
+            } else {
+                Messages::addDanger(__('Error al borrar el usuario.'));
             }
         }
         

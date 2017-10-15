@@ -12,4 +12,5 @@ $siteUrl = ViewController::getViewData('siteUrl') . "admin/sidebar/";
     <div id="data-container">
         <?php ViewController::singleView('data'); ?>
     </div>
+    <?php ViewController::singleRootView('modaldelete'); ?>
 </div>

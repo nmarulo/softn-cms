@@ -183,11 +183,15 @@ class ProfileController extends CUDControllerAbstract {
     
     public function delete($id) {
         $profilesManager = new ProfilesManager();
+        $result          = $profilesManager->deleteById($id);
+        $rowCount        = $profilesManager->getRowCount();
         
-        if (empty($profilesManager->deleteById($id))) {
-            Messages::addDanger(__('Error al borrar el perfil.'));
-        } else {
+        if ($result === FALSE) {
+            Messages::addDanger(__('No puedes borrar un perfil con usuarios asociados.'));
+        } elseif ($rowCount > 0) {
             Messages::addSuccess(__('Perfil borrado correctamente.'));
+        } else {
+            Messages::addDanger(__('Error al borrar el perfil.'));
         }
         
         parent::delete($id);

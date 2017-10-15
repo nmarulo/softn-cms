@@ -1,8 +1,14 @@
 (function () {
+	var btnElement;
+	
 	$(document).on('click', 'button.btn-danger', function (event) {
 		event.preventDefault();
-		deleteData(this);
-	})
+		btnElement = this;
+	});
+	
+	$('#btn-modal-delete-confirm').on('click', function(){
+		deleteData(btnElement);
+	});
 })();
 
 function deleteData(element) {
