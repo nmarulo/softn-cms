@@ -14,4 +14,5 @@ $siteUrl = ViewController::getViewData('siteUrl') . "admin/optionlicense/";
     <div id="data-container">
         <?php ViewController::singleView('data'); ?>
     </div>
+    <?php ViewController::singleRootView('modaldelete'); ?>
 </div>

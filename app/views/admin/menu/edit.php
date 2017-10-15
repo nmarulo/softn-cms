@@ -20,4 +20,5 @@ $menuId        = $menu->getId();
     <div id="data-container">
         <?php ViewController::singleView('dataedit'); ?>
     </div>
+    <?php ViewController::singleRootView('modaldelete'); ?>
 </div>

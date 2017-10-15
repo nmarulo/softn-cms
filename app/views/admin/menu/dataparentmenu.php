@@ -21,8 +21,8 @@ $subMenuId     = $subMenu->getId();
                     <a class='btn btn-primary' href='<?php echo $siteUrlUpdate . $subMenuId; ?>' title='Editar'>
                         <span class='glyphicon glyphicon-edit'></span>
                     </a>
-                    <button class='btn btn-danger' data-id="<?php echo $subMenuId; ?>" title='Borrar'>
-                        <span class='glyphicon glyphicon-remove'></span>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-data-delete" data-id="<?php echo $subMenuId; ?>" title="Borrar">
+                        <span class="glyphicon glyphicon-remove-sign"></span>
                     </button>
                     <?php echo $subMenu->getMenuTitle(); ?>
                 </div>

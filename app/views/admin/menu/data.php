@@ -32,7 +32,9 @@ ViewController::singleViewByDirectory('pagination'); ?>
                 <td class="options">
                     <a class="btn-action-sm btn btn-primary" href="<?php echo $siteUrlUpdate . $menu->getId(); ?>" title="Editar"><span class="glyphicon glyphicon-edit"></span></a>
                     <a class="btn-action-sm btn btn-warning" href="<?php echo $siteUrlEdit . $menu->getId(); ?>" title="Lista de submenus"><span class="glyphicon glyphicon-list"></span></a>
-                    <button class="btn-action-sm btn btn-danger" data-id="<?php echo $menu->getId(); ?>" title="Borrar"><span class="glyphicon glyphicon-remove-sign"></span></button>
+                    <button type="button" class="btn-action-sm btn btn-danger" data-toggle="modal" data-target="#modal-data-delete" data-id="<?php echo $menu->getId(); ?>" title="Borrar">
+                        <span class="glyphicon glyphicon-remove-sign"></span>
+                    </button>
                 </td>
                 <td><a href="#" target="_blank"><?php echo $menu->getMenuTitle(); ?></a></td>
                 <td><?php echo $menu->getMenuTotalChildren(); ?></td>
