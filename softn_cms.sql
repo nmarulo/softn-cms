@@ -6,8 +6,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}profiles` (
     `profile_name`        VARCHAR(45) NOT NULL,
     `profile_description` TEXT        NULL,
     PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
+);
 
 CREATE UNIQUE INDEX `profile_name_UNIQUE`
     ON `#{PREFIX}profiles` (`profile_name` ASC);
@@ -37,8 +36,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}users` (
     REFERENCES `#{PREFIX}profiles` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+);
 
 CREATE UNIQUE INDEX `user_email_UNIQUE`
     ON `#{PREFIX}users` (`user_email` ASC);
@@ -75,8 +73,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}posts` (
     REFERENCES `#{PREFIX}users` (`id`)
         ON DELETE RESTRICT
         ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+);
 
 CREATE INDEX `fk_posts_user_id`
     ON `#{PREFIX}posts` (`user_id` ASC);
@@ -89,8 +86,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}options` (
     `option_name`  VARCHAR(64) NOT NULL,
     `option_value` LONGTEXT    NOT NULL,
     PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
+);
 
 CREATE UNIQUE INDEX `option_name_UNIQUE`
     ON `#{PREFIX}options` (`option_name` ASC);
@@ -117,8 +113,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}comments` (
     REFERENCES `#{PREFIX}posts` (`id`)
         ON DELETE CASCADE
         ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+);
 
 CREATE INDEX `fk_comments_posts`
     ON `#{PREFIX}comments` (`post_id` ASC);
@@ -132,8 +127,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}terms` (
     `term_description` TEXT        NULL,
     `term_post_count`  INT         NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
+);
 
 CREATE UNIQUE INDEX `term_name_UNIQUE`
     ON `#{PREFIX}terms` (`term_name` ASC);
@@ -156,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}posts_terms` (
         ON DELETE CASCADE
         ON UPDATE NO ACTION
 )
-    ENGINE = InnoDB
+
     COMMENT = 'Relaciones entre posts y etiquetas';
 
 CREATE INDEX `fk_posts_terms_term_id`
@@ -174,8 +168,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}categories` (
     `category_description` TEXT        NULL,
     `category_post_count`  INT         NOT NULL,
     PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
+);
 
 CREATE UNIQUE INDEX `category_name_UNIQUE`
     ON `#{PREFIX}categories` (`category_name` ASC);
@@ -198,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}posts_categories` (
         ON DELETE CASCADE
         ON UPDATE NO ACTION
 )
-    ENGINE = InnoDB
+
     COMMENT = 'Relaciones entre post y categorías';
 
 CREATE INDEX `fk_posts_categories_category_id`
@@ -217,8 +210,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}sidebars` (
     `sidebar_position` SMALLINT(2) NOT NULL
     COMMENT 'Establece la posición en la que se mostrara el contenido',
     PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
+);
 
 -- -----------------------------------------------------
 -- Table `#{PREFIX}menus`
@@ -233,8 +225,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}menus` (
     COMMENT 'Indica la posición del menu',
     `menu_total_children` INT          NOT NULL,
     PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
+);
 
 -- -----------------------------------------------------
 -- Table `#{PREFIX}licenses`
@@ -245,7 +236,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}licenses` (
     `license_description` TEXT        NULL,
     PRIMARY KEY (`id`)
 )
-    ENGINE = InnoDB
+
     COMMENT = 'Permisos de los usuarios.';
 
 CREATE UNIQUE INDEX `license_name_UNIQUE`
@@ -263,8 +254,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}pages` (
     `page_comment_status` TINYINT     NULL,
     `page_comment_count`  INT         NULL,
     PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
+);
 
 -- -----------------------------------------------------
 -- Table `#{PREFIX}options_licenses`
@@ -284,8 +274,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}options_licenses` (
     REFERENCES `#{PREFIX}licenses` (`id`)
         ON DELETE CASCADE
         ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+);
 
 CREATE INDEX `fk_options_licenses_license_id`
     ON `#{PREFIX}options_licenses` (`license_id` ASC);
@@ -306,8 +295,7 @@ CREATE TABLE IF NOT EXISTS `#{PREFIX}profiles_licenses` (
     REFERENCES `#{PREFIX}licenses` (`id`)
         ON DELETE CASCADE
         ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+);
 
 CREATE INDEX `fk_profiles_licenses_license_id`
     ON `#{PREFIX}profiles_licenses` (`license_id` ASC);
