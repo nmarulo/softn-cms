@@ -275,6 +275,11 @@ abstract class DBAbstract implements DBInterface {
         return TRUE;
     }
     
+    /**
+     * @param string $allLogicalOperators
+     *
+     * @return bool
+     */
     public function deleteByPrepareStatement($allLogicalOperators = 'AND') {
         $where = $this->getKeyValue($this->prepareStatement);
         $where = implode(" $allLogicalOperators ", $where);

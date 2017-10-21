@@ -33,7 +33,7 @@ class Token {
         $token = empty($token) ? Arrays::get($_GET, self::TOKEN_NAME) : $token;
         
         if (empty($token)) {
-            Messages::addDanger(__('Error. Token no encontrado.'));
+            Messages::addDanger(__('Error. Token no encontrado.'), TRUE);
             Logger::getInstance()
                   ->debug('Token no encontrado.', [
                       'post' => $_POST,
@@ -58,12 +58,14 @@ class Token {
         
         try {
             $tokenDecode = (array)JWT::decode($token, self::getTokenKey(), ['HS256']);
-            $data        = $tokenDecode['aud'];
+            $aud         = Arrays::get($tokenDecode, 'aud');
+            $data        = (array)Arrays::get($tokenDecode, 'data');
+            $user        = Arrays::get($data, 'user');
             
-            if ($data == self::aud()) {
+            if ($aud == self::aud() && LoginManager::getSession() == $user) {
                 $output = TRUE;
             } else {
-                Messages::addDanger(__('Error. El Token es invalido.'));
+                Messages::addDanger(__('Error. El Token es invalido.'), TRUE);
                 Logger::getInstance()
                       ->debug('El Token es invalido.', [
                           'currentToken' => $tokenDecode,
@@ -159,6 +161,8 @@ class Token {
      * Método que obtiene el campo "input" con el TOKEN para agregar al formulario.
      */
     public static function formField() {
+        Token::generate();
+        
         echo sprintf('<input type="hidden" name="%1$s" value="%2$s">', self::TOKEN_NAME, self::$TOKEN);
     }
     
@@ -171,7 +175,9 @@ class Token {
      * @return string
      */
     public static function urlParameters($concat = '?', $separator = '=') {
-        return sprintf('%1$s%2$s$3$s%4$s', $concat, self::TOKEN_NAME, $separator, self::$TOKEN);
+        Token::generate();
+        
+        return sprintf('%1$s%2$s%3$s%4$s', $concat, self::TOKEN_NAME, $separator, self::$TOKEN);
     }
     
 }
