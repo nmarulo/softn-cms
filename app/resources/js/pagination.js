@@ -7,19 +7,19 @@
 			return false;
 		}
 		
-		var url = element.closest('.page-container').data('url');
-		var dataPaged = element.data('paged');
-		
-		reloadData(url, dataPaged);
+		reloadPaged(element.closest('.page-container'), element.data('paged'));
 	});
 	
 	$(document).on('keyup', 'input.search-paged', function (event) {
 		if (event.keyCode === 13) {
-			var element = $(this);
-			var url = element.closest('.page-container').data('url');
-			var dataPaged = 'paged=' + element.val();
-			
-			reloadData(url, dataPaged);
+			reloadPaged($(this).closest('.page-container'), 'paged=' + $(this).val())
 		}
 	});
 })();
+
+function reloadPaged(pageContainer, dataPaged) {
+	var url = pageContainer.data('url');
+	var reloadView = '&view=' + pageContainer.data('reload-view');
+	var reloadAction = '&action=' + pageContainer.data('reload-action');
+	reloadData(url, dataPaged + reloadView + reloadAction);
+}

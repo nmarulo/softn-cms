@@ -9,7 +9,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal"><?php echo __('No'); ?></button>
-                <button type="button" id="btn-modal-delete-confirm" class="btn btn-default" data-dismiss="modal"><?php echo __('Si'); ?></button>
+                <button type="button" id="btn-modal-delete-confirm" class="btn btn-default" data-dismiss="modal" data-token="<?php echo \SoftnCMS\util\Token::urlParameters(''); ?>"><?php echo __('Si'); ?></button>
             </div>
         </div>
     </div>

@@ -123,7 +123,7 @@ function reloadData(url, data) {
 		$('#data-container').html(data);
 	};
 	
-	callAjax(url + 'reloadAJAX', 'GET', data, callback);
+	callAjax(url + 'reload', 'GET', data, callback);
 	
 	return true;
 }

@@ -31,8 +31,6 @@ class Form {
      * @return bool
      */
     public static function submit($name) {
-        Token::generate();
-        
         return (isset($_POST[$name]) || isset($_GET[$name])) && (defined('INSTALL') || Token::check());
     }
     

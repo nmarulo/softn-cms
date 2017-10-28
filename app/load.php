@@ -100,8 +100,9 @@ $router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
         $canCallUserFun = LicenseAbstract::initCheck($route, LoginManager::getSession());
         $router->setCanCallUserFunc($canCallUserFun);
         
+        //TODO: Crear una implementación que permita saber cuando se realiza una llamada desde AJAX.
         //No redirecciona al borrar, porque este método ejecuta mediante AJAX.
-        if (!$canCallUserFun && $route->getMethodName() != 'delete' && $route->getMethodName() != 'reloadAJAX') {
+        if (!$canCallUserFun && $route->getMethodName() != 'delete' && $route->getMethodName() != 'reload') {
             Messages::addDanger(__('No tienes permisos para visualizar esta pagina.'), TRUE);
             Util::redirect(Router::getSiteURL() . 'admin');
         }
