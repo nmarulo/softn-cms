@@ -51,9 +51,7 @@ class CategoryController extends ControllerAbstract {
         if (empty($category)) {
             Messages::addDanger(__('La categoría no existe.'), TRUE);
             $this->redirectToAction('index');
-        }
-        
-        if ($this->checkSubmit(Constants::FORM_UPDATE)) {
+        } elseif ($this->checkSubmit(Constants::FORM_UPDATE)) {
             if ($this->isValidForm()) {
                 $category = $this->getForm('category');
                 
