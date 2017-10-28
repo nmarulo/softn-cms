@@ -52,13 +52,17 @@ abstract class ControllerAbstract {
                                                   ->setMethod($_GET)
                                                   ->build()
                                                   ->filter();
+        $param            = InputIntegerBuilder::init('param')
+                                               ->setMethod($_GET)
+                                               ->build()
+                                               ->filter();
         $this->cancelView = TRUE;
         
         if (method_exists($this, $action)) {
             call_user_func([
                 $this,
                 $action,
-            ]);
+            ], $param);
             $this->singleView($view);
         } else {
             echo "ERROR";

@@ -17,8 +17,14 @@ function deleteData(btnDelete, btnModal) {
 	var id = btnDelete.data('id');
 	var data = btnModal.data('token') + '&redirect=false';
 	var callback = function (data) {
-		var dataPaged = $(document).find('.pagination > li.active > a').data('paged');
-		reloadPaged(pageContainer, dataPaged);
+		var pagination = $(document).find('.pagination > li.active > a');
+		var dataPaged = '';
+		
+		if (pagination.length > 0) {
+			dataPaged = pagination.data('paged');
+		}
+		
+		reloadDataContainer(pageContainer, dataPaged);
 		callAjax(url + 'messages', 'GET', '', function (dataMessages) {
 			includeMessages(dataMessages);
 		});

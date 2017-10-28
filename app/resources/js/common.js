@@ -127,3 +127,11 @@ function reloadData(url, data) {
 	
 	return true;
 }
+
+function reloadDataContainer(pageContainer, dataPaged) {
+	var url = pageContainer.data('url');
+	var reloadView = '&view=' + pageContainer.data('reload-view');
+	var reloadAction = '&action=' + pageContainer.data('reload-action');
+	var reloadParam = '&param=' + pageContainer.data('reload-param');
+	reloadData(url, dataPaged + reloadView + reloadAction + reloadParam);
+}
