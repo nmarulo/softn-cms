@@ -24,10 +24,10 @@ use SoftnCMS\util\Util;
 abstract class ControllerAbstract {
     
     /** @var array */
-    private $formObjects;
+    protected $inputs;
     
     /** @var array */
-    private $inputs;
+    private $formObjects;
     
     /** @var bool */
     private $cancelView;
