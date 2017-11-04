@@ -123,7 +123,7 @@ abstract class ControllerAbstract {
      * @param array  $parametersValues
      */
     protected function redirect($route, $parametersValues = []) {
-        if ($this->canRedirect()) {
+        if ($this->isCanRedirect()) {
             $parameters       = array_map(function($value, $key) {
                 return "$key=$value";
             }, $parametersValues, array_keys($parametersValues));
@@ -133,7 +133,7 @@ abstract class ControllerAbstract {
         }
     }
     
-    private function canRedirect() {
+    private function isCanRedirect() {
         if (Arrays::keyExists([
             $_POST,
             $_GET,
