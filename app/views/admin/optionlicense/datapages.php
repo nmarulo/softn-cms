@@ -57,7 +57,7 @@ if (!empty($optionLicenses)) {
             <div class="panel-group" id="accordion-<?php echo $className; ?>" role="tablist">
                 <?php array_walk($controllerMethods, function($method) use ($managerConstants, $className, $optionLicenses) {
                     $classNameMethod         = $className . '_' . $method;
-                    $inputNameClassMethodId  = $classNameMethod . '_ID';
+                    $inputNameClassMethodId  = $classNameMethod . '_id';
                     $fields                  = [];
                     $inputValueClassMethodId = NULL;
     

@@ -101,19 +101,19 @@ abstract class ControllerAbstract {
     
     /**
      * @param string $actionName
-     * @param array  $routeValues
+     * @param array  $parametersValues
      */
-    protected function redirectToAction($actionName, $routeValues = []) {
-        $this->redirectControllerToAction(Router::getCurrentNameController(), $actionName, $routeValues);
+    protected function redirectToAction($actionName, $parametersValues = []) {
+        $this->redirectControllerToAction(Router::getCurrentNameController(), $actionName, $parametersValues);
     }
     
     /**
      * @param string $controllerName
      * @param string $actionName
-     * @param array  $routeValues
+     * @param array  $parametersValues
      */
-    protected function redirectControllerToAction($controllerName, $actionName, $routeValues = []) {
-        $this->redirect(sprintf('%1$s/%2$s', $controllerName, $actionName), $routeValues);
+    protected function redirectControllerToAction($controllerName, $actionName, $parametersValues = []) {
+        $this->redirect(sprintf('%1$s/%2$s', $controllerName, $actionName), $parametersValues);
     }
     
     /**
