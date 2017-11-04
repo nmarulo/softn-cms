@@ -6,41 +6,46 @@
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\CUDControllerAbstract;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\LicensesManager;
 use SoftnCMS\models\managers\ProfilesLicensesManager;
 use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\tables\Profile;
 use SoftnCMS\models\tables\ProfileLicense;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputListIntegerBuilder;
-use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
-use SoftnCMS\util\Util;
+use SoftnCMS\util\Token;
 
 /**
  * Class ProfileController
  * @author Nicolás Marulanda P.
  */
-class ProfileController extends CUDControllerAbstract {
+class ProfileController extends ControllerAbstract {
+    
+    public function index() {
+        $profilesManager = new ProfilesManager();
+        $count           = $profilesManager->count();
+        
+        $this->sendDataView([
+            'profiles' => $profilesManager->searchAll($this->rowsPages($count)),
+        ]);
+        $this->view();
+    }
     
     public function create() {
-        if (Form::submit(Constants::FORM_CREATE)) {
-            $form = $this->form();
-            
-            if (!empty($form)) {
+        if ($this->checkSubmit(Constants::FORM_CREATE)) {
+            if ($this->isValidForm()) {
                 $profilesManager = new ProfilesManager();
-                $profile         = Arrays::get($form, 'profile');
+                $profile         = $this->getForm('profile');
                 
                 if ($profilesManager->create($profile)) {
-                    $licenses = Arrays::get($form, 'licenses');
+                    $licenses = $this->getForm('licenses');
                     $this->createOrDeleteLicenses($licenses, $profilesManager->getLastInsertId());
-                    Messages::addSuccess(__('Perfil creado correctamente.'));
-                    Util::redirect(Router::getSiteURL() . 'admin/profile');
+                    Messages::addSuccess(__('Perfil creado correctamente.'), TRUE);
+                    $this->redirectToAction('index');
                 }
             }
             
@@ -48,46 +53,12 @@ class ProfileController extends CUDControllerAbstract {
         }
         
         $this->sendViewLicenses();
-        ViewController::sendViewData('isUpdate', FALSE);
-        ViewController::sendViewData('profile', new Profile());
-        ViewController::sendViewData('title', __('Crear nuevo perfil'));
-        ViewController::view('form');
-    }
-    
-    protected function form() {
-        $inputs = $this->filterInputs();
-        
-        if (empty($inputs)) {
-            return FALSE;
-        }
-        
-        $profile  = new Profile();
-        $licenses = Arrays::get($inputs, ProfilesLicensesManager::LICENSE_ID);
-        $profile->setId(Arrays::get($inputs, ProfilesManager::COLUMN_ID));
-        $profile->setProfileName(Arrays::get($inputs, ProfilesManager::PROFILE_NAME));
-        $profile->setProfileDescription(Arrays::get($inputs, ProfilesManager::PROFILE_DESCRIPTION));
-        
-        return [
-            'profile'  => $profile,
-            'licenses' => $licenses,
-        ];
-    }
-    
-    protected function filterInputs() {
-        Form::setInput([
-            InputIntegerBuilder::init(ProfilesManager::COLUMN_ID)
-                               ->build(),
-            InputAlphanumericBuilder::init(ProfilesManager::PROFILE_NAME)
-                                    ->setSpecialChar(TRUE)
-                                    ->build(),
-            InputAlphanumericBuilder::init(ProfilesManager::PROFILE_DESCRIPTION)
-                                    ->setRequire(FALSE)
-                                    ->build(),
-            InputListIntegerBuilder::init(ProfilesLicensesManager::LICENSE_ID)
-                                   ->build(),
+        $this->sendDataView([
+            'isUpdate' => FALSE,
+            'profile'  => new Profile(),
+            'title'    => __('Crear nuevo perfil'),
         ]);
-        
-        return Form::inputFilter();
+        $this->view('form');
     }
     
     private function createOrDeleteLicenses($licensesId, $profileId) {
@@ -144,7 +115,7 @@ class ProfileController extends CUDControllerAbstract {
     
     private function sendViewLicenses() {
         $licensesManager = new LicensesManager();
-        ViewController::sendViewData('licenses', $licensesManager->searchAll());
+        $this->sendDataView(['licenses' => $licensesManager->searchAll()]);
     }
     
     public function update($id) {
@@ -153,56 +124,78 @@ class ProfileController extends CUDControllerAbstract {
         
         if (empty($profile)) {
             Messages::addDanger(__('El perfil no existe.'), TRUE);
-            Util::redirect(Router::getSiteURL() . 'admin/profile');
-        } elseif (Form::submit(Constants::FORM_UPDATE)) {
-            $form = $this->form();
-            
-            if (empty($form)) {
-                Messages::addDanger(__('Error en los campos del perfil.'));
-            } else {
-                $profile = Arrays::get($form, 'profile');
+            $this->redirectToAction('index');
+        } elseif ($this->checkSubmit(Constants::FORM_UPDATE)) {
+            if ($this->isValidForm()) {
+                $profile = $this->getForm('profile');
                 
                 if ($profilesManager->updateByColumnId($profile)) {
                     $profile  = $profilesManager->searchById($id);
-                    $licenses = Arrays::get($form, 'licenses');
+                    $licenses = $this->getForm('licenses');
                     $this->createOrDeleteLicenses($licenses, $id);
                     Messages::addSuccess(__('Perfil actualizado correctamente.'));
                 } else {
                     Messages::addDanger(__('Error al actualizar el perfil.'));
                 }
+            } else {
+                Messages::addDanger(__('Error en los campos del perfil.'));
             }
         }
         
         $this->sendViewLicenses();
-        ViewController::sendViewData('isUpdate', TRUE);
-        ViewController::sendViewData('selectedLicensesId', $this->getLicensesIdByProfileId($id));
-        ViewController::sendViewData('profile', $profile);
-        ViewController::sendViewData('title', __('Actualizar perfil'));
-        ViewController::view('form');
+        $this->sendDataView([
+            'isUpdate'           => TRUE,
+            'selectedLicensesId' => $this->getLicensesIdByProfileId($id),
+            'profile'            => $profile,
+            'title'              => __('Actualizar perfil'),
+        ]);
+        $this->view('form');
     }
     
     public function delete($id) {
-        $profilesManager = new ProfilesManager();
-        $result          = $profilesManager->deleteById($id);
-        $rowCount        = $profilesManager->getRowCount();
-        
-        if ($result === FALSE) {
-            Messages::addDanger(__('No puedes borrar un perfil con usuarios asociados.'));
-        } elseif ($rowCount > 0) {
-            Messages::addSuccess(__('Perfil borrado correctamente.'));
-        } else {
-            Messages::addDanger(__('Error al borrar el perfil.'));
+        if (Token::check()) {
+            $profilesManager = new ProfilesManager();
+            $result          = $profilesManager->deleteById($id);
+            $rowCount        = $profilesManager->getRowCount();
+            
+            if ($result === FALSE) {
+                Messages::addDanger(__('No puedes borrar un perfil con usuarios asociados.'), TRUE);
+            } elseif ($rowCount === 0) {
+                Messages::addDanger(__('El perfil no existe.'), TRUE);
+            } else {
+                Messages::addSuccess(__('Perfil borrado correctamente.'), TRUE);
+            }
         }
         
-        parent::delete($id);
+        $this->redirectToAction('index');
     }
     
-    protected function read() {
-        $profilesManager = new ProfilesManager();
-        $count           = $profilesManager->count();
-        $limit           = parent::pagination($count);
+    protected function formToObject() {
+        $profile  = new Profile();
+        $licenses = $this->getInput(ProfilesLicensesManager::LICENSE_ID);
+        $profile->setId($this->getInput(ProfilesManager::COLUMN_ID));
+        $profile->setProfileName($this->getInput(ProfilesManager::PROFILE_NAME));
+        $profile->setProfileDescription($this->getInput(ProfilesManager::PROFILE_DESCRIPTION));
         
-        ViewController::sendViewData('profiles', $profilesManager->searchAll($limit));
+        return [
+            'profile'  => $profile,
+            'licenses' => $licenses,
+        ];
+    }
+    
+    protected function formInputsBuilders() {
+        return [
+            InputIntegerBuilder::init(ProfilesManager::COLUMN_ID)
+                               ->build(),
+            InputAlphanumericBuilder::init(ProfilesManager::PROFILE_NAME)
+                                    ->setSpecialChar(TRUE)
+                                    ->build(),
+            InputAlphanumericBuilder::init(ProfilesManager::PROFILE_DESCRIPTION)
+                                    ->setRequire(FALSE)
+                                    ->build(),
+            InputListIntegerBuilder::init(ProfilesLicensesManager::LICENSE_ID)
+                                   ->build(),
+        ];
     }
     
 }
