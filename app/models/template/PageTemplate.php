@@ -3,9 +3,9 @@
  * PageTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
-use SoftnCMS\controllers\Template;
+use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\PagesManager;
 use SoftnCMS\models\tables\Page;
 use SoftnCMS\util\Escape;
@@ -15,7 +15,7 @@ use SoftnCMS\util\Logger;
  * Class PageTemplate
  * @author Nicolás Marulanda P.
  */
-class PageTemplate extends Template {
+class PageTemplate extends TemplateAbstract {
     
     /** @var Page */
     private $page;

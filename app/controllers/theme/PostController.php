@@ -6,7 +6,7 @@
 namespace SoftnCMS\controllers\theme;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\template\PostTemplate;
+use SoftnCMS\models\template\PostTemplate;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\PostsManager;
@@ -34,6 +34,7 @@ class PostController extends ThemeControllerAbstract {
         
         $this->comment();
         $this->sendDataView(['post' => new PostTemplate($post, TRUE)]);
+        $this->view();
     }
     
     private function comment() {

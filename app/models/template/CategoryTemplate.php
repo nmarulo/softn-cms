@@ -3,20 +3,20 @@
  * CategoryTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
-use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Post;
+use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\util\Logger;
 
 /**
  * Class CategoryTemplate
  * @author Nicolás Marulanda P.
  */
-class CategoryTemplate extends Template {
+class CategoryTemplate extends TemplateAbstract {
     
     /** @var Category */
     private $category;

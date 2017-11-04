@@ -9,7 +9,7 @@ require ABSPATH . 'define.php';
 require ABSPATH . 'vendor/autoload.php';
 
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\controllers\template\MenuTemplate;
+use SoftnCMS\models\template\MenuTemplate;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\managers\SidebarsManager;

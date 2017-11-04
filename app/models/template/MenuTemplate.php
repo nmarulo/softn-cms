@@ -3,9 +3,9 @@
  * MenuTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
-use SoftnCMS\controllers\Template;
+use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\tables\Menu;
 use SoftnCMS\util\Logger;
@@ -14,7 +14,7 @@ use SoftnCMS\util\Logger;
  * Class MenuTemplate
  * @author Nicolás Marulanda P.
  */
-class MenuTemplate extends Template {
+class MenuTemplate extends TemplateAbstract {
     
     /** @var array */
     private $subMenuList;

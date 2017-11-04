@@ -6,7 +6,7 @@
 namespace SoftnCMS\controllers\theme;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\template\PageTemplate;
+use SoftnCMS\models\template\PageTemplate;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\PagesManager;

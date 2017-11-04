@@ -5,7 +5,7 @@
 
 namespace SoftnCMS\controllers\theme;
 
-use SoftnCMS\controllers\template\PostTemplate;
+use SoftnCMS\models\template\PostTemplate;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\util\controller\ThemeControllerAbstract;

@@ -3,10 +3,10 @@
  * CommentTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\controllers\Template;
+use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsManager;
@@ -19,7 +19,7 @@ use SoftnCMS\util\Logger;
  * Class CommentTemplate
  * @author Nicolás Marulanda P.
  */
-class CommentTemplate extends Template {
+class CommentTemplate extends TemplateAbstract {
     
     /** @var Comment */
     private $comment;
