@@ -72,7 +72,11 @@ class SidebarsManager extends ManagerAbstract {
     }
     
     public function searchAll($limit = '', $orderBy = '') {
-        return parent::searchAll('', self::SIDEBAR_POSITION . ' ASC');
+        if (empty($orderBy)) {
+            $orderBy = self::SIDEBAR_POSITION . ' ASC';
+        }
+        
+        return parent::searchAll($limit, $orderBy);
     }
     
     /**
