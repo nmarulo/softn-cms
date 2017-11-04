@@ -114,6 +114,14 @@ class UsersManager extends ManagerAbstract {
         return Arrays::findFirst($result);
     }
     
+    public function searchByLoginAndPassword($userLogin, $userPassword) {
+        parent::addPrepareStatement(self::USER_LOGIN, $userLogin, \PDO::PARAM_STR);
+        parent::addPrepareStatement(self::USER_PASSWORD, $userPassword, \PDO::PARAM_STR);
+        $query = sprintf('SELECT * FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s', parent::getTableWithPrefix(), self::USER_LOGIN, self::USER_PASSWORD);
+        
+        return Arrays::findFirst(parent::search($query));
+    }
+    
     /**
      * @param string $userEmail
      *
