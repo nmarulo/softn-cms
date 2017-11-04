@@ -113,7 +113,9 @@ abstract class ControllerAbstract {
      * @param array  $parametersValues
      */
     protected function redirectControllerToAction($controllerName, $actionName, $parametersValues = []) {
-        $this->redirect(sprintf('%1$s/%2$s', $controllerName, $actionName), $parametersValues);
+        $currentDirectory = Router::getCurrentDirectory();
+        $currentDirectory .= empty($currentDirectory) ? '' : '/';
+        $this->redirect(sprintf('%1$s%2$s/%3$s',$currentDirectory, $controllerName, $actionName), $parametersValues);
     }
     
     /**
@@ -127,9 +129,7 @@ abstract class ControllerAbstract {
             }, $parametersValues, array_keys($parametersValues));
             $parameters       = implode('&', $parameters);
             $parameters       = empty($parameters) ? '' : "?$parameters";
-            $currentDirectory = Router::getCurrentDirectory();
-            $currentDirectory .= empty($currentDirectory) ? '' : '/';
-            Util::redirect(Router::getSiteURL(), sprintf('%1$s%2$s%3$s', $currentDirectory, $route, $parameters));
+            Util::redirect(Router::getSiteURL(), sprintf('%1$s%2$s', $route, $parameters));
         }
     }
     

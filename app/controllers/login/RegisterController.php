@@ -7,15 +7,14 @@ namespace SoftnCMS\controllers\login;
 
 use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\controllers\ControllerAbstract;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;
-use SoftnCMS\util\Arrays;
+use SoftnCMS\rute\Router;
+use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
-use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Util;
 
@@ -27,22 +26,19 @@ class RegisterController extends ControllerAbstract {
     
     public function index() {
         $this->register();
-        $this->read();
-        ViewController::view('index');
+        $this->sendDataView(['urlLogin' => Router::getSiteURL() . 'login']);
+        $this->view();
     }
     
     private function register() {
-        if (Form::submit(Constants::FORM_SUBMIT)) {
-            $form = $this->form();
-            
-            if (!empty($form)) {
+        if ($this->checkSubmit(Constants::FORM_SUBMIT)) {
+            if ($this->isValidForm()) {
                 $usersManager = new UsersManager();
-                $user         = Arrays::get($form, 'user');
+                $user         = $this->getForm('user');
                 
                 if ($usersManager->create($user)) {
-                    $optionsManager = new OptionsManager();
                     Messages::addSuccess(__('Usuario registrado correctamente.'), TRUE);
-                    Util::redirect($optionsManager->getSiteUrl(), 'login');
+                    $this->redirect('login');
                 }
             }
             
@@ -50,15 +46,9 @@ class RegisterController extends ControllerAbstract {
         }
     }
     
-    protected function form() {
-        $inputs = $this->filterInputs();
-        
-        if (empty($inputs)) {
-            return FALSE;
-        }
-        
-        $pass  = Arrays::get($inputs, UsersManager::USER_PASSWORD);
-        $passR = Arrays::get($inputs, UsersManager::USER_PASSWORD_REWRITE);
+    protected function formToObject() {
+        $pass  = $this->getInput(UsersManager::USER_PASSWORD);
+        $passR = $this->getInput(UsersManager::USER_PASSWORD_REWRITE);
         
         if ($pass != $passR) {
             return FALSE;
@@ -68,8 +58,8 @@ class RegisterController extends ControllerAbstract {
         $pass           = Util::encrypt($pass, LOGGED_KEY);
         $user           = new User();
         $user->setUserPassword($pass);
-        $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
-        $user->setUserEmail(Arrays::get($inputs, UsersManager::USER_EMAIL));
+        $user->setUserLogin($this->getInput(UsersManager::USER_LOGIN));
+        $user->setUserEmail($this->getInput(UsersManager::USER_EMAIL));
         $user->setUserRegistered(Util::dateNow());
         $user->setUserName($user->getUserLogin());
         $user->setUserPostCount(0);
@@ -79,8 +69,8 @@ class RegisterController extends ControllerAbstract {
         return ['user' => $user];
     }
     
-    protected function filterInputs() {
-        Form::setInput([
+    protected function formInputsBuilders() {
+        return [
             InputAlphanumericBuilder::init(UsersManager::USER_LOGIN)
                                     ->setAccents(FALSE)
                                     ->setWithoutSpace(TRUE)
@@ -92,17 +82,7 @@ class RegisterController extends ControllerAbstract {
                                     ->build(),
             InputEmailBuilder::init(UsersManager::USER_EMAIL)
                              ->build(),
-        ]);
-        
-        return Form::inputFilter();
-    }
-    
-    protected function read() {
-        $optionsManager = new OptionsManager();
-        $siteUrl        = $optionsManager->getSiteUrl();
-        $urlLogin       = $siteUrl . 'login';
-        ViewController::sendViewData('siteUrl', $siteUrl);
-        ViewController::sendViewData('urlLogin', $urlLogin);
+        ];
     }
     
 }
