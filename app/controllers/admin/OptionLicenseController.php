@@ -101,7 +101,7 @@ class OptionLicenseController extends ControllerAbstract {
     }
     
     private function getManagerConstants($nameSpaceManager) {
-        $reflectionManagerAbstractClass     = new \ReflectionClass('SoftnCMS\util\database\ManagerAbstract');
+        $reflectionManagerAbstractClass     = new \ReflectionClass(NAMESPACE_MANAGER_ABSTRACT);
         $reflectionManagerClass             = new \ReflectionClass($nameSpaceManager);
         $constantsIgnore                    = $reflectionManagerAbstractClass->getConstants();
         $managerConstants                   = $reflectionManagerClass->getConstants();
