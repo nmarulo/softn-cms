@@ -6,14 +6,11 @@
 namespace SoftnCMS\controllers\theme;
 
 use SoftnCMS\controllers\template\PostTemplate;
-use SoftnCMS\controllers\ThemeControllerAbstract;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\PostsTermsManager;
 use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\tables\Post;
-use SoftnCMS\rute\Router;
-use SoftnCMS\util\Util;
+use SoftnCMS\util\controller\ThemeControllerAbstract;
 
 /**
  * Class TermController
@@ -21,27 +18,29 @@ use SoftnCMS\util\Util;
  */
 class TermController extends ThemeControllerAbstract {
     
-    protected function read($id) {
+    public function index($id) {
         $termsManager = new TermsManager();
         $term         = $termsManager->searchById($id);
         
         if (empty($term)) {
-            Util::redirect(Router::getSiteURL());
+            $this->redirect();
         }
         
         $postStatus        = TRUE;
         $postsManager      = new PostsManager();
         $postsTermsManager = new PostsTermsManager();
         $count             = $postsTermsManager->countPostsByTermIdAndPostStatus($id, $postStatus);
-        $limit        = parent::pagination($count);
-        
-        $posts         = $postsManager->searchAllByTermIdAndStatus($term->getId(), $postStatus, $limit);
-        $postsTemplate = array_map(function(Post $post) {
+        $limit             = $this->rowsPages($count);
+        $posts             = $postsManager->searchAllByTermIdAndStatus($term->getId(), $postStatus, $limit);
+        $postsTemplate     = array_map(function(Post $post) {
             return new PostTemplate($post, TRUE);
         }, $posts);
         
-        ViewController::sendViewData('posts', $postsTemplate);
-        ViewController::sendViewData('term', $term);
+        $this->sendDataView([
+            'posts' => $postsTemplate,
+            'term'  => $term,
+        ]);
+        $this->view();
     }
     
 }

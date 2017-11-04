@@ -41,8 +41,6 @@ abstract class ControllerAbstract {
         $this->cancelView  = FALSE;
     }
     
-    public abstract function index();
-    
     public function reload() {
         $view             = InputAlphabeticBuilder::init('view')
                                                   ->setMethod($_GET)
@@ -122,7 +120,7 @@ abstract class ControllerAbstract {
      * @param string $route
      * @param array  $parametersValues
      */
-    protected function redirect($route, $parametersValues = []) {
+    protected function redirect($route = '', $parametersValues = []) {
         if ($this->isCanRedirect()) {
             $parameters       = array_map(function($value, $key) {
                 return "$key=$value";
