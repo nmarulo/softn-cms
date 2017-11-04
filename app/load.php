@@ -81,6 +81,10 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
         if (LoginManager::checkSession()) {
             $usersManager = new UsersManager();
             $user         = $usersManager->searchById(LoginManager::getSession());
+            
+            if (empty($user)) {
+                Util::redirect(Router::getSiteURL(), 'login/logout');
+            }
         }
         
         return [
