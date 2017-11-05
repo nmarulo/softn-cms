@@ -76,9 +76,10 @@ class PostsTermsManager extends ManagerAbstract {
      * @return bool
      */
     public function create($object) {
+        //"Create" retorna el id, pero, "posts_terms" no tiene "id" y retorna "0".
         $result = parent::create($object);
         
-        if (!empty($result)) {
+        if (!empty($result) || $result == 0) {
             $this->updateTermPostCount($object->getTermId(), 1);
         }
         
