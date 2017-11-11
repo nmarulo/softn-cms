@@ -7,7 +7,6 @@ namespace SoftnCMS\models\managers;
 
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\Logger;
-use SoftnCMS\util\Messages;
 
 /**
  * Class InstallManager
@@ -44,7 +43,6 @@ class InstallManager {
         try {
             $this->connection = new \PDO($dsn, $dbUser, $dbPass);
         } catch (\PDOException $pdoEx) {
-            Messages::addDanger(__('Error al establecer la conexión con la base de datos.'));
             Logger::getInstance()
                   ->withName('INSTALL')
                   ->error($pdoEx->getMessage());
@@ -57,7 +55,6 @@ class InstallManager {
     public function createFileConfig($dataInput) {
         //Compruebo si puedo escribir en la carpeta donde están los archivo
         if (!is_writable(ABSPATH)) {
-            Messages::addDanger(__('No es posible escribir en el directorio %1$s.', ABSPATH));
             Logger::getInstance()
                   ->withName('INSTALL')
                   ->debug('No es posible escribir en el directorio.', ['directory' => ABSPATH]);

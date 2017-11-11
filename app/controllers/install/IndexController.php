@@ -6,60 +6,63 @@
 namespace SoftnCMS\controllers\install;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\InstallManager;
-use SoftnCMS\models\managers\OptionsManager;
-use SoftnCMS\util\Arrays;
+use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputUrlBuilder;
-use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
-use SoftnCMS\util\Util;
 
 /**
  * Class IndexController
  * @author Nicolás Marulanda P.
  */
-class IndexController {
+class IndexController extends ControllerAbstract {
     
     public function index() {
-        if (Form::submit(Constants::FORM_SUBMIT)) {
-            $form = $this->form();
-            
-            if (!empty($form)) {
-                $installManager = new InstallManager();
-                
-                if ($installManager->checkConnection($form) && $installManager->createFileConfig($form)) {
-                    if ($installManager->createTables()) {
-                        Messages::addSuccess(__('El proceso de instalación se completo correctamente.'), TRUE);
-                        Util::redirect(Arrays::get($form, InstallManager::INSTALL_SITE_URL) . 'login');
-                    } else {
-                        Messages::addDanger(__('Error al crear las tablas de la base de datos.'));
-                    }
-                }
-            }
+        if ($this->checkSubmit(Constants::FORM_SUBMIT) && $this->isValidForm() && $this->check()) {
+            Messages::addSuccess(__('El proceso de instalación se completo correctamente.'), TRUE);
+            $this->redirectRoute('login', 'register', 'index');
         }
         
-        $optionsManager = new OptionsManager();
-        ViewController::sendViewData('siteUrl', $optionsManager->getSiteUrl());
-        ViewController::sendViewData('charset', 'utf8');
-        ViewController::sendViewData('prefix', 'sn_');
-        ViewController::sendViewData('host', 'localhost');
-        ViewController::view('index');
+        $this->sendDataView([
+            'charset' => 'utf8',
+            'prefix'  => 'sn_',
+            'host'    => 'localhost',
+        ]);
+        $this->view();
     }
     
-    private function form() {
-        $inputs = $this->filterInputs();
+    private function check() {
+        $installManager = new InstallManager();
         
-        if (empty($inputs)) {
+        if (!$installManager->checkConnection($this->inputs)) {
+            Messages::addDanger(__('Error al establecer la conexión con la base de datos.'));
+            
             return FALSE;
         }
         
-        return $inputs;
+        if (!$installManager->createFileConfig($this->inputs)) {
+            Messages::addDanger(__('No es posible escribir en el directorio %1$s.', ABSPATH));
+            
+            return FALSE;
+        }
+        
+        if (!$installManager->createTables()) {
+            Messages::addDanger(__('Error al crear las tablas de la base de datos.'));
+            
+            return FALSE;
+        }
+        
+        return TRUE;
     }
     
-    private function filterInputs() {
-        Form::setInput([
+    protected function formToObject() {
+        //Se devuelve true para que pase la validación del formulario.
+        return TRUE;
+    }
+    
+    protected function formInputsBuilders() {
+        return [
             InputUrlBuilder::init(InstallManager::INSTALL_SITE_URL)
                            ->build(),
             InputAlphanumericBuilder::init(InstallManager::INSTALL_DB_NAME)
@@ -85,9 +88,7 @@ class IndexController {
             InputAlphanumericBuilder::init(InstallManager::INSTALL_CHARSET)
                                     ->setWithoutSpace(TRUE)
                                     ->build(),
-        ]);
-        
-        return Form::inputFilter();
+        ];
     }
     
 }

@@ -12,7 +12,7 @@ $prefix  = ViewController::getViewData('prefix');
 <div id="install" class="panel panel-default center-block clearfix">
     <div class="panel-body">
         <div id="logo-SoftN">
-            <img class="center-block" src="http://localhost/softn-cms/app/resources/img/softn.png" alt="CMS - SoftN"/>
+            <img class="center-block" src="<?php echo $siteUrl; ?>app/resources/img/softn.png" alt="CMS - SoftN"/>
         </div>
         <h2><?php echo __('Proceso de instalación'); ?></h2>
         <hr/>
