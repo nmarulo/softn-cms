@@ -1,4 +1,5 @@
 /* BOOTSTRAP ================================= */
+.pagination > li > a,
 .modal-content,
 .alert,
 .panel,
@@ -12,6 +13,10 @@
     box-shadow: none;
 }
 
+.pagination > li:first-child > a,
+.pagination > li:first-child > span,
+.pagination > li:last-child > a,
+.pagination > li:last-child > span,
 .modal-content,
 .input-group-addon,
 .btn,
@@ -29,8 +34,6 @@
     padding: 20px 30px;
 }
 
-.pagination > li > a,
-.pagination > li > span,
 .form-control,
 .input-group-addon {
     border: 1px solid #DDDDDD;
@@ -38,6 +41,11 @@
 
 ul.list-unstyled > li > ul.list-unstyled {
     padding-left: 50px;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+    margin-left: 1px;
 }
 
 /* COMÚN ================================= */
