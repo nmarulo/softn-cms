@@ -9,7 +9,7 @@ require ABSPATH . 'define.php';
 require ABSPATH . 'vendor/autoload.php';
 
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\controllers\template\MenuTemplate;
+use SoftnCMS\models\template\MenuTemplate;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\managers\SidebarsManager;
@@ -81,6 +81,10 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
         if (LoginManager::checkSession()) {
             $usersManager = new UsersManager();
             $user         = $usersManager->searchById(LoginManager::getSession());
+            
+            if (empty($user)) {
+                Util::redirect(Router::getSiteURL(), 'login/logout');
+            }
         }
         
         return [
@@ -100,8 +104,9 @@ $router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
         $canCallUserFun = LicenseAbstract::initCheck($route, LoginManager::getSession());
         $router->setCanCallUserFunc($canCallUserFun);
         
+        //TODO: Crear una implementación que permita saber cuando se realiza una llamada desde AJAX.
         //No redirecciona al borrar, porque este método ejecuta mediante AJAX.
-        if (!$canCallUserFun && $route->getMethodName() != 'delete' && $route->getMethodName() != 'reloadAJAX') {
+        if (!$canCallUserFun && $route->getMethodName() != 'delete' && $route->getMethodName() != 'reload') {
             Messages::addDanger(__('No tienes permisos para visualizar esta pagina.'), TRUE);
             Util::redirect(Router::getSiteURL() . 'admin');
         }

@@ -25,6 +25,8 @@ define('URL_GET', 'url');
 /** Espacio de nombre de la aplicación. */
 define('APP_NAMESPACE', 'SoftnCMS\\');
 
+define('NAMESPACE_MANAGER_ABSTRACT', APP_NAMESPACE . 'util\\database\\ManagerAbstract');
+
 /** Espacio de nombre de los controladores. */
 define('NAMESPACE_CONTROLLERS', APP_NAMESPACE . 'controllers\\');
 

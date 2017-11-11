@@ -6,20 +6,16 @@
 namespace SoftnCMS\controllers\theme;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\template\PageTemplate;
-use SoftnCMS\controllers\ThemeControllerAbstract;
-use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\template\PageTemplate;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\PagesManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
-use SoftnCMS\rute\Router;
-use SoftnCMS\util\Arrays;
+use SoftnCMS\util\controller\ThemeControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
-use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Util;
 
 /**
@@ -29,40 +25,38 @@ use SoftnCMS\util\Util;
 class PageController extends ThemeControllerAbstract {
     
     public function index($id) {
+        $pagesManager = new PagesManager();
+        $page         = $pagesManager->searchByIdAndStatus($id, TRUE);
+        
+        if (empty($page)) {
+            $this->redirect();
+        }
+        
         $this->comment();
-        parent::index($id);
+        $this->sendDataView(['page' => new PageTemplate($page, TRUE)]);
+        $this->view();
     }
     
     private function comment() {
-        if (Form::submit(Constants::FORM_SUBMIT)) {
-            $form = $this->form();
+        if ($this->checkSubmit(Constants::FORM_SUBMIT) && $this->isValidForm()) {
+            $commentsManager = new CommentsManager();
+            $comment         = $this->getForm('comment');
             
-            if (!empty($form)) {
-                $commentsManager = new CommentsManager();
-                $comment         = Arrays::get($form, 'comment');
-                
-                if ($commentsManager->create($comment)) {
-                    //TODO: mensaje
-                }
+            if ($commentsManager->create($comment)) {
+                //TODO: mensaje
             }
         }
     }
     
-    private function form() {
-        $inputs = $this->filterInputs();
-        
-        if (empty($inputs)) {
-            return FALSE;
-        }
-        
+    protected function formToObject() {
         $comment = new Comment();
-        $comment->setCommentContents(Arrays::get($inputs, CommentsManager::COMMENT_CONTENTS));
-        $comment->setCommentAuthorEmail(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR_EMAIL));
-        $comment->setCommentAuthor(Arrays::get($inputs, CommentsManager::COMMENT_AUTHOR));
-        $comment->setCommentUserId(Arrays::get($inputs, CommentsManager::COMMENT_USER_ID));
+        $comment->setCommentContents($this->getInput(CommentsManager::COMMENT_CONTENTS));
+        $comment->setCommentAuthorEmail($this->getInput(CommentsManager::COMMENT_AUTHOR_EMAIL));
+        $comment->setCommentAuthor($this->getInput(CommentsManager::COMMENT_AUTHOR));
+        $comment->setCommentUserId($this->getInput(CommentsManager::COMMENT_USER_ID));
         $comment->setCommentStatus(0);
         $comment->setCommentDate(Util::dateNow());
-        $comment->setPostId(Arrays::get($inputs, CommentsManager::POST_ID));
+        $comment->setPostId($this->getInput(CommentsManager::POST_ID));
         
         if (LoginManager::isLogin()) {
             $usersManager = new UsersManager();
@@ -74,10 +68,10 @@ class PageController extends ThemeControllerAbstract {
         return ['comment' => $comment];
     }
     
-    private function filterInputs() {
+    protected function formInputsBuilders() {
         $isRequire = !LoginManager::isLogin();
         
-        Form::setInput([
+        return [
             InputAlphanumericBuilder::init(CommentsManager::COMMENT_AUTHOR)
                                     ->setRequire($isRequire)
                                     ->build(),
@@ -92,21 +86,7 @@ class PageController extends ThemeControllerAbstract {
                                     ->build(),
             InputIntegerBuilder::init(CommentsManager::POST_ID)
                                ->build(),
-        ]);
-        
-        return Form::inputFilter();
-    }
-    
-    protected function read($id) {
-        $pageStatus   = TRUE;
-        $pagesManager = new PagesManager();
-        $page         = $pagesManager->searchByIdAndStatus($id, $pageStatus);
-        
-        if (empty($page)) {
-            Util::redirect(Router::getSiteURL());
-        }
-        
-        ViewController::sendViewData('page', new PageTemplate($page, TRUE));
+        ];
     }
     
 }

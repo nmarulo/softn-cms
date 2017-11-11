@@ -3,10 +3,10 @@
  * PostTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\controllers\Template;
+use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\OptionsManager;
@@ -24,7 +24,7 @@ use SoftnCMS\util\Logger;
  * Class PostTemplate
  * @author Nicolás Marulanda P.
  */
-class PostTemplate extends Template {
+class PostTemplate extends TemplateAbstract {
     
     /** @var Post */
     private $post;

@@ -5,8 +5,6 @@
 
 namespace SoftnCMS\controllers\admin;
 
-use SoftnCMS\controllers\ControllerAbstract;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\PagesManager;
@@ -16,6 +14,7 @@ use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\Sanitize;
 use SoftnCMS\util\Util;
 
@@ -26,11 +25,6 @@ use SoftnCMS\util\Util;
 class IndexController extends ControllerAbstract {
     
     public function index() {
-        $this->read();
-        ViewController::view('index');
-    }
-    
-    protected function read() {
         $postsManager      = new PostsManager();
         $commentsManager   = new CommentsManager();
         $categoriesManager = new CategoriesManager();
@@ -64,14 +58,17 @@ class IndexController extends ControllerAbstract {
             return $comment;
         }, $comments);
         
-        ViewController::sendViewData('posts', $posts);
-        ViewController::sendViewData('comments', $comments);
-        ViewController::sendViewData('countPosts', $postsManager->count());
-        ViewController::sendViewData('countComments', $commentsManager->count());
-        ViewController::sendViewData('countCategories', $categoriesManager->count());
-        ViewController::sendViewData('countTerms', $termsManager->count());
-        ViewController::sendViewData('countUsers', $usersManager->count());
-        ViewController::sendViewData('countPages', $pagesManager->count());
+        $this->sendDataView([
+            'posts'           => $posts,
+            'comments'        => $comments,
+            'countPosts'      => $postsManager->count(),
+            'countComments'   => $commentsManager->count(),
+            'countCategories' => $categoriesManager->count(),
+            'countTerms'      => $termsManager->count(),
+            'countUsers'      => $usersManager->count(),
+            'countPages'      => $pagesManager->count(),
+        ]);
+        $this->view('index');
     }
     
     public function apiGitHub() {
@@ -89,11 +86,13 @@ class IndexController extends ControllerAbstract {
                 return $value['commitDate'];
             }, $commitsDevelop);
             
-            ViewController::sendViewData('lastUpdateMaster', array_shift($lastUpdateMaster));
-            ViewController::sendViewData('lastUpdateDevelop', array_shift($lastUpdateDevelop));
-            ViewController::sendViewData('master', $commitsMaster);
-            ViewController::sendViewData('develop', $commitsDevelop);
-            ViewController::singleView('apigithub');
+            $this->sendDataView([
+                'lastUpdateMaster'  => array_shift($lastUpdateMaster),
+                'lastUpdateDevelop' => array_shift($lastUpdateDevelop),
+                'master'            => $commitsMaster,
+                'develop'           => $commitsDevelop,
+            ]);
+            $this->singleView('apigithub');
         }
     }
     

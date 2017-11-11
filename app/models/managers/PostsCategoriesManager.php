@@ -39,9 +39,10 @@ class PostsCategoriesManager extends ManagerAbstract {
      * @return bool
      */
     public function create($object) {
+        //"Create" retorna el id, pero, "posts_categories" no tiene "id" y retorna "0".
         $result = parent::create($object);
         
-        if (!empty($result)) {
+        if (!empty($result) || $result == 0) {
             $this->updateCategoryPostCount($object->getCategoryId(), 1);
         }
         

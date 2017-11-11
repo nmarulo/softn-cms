@@ -6,11 +6,8 @@
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\CUDControllerAbstract;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\LoginManager;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsCategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\PostsTermsManager;
@@ -21,40 +18,48 @@ use SoftnCMS\models\tables\PostCategory;
 use SoftnCMS\models\tables\PostTerm;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
 use SoftnCMS\util\form\builders\InputHtmlBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputListIntegerBuilder;
-use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
+use SoftnCMS\util\Token;
 use SoftnCMS\util\Util;
 
 /**
  * Class PostController
  * @author Nicolás Marulanda P.
  */
-class PostController extends CUDControllerAbstract {
+class PostController extends ControllerAbstract {
+    
+    public function index() {
+        $postsManager = new PostsManager();
+        $count        = $postsManager->count();
+        
+        $this->sendDataView([
+            'posts' => $postsManager->searchAll($this->rowsPages($count)),
+        ]);
+        $this->view();
+    }
     
     public function create() {
-        if (Form::submit(Constants::FORM_CREATE)) {
-            $postsManager = new PostsManager();
-            $form         = $this->form();
-            
-            if (!empty($form)) {
-                $post = Arrays::get($form, 'post');
+        if ($this->checkSubmit(Constants::FORM_CREATE)) {
+            if ($this->isValidForm()) {
+                $postsManager = new PostsManager();
+                $post         = $this->getForm('post');
                 
                 if ($postsManager->create($post)) {
-                    $usersManager   = new UsersManager();
-                    $optionsManager = new OptionsManager();
-                    $postId         = $postsManager->getLastInsertId();
-                    $terms          = Arrays::get($form, 'terms'); //Etiquetas nuevas
-                    $categories     = Arrays::get($form, 'categories'); //Categorías nuevas
+                    $usersManager = new UsersManager();
+                    $postId       = $postsManager->getLastInsertId();
+                    $terms        = $this->getForm('terms'); //Etiquetas nuevas
+                    $categories   = $this->getForm('categories'); //Categorías nuevas
                     $usersManager->updatePostCount($post->getUserId(), 1);
                     $this->createOrDeleteTerms($terms, $postId);
                     $this->createOrDeleteCategories($categories, $postId);
                     Messages::addSuccess(__('Entrada publicada correctamente.'), TRUE);
-                    Util::redirect($optionsManager->getSiteUrl() . 'admin/post');
+                    $this->redirectToAction('index');
                 }
             }
             
@@ -63,70 +68,13 @@ class PostController extends CUDControllerAbstract {
         
         $this->sendViewCategoriesAndTerms();
         $this->sendViewUsers();
-        ViewController::sendViewData('isUpdate', FALSE);
-        ViewController::sendViewData('selectedUserId', LoginManager::getSession());
-        ViewController::sendViewData('post', new Post());
-        ViewController::sendViewData('title', __('Publicar nueva entrada'));
-        ViewController::view('form');
-    }
-    
-    protected function form() {
-        $inputs = $this->filterInputs();
-        
-        if (empty($inputs)) {
-            return FALSE;
-        }
-        
-        $post       = new Post();
-        $date       = Util::dateNow();
-        $terms      = Arrays::get($inputs, PostsTermsManager::TERM_ID);
-        $categories = Arrays::get($inputs, PostsCategoriesManager::CATEGORY_ID);
-        $post->setId(Arrays::get($inputs, PostsManager::COLUMN_ID));
-        $post->setPostCommentCount(NULL);
-        $post->setPostDate(NULL);
-        $post->setPostUpdate($date);
-        $post->setPostTitle(Arrays::get($inputs, PostsManager::POST_TITLE));
-        $post->setPostStatus(Arrays::get($inputs, PostsManager::POST_STATUS));
-        $post->setPostCommentStatus(Arrays::get($inputs, PostsManager::POST_COMMENT_STATUS));
-        $post->setPostContents(Arrays::get($inputs, PostsManager::POST_CONTENTS));
-        $post->setUserId(Arrays::get($inputs, PostsManager::USER_ID));
-        
-        if (Form::submit(Constants::FORM_CREATE)) {
-            $post->setPostCommentCount(0);
-            $post->setPostDate($date);
-        }
-        
-        return [
-            'post'       => $post,
-            'categories' => $categories,
-            'terms'      => $terms,
-        ];
-    }
-    
-    protected function filterInputs() {
-        Form::setInput([
-            InputIntegerBuilder::init(PostsManager::COLUMN_ID)
-                               ->build(),
-            InputAlphanumericBuilder::init(PostsManager::POST_TITLE)
-                                    ->setSpecialChar(TRUE)
-                                    ->build(),
-            InputHtmlBuilder::init(PostsManager::POST_CONTENTS)
-                            ->build(),
-            InputBooleanBuilder::init(PostsManager::POST_COMMENT_STATUS)
-                               ->build(),
-            InputBooleanBuilder::init(PostsManager::POST_STATUS)
-                               ->build(),
-            InputListIntegerBuilder::init(PostsCategoriesManager::CATEGORY_ID)
-                                   ->setRequire(FALSE)
-                                   ->build(),
-            InputListIntegerBuilder::init(PostsTermsManager::TERM_ID)
-                                   ->setRequire(FALSE)
-                                   ->build(),
-            InputIntegerBuilder::init(PostsManager::USER_ID)
-                               ->build(),
+        $this->sendDataView([
+            'isUpdate'       => FALSE,
+            'selectedUserId' => LoginManager::getSession(),
+            'post'           => new Post(),
+            'title'          => __('Publicar nueva entrada'),
         ]);
-        
-        return Form::inputFilter();
+        $this->view('form');
     }
     
     private function createOrDeleteTerms($termsId, $postId) {
@@ -245,13 +193,15 @@ class PostController extends CUDControllerAbstract {
         $categories        = $categoriesManager->searchAll();
         $terms             = $termsManager->searchAll();
         
-        ViewController::sendViewData('categories', $categories);
-        ViewController::sendViewData('terms', $terms);
+        $this->sendDataView([
+            'categories' => $categories,
+            'terms'      => $terms,
+        ]);
     }
     
     private function sendViewUsers() {
         $usersManager = new UsersManager();
-        ViewController::sendViewData('usersList', $usersManager->searchAll());
+        $this->sendDataView(['usersList' => $usersManager->searchAll()]);
     }
     
     public function update($id) {
@@ -259,66 +209,108 @@ class PostController extends CUDControllerAbstract {
         $post         = $postsManager->searchById($id);
         
         if (empty($post)) {
-            $optionsManager = new OptionsManager();
             Messages::addDanger(__('La entrada no existe.'), TRUE);
-            Util::redirect($optionsManager->getSiteUrl() . 'admin/post');
-        } else {
-            if (Form::submit(Constants::FORM_UPDATE)) {
-                $form = $this->form();
+            $this->redirectToAction('index');
+        } elseif ($this->checkSubmit(Constants::FORM_UPDATE)) {
+            if ($this->isValidForm()) {
+                $post = $this->getForm('post');
                 
-                if (empty($form)) {
-                    Messages::addDanger(__('Error en los campos de la entrada.'));
+                if ($postsManager->update($post)) {
+                    $post       = $postsManager->searchById($id);
+                    $terms      = $this->getForm('terms'); //Etiquetas nuevas
+                    $categories = $this->getForm('categories'); //Categorías nuevas
+                    $this->createOrDeleteTerms($terms, $id);
+                    $this->createOrDeleteCategories($categories, $id);
+                    Messages::addSuccess(__('Entrada actualizada correctamente.'));
                 } else {
-                    $post = Arrays::get($form, 'post');
-                    
-                    if ($postsManager->update($post)) {
-                        $post       = $postsManager->searchById($id);
-                        $terms      = Arrays::get($form, 'terms'); //Etiquetas nuevas
-                        $categories = Arrays::get($form, 'categories'); //Categorías nuevas
-                        $this->createOrDeleteTerms($terms, $id);
-                        $this->createOrDeleteCategories($categories, $id);
-                        Messages::addSuccess(__('Entrada actualizada correctamente.'));
-                    } else {
-                        Messages::addDanger(__('Error al actualizar la entrada.'));
-                    }
+                    Messages::addDanger(__('Error al actualizar la entrada.'));
                 }
-                
+            } else {
+                Messages::addDanger(__('Error en los campos de la entrada.'));
             }
-            
-            $linkPost             = Router::getSiteURL() . 'post/' . $id;
-            $selectedCategoriesId = $this->getCurrentCategoriesId($id);
-            $selectedTermsId      = $this->getCurrentTermsId($id);
-            $this->sendViewCategoriesAndTerms();
-            $this->sendViewUsers();
-            ViewController::sendViewData('isUpdate', TRUE);
-            ViewController::sendViewData('selectedUserId', $post->getUserId());
-            ViewController::sendViewData('linkPost', $linkPost);
-            ViewController::sendViewData('selectedCategoriesId', $selectedCategoriesId);
-            ViewController::sendViewData('selectedTermsId', $selectedTermsId);
-            ViewController::sendViewData('post', $post);
-            ViewController::sendViewData('title', __('Actualizar entrada'));
-            ViewController::view('form');
         }
+        
+        $this->sendViewCategoriesAndTerms();
+        $this->sendViewUsers();
+        $this->sendDataView([
+            'isUpdate'             => TRUE,
+            'selectedUserId'       => $post->getUserId(),
+            'linkPost'             => Router::getSiteURL() . "post/$id",
+            'selectedCategoriesId' => $this->getCurrentCategoriesId($id),
+            'selectedTermsId'      => $this->getCurrentTermsId($id),
+            'post'                 => $post,
+            'title'                => __('Actualizar entrada'),
+        ]);
+        $this->view('form');
     }
     
     public function delete($id) {
-        $postsManager = new PostsManager();
-        
-        if (empty($postsManager->deleteById($id))) {
-            Messages::addSuccess(__('Error al borrar la entrada.'));
-        } else {
-            Messages::addSuccess(__('Entrada borrada correctamente.'));
+        if (Token::check()) {
+            $postsManager = new PostsManager();
+            $result       = $postsManager->deleteById($id);
+            $rowCount     = $postsManager->getRowCount();
+            
+            if ($rowCount === 0) {
+                Messages::addWarning(__('La publicación no existe.'), TRUE);
+            } elseif ($result) {
+                Messages::addSuccess(__('Entrada borrada correctamente.'), TRUE);
+            } else {
+                Messages::addDanger(__('Error al borrar la entrada.'), TRUE);
+            }
         }
         
-        parent::delete($id);
+        $this->redirectToAction('index');
     }
     
-    protected function read() {
-        $postsManager = new PostsManager();
-        $count        = $postsManager->count();
-        $limit        = parent::pagination($count);
+    protected function formToObject() {
+        $post       = new Post();
+        $date       = Util::dateNow();
+        $terms      = $this->getInput(PostsTermsManager::TERM_ID);
+        $categories = $this->getInput(PostsCategoriesManager::CATEGORY_ID);
+        $post->setId($this->getInput(PostsManager::COLUMN_ID));
+        $post->setPostCommentCount(NULL);
+        $post->setPostDate(NULL);
+        $post->setPostUpdate($date);
+        $post->setPostTitle($this->getInput(PostsManager::POST_TITLE));
+        $post->setPostStatus($this->getInput(PostsManager::POST_STATUS));
+        $post->setPostCommentStatus($this->getInput(PostsManager::POST_COMMENT_STATUS));
+        $post->setPostContents($this->getInput(PostsManager::POST_CONTENTS));
+        $post->setUserId($this->getInput(PostsManager::USER_ID));
         
-        ViewController::sendViewData('posts', $postsManager->searchAll($limit));
+        if ($this->checkSubmit(Constants::FORM_CREATE)) {
+            $post->setPostCommentCount(0);
+            $post->setPostDate($date);
+        }
+        
+        return [
+            'post'       => $post,
+            'categories' => $categories,
+            'terms'      => $terms,
+        ];
+    }
+    
+    protected function formInputsBuilders() {
+        return [
+            InputIntegerBuilder::init(PostsManager::COLUMN_ID)
+                               ->build(),
+            InputAlphanumericBuilder::init(PostsManager::POST_TITLE)
+                                    ->setSpecialChar(TRUE)
+                                    ->build(),
+            InputHtmlBuilder::init(PostsManager::POST_CONTENTS)
+                            ->build(),
+            InputBooleanBuilder::init(PostsManager::POST_COMMENT_STATUS)
+                               ->build(),
+            InputBooleanBuilder::init(PostsManager::POST_STATUS)
+                               ->build(),
+            InputListIntegerBuilder::init(PostsCategoriesManager::CATEGORY_ID)
+                                   ->setRequire(FALSE)
+                                   ->build(),
+            InputListIntegerBuilder::init(PostsTermsManager::TERM_ID)
+                                   ->setRequire(FALSE)
+                                   ->build(),
+            InputIntegerBuilder::init(PostsManager::USER_ID)
+                               ->build(),
+        ];
     }
     
 }

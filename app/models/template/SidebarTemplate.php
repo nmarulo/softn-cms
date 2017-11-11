@@ -3,9 +3,9 @@
  * SidebarTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
-use SoftnCMS\controllers\Template;
+use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\SidebarsManager;
 use SoftnCMS\models\tables\Sidebar;
 use SoftnCMS\util\Logger;
@@ -14,7 +14,7 @@ use SoftnCMS\util\Logger;
  * Class SidebarTemplate
  * @author Nicolás Marulanda P.
  */
-class SidebarTemplate extends Template {
+class SidebarTemplate extends TemplateAbstract {
     
     private $sidebar;
     

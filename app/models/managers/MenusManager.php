@@ -30,6 +30,20 @@ class MenusManager extends ManagerAbstract {
     
     const MENU_SUB_PARENT     = 0;
     
+    private $rowCountDelete;
+    
+    public function __construct() {
+        parent::__construct();
+        $this->rowCountDelete = 0;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getRowCountDelete() {
+        return $this->rowCountDelete;
+    }
+    
     /**
      * @param string $limit
      *
@@ -69,7 +83,8 @@ class MenusManager extends ManagerAbstract {
      * @return bool
      */
     public function deleteById($id) {
-        $menu = $this->searchById($id);
+        $this->rowCountDelete = 0;
+        $menu                 = $this->searchById($id);
         
         if (empty($menu)) {
             return FALSE;
@@ -85,7 +100,12 @@ class MenusManager extends ManagerAbstract {
             return FALSE;
         }
         
-        $parentMenuId = $menu->getMenuSub();
+        /*
+         * Guardo el numero de filas afectadas por la consulta "DELETE",
+         * porque, se pierde su valor al usar "updateParentsChildren" y "updatePositions".
+         */
+        $this->rowCountDelete = $this->getRowCount();
+        $parentMenuId         = $menu->getMenuSub();
         
         if ($parentMenuId != self::MENU_SUB_PARENT) {
             if (!$this->updateParentsChildren($parentMenuId, -count($menuIdList))) {

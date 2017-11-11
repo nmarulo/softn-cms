@@ -3,9 +3,9 @@
  * TermTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
-use SoftnCMS\controllers\Template;
+use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\tables\Post;
@@ -16,7 +16,7 @@ use SoftnCMS\util\Logger;
  * Class TermTemplate
  * @author Nicolás Marulanda P.
  */
-class TermTemplate extends Template {
+class TermTemplate extends TemplateAbstract {
     
     /** @var Term */
     private $term;

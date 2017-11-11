@@ -1,7 +1,7 @@
 <?php
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\template\CommentTemplate;
+use SoftnCMS\models\template\CommentTemplate;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\CommentsManager;
 

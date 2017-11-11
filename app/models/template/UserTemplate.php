@@ -3,9 +3,9 @@
  * UserTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
-use SoftnCMS\controllers\Template;
+use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
@@ -16,7 +16,7 @@ use SoftnCMS\util\Logger;
  * Class UserTemplate
  * @author Nicolás Marulanda P.
  */
-class UserTemplate extends Template {
+class UserTemplate extends TemplateAbstract {
     
     /** @var User */
     private $user;

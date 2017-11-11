@@ -249,6 +249,11 @@ abstract class ManagerAbstract {
         return $this->deleteByPrepareStatement();
     }
     
+    /**
+     * @param string $allLogicalOperators
+     *
+     * @return bool
+     */
     protected function deleteByPrepareStatement($allLogicalOperators = 'AND') {
         if (empty($this->prepareStatement)) {
             return FALSE;
@@ -262,7 +267,7 @@ abstract class ManagerAbstract {
     /**
      * @param int $id
      *
-     * @return int
+     * @return bool
      */
     public function deleteById($id) {
         if (empty($id)) {

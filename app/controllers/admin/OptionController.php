@@ -7,20 +7,18 @@ namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\controllers\ControllerAbstract;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\tables\Option;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputUrlBuilder;
-use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Gravatar;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Util;
@@ -33,106 +31,7 @@ class OptionController extends ControllerAbstract {
     
     public function index() {
         $this->update();
-        parent::index();
-    }
-    
-    private function update() {
-        if (Form::submit(Constants::FORM_UPDATE)) {
-            $optionsManager = new OptionsManager();
-            $form           = $this->form();
-            
-            if (empty($form)) {
-                Messages::addDanger(__('Error en los campos de las opciones.'));
-            } else {
-                $options  = Arrays::get($form, 'options');
-                $notError = TRUE;
-                $len      = count($options);
-                
-                for ($i = 0; $i < $len && $notError; ++$i) {
-                    $notError = $optionsManager->updateByColumnName(Arrays::get($options, $i));
-                }
-                
-                if ($notError) {
-                    Messages::addSuccess(__('Actualizado correctamente.'));
-                } else {
-                    Messages::addDanger(__('Error al actualizar.'));
-                }
-            }
-        }
-    }
-    
-    protected function form() {
-        $inputs = $this->filterInputs();
         
-        if (empty($inputs)) {
-            return FALSE;
-        }
-        
-        $inputKeys = array_keys($inputs);
-        $options   = array_map(function($key, $value) {
-            $option = new Option();
-            $option->setOptionName($key);
-            $option->setOptionValue($value);
-            
-            return $option;
-        }, $inputKeys, $inputs);
-        $options[] = $this->formGravatar($inputs);
-        
-        return ['options' => $options];
-    }
-    
-    protected function filterInputs() {
-        Form::setInput([
-            InputAlphabeticBuilder::init(OptionConstants::SITE_TITLE)
-                                  ->build(),
-            InputAlphabeticBuilder::init(OptionConstants::SITE_DESCRIPTION)
-                                  ->setRequire(FALSE)
-                                  ->build(),
-            InputEmailBuilder::init(OptionConstants::EMAIL_ADMIN)
-                             ->build(),
-            InputUrlBuilder::init(OptionConstants::SITE_URL)
-                           ->build(),
-            InputIntegerBuilder::init(OptionConstants::PAGED)
-                               ->build(),
-            InputAlphanumericBuilder::init(OptionConstants::THEME)
-                                    ->build(),
-            InputIntegerBuilder::init(OptionConstants::MENU)
-                               ->build(),
-            InputAlphabeticBuilder::init(OptionConstants::LANGUAGE)
-                                  ->setAccents(FALSE)
-                                  ->setSpecialChar(TRUE)
-                                  ->build(),
-            InputIntegerBuilder::init(OptionConstants::DEFAULT_PROFILE)
-                               ->build(),
-            InputIntegerBuilder::init(OptionConstants::GRAVATAR_SIZE)
-                               ->build(),
-            InputAlphabeticBuilder::init(OptionConstants::GRAVATAR_RATING)
-                                  ->build(),
-            InputAlphabeticBuilder::init(OptionConstants::GRAVATAR_DEFAULT_IMAGE)
-                                  ->build(),
-            InputBooleanBuilder::init(OptionConstants::GRAVATAR_FORCE_DEFAULT)
-                               ->build(),
-            InputBooleanBuilder::init(OptionConstants::COMMENT)
-                               ->build(),
-        ]);
-        
-        return Form::inputFilter();
-    }
-    
-    private function formGravatar($inputs) {
-        $gravatar = new Gravatar();
-        $gravatar->setSize(Arrays::get($inputs, OptionConstants::GRAVATAR_SIZE));
-        $gravatar->setForceDefault(Arrays::get($inputs, OptionConstants::GRAVATAR_FORCE_DEFAULT));
-        $gravatar->setDefaultImage(Arrays::get($inputs, OptionConstants::GRAVATAR_DEFAULT_IMAGE));
-        $gravatar->setRating(Arrays::get($inputs, OptionConstants::GRAVATAR_RATING));
-        $gravatarOption = new Option();
-        $gravatarOption->setOptionName(OptionConstants::GRAVATAR);
-        $gravatarOption->setOptionValue(serialize($gravatar));
-        
-        return $gravatarOption;
-    }
-    
-    protected function read() {
         $profilesManager      = new ProfilesManager();
         $menusManager         = new MenusManager();
         $optionsManager       = new OptionsManager();
@@ -151,20 +50,45 @@ class OptionController extends ControllerAbstract {
         
         $this->sendViewOptionLanguage();
         $this->sendViewOptionGravatar();
-        ViewController::sendViewData('optionComment', $optionComment);
-        ViewController::sendViewData('optionLanguage', $optionLanguage);
-        ViewController::sendViewData('menuList', $menuList);
-        ViewController::sendViewData('optionMenu', $optionMenu);
-        ViewController::sendViewData('listThemes', Util::getFilesAndDirectories(THEMES));
-        ViewController::sendViewData('optionTitle', $optionTitle);
-        ViewController::sendViewData('optionDescription', $optionDescription);
-        ViewController::sendViewData('optionPaged', $optionPaged);
-        ViewController::sendViewData('optionSiteUrl', $optionSiteUrl);
-        ViewController::sendViewData('optionTheme', $optionTheme);
-        ViewController::sendViewData('optionEmailAdmin', $optionEmailAdmin);
-        ViewController::sendViewData('optionDefaultProfile', $optionDefaultProfile);
-        ViewController::sendViewData('profilesList', $profilesList);
-        
+        $this->sendDataView([
+            'optionComment'        => $optionComment,
+            'optionLanguage'       => $optionLanguage,
+            'menuList'             => $menuList,
+            'optionMenu'           => $optionMenu,
+            'listThemes'           => Util::getFilesAndDirectories(THEMES),
+            'optionTitle'          => $optionTitle,
+            'optionDescription'    => $optionDescription,
+            'optionPaged'          => $optionPaged,
+            'optionSiteUrl'        => $optionSiteUrl,
+            'optionTheme'          => $optionTheme,
+            'optionEmailAdmin'     => $optionEmailAdmin,
+            'optionDefaultProfile' => $optionDefaultProfile,
+            'profilesList'         => $profilesList,
+        ]);
+        $this->view('index');
+    }
+    
+    private function update() {
+        if ($this->checkSubmit(Constants::FORM_UPDATE)) {
+            if ($this->isValidForm()) {
+                $optionsManager = new OptionsManager();
+                $options        = $this->getForm('options');
+                $notError       = TRUE;
+                $len            = count($options);
+                
+                for ($i = 0; $i < $len && $notError; ++$i) {
+                    $notError = $optionsManager->updateByColumnName(Arrays::get($options, $i));
+                }
+                
+                if ($notError) {
+                    Messages::addSuccess(__('Actualizado correctamente.'));
+                } else {
+                    Messages::addDanger(__('Error al actualizar.'));
+                }
+            } else {
+                Messages::addDanger(__('Error en los campos de las opciones.'));
+            }
+        }
     }
     
     private function sendViewOptionLanguage() {
@@ -183,7 +107,7 @@ class OptionController extends ControllerAbstract {
             return Arrays::get(explode('.', $language), 0);
         }, $listLanguages);
         
-        ViewController::sendViewData('listLanguages', $listLanguages);
+        $this->sendDataView(['listLanguages' => $listLanguages]);
     }
     
     private function sendViewOptionGravatar() {
@@ -219,14 +143,80 @@ class OptionController extends ControllerAbstract {
             Gravatar::RATING_R,
             Gravatar::RATING_X,
         ];
-        ViewController::sendViewData('gravatarSizeList', $sizeList);
-        ViewController::sendViewData('gravatarDefaultImageList', $defaultImageList);
-        ViewController::sendViewData('gravatarRatingList', $ratingList);
-        ViewController::sendViewData('gravatar', $gravatar);
+        $this->sendDataView([
+            'gravatarSizeList'         => $sizeList,
+            'gravatarDefaultImageList' => $defaultImageList,
+            'gravatarRatingList'       => $ratingList,
+            'gravatar'                 => $gravatar,
+        
+        ]);
     }
     
     private function getDataGravatar($string) {
         return Arrays::get(explode('=', $string), 1);
+    }
+    
+    protected function formToObject() {
+        $inputKeys = array_keys($this->inputs);
+        $options   = array_map(function($key, $value) {
+            $option = new Option();
+            $option->setOptionName($key);
+            $option->setOptionValue($value);
+            
+            return $option;
+        }, $inputKeys, $this->inputs);
+        $options[] = $this->formGravatar();
+        
+        return ['options' => $options];
+    }
+    
+    private function formGravatar() {
+        $gravatar = new Gravatar();
+        $gravatar->setSize($this->getInput(OptionConstants::GRAVATAR_SIZE));
+        $gravatar->setForceDefault($this->getInput(OptionConstants::GRAVATAR_FORCE_DEFAULT));
+        $gravatar->setDefaultImage($this->getInput(OptionConstants::GRAVATAR_DEFAULT_IMAGE));
+        $gravatar->setRating($this->getInput(OptionConstants::GRAVATAR_RATING));
+        $gravatarOption = new Option();
+        $gravatarOption->setOptionName(OptionConstants::GRAVATAR);
+        $gravatarOption->setOptionValue(serialize($gravatar));
+        
+        return $gravatarOption;
+    }
+    
+    protected function formInputsBuilders() {
+        return [
+            InputAlphabeticBuilder::init(OptionConstants::SITE_TITLE)
+                                  ->build(),
+            InputAlphabeticBuilder::init(OptionConstants::SITE_DESCRIPTION)
+                                  ->setRequire(FALSE)
+                                  ->build(),
+            InputEmailBuilder::init(OptionConstants::EMAIL_ADMIN)
+                             ->build(),
+            InputUrlBuilder::init(OptionConstants::SITE_URL)
+                           ->build(),
+            InputIntegerBuilder::init(OptionConstants::PAGED)
+                               ->build(),
+            InputAlphanumericBuilder::init(OptionConstants::THEME)
+                                    ->build(),
+            InputIntegerBuilder::init(OptionConstants::MENU)
+                               ->build(),
+            InputAlphabeticBuilder::init(OptionConstants::LANGUAGE)
+                                  ->setAccents(FALSE)
+                                  ->setSpecialChar(TRUE)
+                                  ->build(),
+            InputIntegerBuilder::init(OptionConstants::DEFAULT_PROFILE)
+                               ->build(),
+            InputIntegerBuilder::init(OptionConstants::GRAVATAR_SIZE)
+                               ->build(),
+            InputAlphabeticBuilder::init(OptionConstants::GRAVATAR_RATING)
+                                  ->build(),
+            InputAlphabeticBuilder::init(OptionConstants::GRAVATAR_DEFAULT_IMAGE)
+                                  ->build(),
+            InputBooleanBuilder::init(OptionConstants::GRAVATAR_FORCE_DEFAULT)
+                               ->build(),
+            InputBooleanBuilder::init(OptionConstants::COMMENT)
+                               ->build(),
+        ];
     }
     
 }

@@ -1,6 +1,6 @@
 <?php
 
-use SoftnCMS\controllers\template\MenuTemplate;
+use SoftnCMS\models\template\MenuTemplate;
 use SoftnCMS\controllers\ViewController;
 
 $siteTitle     = ViewController::getViewData('siteTitle');

@@ -3,35 +3,31 @@
 	
 	$(document).on('click', 'button.btn-danger', function (event) {
 		event.preventDefault();
-		btnElement = this;
+		btnElement = $(this);
 	});
 	
-	$('#btn-modal-delete-confirm').on('click', function(){
-		deleteData(btnElement);
+	$('#btn-modal-delete-confirm').on('click', function () {
+		deleteData(btnElement, $(this));
 	});
 })();
 
-function deleteData(element) {
-	var url = $(element).closest('.page-container').data('url');
-	var id = $(element).data('id');
-	var data = 'deleteAJAX=true';
-	var callback = function (dataMessages) {
-		var data = '';
-		var dataPaged = $(document).find('.pagination > li.active > a').data('paged');
-		var dataAdd = $(document).find('.page-container').data('add-url');
+function deleteData(btnDelete, btnModal) {
+	var pageContainer = btnDelete.closest('.page-container');
+	var url = pageContainer.data('url');
+	var id = btnDelete.data('id');
+	var data = btnModal.data('token') + '&redirect=false';
+	var callback = function (data) {
+		var pagination = $(document).find('.pagination > li.active > a');
+		var dataPaged = '';
 		
-		if (dataPaged !== undefined) {
-			data = dataPaged;
-			
-			if (dataAdd !== undefined) {
-				data += '&' + dataAdd;
-			}
-		} else if (dataAdd !== undefined) {
-			data = dataAdd;
+		if (pagination.length > 0) {
+			dataPaged = pagination.data('paged');
 		}
 		
-		reloadData(url, data);
-		includeMessages(dataMessages);
+		reloadDataContainer(pageContainer, dataPaged);
+		callAjax(url + 'messages', 'GET', '', function (dataMessages) {
+			includeMessages(dataMessages);
+		});
 	};
 	callAjax(url + 'delete/' + id, 'POST', data, callback);
 }

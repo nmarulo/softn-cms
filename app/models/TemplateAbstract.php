@@ -1,9 +1,9 @@
 <?php
 /**
- * Template.php
+ * TemplateAbstract.php
  */
 
-namespace SoftnCMS\controllers;
+namespace SoftnCMS\models;
 
 use SoftnCMS\rute\Router;
 
@@ -11,7 +11,7 @@ use SoftnCMS\rute\Router;
  * Class Template
  * @author Nicolás Marulanda P.
  */
-abstract class Template {
+abstract class TemplateAbstract {
     
     private $siteUrl;
     

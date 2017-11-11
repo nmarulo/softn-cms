@@ -1,8 +1,8 @@
 <?php
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\controllers\template\PostTemplate;
-use SoftnCMS\controllers\template\CategoryTemplate;
-use SoftnCMS\controllers\template\TermTemplate;
+use SoftnCMS\models\template\PostTemplate;
+use SoftnCMS\models\template\CategoryTemplate;
+use SoftnCMS\models\template\TermTemplate;
 
 $posts = ViewController::getViewData('posts');
 ?>

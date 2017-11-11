@@ -6,16 +6,13 @@
 namespace SoftnCMS\controllers\login;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\ControllerAbstract;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\LoginManager;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;
-use SoftnCMS\util\Arrays;
+use SoftnCMS\rute\Router;
+use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
-use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Util;
 
@@ -27,22 +24,19 @@ class IndexController extends ControllerAbstract {
     
     public function index() {
         $this->login();
-        $this->read();
-        ViewController::view('index');
+        $this->sendDataView(['urlRegister' => Router::getSiteURL() . 'login/register']);
+        $this->view();
     }
     
     private function login() {
-        if (Form::submit(Constants::FORM_SUBMIT)) {
-            $form = $this->form();
-            
-            if (!empty($form)) {
-                $user       = Arrays::get($form, 'user');
-                $rememberMe = Arrays::get($form, 'rememberMe');
+        if ($this->checkSubmit(Constants::FORM_SUBMIT)) {
+            if ($this->isValidForm()) {
+                $user       = $this->getForm('user');
+                $rememberMe = $this->getForm('rememberMe');
                 
                 if (LoginManager::login($user, $rememberMe)) {
-                    $optionsManager = new OptionsManager();
                     Messages::addSuccess(__('Inicio de sesión correcto.'), TRUE);
-                    Util::redirect($optionsManager->getSiteUrl(), 'admin');
+                    $this->redirect('admin');
                 }
             }
             
@@ -50,27 +44,20 @@ class IndexController extends ControllerAbstract {
         }
     }
     
-    protected function form() {
-        $inputs = $this->filterInputs();
-        
-        if ($inputs === FALSE) {
-            return FALSE;
-        }
-        
-        $rememberMe = Arrays::get($inputs, UsersManager::USER_REMEMBER_ME);
-        $pass       = Arrays::get($inputs, UsersManager::USER_PASSWORD);
-        $user       = new User();
-        $user->setUserLogin(Arrays::get($inputs, UsersManager::USER_LOGIN));
+    protected function formToObject() {
+        $pass = $this->getInput(UsersManager::USER_PASSWORD);
+        $user = new User();
+        $user->setUserLogin($this->getInput(UsersManager::USER_LOGIN));
         $user->setUserPassword(Util::encrypt($pass, LOGGED_KEY));
         
         return [
             'user'       => $user,
-            'rememberMe' => $rememberMe,
+            'rememberMe' => $this->getInput(UsersManager::USER_REMEMBER_ME),
         ];
     }
     
-    protected function filterInputs() {
-        Form::setInput([
+    protected function formInputsBuilders() {
+        return [
             InputAlphanumericBuilder::init(UsersManager::USER_LOGIN)
                                     ->setAccents(FALSE)
                                     ->setWithoutSpace(TRUE)
@@ -81,17 +68,7 @@ class IndexController extends ControllerAbstract {
             InputBooleanBuilder::init(UsersManager::USER_REMEMBER_ME)
                                ->setRequire(FALSE)
                                ->build(),
-        ]);
-        
-        return Form::inputFilter();
-    }
-    
-    protected function read() {
-        $optionsManager = new OptionsManager();
-        $siteUrl        = $optionsManager->getSiteUrl();
-        $urlRegister    = $siteUrl . 'login/register';
-        ViewController::sendViewData('siteUrl', $siteUrl);
-        ViewController::sendViewData('urlRegister', $urlRegister);
+        ];
     }
     
 }

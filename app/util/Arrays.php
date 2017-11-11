@@ -50,7 +50,27 @@ class Arrays {
         return FALSE;
     }
     
-    public static function keyExists($array, $key) {
-        return is_array($array) && array_key_exists($key, $array);
+    public static function keyExists($array, $key, $recursive = FALSE) {
+        if ($recursive) {
+            $values = [];
+            $filter = array_filter($array, function($value) {
+                return is_array($value);
+            });
+            
+            //TODO: Esto debe poderse implementar de una forma mas fácil.
+            array_walk($filter, function($value) use (&$values) {
+                if (is_array($value)) {
+                    array_walk($value, function($value, $key) use (&$values) {
+                        $values[$key] = $value;
+                    });
+                }
+            });
+        }
+        
+        if (empty($values)) {
+            return is_array($array) && array_key_exists($key, $array);
+        }
+        
+        return self::keyExists($values, $key, $recursive);
     }
 }
