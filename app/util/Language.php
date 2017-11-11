@@ -9,6 +9,7 @@ use Gettext\Translations;
 use Gettext\Translator;
 use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
 
 /**
  * Class Language
@@ -17,8 +18,12 @@ use SoftnCMS\models\managers\OptionsManager;
 class Language {
     
     public static function load() {
-        $paramLan = Arrays::get($_GET, PARAM_LANGUAGE);
-        $language = empty($paramLan) ? self::getDefaultLan() : $paramLan;
+        $paramLan   = InputAlphabeticBuilder::init(PARAM_LANGUAGE)
+                                            ->setMethod($_GET)
+                                            ->setSpecialChar(TRUE)
+                                            ->build()
+                                            ->filter();
+        $language   = empty($paramLan) ? self::getDefaultLan() : $paramLan;
         $translator = new Translator();
         $translator->register();
         
@@ -31,7 +36,7 @@ class Language {
             }
         }
         
-        $pathMoFile = ABSPATH . "util/languages/$language.mo";
+        $pathMoFile = LANGUAGES . "$language.mo";
         
         if (file_exists($pathMoFile)) {
             $translator->loadTranslations(Translations::fromMoFile($pathMoFile));

@@ -80,7 +80,7 @@ class CategoryController extends ControllerAbstract {
             $rowCount          = $categoriesManager->getRowCount();
             
             if ($rowCount == 0) {
-                Messages::addWarning(__('No existe ninguna categoría.'), TRUE);
+                Messages::addWarning(__('La categoría no existe.'), TRUE);
             } elseif ($result) {
                 Messages::addSuccess(__('Categoría borrada correctamente.'), TRUE);
             } else {

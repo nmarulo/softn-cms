@@ -88,7 +88,7 @@ class CommentController extends ControllerAbstract {
             $rowCount        = $commentsManager->getRowCount();
             
             if ($rowCount === 0) {
-                Messages::addWarning(__("No existe ningún comentario."), TRUE);
+                Messages::addWarning(__("El comentario no existe."), TRUE);
             } elseif ($result) {
                 Messages::addSuccess(__('Comentario borrado correctamente.'), TRUE);
             } else {

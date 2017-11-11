@@ -157,7 +157,7 @@ class MenuController extends ControllerAbstract {
             $rowCount     = $menusManager->getRowCountDelete();
             
             if ($rowCount === 0) {
-                Messages::addWarning(__('No existe ningún menu.'), TRUE);
+                Messages::addWarning(__('El menu no existe.'), TRUE);
             } elseif ($result) {
                 Messages::addSuccess(__('Menu borrado correctamente.'), TRUE);
             } else {

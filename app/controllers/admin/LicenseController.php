@@ -152,7 +152,7 @@ class LicenseController extends ControllerAbstract {
             $rowCount        = $licensesManager->getRowCount();
             
             if ($rowCount === 0) {
-                Messages::addWarning(__('No existe ningún permiso.'), TRUE);
+                Messages::addWarning(__('El permiso no existe.'), TRUE);
             } elseif ($result) {
                 Messages::addSuccess(__('Permiso borrado correctamente.'), TRUE);
             } else {

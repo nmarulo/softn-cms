@@ -209,7 +209,7 @@ class PostController extends ControllerAbstract {
         $post         = $postsManager->searchById($id);
         
         if (empty($post)) {
-            Messages::addDanger(__('La entrada no existe.'), TRUE);
+            Messages::addDanger(__('La publicación no existe.'), TRUE);
             $this->redirectToAction('index');
         } elseif ($this->checkSubmit(Constants::FORM_UPDATE)) {
             if ($this->isValidForm()) {
