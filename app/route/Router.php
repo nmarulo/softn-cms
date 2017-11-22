@@ -9,6 +9,9 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\controller\ControllerInterface;
+use SoftnCMS\util\database\DBAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Logger;
 use SoftnCMS\util\Util;
 
@@ -47,10 +50,14 @@ class Router {
     /** @var bool */
     private $canCallUserFunc;
     
+    /** @var DBInterface */
+    private $connectionDB;
+    
     /**
      * Router constructor.
      */
     public function __construct() {
+        $this->connectionDB    = DBAbstract::getNewInstance();
         $this->canCallUserFunc = TRUE;
         $this->request         = new Request();
         $this->route           = $this->request->getRoute();
@@ -59,7 +66,7 @@ class Router {
                 throw new \Exception('Error');
             },
         ];
-        $optionsManager        = new OptionsManager();
+        $optionsManager        = new OptionsManager($this->connectionDB);
         self::$SITE_URL        = $optionsManager->getSiteUrl($this);
     }
     
@@ -113,6 +120,7 @@ class Router {
         $this->events(self::EVENT_INIT_LOAD);
         
         $instanceController = $this->instanceController();
+        $instanceController->setConnectionDB($this->connectionDB);
         $method             = $this->getMethod($instanceController);
         $parameter          = $this->getParameter();
         
@@ -163,7 +171,7 @@ class Router {
     }
     
     /**
-     * @return mixed
+     * @return ControllerInterface
      */
     private function instanceController() {
         $controllerName      = $this->route->getControllerName() . 'Controller';
@@ -237,4 +245,19 @@ class Router {
         ViewController::setDirectoryViewsController($this->route->getDirectoryNameViewController());
         ViewController::setViewPath($this->route->getViewPath());
     }
+    
+    /**
+     * @return DBInterface
+     */
+    public function getConnectionDB() {
+        return $this->connectionDB;
+    }
+    
+    /**
+     * @param DBInterface $connectionDB
+     */
+    public function setConnectionDB($connectionDB) {
+        $this->connectionDB = $connectionDB;
+    }
+    
 }
