@@ -41,23 +41,28 @@ abstract class DBAbstract implements DBInterface {
     }
     
     /**
-     * @param string $parameter
-     * @param mixed  $value
-     * @param string $dataType
-     * @param string $column
+     * @return null|DBInterface
      */
-    public function prepareStatement($parameter, $value, $dataType = '', $column = '') {
-        self::addPrepareStatement($this->prepareStatement, $parameter, $value, $dataType, $column);
+    public static function getNewInstance() {
+        //TODO: Lista de tipos.
+        $connection = NULL;
+        
+        switch (DB_TYPE) {
+            case 'mysql':
+                $connection = new MySQL();
+                break;
+        }
+        
+        return $connection;
     }
     
     /**
-     * @param array  $array
      * @param string $parameter
      * @param mixed  $value
      * @param string $dataType
      * @param string $column
      */
-    public static function addPrepareStatement(&$array, $parameter, $value, $dataType = '', $column = '') {
+    public function addPrepareStatement($parameter, $value, $dataType = '', $column = '') {
         if (!is_null($value)) {
             if ($dataType === '') {
                 $dataType = self::getDataType($value);
@@ -67,7 +72,7 @@ abstract class DBAbstract implements DBInterface {
                 $column = $parameter;
             }
             
-            $array[":$parameter"] = [
+            $this->prepareStatement[":$parameter"] = [
                 'value'    => $value,
                 'dataType' => $dataType,
                 'column'   => $column,
@@ -95,13 +100,6 @@ abstract class DBAbstract implements DBInterface {
         }
         
         return $dataType;
-    }
-    
-    /**
-     * @param array $prepareStatement
-     */
-    public function setPrepareStatement($prepareStatement) {
-        $this->prepareStatement = $prepareStatement;
     }
     
     /**
@@ -226,13 +224,7 @@ abstract class DBAbstract implements DBInterface {
     
     public function close() {
         $this->prepareStatement = [];
-        $this->setConnection(NULL);
     }
-    
-    /**
-     * @param \PDO $value
-     */
-    protected abstract function setConnection($value);
     
     public function updateByColumn($column) {
         $columns = array_filter($this->prepareStatement, function($value) use ($column) {
@@ -366,5 +358,24 @@ abstract class DBAbstract implements DBInterface {
     public function setTable($table) {
         $this->table = $table;
     }
+    
+    /**
+     * @return array
+     */
+    public function getPrepareStatement() {
+        return $this->prepareStatement;
+    }
+    
+    /**
+     * @param array $prepareStatement
+     */
+    public function setPrepareStatement($prepareStatement) {
+        $this->prepareStatement = $prepareStatement;
+    }
+    
+    /**
+     * @param \PDO $value
+     */
+    protected abstract function setConnection($value);
     
 }
