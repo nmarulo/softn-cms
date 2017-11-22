@@ -7,6 +7,7 @@ namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\tables\Sidebar;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\database\ManagerAbstract;
 use SoftnCMS\util\Messages;
 
@@ -23,6 +24,10 @@ class SidebarsManager extends ManagerAbstract {
     const SIDEBAR_CONTENTS = 'sidebar_contents';
     
     const SIDEBAR_POSITION = 'sidebar_position';
+    
+    public function __construct(DBInterface $connection = NULL) {
+        parent::__construct($connection);
+    }
     
     /**
      * @param Sidebar $object

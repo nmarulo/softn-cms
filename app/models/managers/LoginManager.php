@@ -6,6 +6,7 @@
 namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\tables\User;
+use SoftnCMS\util\database\DBAbstract;
 
 /**
  * Class LoginManager
@@ -20,7 +21,8 @@ class LoginManager {
      * @return bool
      */
     public static function login($user, $rememberMe) {
-        $usersManager = new UsersManager();
+        //TODO: Corregir: obtener conexion
+        $usersManager = new UsersManager(DBAbstract::getNewInstance());
         $searchUser   = $usersManager->searchByLoginAndPassword($user->getUserLogin(), $user->getUserPassword());
         
         if (empty($searchUser)) {
@@ -59,7 +61,8 @@ class LoginManager {
      * @return bool
      */
     public static function checkSession() {
-        $usersManager = new UsersManager();
+        //TODO: Corregir: obtener conexion
+        $usersManager = new UsersManager(DBAbstract::getNewInstance());
         $session      = self::getSession();
         
         if ($session == 0 || $usersManager->searchById($session) === FALSE) {

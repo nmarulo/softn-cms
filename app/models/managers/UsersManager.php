@@ -8,6 +8,7 @@ namespace SoftnCMS\models\managers;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\database\ManagerAbstract;
 
 /**
@@ -39,6 +40,10 @@ class UsersManager extends ManagerAbstract {
     const PROFILE_ID            = 'profile_id';
     
     const USER_URL_IMAGE        = 'user_url_image';
+    
+    public function __construct(DBInterface $connection = NULL) {
+        parent::__construct($connection);
+    }
     
     /**
      * @param int $id

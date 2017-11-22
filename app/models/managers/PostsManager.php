@@ -55,7 +55,7 @@ class PostsManager extends ManagerAbstract {
         $table = parent::getTableWithPrefix();
         $query = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s', $table, self::POST_STATUS);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
-        $result = Arrays::findFirst(parent::getDB()
+        $result = Arrays::findFirst(parent::getConnection()
                                           ->select($query));
         
         return empty($result) ? 0 : $result;
@@ -66,7 +66,7 @@ class PostsManager extends ManagerAbstract {
         $query = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s', $table, self::POST_STATUS, self::USER_ID);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
         parent::addPrepareStatement(self::USER_ID, $userId, \PDO::PARAM_INT);
-        $result = Arrays::findFirst(parent::getDB()
+        $result = Arrays::findFirst(parent::getConnection()
                                           ->select($query));
         
         return empty($result) ? 0 : $result;

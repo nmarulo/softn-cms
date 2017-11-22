@@ -7,6 +7,7 @@ namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\tables\OptionLicense;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\database\ManagerAbstract;
 
 /**
@@ -30,6 +31,10 @@ class OptionsLicensesManager extends ManagerAbstract {
     const OPTION_LICENSE_FIELDS_NAME     = 'option_license_fields_name';
     
     const LICENSE_ID                     = 'license_id';
+    
+    public function __construct(DBInterface $connection = NULL) {
+        parent::__construct($connection);
+    }
     
     public function deleteByLicenseId($licenseId) {
         return parent::deleteByColumn($licenseId, self::LICENSE_ID, \PDO::PARAM_INT);
