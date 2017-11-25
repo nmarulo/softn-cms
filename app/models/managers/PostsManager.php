@@ -35,13 +35,6 @@ class PostsManager extends ManagerAbstract {
     
     const USER_ID             = 'user_id';
     
-    /**
-     * PostsManager constructor.
-     */
-    public function __construct() {
-        parent::__construct();
-    }
-    
     public function searchByIdAndStatus($id, $status) {
         parent::addPrepareStatement(self::COLUMN_ID, $id, \PDO::PARAM_INT);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
@@ -83,9 +76,9 @@ class PostsManager extends ManagerAbstract {
     }
     
     public function deleteById($id) {
-        $usersManager           = new UsersManager();
-        $postsCategoriesManager = new PostsCategoriesManager();
-        $postsTermsManager      = new PostsTermsManager();
+        $usersManager           = new UsersManager($this->getConnection());
+        $postsCategoriesManager = new PostsCategoriesManager($this->getConnection());
+        $postsTermsManager      = new PostsTermsManager($this->getConnection());
         $postsCategories        = $postsCategoriesManager->searchAllByPostId($id);
         $postsTerms             = $postsTermsManager->searchAllByPostId($id);
         $user                   = $usersManager->searchByPostId($id);
@@ -211,7 +204,7 @@ class PostsManager extends ManagerAbstract {
         $currentUserId = $currentPost->getUserId();
         
         if ($userId != $currentUserId) {
-            $userManager = new UsersManager();
+            $userManager = new UsersManager($this->getConnection());
             $userManager->updatePostCount($userId, -1);
             $userManager->updatePostCount($currentUserId, 1);
         }

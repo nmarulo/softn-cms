@@ -55,7 +55,7 @@ class PostsTermsManager extends ManagerAbstract {
     }
     
     private function updateTermPostCount($termId, $num) {
-        $termsManager = new TermsManager();
+        $termsManager = new TermsManager($this->getConnection());
         
         return $termsManager->updatePostCount($termId, $num);
     }

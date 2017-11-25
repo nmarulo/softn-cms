@@ -179,7 +179,7 @@ class UsersManager extends ManagerAbstract {
         $result = parent::updateByColumnId($object);
         
         if ($result) {
-            $commentsManager = new CommentsManager();
+            $commentsManager = new CommentsManager($this->getConnection());
             $comments        = $commentsManager->searchByUserId($object->getId());
             //TODO: Una mejor opción seria solo guardar los datos para usuario no registrados, y asi no tener que actualizar los datos de los usuarios registrados.
             array_walk($comments, function(Comment $comment) use ($commentsManager, $object) {

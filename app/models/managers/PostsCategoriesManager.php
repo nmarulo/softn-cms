@@ -50,7 +50,7 @@ class PostsCategoriesManager extends ManagerAbstract {
     }
     
     private function updateCategoryPostCount($categoryId, $num) {
-        $categoriesManager = new CategoriesManager();
+        $categoriesManager = new CategoriesManager($this->getConnection());
         
         return $categoriesManager->updatePostCount($categoryId, $num);
     }
