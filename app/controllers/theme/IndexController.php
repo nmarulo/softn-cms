@@ -18,7 +18,7 @@ class IndexController extends ThemeControllerAbstract {
     
     public function index() {
         $postStatus    = TRUE;
-        $postsManager  = new PostsManager();
+        $postsManager  = new PostsManager($this->getConnectionDB());
         $count         = $postsManager->countByStatus($postStatus);
         $posts         = $postsManager->searchAllByStatus($postStatus, $this->rowsPages($count));
         $postsTemplate = array_map(function(Post $post) {

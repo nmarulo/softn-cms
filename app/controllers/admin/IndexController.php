@@ -25,12 +25,12 @@ use SoftnCMS\util\Util;
 class IndexController extends ControllerAbstract {
     
     public function index() {
-        $postsManager      = new PostsManager();
-        $commentsManager   = new CommentsManager();
-        $categoriesManager = new CategoriesManager();
-        $termsManager      = new TermsManager();
-        $usersManager      = new UsersManager();
-        $pagesManager      = new PagesManager();
+        $postsManager      = new PostsManager($this->getConnectionDB());
+        $commentsManager   = new CommentsManager($this->getConnectionDB());
+        $categoriesManager = new CategoriesManager($this->getConnectionDB());
+        $termsManager      = new TermsManager($this->getConnectionDB());
+        $usersManager      = new UsersManager($this->getConnectionDB());
+        $pagesManager      = new PagesManager($this->getConnectionDB());
         $posts             = $postsManager->searchAll(5);
         $comments          = $commentsManager->searchAll(5);
         

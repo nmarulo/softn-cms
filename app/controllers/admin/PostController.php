@@ -35,7 +35,7 @@ use SoftnCMS\util\Util;
 class PostController extends ControllerAbstract {
     
     public function index() {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $count        = $postsManager->count();
         
         $this->sendDataView([
@@ -47,11 +47,11 @@ class PostController extends ControllerAbstract {
     public function create() {
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $postsManager = new PostsManager();
+                $postsManager = new PostsManager($this->getConnectionDB());
                 $post         = $this->getForm('post');
                 
                 if ($postsManager->create($post)) {
-                    $usersManager = new UsersManager();
+                    $usersManager = new UsersManager($this->getConnectionDB());
                     $postId       = $postsManager->getLastInsertId();
                     $terms        = $this->getForm('terms'); //Etiquetas nuevas
                     $categories   = $this->getForm('categories'); //Categorías nuevas
@@ -78,7 +78,7 @@ class PostController extends ControllerAbstract {
     }
     
     private function createOrDeleteTerms($termsId, $postId) {
-        $postsTermsManager = new PostsTermsManager();
+        $postsTermsManager = new PostsTermsManager($this->getConnectionDB());
         $currentTermsId    = $this->getCurrentTermsId($postId);
         
         if (empty($termsId)) {
@@ -123,7 +123,7 @@ class PostController extends ControllerAbstract {
     }
     
     private function getCurrentTermsId($postId) {
-        $postsTermsManager = new PostsTermsManager();
+        $postsTermsManager = new PostsTermsManager($this->getConnectionDB());
         $postTerms         = $postsTermsManager->searchAllByPostId($postId); //Etiquetas actuales
         $currentTermsId    = array_map(function(PostTerm $value) {
             return $value->getTermId();
@@ -133,7 +133,7 @@ class PostController extends ControllerAbstract {
     }
     
     private function createOrDeleteCategories($categoriesId, $postId) {
-        $postsCategoriesManager = new PostsCategoriesManager();
+        $postsCategoriesManager = new PostsCategoriesManager($this->getConnectionDB());
         $currentCategoriesId    = $this->getCurrentCategoriesId($postId);
         
         if (empty($categoriesId)) {
@@ -178,7 +178,7 @@ class PostController extends ControllerAbstract {
     }
     
     private function getCurrentCategoriesId($postId) {
-        $postsCategoriesManager = new PostsCategoriesManager();
+        $postsCategoriesManager = new PostsCategoriesManager($this->getConnectionDB());
         $postCategories         = $postsCategoriesManager->searchAllByPostId($postId); //Categorías actuales
         $CurrentCategoriesId    = array_map(function(PostCategory $value) {
             return $value->getCategoryId();
@@ -188,8 +188,8 @@ class PostController extends ControllerAbstract {
     }
     
     private function sendViewCategoriesAndTerms() {
-        $termsManager      = new TermsManager();
-        $categoriesManager = new CategoriesManager();
+        $termsManager      = new TermsManager($this->getConnectionDB());
+        $categoriesManager = new CategoriesManager($this->getConnectionDB());
         $categories        = $categoriesManager->searchAll();
         $terms             = $termsManager->searchAll();
         
@@ -200,12 +200,12 @@ class PostController extends ControllerAbstract {
     }
     
     private function sendViewUsers() {
-        $usersManager = new UsersManager();
+        $usersManager = new UsersManager($this->getConnectionDB());
         $this->sendDataView(['usersList' => $usersManager->searchAll()]);
     }
     
     public function update($id) {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $post         = $postsManager->searchById($id);
         
         if (empty($post)) {
@@ -246,7 +246,7 @@ class PostController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            $postsManager = new PostsManager();
+            $postsManager = new PostsManager($this->getConnectionDB());
             $result       = $postsManager->deleteById($id);
             $rowCount     = $postsManager->getRowCount();
             

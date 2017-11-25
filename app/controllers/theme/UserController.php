@@ -18,7 +18,7 @@ use SoftnCMS\util\controller\ThemeControllerAbstract;
 class UserController extends ThemeControllerAbstract {
     
     public function index($id) {
-        $usersManager = new UsersManager();
+        $usersManager = new UsersManager($this->getConnectionDB());
         $user         = $usersManager->searchById($id);
         
         if (empty($user)) {
@@ -26,7 +26,7 @@ class UserController extends ThemeControllerAbstract {
         }
         
         $postStatus    = TRUE;
-        $postsManager  = new PostsManager();
+        $postsManager  = new PostsManager($this->getConnectionDB());
         $count         = $postsManager->countByUserIdAndStatus($id, $postStatus);
         $limit         = $this->rowsPages($count);
         $posts         = $postsManager->searchByUserIdAndStatus($user->getId(), $postStatus, $limit);

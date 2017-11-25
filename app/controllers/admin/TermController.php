@@ -21,7 +21,7 @@ use SoftnCMS\util\Token;
 class TermController extends ControllerAbstract {
     
     public function index() {
-        $termsManager = new TermsManager();
+        $termsManager = new TermsManager($this->getConnectionDB());
         $count        = $termsManager->count();
         
         $this->sendDataView([
@@ -33,7 +33,7 @@ class TermController extends ControllerAbstract {
     public function create() {
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $termsManager = new TermsManager();
+                $termsManager = new TermsManager($this->getConnectionDB());
                 $term         = $this->getForm('term');
                 
                 if ($termsManager->create($term)) {
@@ -54,7 +54,7 @@ class TermController extends ControllerAbstract {
     }
     
     public function update($id) {
-        $termsManager = new TermsManager();
+        $termsManager = new TermsManager($this->getConnectionDB());
         $term         = $termsManager->searchById($id);
         
         if (empty($term)) {
@@ -84,7 +84,7 @@ class TermController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            $termsManager = new TermsManager();
+            $termsManager = new TermsManager($this->getConnectionDB());
             $result       = $termsManager->deleteById($id);
             $rowCount     = $termsManager->getRowCount();
             

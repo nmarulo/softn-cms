@@ -26,7 +26,7 @@ use SoftnCMS\util\Token;
 class ProfileController extends ControllerAbstract {
     
     public function index() {
-        $profilesManager = new ProfilesManager();
+        $profilesManager = new ProfilesManager($this->getConnectionDB());
         $count           = $profilesManager->count();
         
         $this->sendDataView([
@@ -38,7 +38,7 @@ class ProfileController extends ControllerAbstract {
     public function create() {
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $profilesManager = new ProfilesManager();
+                $profilesManager = new ProfilesManager($this->getConnectionDB());
                 $profile         = $this->getForm('profile');
                 
                 if ($profilesManager->create($profile)) {
@@ -62,7 +62,7 @@ class ProfileController extends ControllerAbstract {
     }
     
     private function createOrDeleteLicenses($licensesId, $profileId) {
-        $licensesProfilesManager = new ProfilesLicensesManager();
+        $licensesProfilesManager = new ProfilesLicensesManager($this->getConnectionDB());
         
         if (empty($licensesId)) {
             if ($licensesProfilesManager->deleteAllByProfileId($profileId) === FALSE) {
@@ -105,7 +105,7 @@ class ProfileController extends ControllerAbstract {
     }
     
     private function getLicensesIdByProfileId($profileId) {
-        $licensesProfilesManager = new ProfilesLicensesManager();
+        $licensesProfilesManager = new ProfilesLicensesManager($this->getConnectionDB());
         $licensesProfile         = $licensesProfilesManager->searchAllByProfileId($profileId);
         
         return array_map(function(ProfileLicense $licenseProfile) {
@@ -114,12 +114,12 @@ class ProfileController extends ControllerAbstract {
     }
     
     private function sendViewLicenses() {
-        $licensesManager = new LicensesManager();
+        $licensesManager = new LicensesManager($this->getConnectionDB());
         $this->sendDataView(['licenses' => $licensesManager->searchAll()]);
     }
     
     public function update($id) {
-        $profilesManager = new ProfilesManager();
+        $profilesManager = new ProfilesManager($this->getConnectionDB());
         $profile         = $profilesManager->searchById($id);
         
         if (empty($profile)) {
@@ -154,7 +154,7 @@ class ProfileController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            $profilesManager = new ProfilesManager();
+            $profilesManager = new ProfilesManager($this->getConnectionDB());
             $result          = $profilesManager->deleteById($id);
             $rowCount        = $profilesManager->getRowCount();
             

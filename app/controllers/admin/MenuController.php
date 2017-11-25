@@ -26,7 +26,7 @@ use SoftnCMS\util\Util;
 class MenuController extends ControllerAbstract {
     
     public function index() {
-        $menusManager = new MenusManager();
+        $menusManager = new MenusManager($this->getConnectionDB());
         $count        = $menusManager->count();
         
         $this->sendDataView([
@@ -36,7 +36,7 @@ class MenuController extends ControllerAbstract {
     }
     
     public function create() {
-        $menusManager = new MenusManager();
+        $menusManager = new MenusManager($this->getConnectionDB());
         $parentMenuId = InputIntegerBuilder::init('parentMenu')
                                            ->setRequire(FALSE)
                                            ->setMethod($_GET)
@@ -86,7 +86,7 @@ class MenuController extends ControllerAbstract {
     }
     
     public function update($id) {
-        $menusManager = new MenusManager();
+        $menusManager = new MenusManager($this->getConnectionDB());
         $menu         = $menusManager->searchById($id);
         
         if (empty($menu)) {
@@ -119,7 +119,7 @@ class MenuController extends ControllerAbstract {
             $parentMenu = $menusManager->searchParent($parentMenuId);
             
             if (!empty($parentMenu)) {
-                $optionsManager        = new OptionsManager();
+                $optionsManager        = new OptionsManager($this->getConnectionDB());
                 $siteUrlEditParentMenu = $optionsManager->getSiteUrl() . 'admin/menu/edit/';
                 $siteUrlEditParentMenu .= $parentMenu->getId();
                 $this->sendDataView(['siteUrlEditParentMenu' => $siteUrlEditParentMenu]);
@@ -135,7 +135,7 @@ class MenuController extends ControllerAbstract {
     }
     
     public function edit($id) {
-        $menusManager = new MenusManager();
+        $menusManager = new MenusManager($this->getConnectionDB());
         $menu         = $menusManager->searchById($id);
         
         if (empty($menu)) {
@@ -152,7 +152,7 @@ class MenuController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            $menusManager = new MenusManager();
+            $menusManager = new MenusManager($this->getConnectionDB());
             $result       = $menusManager->deleteById($id);
             $rowCount     = $menusManager->getRowCountDelete();
             

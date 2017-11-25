@@ -29,7 +29,7 @@ class CommentController extends ControllerAbstract {
     public function create() {
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $commentsManager = new CommentsManager();
+                $commentsManager = new CommentsManager($this->getConnectionDB());
                 $comment         = $this->getForm('comment');
                 
                 if ($commentsManager->create($comment)) {
@@ -52,7 +52,7 @@ class CommentController extends ControllerAbstract {
     }
     
     public function update($id) {
-        $commentsManager = new CommentsManager();
+        $commentsManager = new CommentsManager($this->getConnectionDB());
         $comment         = $commentsManager->searchById($id);
         
         if (empty($comment)) {
@@ -83,7 +83,7 @@ class CommentController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            $commentsManager = new CommentsManager();
+            $commentsManager = new CommentsManager($this->getConnectionDB());
             $result          = $commentsManager->deleteById($id);
             $rowCount        = $commentsManager->getRowCount();
             
@@ -100,7 +100,7 @@ class CommentController extends ControllerAbstract {
     }
     
     public function index() {
-        $commentsManager = new CommentsManager();
+        $commentsManager = new CommentsManager($this->getConnectionDB());
         $count           = $commentsManager->count();
         
         $this->sendDataView([
@@ -127,7 +127,7 @@ class CommentController extends ControllerAbstract {
         }
         
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
-            $usersManager = new UsersManager();
+            $usersManager = new UsersManager($this->getConnectionDB());
             $user         = $usersManager->searchById(LoginManager::getSession());
             $comment->setCommentAuthor($user->getUserName());
             $comment->setCommentAuthorEmail($user->getUserEmail());

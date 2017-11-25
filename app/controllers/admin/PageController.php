@@ -25,7 +25,7 @@ use SoftnCMS\util\Util;
 class PageController extends ControllerAbstract {
     
     public function index() {
-        $pagesManager = new PagesManager();
+        $pagesManager = new PagesManager($this->getConnectionDB());
         $count        = $pagesManager->count();
         
         $this->sendDataView([
@@ -37,7 +37,7 @@ class PageController extends ControllerAbstract {
     public function create() {
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $pagesManager = new PagesManager();
+                $pagesManager = new PagesManager($this->getConnectionDB());
                 $page         = $this->getForm('page');
                 
                 if ($pagesManager->create($page)) {
@@ -58,7 +58,7 @@ class PageController extends ControllerAbstract {
     }
     
     public function update($id) {
-        $pagesManager = new PagesManager();
+        $pagesManager = new PagesManager($this->getConnectionDB());
         $page         = $pagesManager->searchById($id);
         
         if (empty($page)) {
@@ -89,7 +89,7 @@ class PageController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            $pagesManager = new PagesManager();
+            $pagesManager = new PagesManager($this->getConnectionDB());
             $result       = $pagesManager->deleteById($id);
             $rowCount     = $pagesManager->getRowCount();
             
