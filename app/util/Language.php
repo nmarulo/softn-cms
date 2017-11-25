@@ -7,9 +7,6 @@ namespace SoftnCMS\util;
 
 use Gettext\Translations;
 use Gettext\Translator;
-use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\models\managers\OptionsManager;
-use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
 
 /**
