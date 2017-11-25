@@ -45,7 +45,7 @@ class CommentTemplate extends TemplateAbstract {
         $this->comment          = $comment;
         $this->post             = NULL;
         $this->userTemplate     = NULL;
-        $optionsManager         = new OptionsManager();
+        $optionsManager         = new OptionsManager($this->getConnectionDB());
         $optionGravatar         = $optionsManager->searchByName(OptionConstants::GRAVATAR);
         $gravatar               = unserialize($optionGravatar->getOptionValue());
         $this->defaultUserImage = $gravatar->get();
@@ -61,7 +61,7 @@ class CommentTemplate extends TemplateAbstract {
     }
     
     public function initPost() {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $post         = $postsManager->searchByCommentId($this->comment->getId());
         
         if (empty($post)) {
@@ -74,7 +74,7 @@ class CommentTemplate extends TemplateAbstract {
     }
     
     public function initUser() {
-        $usersManager = new UsersManager();
+        $usersManager = new UsersManager($this->getConnectionDB());
         $user         = $usersManager->searchById($this->comment->getCommentUserId());
         
         //No lanza exception ya que un usuario no registrado puede comentar.
@@ -97,7 +97,7 @@ class CommentTemplate extends TemplateAbstract {
      * @throws \Exception
      */
     public function initComment($commentId) {
-        $commentsManager = new CommentsManager();
+        $commentsManager = new CommentsManager($this->getConnectionDB());
         $this->comment   = $commentsManager->searchById($commentId);
         
         if (empty($this->comment)) {

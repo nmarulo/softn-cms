@@ -40,7 +40,7 @@ class PageTemplate extends TemplateAbstract {
     }
     
     public function initPage($pageId) {
-        $pagesManager = new PagesManager();
+        $pagesManager = new PagesManager($this->getConnectionDB());
         $this->page   = $pagesManager->searchById($pageId);
         
         if ($this->page === FALSE) {

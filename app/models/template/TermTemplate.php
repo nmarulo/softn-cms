@@ -45,7 +45,7 @@ class TermTemplate extends TemplateAbstract {
     }
     
     public function initPosts() {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $this->posts  = $postsManager->searchAllByTermId($this->term->getId());
         $this->posts  = array_map(function(Post $post) {
             return new PostTemplate($post);
@@ -53,7 +53,7 @@ class TermTemplate extends TemplateAbstract {
     }
     
     public function initTerm($termId) {
-        $termsManager = new TermsManager();
+        $termsManager = new TermsManager($this->getConnectionDB());
         $this->term   = $termsManager->searchById($termId);
         
         if (empty($this->term)) {
