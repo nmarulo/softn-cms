@@ -15,6 +15,8 @@ abstract class TemplateAbstract {
     
     private $siteUrl;
     
+    private $connectionDB;
+    
     /**
      * Template constructor.
      */
@@ -30,4 +32,19 @@ abstract class TemplateAbstract {
     }
     
     public abstract function initRelationship();
+    
+    /**
+     * @return mixed
+     */
+    public function getConnectionDB() {
+        return $this->connectionDB;
+    }
+    
+    /**
+     * @param mixed $connectionDB
+     */
+    public function setConnectionDB($connectionDB) {
+        $this->connectionDB = $connectionDB;
+    }
+    
 }
