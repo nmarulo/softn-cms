@@ -115,7 +115,6 @@ abstract class DBAbstract implements DBInterface {
         }
         
         $result = $prepareObject->fetchAll();
-        $this->close();
         
         return $result;
     }
@@ -126,10 +125,11 @@ abstract class DBAbstract implements DBInterface {
      * @return bool|\PDOStatement
      */
     private function execute($query) {
-        $this->query   = $query;
-        $prepareObject = $this->prepareStatementObject($query);
+        $this->query = $query;
         
         try {
+            $prepareObject = $this->prepareStatementObject($query);
+            
             if (!empty($prepareObject) && $prepareObject->execute()) {
                 $this->rowCount = $prepareObject->rowCount();
                 
@@ -141,6 +141,8 @@ abstract class DBAbstract implements DBInterface {
         } catch (\Exception $ex) {
             Logger::getInstance()
                   ->error($ex->getMessage());
+        } finally {
+            $this->close();
         }
         
         return FALSE;
@@ -165,7 +167,10 @@ abstract class DBAbstract implements DBInterface {
                   ->error("Error al preparar la consulta.");
         } catch (\Exception $ex) {
             Logger::getInstance()
-                  ->error($ex->getMessage());
+                  ->error($ex->getMessage(), [
+                      'query'            => $query,
+                      'prepareStatement' => $this->prepareStatement,
+                  ]);
         }
         
         return FALSE;
@@ -262,8 +267,6 @@ abstract class DBAbstract implements DBInterface {
             return FALSE;
         }
         
-        $this->close();
-        
         return TRUE;
     }
     
@@ -296,8 +299,6 @@ abstract class DBAbstract implements DBInterface {
             return FALSE;
         }
         
-        $this->close();
-        
         return TRUE;
     }
     
@@ -325,10 +326,8 @@ abstract class DBAbstract implements DBInterface {
         
         $this->lastInsertId = $this->getConnection()
                                    ->lastInsertId();
-        $this->close();
         
         return TRUE;
-        
     }
     
     /**
