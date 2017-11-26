@@ -1,9 +1,9 @@
 <?php
 
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\tables\Menu;
 
+$menusManager  = ViewController::getViewData('menusManager');
 $siteUrl       = ViewController::getViewData('siteUrl');
 $siteUrlUpdate = $siteUrl . 'admin/menu/update/';
 $siteUrlCreate = $siteUrl . 'admin/menu/create/?parentMenu=';
@@ -61,8 +61,7 @@ $subMenuId     = $subMenu->getId();
     <?php if ($subMenu->getMenuTotalChildren() > 0) { ?>
         <ul class="list-unstyled">
             <?php
-            $menusManager = new MenusManager();
-            $menus        = $menusManager->searchByMenuSub($subMenu->getId());
+            $menus = $menusManager->searchByMenuSub($subMenu->getId());
 
             array_walk($menus, function(Menu $menu) {
                 ViewController::sendViewData('subMenu', $menu);

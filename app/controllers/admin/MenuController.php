@@ -6,7 +6,6 @@
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Menu;
@@ -144,10 +143,11 @@ class MenuController extends ControllerAbstract {
         }
         
         $this->sendDataView([
-            'menu'     => $menu,
-            'subMenus' => $menusManager->searchByMenuSub($id),
+            'menusManager' => $menusManager,
+            'menu'         => $menu,
+            'subMenus'     => $menusManager->searchByMenuSub($id),
         ]);
-        $this->view('edit');
+        $this->view();
     }
     
     public function delete($id) {
