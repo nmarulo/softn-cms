@@ -12,7 +12,7 @@ use Firebase\JWT\SignatureInvalidException;
 use SoftnCMS\models\managers\LoginManager;
 
 /**
- * Clase Token para autentificar formularios.
+ * Class Token
  * @author Nicolás Marulanda P.
  */
 class Token {
@@ -26,11 +26,16 @@ class Token {
     
     /**
      * Método que comprueba el token.
+     *
+     * @param string $token
+     *
      * @return bool
      */
-    public static function check() {
-        $token = Arrays::get($_POST, self::TOKEN_NAME);
-        $token = empty($token) ? Arrays::get($_GET, self::TOKEN_NAME) : $token;
+    public static function check($token = "") {
+        if (empty($token)) {
+            $token = Arrays::get($_POST, self::TOKEN_NAME);
+            $token = empty($token) ? Arrays::get($_GET, self::TOKEN_NAME) : $token;
+        }
         
         if (empty($token)) {
             Messages::addDanger(__('Error. Token no encontrado.'), TRUE);
@@ -54,25 +59,35 @@ class Token {
      * @return bool
      */
     private static function validate($token) {
-        $output = FALSE;
+        $output      = FALSE;
+        $tokenDecode = self::decode($token);
+        
+        if (self::checkAud($tokenDecode)) {
+            $output = TRUE;
+        } else {
+            Messages::addDanger(__('Error. El Token es invalido.'), TRUE);
+            Logger::getInstance()
+                  ->debug('El Token es invalido.', [
+                      'currentToken' => $tokenDecode,
+                      'dataCheck'    => self::aud(),
+                  ]);
+        }
+        
+        self::regenerate();
+        
+        return $output;
+    }
+    
+    /**
+     * @param string $token
+     *
+     * @return array
+     */
+    private static function decode($token) {
+        $decode = [];
         
         try {
-            $tokenDecode = (array)JWT::decode($token, self::getTokenKey(), ['HS256']);
-            $aud         = Arrays::get($tokenDecode, 'aud');
-            $data        = (array)Arrays::get($tokenDecode, 'data');
-            $user        = Arrays::get($data, 'user');
-            
-            if ($aud == self::aud() && LoginManager::getSession() == $user) {
-                $output = TRUE;
-            } else {
-                Messages::addDanger(__('Error. El Token es invalido.'), TRUE);
-                Logger::getInstance()
-                      ->debug('El Token es invalido.', [
-                          'currentToken' => $tokenDecode,
-                          'dataCheck'    => self::aud(),
-                      ]);
-            }
-            
+            $decode = (array)JWT::decode($token, self::getTokenKey(), ['HS256']);
         } catch (ExpiredException $expiredException) {
             Messages::addDanger(__('Error. El Token a caducado.'));
             Logger::getInstance()
@@ -95,9 +110,7 @@ class Token {
                   ->debug('Error desconocido en el Token.');
         }
         
-        self::regenerate();
-        
-        return $output;
+        return $decode;
     }
     
     private static function getTokenKey() {
@@ -110,6 +123,17 @@ class Token {
         
         //TODO: Que devolver si no esta definido?
         return '';
+    }
+    
+    /**
+     * @param array $tokenDecode
+     *
+     * @return bool
+     */
+    private static function checkAud($tokenDecode) {
+        $aud = Arrays::get($tokenDecode, 'aud');
+        
+        return !empty($aud) && $aud == self::aud();
     }
     
     private static function aud() {
@@ -140,21 +164,39 @@ class Token {
      */
     public static function generate() {
         if (empty(self::$TOKEN)) {
-            $time  = time();
-            $token = [
-                //Hora actual en segundos
-                "iat"  => $time,
-                //La hora, en segundos, en que el token caduca. Puede ser como máximo 3600 segundos posterior a iat.
-                'exp'  => $time + (60 * 60),
-                'nbf'  => $time,
-                'aud'  => self::aud(),
-                'data' => [
-                    'user' => LoginManager::getSession(),
-                ],
-            ];
-            
-            self::$TOKEN = JWT::encode($token, self::getTokenKey(), 'HS256');
+            self::$TOKEN = self::generateNewToken(LoginManager::dataToken());
         }
+    }
+    
+    public static function generateNewToken($data = []) {
+        $time  = time();
+        $token = [
+            //Hora actual en segundos
+            "iat"  => $time,
+            //La hora, en segundos, en que el token caduca. Puede ser como máximo 3600 segundos posterior a iat.
+            'exp'  => $time + (60 * 60),
+            'nbf'  => $time,
+            'aud'  => self::aud(),
+            'data' => $data,
+        ];
+        
+        return JWT::encode($token, self::getTokenKey(), 'HS256');
+    }
+    
+    /**
+     * @param string $token
+     *
+     * @return array
+     */
+    public static function getData($token) {
+        $tokenDecode = self::decode($token);
+        $data        = Arrays::get($tokenDecode, 'data');
+        
+        if (empty($data) || !self::checkAud($tokenDecode)) {
+            return [];
+        }
+        
+        return (array)$data;
     }
     
     /**
