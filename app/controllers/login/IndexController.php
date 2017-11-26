@@ -34,7 +34,7 @@ class IndexController extends ControllerAbstract {
                 $user       = $this->getForm('user');
                 $rememberMe = $this->getForm('rememberMe');
                 
-                if (LoginManager::login($user, $rememberMe)) {
+                if (LoginManager::login($user, $rememberMe, $this->getConnectionDB())) {
                     Messages::addSuccess(__('Inicio de sesión correcto.'), TRUE);
                     $this->redirect('admin');
                 }

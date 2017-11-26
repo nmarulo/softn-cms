@@ -9,19 +9,19 @@ require ABSPATH . 'define.php';
 require ABSPATH . 'vendor/autoload.php';
 
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\models\template\MenuTemplate;
 use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\LicenseAbstract;
+use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\MenusManager;
+use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\SidebarsManager;
 use SoftnCMS\models\managers\UsersManager;
-use SoftnCMS\rute\Router;
-use SoftnCMS\models\managers\LoginManager;
-use SoftnCMS\util\Util;
-use SoftnCMS\models\managers\OptionsManager;
-use SoftnCMS\util\Messages;
+use SoftnCMS\models\template\MenuTemplate;
 use SoftnCMS\route\Route;
-use SoftnCMS\models\LicenseAbstract;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Logger;
+use SoftnCMS\util\Messages;
+use SoftnCMS\util\Util;
 
 session_start();
 
@@ -52,7 +52,7 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
         $optionsManager = new OptionsManager($router->getConnectionDB());
         $optionLanguage = $optionsManager->searchByName(OptionConstants::LANGUAGE);
         
-        if (empty($optionLanguage)) {
+        if (!empty($optionLanguage)) {
             $language = $optionLanguage->getOptionValue();
         }
     }
@@ -91,7 +91,7 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
         
         if (LoginManager::checkSession()) {
             $usersManager = new UsersManager($router->getConnectionDB());
-            $user         = $usersManager->searchById(LoginManager::getSession());
+            $user         = $usersManager->searchById(LoginManager::getUserId());
             
             if (empty($user)) {
                 Util::redirect(Router::getSiteURL(), 'login/logout');
@@ -112,7 +112,7 @@ $router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
     $route = $router->getRoute();
     
     if ($route->getControllerDirectoryName() == Route::CONTROLLER_DIRECTORY_NAME_ADMIN) {
-        $canCallUserFun = LicenseAbstract::initCheck($router, LoginManager::getSession());
+        $canCallUserFun = LicenseAbstract::initCheck($router, LoginManager::getUserId());
         $router->setCanCallUserFunc($canCallUserFun);
         
         //TODO: Crear una implementación que permita saber cuando se realiza una llamada desde AJAX.

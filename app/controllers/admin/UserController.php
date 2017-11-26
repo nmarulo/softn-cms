@@ -124,7 +124,7 @@ class UserController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            if ($id == LoginManager::getSession()) {
+            if ($id == LoginManager::getUserId()) {
                 Messages::addDanger(__('No puedes eliminar este usuario.'), TRUE);
             } else {
                 $usersManager = new UsersManager($this->getConnectionDB());

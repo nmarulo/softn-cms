@@ -60,7 +60,7 @@ class PageController extends ThemeControllerAbstract {
         
         if (LoginManager::isLogin()) {
             $usersManager = new UsersManager($this->getConnectionDB());
-            $user         = $usersManager->searchById(LoginManager::getSession());
+            $user         = $usersManager->searchById(LoginManager::getUserId());
             $comment->setCommentAuthorEmail($user->getUserEmail());
             $comment->setCommentAuthor($user->getUserName());
         }

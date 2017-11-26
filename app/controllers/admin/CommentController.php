@@ -42,7 +42,7 @@ class CommentController extends ControllerAbstract {
         }
         
         $comment = new Comment();
-        $comment->setCommentUserId(LoginManager::getSession());
+        $comment->setCommentUserId(LoginManager::getUserId());
         $this->sendDataView([
             'isUpdate' => FALSE,
             'comment'  => $comment,
@@ -128,7 +128,7 @@ class CommentController extends ControllerAbstract {
         
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             $usersManager = new UsersManager($this->getConnectionDB());
-            $user         = $usersManager->searchById(LoginManager::getSession());
+            $user         = $usersManager->searchById(LoginManager::getUserId());
             $comment->setCommentAuthor($user->getUserName());
             $comment->setCommentAuthorEmail($user->getUserEmail());
             $comment->setCommentUserId($user->getId());

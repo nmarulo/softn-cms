@@ -70,7 +70,7 @@ class PostController extends ControllerAbstract {
         $this->sendViewUsers();
         $this->sendDataView([
             'isUpdate'       => FALSE,
-            'selectedUserId' => LoginManager::getSession(),
+            'selectedUserId' => LoginManager::getUserId(),
             'post'           => new Post(),
             'title'          => __('Publicar nueva entrada'),
         ]);
