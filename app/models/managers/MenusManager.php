@@ -7,6 +7,7 @@ namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\tables\Menu;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\database\ManagerAbstract;
 use SoftnCMS\util\Messages;
 
@@ -32,8 +33,8 @@ class MenusManager extends ManagerAbstract {
     
     private $rowCountDelete;
     
-    public function __construct() {
-        parent::__construct();
+    public function __construct(DBInterface $connection = NULL) {
+        parent::__construct($connection);
         $this->rowCountDelete = 0;
     }
     
@@ -254,7 +255,7 @@ class MenusManager extends ManagerAbstract {
         $columnMenuSub = self::MENU_SUB;
         parent::addPrepareStatement($columnMenuSub, self::MENU_SUB_PARENT, \PDO::PARAM_INT);
         $query  = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s', parent::getTableWithPrefix(), $columnMenuSub);
-        $result = Arrays::findFirst(parent::getDB()
+        $result = Arrays::findFirst(parent::getConnection()
                                           ->select($query));
         
         return empty($result) ? 0 : $result;

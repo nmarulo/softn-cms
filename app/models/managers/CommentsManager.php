@@ -7,6 +7,7 @@ namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\database\ManagerAbstract;
 
 /**
@@ -45,7 +46,7 @@ class CommentsManager extends ManagerAbstract {
     }
     
     public function delete($id) {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnection());
         $post         = $postsManager->searchByCommentId($id);
         $result       = parent::deleteById($id);
         
@@ -65,7 +66,7 @@ class CommentsManager extends ManagerAbstract {
         $result = parent::create($object);
         
         if ($result) {
-            $postsManager = new PostsManager();
+            $postsManager = new PostsManager($this->getConnection());
             $postsManager->updateCommentCount($object->getPostId(), 1);
         }
         

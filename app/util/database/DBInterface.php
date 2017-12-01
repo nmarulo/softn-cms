@@ -7,7 +7,7 @@ namespace SoftnCMS\util\database;
 
 /**
  * Interface DBInterface
- * @author MaruloPC-Desk
+ * @author Nicolás Maruladan P.
  */
 interface DBInterface {
     
@@ -59,7 +59,7 @@ interface DBInterface {
      * @param string $dataType
      * @param string $column
      */
-    public function prepareStatement($parameter, $value, $dataType = '', $column = '');
+    public function addPrepareStatement($parameter, $value, $dataType = '', $column = '');
     
     /**
      * @param array $prepareStatement

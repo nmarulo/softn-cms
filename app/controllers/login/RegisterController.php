@@ -33,7 +33,7 @@ class RegisterController extends ControllerAbstract {
     private function register() {
         if ($this->checkSubmit(Constants::FORM_SUBMIT)) {
             if ($this->isValidForm()) {
-                $usersManager = new UsersManager();
+                $usersManager = new UsersManager($this->getConnectionDB());
                 $user         = $this->getForm('user');
                 
                 if ($usersManager->create($user)) {
@@ -54,7 +54,7 @@ class RegisterController extends ControllerAbstract {
             return FALSE;
         }
         
-        $optionsManager = new OptionsManager();
+        $optionsManager = new OptionsManager($this->getConnectionDB());
         $pass           = Util::encrypt($pass, LOGGED_KEY);
         $user           = new User();
         $user->setUserPassword($pass);

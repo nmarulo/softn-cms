@@ -30,7 +30,7 @@ class LicenseController extends ControllerAbstract {
     public function create() {
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $licensesManager = new LicensesManager();
+                $licensesManager = new LicensesManager($this->getConnectionDB());
                 $license         = $this->getForm('license');
                 
                 if ($licensesManager->create($license)) {
@@ -55,7 +55,7 @@ class LicenseController extends ControllerAbstract {
     }
     
     private function createOrDeleteProfiles($profilesId, $licenseId) {
-        $profilesLicensesManager = new ProfilesLicensesManager();
+        $profilesLicensesManager = new ProfilesLicensesManager($this->getConnectionDB());
         
         if (empty($profilesId)) {
             if ($profilesLicensesManager->deleteAllByLicenseId($licenseId) === FALSE) {
@@ -98,7 +98,7 @@ class LicenseController extends ControllerAbstract {
     }
     
     private function getProfilesIdByLicenseId($licenseId) {
-        $licensesProfilesManager = new ProfilesLicensesManager();
+        $licensesProfilesManager = new ProfilesLicensesManager($this->getConnectionDB());
         $licenseProfiles         = $licensesProfilesManager->searchAllByLicenseId($licenseId);
         
         return array_map(function(ProfileLicense $profileLicense) {
@@ -107,12 +107,12 @@ class LicenseController extends ControllerAbstract {
     }
     
     private function sendViewProfiles() {
-        $profilesManager = new ProfilesManager();
+        $profilesManager = new ProfilesManager($this->getConnectionDB());
         $this->sendDataView(['profiles' => $profilesManager->searchAll()]);
     }
     
     public function update($id) {
-        $licensesManager = new LicensesManager();
+        $licensesManager = new LicensesManager($this->getConnectionDB());
         $license         = $licensesManager->searchById($id);
         
         if (empty($license)) {
@@ -122,7 +122,7 @@ class LicenseController extends ControllerAbstract {
             if ($this->isValidForm()) {
                 $license = $this->getForm('license');
                 
-                if ($licensesManager->updateByColumnId($license)) {
+                if ($licensesManager->update($license)) {
                     $license  = $licensesManager->searchById($id);
                     $profiles = $this->getForm('profiles');
                     $this->createOrDeleteProfiles($profiles, $id);
@@ -147,7 +147,7 @@ class LicenseController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            $licensesManager = new LicensesManager();
+            $licensesManager = new LicensesManager($this->getConnectionDB());
             $result          = $licensesManager->deleteById($id);
             $rowCount        = $licensesManager->getRowCount();
             
@@ -164,7 +164,7 @@ class LicenseController extends ControllerAbstract {
     }
     
     public function index() {
-        $licensesManager = new LicensesManager();
+        $licensesManager = new LicensesManager($this->getConnectionDB());
         $count           = $licensesManager->count();
         
         $this->sendDataView([

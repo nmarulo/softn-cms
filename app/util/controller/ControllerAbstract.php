@@ -10,6 +10,7 @@ use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
@@ -21,7 +22,7 @@ use SoftnCMS\util\Util;
  * Class ControllerAbstract
  * @author Nicolás Marulanda P.
  */
-abstract class ControllerAbstract {
+abstract class ControllerAbstract implements ControllerInterface {
     
     /** @var array */
     protected $inputs;
@@ -32,13 +33,17 @@ abstract class ControllerAbstract {
     /** @var bool */
     private $cancelView;
     
+    /** @var DBInterface */
+    private $connectionDB;
+    
     /**
      * ControllerAbstract constructor.
      */
     public function __construct() {
-        $this->formObjects = [];
-        $this->inputs      = [];
-        $this->cancelView  = FALSE;
+        $this->formObjects  = [];
+        $this->inputs       = [];
+        $this->cancelView   = FALSE;
+        $this->connectionDB = NULL;
     }
     
     public function reload() {
@@ -95,6 +100,20 @@ abstract class ControllerAbstract {
     
     public function messages() {
         ViewController::singleViewByDirectory('messages');
+    }
+    
+    /**
+     * @return DBInterface
+     */
+    public function getConnectionDB() {
+        return $this->connectionDB;
+    }
+    
+    /**
+     * @param DBInterface $connectionDB
+     */
+    public function setConnectionDB($connectionDB) {
+        $this->connectionDB = $connectionDB;
     }
     
     /**
@@ -239,7 +258,7 @@ abstract class ControllerAbstract {
      * @return string
      */
     protected function rowsPages($count) {
-        $optionsManager = new OptionsManager();
+        $optionsManager = new OptionsManager($this->connectionDB);
         $optionPaged    = $optionsManager->searchByName(OptionConstants::PAGED);
         $siteUrl        = $optionsManager->getSiteUrl();
         $paged          = InputIntegerBuilder::init('paged')
@@ -262,4 +281,5 @@ abstract class ControllerAbstract {
         
         return '';
     }
+    
 }

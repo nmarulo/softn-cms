@@ -25,7 +25,7 @@ use SoftnCMS\util\Util;
 class PostController extends ThemeControllerAbstract {
     
     public function index($id) {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $post         = $postsManager->searchByIdAndStatus($id, TRUE);
         
         if (empty($post)) {
@@ -39,7 +39,7 @@ class PostController extends ThemeControllerAbstract {
     
     private function comment() {
         if ($this->checkSubmit(Constants::FORM_SUBMIT) && $this->isValidForm()) {
-            $commentsManager = new CommentsManager();
+            $commentsManager = new CommentsManager($this->getConnectionDB());
             $comment         = $this->getForm('comment');
             
             if ($commentsManager->create($comment)) {
@@ -59,8 +59,8 @@ class PostController extends ThemeControllerAbstract {
         $comment->setPostId($this->getInput(CommentsManager::POST_ID));
         
         if (LoginManager::isLogin()) {
-            $usersManager = new UsersManager();
-            $user         = $usersManager->searchById(LoginManager::getSession());
+            $usersManager = new UsersManager($this->getConnectionDB());
+            $user         = $usersManager->searchById(LoginManager::getUserId());
             $comment->setCommentAuthorEmail($user->getUserEmail());
             $comment->setCommentAuthor($user->getUserName());
             $comment->setCommentStatus(1);

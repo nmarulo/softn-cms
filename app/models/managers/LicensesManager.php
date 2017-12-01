@@ -43,7 +43,7 @@ class LicensesManager extends ManagerAbstract {
         $tableOptionLicense = parent::getTableWithPrefix(OptionsLicensesManager::TABLE);
         $query              = 'SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %4$s)';
         $query              = sprintf($query, $this->getTableWithPrefix(), self::COLUMN_ID, OptionsLicensesManager::LICENSE_ID, $tableOptionLicense);
-        $result             = Arrays::findFirst(parent::getDB()
+        $result             = Arrays::findFirst(parent::getConnection()
                                                       ->select($query));
         
         return empty($result) ? 0 : $result;
@@ -81,6 +81,12 @@ class LicensesManager extends ManagerAbstract {
         
         //Si el "id" es el mismo, estamos actualizando.
         return !empty($result) && $result->getId() != $id;
+    }
+    
+    public function update($object) {
+        $object = $this->checkName($object);
+        
+        return parent::updateByColumnId($object);
     }
     
     /**

@@ -21,7 +21,7 @@ use SoftnCMS\util\Token;
 class SidebarController extends ControllerAbstract {
     
     public function index() {
-        $sidebarsManager = new SidebarsManager();
+        $sidebarsManager = new SidebarsManager($this->getConnectionDB());
         //No necesita paginación, por el momento.
         $this->sendDataView(['sidebars' => $sidebarsManager->searchAll()]);
         $this->view();
@@ -30,7 +30,7 @@ class SidebarController extends ControllerAbstract {
     public function create() {
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $sidebarsManager = new SidebarsManager();
+                $sidebarsManager = new SidebarsManager($this->getConnectionDB());
                 $sidebar         = $this->getForm('sidebar');
                 
                 if ($sidebarsManager->create($sidebar)) {
@@ -51,7 +51,7 @@ class SidebarController extends ControllerAbstract {
     }
     
     public function update($id) {
-        $sidebarsManager = new SidebarsManager();
+        $sidebarsManager = new SidebarsManager($this->getConnectionDB());
         $sidebar         = $sidebarsManager->searchById($id);
         
         if (empty($sidebar)) {
@@ -83,7 +83,7 @@ class SidebarController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            $sidebarsManager = new SidebarsManager();
+            $sidebarsManager = new SidebarsManager($this->getConnectionDB());
             $result          = $sidebarsManager->deleteById($id);
             $rowCount        = $sidebarsManager->getRowCount();
             

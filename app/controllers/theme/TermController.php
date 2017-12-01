@@ -19,7 +19,7 @@ use SoftnCMS\util\controller\ThemeControllerAbstract;
 class TermController extends ThemeControllerAbstract {
     
     public function index($id) {
-        $termsManager = new TermsManager();
+        $termsManager = new TermsManager($this->getConnectionDB());
         $term         = $termsManager->searchById($id);
         
         if (empty($term)) {
@@ -27,8 +27,8 @@ class TermController extends ThemeControllerAbstract {
         }
         
         $postStatus        = TRUE;
-        $postsManager      = new PostsManager();
-        $postsTermsManager = new PostsTermsManager();
+        $postsManager      = new PostsManager($this->getConnectionDB());
+        $postsTermsManager = new PostsTermsManager($this->getConnectionDB());
         $count             = $postsTermsManager->countPostsByTermIdAndPostStatus($id, $postStatus);
         $limit             = $this->rowsPages($count);
         $posts             = $postsManager->searchAllByTermIdAndStatus($term->getId(), $postStatus, $limit);

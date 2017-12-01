@@ -23,7 +23,7 @@ class CategoryController extends ControllerAbstract {
     public function create() {
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $categoriesManager = new CategoriesManager();
+                $categoriesManager = new CategoriesManager($this->getConnectionDB());
                 $category          = $this->getForm('category');
                 
                 if ($categoriesManager->create($category)) {
@@ -45,7 +45,7 @@ class CategoryController extends ControllerAbstract {
     }
     
     public function update($id) {
-        $categoriesManager = new CategoriesManager();
+        $categoriesManager = new CategoriesManager($this->getConnectionDB());
         $category          = $categoriesManager->searchById($id);
         
         if (empty($category)) {
@@ -75,7 +75,7 @@ class CategoryController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            $categoriesManager = new CategoriesManager();
+            $categoriesManager = new CategoriesManager($this->getConnectionDB());
             $result            = $categoriesManager->deleteById($id);
             $rowCount          = $categoriesManager->getRowCount();
             
@@ -92,7 +92,7 @@ class CategoryController extends ControllerAbstract {
     }
     
     public function index() {
-        $categoriesManager = new CategoriesManager();
+        $categoriesManager = new CategoriesManager($this->getConnectionDB());
         $count             = $categoriesManager->count();
         
         $this->sendDataView([

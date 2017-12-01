@@ -8,6 +8,7 @@ namespace SoftnCMS\models\managers;
 use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\database\ManagerAbstract;
 
 /**
@@ -23,6 +24,10 @@ class CategoriesManager extends ManagerAbstract {
     const CATEGORY_DESCRIPTION = 'category_description';
     
     const CATEGORY_POST_COUNT  = 'category_post_count';
+    
+    public function __construct(DBInterface $connection = NULL) {
+        parent::__construct($connection);
+    }
     
     public function searchByPostId($postId) {
         $columnPostId         = PostsCategoriesManager::POST_ID;

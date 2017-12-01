@@ -7,8 +7,6 @@ namespace SoftnCMS\util;
 
 use Gettext\Translations;
 use Gettext\Translator;
-use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
 
 /**
@@ -17,23 +15,19 @@ use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
  */
 class Language {
     
-    public static function load() {
-        $paramLan   = InputAlphabeticBuilder::init(PARAM_LANGUAGE)
+    public static function load($language) {
+        $paramLang  = InputAlphabeticBuilder::init(PARAM_LANGUAGE)
                                             ->setMethod($_GET)
                                             ->setSpecialChar(TRUE)
                                             ->build()
                                             ->filter();
-        $language   = empty($paramLan) ? self::getDefaultLan() : $paramLan;
         $translator = new Translator();
         $translator->register();
         
-        if (!defined('INSTALL') && empty($paramLan)) {
-            $optionsManager = new OptionsManager();
-            $optionLanguage = $optionsManager->searchByName(OptionConstants::LANGUAGE);
-            
-            if ($optionLanguage) {
-                $language = $optionLanguage->getOptionValue();
-            }
+        if (empty($language) && empty($paramLang)) {
+            $language = self::getDefaultLan();
+        } elseif (empty($language)) {
+            $language = $paramLang;
         }
         
         $pathMoFile = LANGUAGES . "$language.mo";

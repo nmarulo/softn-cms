@@ -35,13 +35,6 @@ class PostsManager extends ManagerAbstract {
     
     const USER_ID             = 'user_id';
     
-    /**
-     * PostsManager constructor.
-     */
-    public function __construct() {
-        parent::__construct();
-    }
-    
     public function searchByIdAndStatus($id, $status) {
         parent::addPrepareStatement(self::COLUMN_ID, $id, \PDO::PARAM_INT);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
@@ -55,7 +48,7 @@ class PostsManager extends ManagerAbstract {
         $table = parent::getTableWithPrefix();
         $query = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s', $table, self::POST_STATUS);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
-        $result = Arrays::findFirst(parent::getDB()
+        $result = Arrays::findFirst(parent::getConnection()
                                           ->select($query));
         
         return empty($result) ? 0 : $result;
@@ -66,7 +59,7 @@ class PostsManager extends ManagerAbstract {
         $query = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s = :%3$s', $table, self::POST_STATUS, self::USER_ID);
         parent::addPrepareStatement(self::POST_STATUS, $status, \PDO::PARAM_INT);
         parent::addPrepareStatement(self::USER_ID, $userId, \PDO::PARAM_INT);
-        $result = Arrays::findFirst(parent::getDB()
+        $result = Arrays::findFirst(parent::getConnection()
                                           ->select($query));
         
         return empty($result) ? 0 : $result;
@@ -83,9 +76,9 @@ class PostsManager extends ManagerAbstract {
     }
     
     public function deleteById($id) {
-        $usersManager           = new UsersManager();
-        $postsCategoriesManager = new PostsCategoriesManager();
-        $postsTermsManager      = new PostsTermsManager();
+        $usersManager           = new UsersManager($this->getConnection());
+        $postsCategoriesManager = new PostsCategoriesManager($this->getConnection());
+        $postsTermsManager      = new PostsTermsManager($this->getConnection());
         $postsCategories        = $postsCategoriesManager->searchAllByPostId($id);
         $postsTerms             = $postsTermsManager->searchAllByPostId($id);
         $user                   = $usersManager->searchByPostId($id);
@@ -211,7 +204,7 @@ class PostsManager extends ManagerAbstract {
         $currentUserId = $currentPost->getUserId();
         
         if ($userId != $currentUserId) {
-            $userManager = new UsersManager();
+            $userManager = new UsersManager($this->getConnection());
             $userManager->updatePostCount($userId, -1);
             $userManager->updatePostCount($currentUserId, 1);
         }

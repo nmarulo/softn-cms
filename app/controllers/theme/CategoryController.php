@@ -19,7 +19,7 @@ use SoftnCMS\util\controller\ThemeControllerAbstract;
 class CategoryController extends ThemeControllerAbstract {
     
     public function index($id) {
-        $categoriesManager = new CategoriesManager();
+        $categoriesManager = new CategoriesManager($this->getConnectionDB());
         $category          = $categoriesManager->searchById($id);
         
         if (empty($category)) {
@@ -27,8 +27,8 @@ class CategoryController extends ThemeControllerAbstract {
         }
         
         $postStatus             = TRUE;
-        $postsManager           = new PostsManager();
-        $postsCategoriesManager = new PostsCategoriesManager();
+        $postsManager           = new PostsManager($this->getConnectionDB());
+        $postsCategoriesManager = new PostsCategoriesManager($this->getConnectionDB());
         $count                  = $postsCategoriesManager->countPostsByCategoryIdAndPostStatus($id, $postStatus);
         $limit                  = $this->rowsPages($count);
         $posts                  = $postsManager->searchAllByCategoryIdAndStatus($category->getId(), $postStatus, $limit);

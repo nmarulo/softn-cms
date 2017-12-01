@@ -44,7 +44,7 @@ class MenuTemplate extends TemplateAbstract {
     
     public function initSubMenuList() {
         if (!empty($this->menu)) {
-            $menusManager = new MenusManager();
+            $menusManager = new MenusManager($this->getConnectionDB());
             $menuList     = $menusManager->searchByMenuSub($this->menu->getId());
             
             $this->subMenuList = array_map(function(Menu $menu) {
@@ -54,7 +54,7 @@ class MenuTemplate extends TemplateAbstract {
     }
     
     public function initMenu($menuId) {
-        $menusManager = new MenusManager();
+        $menusManager = new MenusManager($this->getConnectionDB());
         $this->menu   = $menusManager->searchById($menuId);
         
         if (empty($this->menu)) {

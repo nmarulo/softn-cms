@@ -29,7 +29,7 @@ use SoftnCMS\util\Util;
 class UserController extends ControllerAbstract {
     
     public function index() {
-        $usersManager = new UsersManager();
+        $usersManager = new UsersManager($this->getConnectionDB());
         $count        = $usersManager->count();
         
         $this->sendDataView([
@@ -41,7 +41,7 @@ class UserController extends ControllerAbstract {
     public function create() {
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $usersManager = new UsersManager();
+                $usersManager = new UsersManager($this->getConnectionDB());
                 $user         = $this->getForm('user');
                 
                 if ($usersManager->create($user)) {
@@ -68,12 +68,12 @@ class UserController extends ControllerAbstract {
     }
     
     private function sendViewProfiles() {
-        $profilesManager = new ProfilesManager();
+        $profilesManager = new ProfilesManager($this->getConnectionDB());
         $this->sendDataView(['profiles' => $profilesManager->searchAll()]);
     }
     
     private function getGravatar() {
-        $optionsManager = new OptionsManager();
+        $optionsManager = new OptionsManager($this->getConnectionDB());
         $gravatarOption = $optionsManager->searchByName(OptionConstants::GRAVATAR);
         
         if (empty($gravatarOption->getOptionValue())) {
@@ -86,7 +86,7 @@ class UserController extends ControllerAbstract {
     }
     
     public function update($id) {
-        $usersManager = new UsersManager();
+        $usersManager = new UsersManager($this->getConnectionDB());
         $user         = $usersManager->searchById($id);
         
         if (empty($user)) {
@@ -124,10 +124,10 @@ class UserController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            if ($id == LoginManager::getSession()) {
+            if ($id == LoginManager::getUserId()) {
                 Messages::addDanger(__('No puedes eliminar este usuario.'), TRUE);
             } else {
-                $usersManager = new UsersManager();
+                $usersManager = new UsersManager($this->getConnectionDB());
                 $result       = $usersManager->deleteById($id);
                 $rowCount     = $usersManager->getRowCount();
                 

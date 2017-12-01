@@ -57,7 +57,7 @@ class PostTemplate extends TemplateAbstract {
         $this->categoriesTemplate = [];
         $this->termsTemplate      = [];
         $this->userTemplate       = NULL;
-        $optionsManager           = new OptionsManager();
+        $optionsManager           = new OptionsManager($this->getConnectionDB());
         $optionComment            = $optionsManager->searchByName(OptionConstants::COMMENT);
         $this->canCommentAnyUser  = !empty($optionComment->getOptionValue());
         
@@ -74,7 +74,7 @@ class PostTemplate extends TemplateAbstract {
     }
     
     public function initUser() {
-        $usersManager = new UsersManager();
+        $usersManager = new UsersManager($this->getConnectionDB());
         $user         = $usersManager->searchById($this->post->getUserId());
         
         if (empty($user)) {
@@ -87,7 +87,7 @@ class PostTemplate extends TemplateAbstract {
     }
     
     public function initCategories() {
-        $categoriesManager        = new CategoriesManager();
+        $categoriesManager        = new CategoriesManager($this->getConnectionDB());
         $this->categoriesTemplate = $categoriesManager->searchByPostId($this->post->getId());
         $this->categoriesTemplate = array_map(function(Category $category) {
             return new CategoryTemplate($category);
@@ -95,7 +95,7 @@ class PostTemplate extends TemplateAbstract {
     }
     
     public function initTerms() {
-        $termsManager        = new TermsManager();
+        $termsManager        = new TermsManager($this->getConnectionDB());
         $this->termsTemplate = $termsManager->searchByPostId($this->post->getId());
         $this->termsTemplate = array_map(function(Term $term) {
             return new TermTemplate($term);
@@ -104,7 +104,7 @@ class PostTemplate extends TemplateAbstract {
     
     public function initComments() {
         $commentStatus          = TRUE;
-        $commentsManager        = new CommentsManager();
+        $commentsManager        = new CommentsManager($this->getConnectionDB());
         $this->commentsTemplate = $commentsManager->searchByPostIdAndStatus($this->post->getId(), $commentStatus);
         $this->commentsTemplate = array_map(function(Comment $comment) {
             return new CommentTemplate($comment);
@@ -119,7 +119,7 @@ class PostTemplate extends TemplateAbstract {
      * @throws \Exception
      */
     public function initPost($postId) {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $this->post   = $postsManager->searchById($postId);
         
         if ($this->post === FALSE) {

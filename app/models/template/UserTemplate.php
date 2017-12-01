@@ -45,7 +45,7 @@ class UserTemplate extends TemplateAbstract {
     }
     
     public function initPosts() {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $this->post   = $postsManager->searchAllByUserId($this->user->getId());
         $this->post   = array_map(function(Post $post) {
             return new PostTemplate($post);
@@ -53,7 +53,7 @@ class UserTemplate extends TemplateAbstract {
     }
     
     public function initUser($userId) {
-        $usersManager = new UsersManager();
+        $usersManager = new UsersManager($this->getConnectionDB());
         $this->user   = $usersManager->searchById($userId);
         
         if (empty($this->user)) {

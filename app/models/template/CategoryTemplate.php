@@ -45,7 +45,7 @@ class CategoryTemplate extends TemplateAbstract {
     }
     
     public function initPosts() {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $this->posts  = $postsManager->searchAllByCategoryId($this->category->getId());
         $this->posts  = array_map(function(Post $post) {
             return new PostTemplate($post);
@@ -53,7 +53,7 @@ class CategoryTemplate extends TemplateAbstract {
     }
     
     public function initCategory($categoryId) {
-        $categoriesManager = new CategoriesManager();
+        $categoriesManager = new CategoriesManager($this->getConnectionDB());
         $this->category    = $categoriesManager->searchById($categoryId);
         
         if (empty($this->category)) {

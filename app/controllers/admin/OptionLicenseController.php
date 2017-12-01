@@ -30,7 +30,7 @@ class OptionLicenseController extends ControllerAbstract {
     private $inputNames;
     
     public function index() {
-        $licensesManager = new LicensesManager();
+        $licensesManager = new LicensesManager($this->getConnectionDB());
         $count           = $licensesManager->configuredCount();
         
         $this->sendDataView([
@@ -40,7 +40,7 @@ class OptionLicenseController extends ControllerAbstract {
     }
     
     public function create() {
-        $licensesManager = new LicensesManager();
+        $licensesManager = new LicensesManager($this->getConnectionDB());
         $licenses        = $licensesManager->searchAllWithoutConfigured();
         
         if (empty($licenses)) {
@@ -50,7 +50,7 @@ class OptionLicenseController extends ControllerAbstract {
         
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $optionsLicenseManager = new OptionsLicensesManager();
+                $optionsLicenseManager = new OptionsLicensesManager($this->getConnectionDB());
                 $optionsLicenses       = $this->getForm('optionsLicenses');
                 $len                   = count($optionsLicenses);
                 $notError              = TRUE;
@@ -134,7 +134,7 @@ class OptionLicenseController extends ControllerAbstract {
          * ya que el ID del permisos es único dato común para esa configuración.
          */
         
-        $optionsLicensesManager = new OptionsLicensesManager();
+        $optionsLicensesManager = new OptionsLicensesManager($this->getConnectionDB());
         $optionsLicenses        = $optionsLicensesManager->searchAllByLicenseId($id);
         
         if (empty($optionsLicenses)) {
@@ -191,7 +191,7 @@ class OptionLicenseController extends ControllerAbstract {
             $optionsLicensesList[$controllerName]['delete']    = $optionLicense->getOptionLicenseCanDelete();
         });
         
-        $licensesManager = new LicensesManager();
+        $licensesManager = new LicensesManager($this->getConnectionDB());
         $this->sendDataView([
             'isUpdate'        => TRUE,
             'optionsLicenses' => $optionsLicensesList,
@@ -205,7 +205,7 @@ class OptionLicenseController extends ControllerAbstract {
     
     public function delete($id) {
         if (Token::check()) {
-            $optionsLicenses = new OptionsLicensesManager();
+            $optionsLicenses = new OptionsLicensesManager($this->getConnectionDB());
             $result          = $optionsLicenses->deleteByLicenseId($id);
             $rowCount        = $optionsLicenses->getRowCount();
             

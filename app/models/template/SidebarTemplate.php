@@ -32,7 +32,7 @@ class SidebarTemplate extends TemplateAbstract {
     }
     
     public function initSidebar($sidebarId) {
-        $sidebarsManager = new SidebarsManager();
+        $sidebarsManager = new SidebarsManager($this->getConnectionDB());
         $this->sidebar   = $sidebarsManager->searchById($sidebarId);
         
         if (empty($this->sidebar)) {

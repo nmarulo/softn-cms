@@ -30,11 +30,10 @@ use SoftnCMS\util\Util;
 class OptionController extends ControllerAbstract {
     
     public function index() {
-        $this->update();
-        
-        $profilesManager      = new ProfilesManager();
-        $menusManager         = new MenusManager();
-        $optionsManager       = new OptionsManager();
+        $optionsManager = new OptionsManager($this->getConnectionDB());
+        $this->update($optionsManager);
+        $profilesManager      = new ProfilesManager($this->getConnectionDB());
+        $menusManager         = new MenusManager($this->getConnectionDB());
         $optionComment        = $optionsManager->searchByName(OptionConstants::COMMENT);
         $optionTitle          = $optionsManager->searchByName(OptionConstants::SITE_TITLE);
         $optionDescription    = $optionsManager->searchByName(OptionConstants::SITE_DESCRIPTION);
@@ -49,7 +48,7 @@ class OptionController extends ControllerAbstract {
         $menuList             = $menusManager->searchAllParent();
         
         $this->sendViewOptionLanguage();
-        $this->sendViewOptionGravatar();
+        $this->sendViewOptionGravatar($optionsManager);
         $this->sendDataView([
             'optionComment'        => $optionComment,
             'optionLanguage'       => $optionLanguage,
@@ -65,16 +64,15 @@ class OptionController extends ControllerAbstract {
             'optionDefaultProfile' => $optionDefaultProfile,
             'profilesList'         => $profilesList,
         ]);
-        $this->view('index');
+        $this->view();
     }
     
-    private function update() {
+    private function update(OptionsManager $optionsManager) {
         if ($this->checkSubmit(Constants::FORM_UPDATE)) {
             if ($this->isValidForm()) {
-                $optionsManager = new OptionsManager();
-                $options        = $this->getForm('options');
-                $notError       = TRUE;
-                $len            = count($options);
+                $options  = $this->getForm('options');
+                $notError = TRUE;
+                $len      = count($options);
                 
                 for ($i = 0; $i < $len && $notError; ++$i) {
                     $notError = $optionsManager->updateByColumnName(Arrays::get($options, $i));
@@ -94,14 +92,15 @@ class OptionController extends ControllerAbstract {
     private function sendViewOptionLanguage() {
         $listLanguages = Util::getFilesAndDirectories(LANGUAGES);
         $listLanguages = array_filter($listLanguages, function($language) {
-            $aux          = explode('.', $language);
-            $lastPosition = count($aux) - 1;
+            $explodeLanguage = explode('.', $language);
+            $lastPosition    = count($explodeLanguage) - 1;
             
-            if (Arrays::get($aux, $lastPosition) === FALSE || Arrays::get($aux, 0) === FALSE) {
+            if (Arrays::get($explodeLanguage, $lastPosition) === FALSE || Arrays::get($explodeLanguage, 0) === FALSE) {
                 return FALSE;
             }
             
-            return Arrays::get($aux, $lastPosition) == 'mo' && Arrays::get($aux, 0) != 'softncms';
+            //TODO:
+            return Arrays::get($explodeLanguage, $lastPosition) == 'mo' && Arrays::get($explodeLanguage, 0) != 'softncms';
         });
         $listLanguages = array_map(function($language) {
             return Arrays::get(explode('.', $language), 0);
@@ -110,8 +109,7 @@ class OptionController extends ControllerAbstract {
         $this->sendDataView(['listLanguages' => $listLanguages]);
     }
     
-    private function sendViewOptionGravatar() {
-        $optionsManager = new OptionsManager();
+    private function sendViewOptionGravatar(OptionsManager $optionsManager) {
         $optionGravatar = $optionsManager->searchByName(OptionConstants::GRAVATAR);
         $gravatar       = unserialize($optionGravatar->getOptionValue());
         
