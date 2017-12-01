@@ -83,6 +83,12 @@ class LicensesManager extends ManagerAbstract {
         return !empty($result) && $result->getId() != $id;
     }
     
+    public function update($object) {
+        $object = $this->checkName($object);
+        
+        return parent::updateByColumnId($object);
+    }
+    
     /**
      * @param License $object
      */

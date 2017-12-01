@@ -241,7 +241,7 @@ abstract class ManagerAbstract {
         if (empty($this->connection->getPrepareStatement())) {
             return FALSE;
         }
-    
+        
         $this->connection->setTable($this->getTableWithPrefix());
         
         return $this->connection->deleteByPrepareStatement($allLogicalOperators);
@@ -273,7 +273,7 @@ abstract class ManagerAbstract {
         if (empty($query)) {
             return FALSE;
         }
-    
+        
         $this->connection->setTable($this->getTableWithPrefix());
         
         return $this->connection->delete($query);
