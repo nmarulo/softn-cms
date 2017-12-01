@@ -188,6 +188,7 @@ abstract class ManagerAbstract {
         }
         
         $this->prepareStatement($object);
+        $this->connection->setTable($this->getTableWithPrefix());
         
         if ($this->connection->insert()) {
             return $this->connection->getLastInsetId();
@@ -211,6 +212,7 @@ abstract class ManagerAbstract {
         }
         
         $this->prepareStatement($object);
+        $this->connection->setTable($this->getTableWithPrefix());
         
         return $this->connection->updateByColumn($columnName);
     }
@@ -239,6 +241,8 @@ abstract class ManagerAbstract {
         if (empty($this->connection->getPrepareStatement())) {
             return FALSE;
         }
+    
+        $this->connection->setTable($this->getTableWithPrefix());
         
         return $this->connection->deleteByPrepareStatement($allLogicalOperators);
     }
@@ -269,6 +273,8 @@ abstract class ManagerAbstract {
         if (empty($query)) {
             return FALSE;
         }
+    
+        $this->connection->setTable($this->getTableWithPrefix());
         
         return $this->connection->delete($query);
     }
