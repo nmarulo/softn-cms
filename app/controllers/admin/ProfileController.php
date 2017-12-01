@@ -129,7 +129,7 @@ class ProfileController extends ControllerAbstract {
             if ($this->isValidForm()) {
                 $profile = $this->getForm('profile');
                 
-                if ($profilesManager->updateByColumnId($profile)) {
+                if ($profilesManager->update($profile)) {
                     $profile  = $profilesManager->searchById($id);
                     $licenses = $this->getForm('licenses');
                     $this->createOrDeleteLicenses($licenses, $id);

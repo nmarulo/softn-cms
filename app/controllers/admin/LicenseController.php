@@ -55,7 +55,7 @@ class LicenseController extends ControllerAbstract {
     }
     
     private function createOrDeleteProfiles($profilesId, $licenseId) {
-        $profilesLicensesManager = new ProfilesLicensesManager();
+        $profilesLicensesManager = new ProfilesLicensesManager($this->getConnectionDB());
         
         if (empty($profilesId)) {
             if ($profilesLicensesManager->deleteAllByLicenseId($licenseId) === FALSE) {
@@ -98,7 +98,7 @@ class LicenseController extends ControllerAbstract {
     }
     
     private function getProfilesIdByLicenseId($licenseId) {
-        $licensesProfilesManager = new ProfilesLicensesManager();
+        $licensesProfilesManager = new ProfilesLicensesManager($this->getConnectionDB());
         $licenseProfiles         = $licensesProfilesManager->searchAllByLicenseId($licenseId);
         
         return array_map(function(ProfileLicense $profileLicense) {
@@ -122,7 +122,7 @@ class LicenseController extends ControllerAbstract {
             if ($this->isValidForm()) {
                 $license = $this->getForm('license');
                 
-                if ($licensesManager->updateByColumnId($license)) {
+                if ($licensesManager->update($license)) {
                     $license  = $licensesManager->searchById($id);
                     $profiles = $this->getForm('profiles');
                     $this->createOrDeleteProfiles($profiles, $id);
