@@ -33,7 +33,10 @@ class PageController extends ThemeControllerAbstract {
         }
         
         $this->comment();
-        $this->sendDataView(['page' => new PageTemplate($page, TRUE)]);
+        $this->sendDataView([
+            'page' => new PageTemplate($page, TRUE, $this->getRequest()
+                                                         ->getSiteUrl(), $this->getConnectionDB()),
+        ]);
         $this->view();
     }
     

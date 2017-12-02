@@ -6,12 +6,13 @@
 namespace SoftnCMS\models\template;
 
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
+use SoftnCMS\models\TemplateAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Escape;
 use SoftnCMS\util\Logger;
 
@@ -36,11 +37,13 @@ class CommentTemplate extends TemplateAbstract {
     /**
      * CommentTemplate constructor.
      *
-     * @param Comment $comment
-     * @param bool    $initRelationship
+     * @param Comment     $comment
+     * @param bool        $initRelationship
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(Comment $comment = NULL, $initRelationship = FALSE) {
-        parent::__construct();
+    public function __construct(Comment $comment = NULL, $initRelationship = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $comment->setCommentContents(Escape::htmlDecode($comment->getCommentContents()));
         $this->comment          = $comment;
         $this->post             = NULL;
@@ -80,7 +83,7 @@ class CommentTemplate extends TemplateAbstract {
         //No lanza exception ya que un usuario no registrado puede comentar.
         //TODO: agregar a la pagina de opciones si un usuario no registrado puede comentar.
         if (!empty($user)) {
-            $this->userTemplate = new UserTemplate($user);
+            $this->userTemplate = new UserTemplate($user, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }
     }
     

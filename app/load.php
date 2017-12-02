@@ -111,7 +111,7 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
             $menusManager    = new MenusManager($router->getConnectionDB());
             $optionMenu      = $optionsManager->searchByName(OptionConstants::MENU);
             $menu            = $menusManager->searchById($optionMenu->getOptionValue());
-            $menuTemplate    = new MenuTemplate($menu, TRUE);
+            $menuTemplate    = new MenuTemplate($menu, TRUE, $siteUrl, $router->getConnectionDB());
             $menuList        = $menuTemplate->getSubMenuList();
             $sidebarsManager = new SidebarsManager($router->getConnectionDB());
             $sidebars        = $sidebarsManager->searchAll();

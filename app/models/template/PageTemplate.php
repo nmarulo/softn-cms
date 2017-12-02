@@ -5,9 +5,10 @@
 
 namespace SoftnCMS\models\template;
 
-use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\PagesManager;
 use SoftnCMS\models\tables\Page;
+use SoftnCMS\models\TemplateAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Escape;
 use SoftnCMS\util\Logger;
 
@@ -23,11 +24,13 @@ class PageTemplate extends TemplateAbstract {
     /**
      * PageTemplate constructor.
      *
-     * @param Page $page
-     * @param bool $initRelationShip
+     * @param Page        $page
+     * @param bool        $initRelationShip
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(Page $page = NULL, $initRelationShip = FALSE) {
-        parent::__construct();
+    public function __construct(Page $page = NULL, $initRelationShip = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $page->setPageContents(Escape::htmlDecode($page->getPageContents()));
         $this->page = $page;
         

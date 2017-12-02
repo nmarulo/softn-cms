@@ -17,6 +17,7 @@ use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\Term;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Escape;
 use SoftnCMS\util\Logger;
 
@@ -47,11 +48,13 @@ class PostTemplate extends TemplateAbstract {
     /**
      * PostTemplate constructor.
      *
-     * @param Post $post
-     * @param bool $initRelationship
+     * @param Post        $post
+     * @param bool        $initRelationship
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(Post $post = NULL, $initRelationship = FALSE) {
-        parent::__construct();
+    public function __construct(Post $post = NULL, $initRelationship = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $post->setPostContents(Escape::htmlDecode($post->getPostContents()));
         $this->post               = $post;
         $this->categoriesTemplate = [];
@@ -83,14 +86,14 @@ class PostTemplate extends TemplateAbstract {
             throw new \Exception("El usuario no existe.");
         }
         
-        $this->userTemplate = new UserTemplate($user);
+        $this->userTemplate = new UserTemplate($user, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
     }
     
     public function initCategories() {
         $categoriesManager        = new CategoriesManager($this->getConnectionDB());
         $this->categoriesTemplate = $categoriesManager->searchByPostId($this->post->getId());
         $this->categoriesTemplate = array_map(function(Category $category) {
-            return new CategoryTemplate($category);
+            return new CategoryTemplate($category, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }, $this->categoriesTemplate);
     }
     
@@ -98,7 +101,7 @@ class PostTemplate extends TemplateAbstract {
         $termsManager        = new TermsManager($this->getConnectionDB());
         $this->termsTemplate = $termsManager->searchByPostId($this->post->getId());
         $this->termsTemplate = array_map(function(Term $term) {
-            return new TermTemplate($term);
+            return new TermTemplate($term, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }, $this->termsTemplate);
     }
     
@@ -107,7 +110,7 @@ class PostTemplate extends TemplateAbstract {
         $commentsManager        = new CommentsManager($this->getConnectionDB());
         $this->commentsTemplate = $commentsManager->searchByPostIdAndStatus($this->post->getId(), $commentStatus);
         $this->commentsTemplate = array_map(function(Comment $comment) {
-            return new CommentTemplate($comment);
+            return new CommentTemplate($comment, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }, $this->commentsTemplate);
         
         $this->post->setPostCommentCount(count($this->commentsTemplate));

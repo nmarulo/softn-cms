@@ -5,10 +5,10 @@
 
 namespace SoftnCMS\controllers\theme;
 
-use SoftnCMS\models\template\PostTemplate;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
+use SoftnCMS\models\template\PostTemplate;
 use SoftnCMS\util\controller\ThemeControllerAbstract;
 
 /**
@@ -31,7 +31,8 @@ class UserController extends ThemeControllerAbstract {
         $limit         = $this->rowsPages($count);
         $posts         = $postsManager->searchByUserIdAndStatus($user->getId(), $postStatus, $limit);
         $postsTemplate = array_map(function(Post $post) {
-            return new PostTemplate($post, TRUE);
+            return new PostTemplate($post, TRUE, $this->getRequest()
+                                                      ->getSiteUrl(), $this->getConnectionDB());
         }, $posts);
         
         $this->sendDataView([

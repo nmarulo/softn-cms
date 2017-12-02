@@ -33,7 +33,8 @@ class CategoryController extends ThemeControllerAbstract {
         $limit                  = $this->rowsPages($count);
         $posts                  = $postsManager->searchAllByCategoryIdAndStatus($category->getId(), $postStatus, $limit);
         $postsTemplate          = array_map(function(Post $post) {
-            return new PostTemplate($post, TRUE);
+            return new PostTemplate($post, TRUE, $this->getRequest()
+                                                      ->getSiteUrl(), $this->getConnectionDB());
         }, $posts);
         
         $this->sendDataView([
