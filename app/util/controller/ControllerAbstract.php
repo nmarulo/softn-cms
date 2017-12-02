@@ -8,6 +8,7 @@ namespace SoftnCMS\util\controller;
 use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\rute\Request;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\database\DBInterface;
@@ -25,7 +26,7 @@ use SoftnCMS\util\Util;
 abstract class ControllerAbstract implements ControllerInterface {
     
     /** @var array */
-    protected $inputs;
+    private $inputs;
     
     /** @var array */
     private $formObjects;
@@ -36,6 +37,12 @@ abstract class ControllerAbstract implements ControllerInterface {
     /** @var DBInterface */
     private $connectionDB;
     
+    /** @var Request */
+    private $request;
+    
+    /** @var Router */
+    private $router;
+    
     /**
      * ControllerAbstract constructor.
      */
@@ -44,6 +51,8 @@ abstract class ControllerAbstract implements ControllerInterface {
         $this->inputs       = [];
         $this->cancelView   = FALSE;
         $this->connectionDB = NULL;
+        $this->router       = NULL;
+        $this->request      = NULL;
     }
     
     public function reload() {
@@ -117,11 +126,47 @@ abstract class ControllerAbstract implements ControllerInterface {
     }
     
     /**
+     * @return Request
+     */
+    public function getRequest() {
+        return $this->request;
+    }
+    
+    /**
+     * @param Request $request
+     */
+    public function setRequest($request) {
+        $this->request = $request;
+    }
+    
+    /**
+     * @return Router
+     */
+    public function getRouter() {
+        return $this->router;
+    }
+    
+    /**
+     * @param Router $router
+     */
+    public function setRouter($router) {
+        $this->router = $router;
+    }
+    
+    /**
+     * @return array
+     */
+    public function getInputs() {
+        return $this->inputs;
+    }
+    
+    /**
      * @param string $actionName
      * @param array  $parametersValues
      */
     protected function redirectToAction($actionName, $parametersValues = []) {
-        $this->redirectControllerToAction(Router::getCurrentNameController(), $actionName, $parametersValues);
+        $this->redirectControllerToAction($this->request->getRoute()
+                                                        ->getControllerName(), $actionName, $parametersValues);
     }
     
     /**
@@ -130,7 +175,8 @@ abstract class ControllerAbstract implements ControllerInterface {
      * @param array  $parametersValues
      */
     protected function redirectControllerToAction($controllerName, $actionName, $parametersValues = []) {
-        $this->redirectRoute(Router::getCurrentDirectory(), $controllerName, $actionName, $parametersValues);
+        $this->redirectRoute($this->request->getRoute()
+                                           ->getControllerDirectoryName(), $controllerName, $actionName, $parametersValues);
     }
     
     /**
@@ -155,7 +201,7 @@ abstract class ControllerAbstract implements ControllerInterface {
             }, $parametersValues, array_keys($parametersValues));
             $parameters = implode('&', $parameters);
             $parameters = empty($parameters) ? '' : "?$parameters";
-            Util::redirect(Router::getSiteURL(), sprintf('%1$s%2$s', $route, $parameters));
+            Util::redirect($this->request->getSiteUrl(), sprintf('%1$s%2$s', $route, $parameters));
         }
     }
     
