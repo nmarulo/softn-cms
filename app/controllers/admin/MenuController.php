@@ -9,14 +9,12 @@ use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\tables\Menu;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputUrlBuilder;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Token;
-use SoftnCMS\util\Util;
 
 /**
  * Class MenuController
@@ -90,7 +88,7 @@ class MenuController extends ControllerAbstract {
         
         if (empty($menu)) {
             Messages::addDanger(__('El menu no existe.'), TRUE);
-            Util::redirect(Router::getSiteURL(), 'admin/menu');
+            $this->redirectToAction('index');
         } elseif ($this->checkSubmit(Constants::FORM_UPDATE)) {
             if ($this->isValidForm()) {
                 $menu = $this->getForm('menu');

@@ -11,7 +11,6 @@ use SoftnCMS\models\managers\OptionsLicensesManager;
 use SoftnCMS\models\tables\License;
 use SoftnCMS\models\tables\OptionLicense;
 use SoftnCMS\route\Route;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
@@ -139,7 +138,7 @@ class OptionLicenseController extends ControllerAbstract {
         
         if (empty($optionsLicenses)) {
             Messages::addDanger(__('La configuración del permiso no existe.'), TRUE);
-            Util::redirect(Router::getSiteURL() . 'admin/optionlicense');
+            $this->redirectToAction('index');
         } elseif ($this->checkSubmit(Constants::FORM_UPDATE)) {
             if ($this->isValidForm()) {
                 $optionsLicenses = $this->getForm('optionsLicenses');
@@ -233,7 +232,7 @@ class OptionLicenseController extends ControllerAbstract {
              * CATEGORY_INDEX_category_description
          */
         $optionsLicenses  = [];
-        $filterInputsKeys = array_keys($this->inputs);
+        $filterInputsKeys = array_keys($this->getInputs());
         
         array_walk($this->inputNames, function($inputName) use ($filterInputsKeys, $licenseId, &$optionsLicenses) {
             $pageName   = Arrays::get($inputName, 'pageName');

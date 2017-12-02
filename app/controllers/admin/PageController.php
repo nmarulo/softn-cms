@@ -8,7 +8,6 @@ namespace SoftnCMS\controllers\admin;
 use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\models\managers\PagesManager;
 use SoftnCMS\models\tables\Page;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
@@ -80,7 +79,8 @@ class PageController extends ControllerAbstract {
         
         $this->sendDataView([
             'isUpdate' => TRUE,
-            'linkPage' => Router::getSiteURL() . 'page/' . $page->getId(),
+            'linkPage' => $this->getRequest()
+                               ->getSiteUrl() . 'page/' . $page->getId(),
             'page'     => $page,
             'title'    => __('Actualizar pagina'),
         ]);

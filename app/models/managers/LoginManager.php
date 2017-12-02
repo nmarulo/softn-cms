@@ -77,8 +77,6 @@ class LoginManager {
         if (empty($user)) {
             Logger::getInstance()
                   ->error(__('No se encontró el usuario de la sesión.'), ['data' => $data]);
-            
-            Util::redirect(Router::getSiteURL(), 'login/logout');
         }
         
         return $user;
