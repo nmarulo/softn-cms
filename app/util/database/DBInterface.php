@@ -62,6 +62,11 @@ interface DBInterface {
     public function addPrepareStatement($parameter, $value, $dataType = '', $column = '');
     
     /**
+     * @return array
+     */
+    public function getPrepareStatement();
+    
+    /**
      * @param array $prepareStatement
      */
     public function setPrepareStatement($prepareStatement);
