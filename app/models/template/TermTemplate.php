@@ -5,11 +5,12 @@
 
 namespace SoftnCMS\models\template;
 
-use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\TermsManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\Term;
+use SoftnCMS\models\TemplateAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Logger;
 
 /**
@@ -27,11 +28,13 @@ class TermTemplate extends TemplateAbstract {
     /**
      * CategoryTemplate constructor.
      *
-     * @param Term $term
-     * @param bool $initRelationShip
+     * @param Term        $term
+     * @param bool        $initRelationShip
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(Term $term = NULL, $initRelationShip = FALSE) {
-        parent::__construct();
+    public function __construct(Term $term = NULL, $initRelationShip = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $this->term  = $term;
         $this->posts = [];
         
@@ -48,7 +51,7 @@ class TermTemplate extends TemplateAbstract {
         $postsManager = new PostsManager($this->getConnectionDB());
         $this->posts  = $postsManager->searchAllByTermId($this->term->getId());
         $this->posts  = array_map(function(Post $post) {
-            return new PostTemplate($post);
+            return new PostTemplate($post, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }, $this->posts);
     }
     

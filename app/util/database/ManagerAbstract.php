@@ -15,7 +15,7 @@ abstract class ManagerAbstract {
     
     const COLUMN_ID = 'id';
     
-    /** @var DBAbstract */
+    /** @var DBInterface */
     private $connection;
     
     /**
@@ -287,7 +287,7 @@ abstract class ManagerAbstract {
     }
     
     /**
-     * @return DBAbstract
+     * @return DBInterface
      */
     protected function getConnection() {
         return $this->connection;

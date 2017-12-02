@@ -5,9 +5,10 @@
 
 namespace SoftnCMS\models\template;
 
-use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\tables\Menu;
+use SoftnCMS\models\TemplateAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Logger;
 
 /**
@@ -25,11 +26,13 @@ class MenuTemplate extends TemplateAbstract {
     /**
      * MenuTemplate constructor.
      *
-     * @param Menu $menu
-     * @param bool $initRelationShip
+     * @param Menu        $menu
+     * @param bool        $initRelationShip
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(Menu $menu = NULL, $initRelationShip = FALSE) {
-        parent::__construct();
+    public function __construct(Menu $menu = NULL, $initRelationShip = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $this->menu        = $menu;
         $this->subMenuList = [];
         
@@ -48,7 +51,7 @@ class MenuTemplate extends TemplateAbstract {
             $menuList     = $menusManager->searchByMenuSub($this->menu->getId());
             
             $this->subMenuList = array_map(function(Menu $menu) {
-                return new MenuTemplate($menu, TRUE);
+                return new MenuTemplate($menu, TRUE, $this->getSiteUrl(), $this->getConnectionDB());
             }, $menuList);
         }
     }

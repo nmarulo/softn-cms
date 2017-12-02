@@ -6,12 +6,12 @@
 namespace SoftnCMS\controllers\theme;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\models\template\PostTemplate;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
+use SoftnCMS\models\template\PostTemplate;
 use SoftnCMS\util\controller\ThemeControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
@@ -33,7 +33,10 @@ class PostController extends ThemeControllerAbstract {
         }
         
         $this->comment();
-        $this->sendDataView(['post' => new PostTemplate($post, TRUE)]);
+        $this->sendDataView([
+            'post' => new PostTemplate($post, TRUE, $this->getRequest()
+                                                         ->getSiteUrl(), $this->getConnectionDB()),
+        ]);
         $this->view();
     }
     

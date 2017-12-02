@@ -10,6 +10,7 @@ use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\User;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Logger;
 
 /**
@@ -27,11 +28,13 @@ class UserTemplate extends TemplateAbstract {
     /**
      * UserTemplate constructor.
      *
-     * @param User $user
-     * @param bool $initRelationship
+     * @param User        $user
+     * @param bool        $initRelationship
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(User $user = NULL, $initRelationship = FALSE) {
-        parent::__construct();
+    public function __construct(User $user = NULL, $initRelationship = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $this->user = $user;
         $this->post = [];
         
@@ -48,7 +51,7 @@ class UserTemplate extends TemplateAbstract {
         $postsManager = new PostsManager($this->getConnectionDB());
         $this->post   = $postsManager->searchAllByUserId($this->user->getId());
         $this->post   = array_map(function(Post $post) {
-            return new PostTemplate($post);
+            return new PostTemplate($post, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }, $this->post);
     }
     

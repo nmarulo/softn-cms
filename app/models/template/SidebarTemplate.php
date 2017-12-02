@@ -5,9 +5,10 @@
 
 namespace SoftnCMS\models\template;
 
-use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\SidebarsManager;
 use SoftnCMS\models\tables\Sidebar;
+use SoftnCMS\models\TemplateAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Logger;
 
 /**
@@ -21,10 +22,13 @@ class SidebarTemplate extends TemplateAbstract {
     /**
      * SidebarTemplate constructor.
      *
-     * @param Sidebar $sidebar
+     * @param Sidebar     $sidebar
+     * @param bool        $initRelationShip
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct($sidebar = NULL) {
-        parent::__construct();
+    public function __construct($sidebar = NULL, $initRelationShip = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $this->sidebar = $sidebar;
     }
     
