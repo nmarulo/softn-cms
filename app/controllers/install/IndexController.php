@@ -35,13 +35,13 @@ class IndexController extends ControllerAbstract {
     private function check() {
         $installManager = new InstallManager();
         
-        if (!$installManager->checkConnection($this->inputs)) {
+        if (!$installManager->checkConnection($this->getInputs())) {
             Messages::addDanger(__('Error al establecer la conexión con la base de datos.'));
             
             return FALSE;
         }
         
-        if (!$installManager->createFileConfig($this->inputs)) {
+        if (!$installManager->createFileConfig($this->getInputs())) {
             Messages::addDanger(__('No es posible escribir en el directorio %1$s.', ABSPATH));
             
             return FALSE;
