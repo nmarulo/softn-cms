@@ -5,7 +5,7 @@
 
 namespace SoftnCMS\models;
 
-use SoftnCMS\rute\Router;
+use SoftnCMS\util\database\DBInterface;
 
 /**
  * Class Template
@@ -19,9 +19,13 @@ abstract class TemplateAbstract {
     
     /**
      * Template constructor.
+     *
+     * @param string           $siteUrl
+     * @param DBInterface|null $connectionDB
      */
-    public function __construct() {
-        $this->siteUrl = Router::getSiteURL();
+    public function __construct($siteUrl = '', DBInterface $connectionDB = NULL) {
+        $this->siteUrl      = $siteUrl;
+        $this->connectionDB = $connectionDB;
     }
     
     /**
@@ -29,6 +33,13 @@ abstract class TemplateAbstract {
      */
     public function getSiteUrl() {
         return $this->siteUrl;
+    }
+    
+    /**
+     * @param string $siteUrl
+     */
+    public function setSiteUrl($siteUrl) {
+        $this->siteUrl = $siteUrl;
     }
     
     public abstract function initRelationship();
