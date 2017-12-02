@@ -155,14 +155,14 @@ class OptionController extends ControllerAbstract {
     }
     
     protected function formToObject() {
-        $inputKeys = array_keys($this->inputs);
+        $inputKeys = array_keys($this->getInputs());
         $options   = array_map(function($key, $value) {
             $option = new Option();
             $option->setOptionName($key);
             $option->setOptionValue($value);
             
             return $option;
-        }, $inputKeys, $this->inputs);
+        }, $inputKeys, $this->getInputs());
         $options[] = $this->formGravatar();
         
         return ['options' => $options];

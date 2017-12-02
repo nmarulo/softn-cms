@@ -9,7 +9,6 @@ use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\models\managers\LoginManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
@@ -24,7 +23,10 @@ class IndexController extends ControllerAbstract {
     
     public function index() {
         $this->login();
-        $this->sendDataView(['urlRegister' => Router::getSiteURL() . 'login/register']);
+        $this->sendDataView([
+            'urlRegister' => $this->getRequest()
+                                  ->getSiteUrl() . 'login/register',
+        ]);
         $this->view();
     }
     

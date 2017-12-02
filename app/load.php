@@ -25,17 +25,45 @@ use SoftnCMS\util\Util;
 
 session_start();
 
-Logger::getInstance()
-      ->debug('Inicio de la aplicación.');
 $router = new Router();
-$router->setEvent(Router::EVENT_ERROR, function() {
-    Util::redirect(Router::getSiteURL());
+$router->setFuncSiteUrl(function() use ($router) {
+    $optionsManager = new OptionsManager($router->getConnectionDB());
+    $optionSiteUrl  = $optionsManager->searchByName(OptionConstants::SITE_URL);
+    
+    if (empty($optionSiteUrl)) {
+        return "";
+    }
+    
+    return $optionSiteUrl->getOptionValue();
+});
+$router->setFuncCheckViewTheme(function() use (&$router) {
+    $controllerDirectoryName = $router->getRoute()
+                                      ->getControllerDirectoryName();
+    
+    if ($controllerDirectoryName == Route::CONTROLLER_DIRECTORY_NAME_THEME) {
+        
+        if (!defined('INSTALL')) {
+            $optionsManager          = new OptionsManager($router->getConnectionDB());
+            $controllerDirectoryName = $optionsManager->searchByName(OptionConstants::THEME)
+                                                      ->getOptionValue();
+        }
+        
+        $router->getRoute()
+               ->setViewDirectoryName($controllerDirectoryName);
+        $router->getRoute()
+               ->setViewPath(THEMES);
+    }
+});
+$router->setEvent(Router::EVENT_ERROR, function() use ($router) {
+    Util::redirect($router->getRequest()
+                          ->getSiteUrl());
 });
 $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
     $route               = $router->getRoute();
     $directoryController = $route->getControllerDirectoryName();
     $directoryView       = $route->getDirectoryNameViewController();
-    $siteUrl             = Router::getSiteURL();
+    $siteUrl             = $router->getRequest()
+                                  ->getSiteUrl();
     $isInstall           = defined('INSTALL') || $directoryController == 'install';
     $language            = NULL;
     
@@ -94,7 +122,7 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
             $user         = $usersManager->searchById(LoginManager::getUserId());
             
             if (empty($user)) {
-                Util::redirect(Router::getSiteURL(), 'login/logout');
+                Util::redirect($siteUrl, 'login/logout');
             }
         }
         
@@ -119,7 +147,8 @@ $router->setEvent(Router::EVENT_BEFORE_CALL_METHOD, function() use ($router) {
         //No redirecciona al borrar, porque este método ejecuta mediante AJAX.
         if (!$canCallUserFun && $route->getMethodName() != 'delete' && $route->getMethodName() != 'reload') {
             Messages::addDanger(__('No tienes permisos para visualizar esta pagina.'), TRUE);
-            Util::redirect(Router::getSiteURL() . 'admin');
+            Util::redirect($router->getRequest()
+                                  ->getSiteUrl(), 'admin');
         }
     }
 });

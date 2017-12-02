@@ -16,7 +16,6 @@ use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\PostCategory;
 use SoftnCMS\models\tables\PostTerm;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
@@ -235,7 +234,8 @@ class PostController extends ControllerAbstract {
         $this->sendDataView([
             'isUpdate'             => TRUE,
             'selectedUserId'       => $post->getUserId(),
-            'linkPost'             => Router::getSiteURL() . "post/$id",
+            'linkPost'             => $this->getRequest()
+                                           ->getSiteUrl() . "post/$id",
             'selectedCategoriesId' => $this->getCurrentCategoriesId($id),
             'selectedTermsId'      => $this->getCurrentTermsId($id),
             'post'                 => $post,

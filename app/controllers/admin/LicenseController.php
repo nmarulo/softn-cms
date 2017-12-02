@@ -11,7 +11,6 @@ use SoftnCMS\models\managers\ProfilesLicensesManager;
 use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\tables\License;
 use SoftnCMS\models\tables\ProfileLicense;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
@@ -19,7 +18,6 @@ use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputListIntegerBuilder;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Token;
-use SoftnCMS\util\Util;
 
 /**
  * Class LicenseController
@@ -38,7 +36,6 @@ class LicenseController extends ControllerAbstract {
                     $this->createOrDeleteProfiles($profiles, $licensesManager->getLastInsertId());
                     Messages::addSuccess(__('Permiso creado correctamente.'));
                     $this->redirectToAction('index');
-                    Util::redirect(Router::getSiteURL() . 'admin/license');
                 }
             }
             
@@ -117,7 +114,7 @@ class LicenseController extends ControllerAbstract {
         
         if (empty($license)) {
             Messages::addDanger(__('El permiso no existe.'), TRUE);
-            Util::redirect(Router::getSiteURL() . 'admin/license');
+            $this->redirectToAction('index');
         } elseif ($this->checkSubmit(Constants::FORM_UPDATE)) {
             if ($this->isValidForm()) {
                 $license = $this->getForm('license');

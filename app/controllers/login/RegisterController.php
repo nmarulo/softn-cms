@@ -7,11 +7,9 @@ namespace SoftnCMS\controllers\login;
 
 use SoftnCMS\classes\constants\Constants;
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
@@ -26,7 +24,10 @@ class RegisterController extends ControllerAbstract {
     
     public function index() {
         $this->register();
-        $this->sendDataView(['urlLogin' => Router::getSiteURL() . 'login']);
+        $this->sendDataView([
+            'urlLogin' => $this->getRequest()
+                               ->getSiteUrl() . 'login',
+        ]);
         $this->view();
     }
     
@@ -47,7 +48,7 @@ class RegisterController extends ControllerAbstract {
     }
     
     protected function formToObject() {
-        $pass  = $this->getInput(UsersManager::USER_PASSWORD);
+        $pass = $this->getInput(UsersManager::USER_PASSWORD);
         $passR = $this->getInput(UsersManager::USER_PASSWORD_REWRITE);
         
         if ($pass != $passR) {
