@@ -42,7 +42,6 @@ class IndexController extends ControllerAbstract {
         }
         
         if (!$installManager->createFileConfig($this->getInputs())) {
-            Messages::addDanger(__('No es posible escribir en el directorio %1$s.', ABSPATH));
             
             return FALSE;
         }
