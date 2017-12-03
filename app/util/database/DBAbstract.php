@@ -47,6 +47,10 @@ abstract class DBAbstract implements DBInterface {
         //TODO: Lista de tipos.
         $connection = NULL;
         
+        if (!defined('DB_TYPE')) {
+            return $connection;
+        }
+        
         switch (DB_TYPE) {
             case 'mysql':
                 $connection = new MySQL();
