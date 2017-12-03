@@ -6,12 +6,10 @@
 namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\tables\User;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Logger;
 use SoftnCMS\util\Token;
-use SoftnCMS\util\Util;
 
 /**
  * Class LoginManager
@@ -64,6 +62,10 @@ class LoginManager {
      * @return string
      */
     public static function getSession() {
+        if (defined('INSTALL') && isset($_SESSION[SESSION_USER])) {
+            unset($_SESSION[SESSION_USER]);
+        }
+        
         return isset($_SESSION[SESSION_USER]) ? $_SESSION[SESSION_USER] : "";
     }
     
@@ -109,10 +111,6 @@ class LoginManager {
         
         if (!empty($session = self::getSession())) {
             $output = !empty(Arrays::get(Token::getData($session), self::TOKEN_DATA_USER_ID));
-        }
-        
-        if (!$output) {
-            unset($_SESSION[SESSION_USER]);
         }
         
         return $output;
