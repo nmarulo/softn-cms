@@ -3,15 +3,16 @@
  * CommentTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Comment;
+use SoftnCMS\models\TemplateAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Escape;
 use SoftnCMS\util\Logger;
 
@@ -19,7 +20,7 @@ use SoftnCMS\util\Logger;
  * Class CommentTemplate
  * @author Nicolás Marulanda P.
  */
-class CommentTemplate extends Template {
+class CommentTemplate extends TemplateAbstract {
     
     /** @var Comment */
     private $comment;
@@ -36,16 +37,18 @@ class CommentTemplate extends Template {
     /**
      * CommentTemplate constructor.
      *
-     * @param Comment $comment
-     * @param bool    $initRelationship
+     * @param Comment     $comment
+     * @param bool        $initRelationship
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(Comment $comment = NULL, $initRelationship = FALSE) {
-        parent::__construct();
+    public function __construct(Comment $comment = NULL, $initRelationship = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $comment->setCommentContents(Escape::htmlDecode($comment->getCommentContents()));
         $this->comment          = $comment;
         $this->post             = NULL;
         $this->userTemplate     = NULL;
-        $optionsManager         = new OptionsManager();
+        $optionsManager         = new OptionsManager($this->getConnectionDB());
         $optionGravatar         = $optionsManager->searchByName(OptionConstants::GRAVATAR);
         $gravatar               = unserialize($optionGravatar->getOptionValue());
         $this->defaultUserImage = $gravatar->get();
@@ -61,7 +64,7 @@ class CommentTemplate extends Template {
     }
     
     public function initPost() {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $post         = $postsManager->searchByCommentId($this->comment->getId());
         
         if (empty($post)) {
@@ -74,13 +77,13 @@ class CommentTemplate extends Template {
     }
     
     public function initUser() {
-        $usersManager = new UsersManager();
+        $usersManager = new UsersManager($this->getConnectionDB());
         $user         = $usersManager->searchById($this->comment->getCommentUserId());
         
         //No lanza exception ya que un usuario no registrado puede comentar.
         //TODO: agregar a la pagina de opciones si un usuario no registrado puede comentar.
         if (!empty($user)) {
-            $this->userTemplate = new UserTemplate($user);
+            $this->userTemplate = new UserTemplate($user, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }
     }
     
@@ -97,7 +100,7 @@ class CommentTemplate extends Template {
      * @throws \Exception
      */
     public function initComment($commentId) {
-        $commentsManager = new CommentsManager();
+        $commentsManager = new CommentsManager($this->getConnectionDB());
         $this->comment   = $commentsManager->searchById($commentId);
         
         if (empty($this->comment)) {

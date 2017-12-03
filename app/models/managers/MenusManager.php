@@ -7,6 +7,7 @@ namespace SoftnCMS\models\managers;
 
 use SoftnCMS\models\tables\Menu;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\database\ManagerAbstract;
 use SoftnCMS\util\Messages;
 
@@ -29,6 +30,20 @@ class MenusManager extends ManagerAbstract {
     const MENU_TOTAL_CHILDREN = 'menu_total_children';
     
     const MENU_SUB_PARENT     = 0;
+    
+    private $rowCountDelete;
+    
+    public function __construct(DBInterface $connection = NULL) {
+        parent::__construct($connection);
+        $this->rowCountDelete = 0;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getRowCountDelete() {
+        return $this->rowCountDelete;
+    }
     
     /**
      * @param string $limit
@@ -69,7 +84,8 @@ class MenusManager extends ManagerAbstract {
      * @return bool
      */
     public function deleteById($id) {
-        $menu = $this->searchById($id);
+        $this->rowCountDelete = 0;
+        $menu                 = $this->searchById($id);
         
         if (empty($menu)) {
             return FALSE;
@@ -85,7 +101,12 @@ class MenusManager extends ManagerAbstract {
             return FALSE;
         }
         
-        $parentMenuId = $menu->getMenuSub();
+        /*
+         * Guardo el numero de filas afectadas por la consulta "DELETE",
+         * porque, se pierde su valor al usar "updateParentsChildren" y "updatePositions".
+         */
+        $this->rowCountDelete = $this->getRowCount();
+        $parentMenuId         = $menu->getMenuSub();
         
         if ($parentMenuId != self::MENU_SUB_PARENT) {
             if (!$this->updateParentsChildren($parentMenuId, -count($menuIdList))) {
@@ -234,7 +255,7 @@ class MenusManager extends ManagerAbstract {
         $columnMenuSub = self::MENU_SUB;
         parent::addPrepareStatement($columnMenuSub, self::MENU_SUB_PARENT, \PDO::PARAM_INT);
         $query  = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s', parent::getTableWithPrefix(), $columnMenuSub);
-        $result = Arrays::findFirst(parent::getDB()
+        $result = Arrays::findFirst(parent::getConnection()
                                           ->select($query));
         
         return empty($result) ? 0 : $result;

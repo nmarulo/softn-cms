@@ -5,35 +5,27 @@
 
 namespace SoftnCMS\controllers\theme;
 
-use SoftnCMS\controllers\ControllerAbstract;
-use SoftnCMS\controllers\template\PostTemplate;
-use SoftnCMS\controllers\ViewController;
+use SoftnCMS\models\template\PostTemplate;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\tables\Post;
+use SoftnCMS\util\controller\ThemeControllerAbstract;
 
 /**
  * Class IndexController
  * @author Nicolás Marulanda P.
  */
-class IndexController extends ControllerAbstract {
+class IndexController extends ThemeControllerAbstract {
     
     public function index() {
-        $this->read();
-        ViewController::view('index');
-    }
-    
-    protected function read() {
-        $postStatus   = TRUE;
-        $postsManager = new PostsManager();
-        $count        = $postsManager->countByStatus($postStatus);
-        $limit        = parent::pagination($count);
-        
-        $posts         = $postsManager->searchAllByStatus($postStatus, $limit);
+        $postStatus    = TRUE;
+        $postsManager  = new PostsManager($this->getConnectionDB());
+        $count         = $postsManager->countByStatus($postStatus);
+        $posts         = $postsManager->searchAllByStatus($postStatus, $this->rowsPages($count));
         $postsTemplate = array_map(function(Post $post) {
-            return new PostTemplate($post, TRUE);
+            return new PostTemplate($post, TRUE, $this->getRequest()->getSiteUrl(), $this->getConnectionDB());
         }, $posts);
-        
-        ViewController::sendViewData('posts', $postsTemplate);
+        $this->sendDataView(['posts' => $postsTemplate]);
+        $this->view();
     }
     
 }

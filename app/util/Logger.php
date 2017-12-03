@@ -80,7 +80,11 @@ class Logger implements LoggerInterface {
     }
     
     private function canWriteLog() {
-        return (defined('LOGGER') && LOGGER);
+        return (defined('LOGGER') && LOGGER) || $this->isInstall();
+    }
+    
+    private function isInstall() {
+        return $this->logger->getName() == 'INSTALL' || defined('INSTALL');
     }
     
     private function addBackTrace($message) {
@@ -124,9 +128,13 @@ class Logger implements LoggerInterface {
     }
     
     public function debug($message, array $context = []) {
-        if (($this->canWriteLog() && defined('FULL_LOGGER') && FULL_LOGGER) || $this->logger->getName() == 'INSTALL') {
+        if (($this->canWriteLog() && $this->isFullLogger()) || $this->isInstall()) {
             $this->logger->debug($this->addBackTrace($message), $context);
         }
+    }
+    
+    private function isFullLogger() {
+        return defined('FULL_LOGGER') && FULL_LOGGER;
     }
     
     public function log($level, $message, array $context = []) {

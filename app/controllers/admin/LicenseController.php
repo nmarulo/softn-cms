@@ -6,41 +6,36 @@
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\CUDControllerAbstract;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\LicensesManager;
 use SoftnCMS\models\managers\ProfilesLicensesManager;
 use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\tables\License;
 use SoftnCMS\models\tables\ProfileLicense;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputListIntegerBuilder;
-use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
-use SoftnCMS\util\Util;
+use SoftnCMS\util\Token;
 
 /**
  * Class LicenseController
  * @author Nicolás Marulanda P.
  */
-class LicenseController extends CUDControllerAbstract {
+class LicenseController extends ControllerAbstract {
     
     public function create() {
-        if (Form::submit(Constants::FORM_CREATE)) {
-            $form = $this->form();
-            
-            if (!empty($form)) {
-                $licensesManager = new LicensesManager();
-                $license         = Arrays::get($form, 'license');
+        if ($this->checkSubmit(Constants::FORM_CREATE)) {
+            if ($this->isValidForm()) {
+                $licensesManager = new LicensesManager($this->getConnectionDB());
+                $license         = $this->getForm('license');
                 
                 if ($licensesManager->create($license)) {
-                    $profiles = Arrays::get($form, 'profiles');
+                    $profiles = $this->getForm('profiles');
                     $this->createOrDeleteProfiles($profiles, $licensesManager->getLastInsertId());
                     Messages::addSuccess(__('Permiso creado correctamente.'));
-                    Util::redirect(Router::getSiteURL() . 'admin/license');
+                    $this->redirectToAction('index');
                 }
             }
             
@@ -48,50 +43,16 @@ class LicenseController extends CUDControllerAbstract {
         }
         
         $this->sendViewProfiles();
-        ViewController::sendViewData('isUpdate', FALSE);
-        ViewController::sendViewData('license', new License());
-        ViewController::sendViewData('title', __('Crear nuevo permiso'));
-        ViewController::view('form');
-    }
-    
-    protected function form() {
-        $inputs = $this->filterInputs();
-        
-        if (empty($inputs)) {
-            return FALSE;
-        }
-        
-        $license  = new License();
-        $profiles = Arrays::get($inputs, ProfilesLicensesManager::PROFILE_ID);
-        $license->setId(Arrays::get($inputs, LicensesManager::COLUMN_ID));
-        $license->setLicenseName(Arrays::get($inputs, LicensesManager::LICENSE_NAME));
-        $license->setLicenseDescription(Arrays::get($inputs, LicensesManager::LICENSE_DESCRIPTION));
-        
-        return [
-            'license'  => $license,
-            'profiles' => $profiles,
-        ];
-    }
-    
-    protected function filterInputs() {
-        Form::setInput([
-            InputIntegerBuilder::init(LicensesManager::COLUMN_ID)
-                               ->build(),
-            InputAlphanumericBuilder::init(LicensesManager::LICENSE_NAME)
-                                    ->setSpecialChar(TRUE)
-                                    ->build(),
-            InputAlphanumericBuilder::init(LicensesManager::LICENSE_DESCRIPTION)
-                                    ->setRequire(FALSE)
-                                    ->build(),
-            InputListIntegerBuilder::init(ProfilesLicensesManager::PROFILE_ID)
-                                   ->build(),
+        $this->sendDataView([
+            'isUpdate' => FALSE,
+            'license'  => new License(),
+            'title'    => __('Crear nuevo permiso'),
         ]);
-        
-        return Form::inputFilter();
+        $this->view('form');
     }
     
     private function createOrDeleteProfiles($profilesId, $licenseId) {
-        $profilesLicensesManager = new ProfilesLicensesManager();
+        $profilesLicensesManager = new ProfilesLicensesManager($this->getConnectionDB());
         
         if (empty($profilesId)) {
             if ($profilesLicensesManager->deleteAllByLicenseId($licenseId) === FALSE) {
@@ -134,7 +95,7 @@ class LicenseController extends CUDControllerAbstract {
     }
     
     private function getProfilesIdByLicenseId($licenseId) {
-        $licensesProfilesManager = new ProfilesLicensesManager();
+        $licensesProfilesManager = new ProfilesLicensesManager($this->getConnectionDB());
         $licenseProfiles         = $licensesProfilesManager->searchAllByLicenseId($licenseId);
         
         return array_map(function(ProfileLicense $profileLicense) {
@@ -143,61 +104,98 @@ class LicenseController extends CUDControllerAbstract {
     }
     
     private function sendViewProfiles() {
-        $profilesManager = new ProfilesManager();
-        ViewController::sendViewData('profiles', $profilesManager->searchAll());
+        $profilesManager = new ProfilesManager($this->getConnectionDB());
+        $this->sendDataView(['profiles' => $profilesManager->searchAll()]);
     }
     
     public function update($id) {
-        $licensesManager = new LicensesManager();
+        $licensesManager = new LicensesManager($this->getConnectionDB());
         $license         = $licensesManager->searchById($id);
         
         if (empty($license)) {
             Messages::addDanger(__('El permiso no existe.'), TRUE);
-            Util::redirect(Router::getSiteURL() . 'admin/license');
-        } elseif (Form::submit(Constants::FORM_UPDATE)) {
-            $form = $this->form();
-            
-            if (empty($form)) {
-                Messages::addDanger(__('Error en los campos del permiso.'));
-            } else {
-                $license = Arrays::get($form, 'license');
+            $this->redirectToAction('index');
+        } elseif ($this->checkSubmit(Constants::FORM_UPDATE)) {
+            if ($this->isValidForm()) {
+                $license = $this->getForm('license');
                 
-                if ($licensesManager->updateByColumnId($license)) {
+                if ($licensesManager->update($license)) {
                     $license  = $licensesManager->searchById($id);
-                    $profiles = Arrays::get($form, 'profiles');
+                    $profiles = $this->getForm('profiles');
                     $this->createOrDeleteProfiles($profiles, $id);
                     Messages::addSuccess(__('Permiso actualizado correctamente.'));
                 } else {
                     Messages::addDanger(__('Error al actualizar el permiso.'));
                 }
+            } else {
+                Messages::addDanger(__('Error en los campos del permiso.'));
             }
         }
         
         $this->sendViewProfiles();
-        ViewController::sendViewData('isUpdate', TRUE);
-        ViewController::sendViewData('selectedProfilesId', $this->getProfilesIdByLicenseId($id));
-        ViewController::sendViewData('license', $license);
-        ViewController::sendViewData('title', __('Actualizar permiso'));
-        ViewController::view('form');
+        $this->sendDataView([
+            'isUpdate'           => TRUE,
+            'selectedProfilesId' => $this->getProfilesIdByLicenseId($id),
+            'license'            => $license,
+            'title'              => __('Actualizar permiso'),
+        ]);
+        $this->view('form');
     }
     
     public function delete($id) {
-        $licensesManager = new LicensesManager();
-        
-        if (empty($licensesManager->deleteById($id))) {
-            Messages::addDanger(__('Error al borrar el permiso.'));
-        } else {
-            Messages::addSuccess(__('Permiso borrado correctamente.'));
+        if (Token::check()) {
+            $licensesManager = new LicensesManager($this->getConnectionDB());
+            $result          = $licensesManager->deleteById($id);
+            $rowCount        = $licensesManager->getRowCount();
+            
+            if ($rowCount === 0) {
+                Messages::addWarning(__('El permiso no existe.'), TRUE);
+            } elseif ($result) {
+                Messages::addSuccess(__('Permiso borrado correctamente.'), TRUE);
+            } else {
+                Messages::addDanger(__('Error al borrar el permiso.'), TRUE);
+            }
         }
         
-        parent::delete($id);
+        $this->redirectToAction('index');
     }
     
-    protected function read() {
-        $licensesManager = new LicensesManager();
+    public function index() {
+        $licensesManager = new LicensesManager($this->getConnectionDB());
         $count           = $licensesManager->count();
-        $limit           = parent::pagination($count);
         
-        ViewController::sendViewData('licenses', $licensesManager->searchAll($limit));
+        $this->sendDataView([
+            'licenses' => $licensesManager->searchAll($this->rowsPages($count)),
+        ]);
+        $this->view();
+    }
+    
+    protected function formToObject() {
+        $license  = new License();
+        $profiles = $this->getInput(ProfilesLicensesManager::PROFILE_ID);
+        $license->setId($this->getInput(LicensesManager::COLUMN_ID));
+        $license->setLicenseName($this->getInput(LicensesManager::LICENSE_NAME));
+        $license->setLicenseDescription($this->getInput(LicensesManager::LICENSE_DESCRIPTION));
+        
+        return [
+            'license'  => $license,
+            'profiles' => $profiles,
+        ];
+    }
+    
+    protected function formInputsBuilders() {
+        return [
+            InputIntegerBuilder::init(LicensesManager::COLUMN_ID)
+                               ->build(),
+            InputAlphanumericBuilder::init(LicensesManager::LICENSE_NAME)
+                                    ->setSpecialChar(TRUE)
+                                    ->build(),
+            InputAlphanumericBuilder::init(LicensesManager::LICENSE_DESCRIPTION)
+                                    ->setRequire(FALSE)
+                                    ->build(),
+            InputListIntegerBuilder::init(ProfilesLicensesManager::PROFILE_ID)
+                                   ->build(),
+        ];
+        
     }
 }

@@ -10,6 +10,7 @@ use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\Sanitize;
+use SoftnCMS\util\Util;
 
 /**
  * Class Request
@@ -26,6 +27,8 @@ class Request {
     /** @var array */
     private $urlExplode;
     
+    private $siteUrl;
+    
     /**
      * Request constructor.
      */
@@ -33,6 +36,7 @@ class Request {
         $this->route      = new Route();
         $this->urlGet     = '';
         $this->urlExplode = [];
+        $this->siteUrl    = '';
         $this->setUrl();
         $this->setRoute();
     }
@@ -115,20 +119,26 @@ class Request {
          */
         $directoryNameViewController = strtolower($this->route->getControllerName());
         $controllerDirectoryName     = $this->route->getControllerDirectoryName();
-        
-        if ($controllerDirectoryName == Route::CONTROLLER_DIRECTORY_NAME_THEME) {
-            $optionsManager = new OptionsManager();
-            
-            if (!defined('INSTALL')) {
-                $controllerDirectoryName = $optionsManager->searchByName(OptionConstants::THEME)
-                                                          ->getOptionValue();
-            }
-            
-            $this->route->setViewPath(THEMES);
-        }
-        
         $this->route->setViewDirectoryName($controllerDirectoryName);
         $this->route->setDirectoryNameViewController($directoryNameViewController);
+    }
+    
+    /**
+     * @return string
+     */
+    public function getSiteUrl() {
+        return $this->siteUrl;
+    }
+    
+    /**
+     * @param string $siteUrl
+     */
+    public function setSiteUrl($siteUrl) {
+        if (empty($siteUrl)) {
+            $siteUrl = Util::getUrl($this->getUrlGet());
+        }
+        
+        $this->siteUrl = $siteUrl;
     }
     
     /**

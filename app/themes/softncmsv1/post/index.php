@@ -1,8 +1,8 @@
 <?php
 
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\controllers\template\CategoryTemplate;
-use SoftnCMS\controllers\template\TermTemplate;
+use SoftnCMS\models\template\CategoryTemplate;
+use SoftnCMS\models\template\TermTemplate;
 
 $postTemplate       = ViewController::getViewData('post');
 $siteUrl            = $postTemplate->getSiteUrl();

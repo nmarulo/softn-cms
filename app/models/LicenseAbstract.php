@@ -9,7 +9,7 @@ use SoftnCMS\models\managers\OptionsLicensesManager;
 use SoftnCMS\models\managers\ProfilesLicensesManager;
 use SoftnCMS\models\tables\OptionLicense;
 use SoftnCMS\models\tables\ProfileLicense;
-use SoftnCMS\route\Route;
+use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 
 /**
@@ -21,8 +21,8 @@ abstract class LicenseAbstract implements LicenseInterface {
     /** @var LicenseAbstract */
     private static $INSTANCE;
     
-    /** @var Route */
-    protected $route;
+    /** @var Router */
+    protected $router;
     
     /** @var int */
     protected $userId;
@@ -42,11 +42,11 @@ abstract class LicenseAbstract implements LicenseInterface {
     /**
      * License constructor.
      *
-     * @param Route $route
-     * @param int   $userId
+     * @param Router $router
+     * @param int    $userId
      */
-    public function __construct($route, $userId) {
-        $this->route                = $route;
+    public function __construct($router, $userId) {
+        $this->router               = $router;
         $this->userId               = $userId;
         $this->currentOptionLicense = NULL;
         $this->optionsLicenses      = [];
@@ -61,18 +61,19 @@ abstract class LicenseAbstract implements LicenseInterface {
     }
     
     /**
-     * @param Route $route
-     * @param int   $userId
+     * @param Router $router
+     * @param int    $userId
      *
      * @return bool True, si tiene algún permiso mayor o igual que 'LICENSE_READ_CODE'
      * o True en caso de no encontrar la clase 'xLicense' correspondiente.
      */
-    public static function initCheck($route, $userId) {
-        $controllerName   = $route->getControllerName();
+    public static function initCheck($router, $userId) {
+        $controllerName   = $router->getRoute()
+                                   ->getControllerName();
         $nameSpaceLicense = NAMESPACES_LICENSES . $controllerName . 'License';
         
         if (class_exists($nameSpaceLicense)) {
-            self::$INSTANCE = new $nameSpaceLicense($route, $userId);
+            self::$INSTANCE = new $nameSpaceLicense($router, $userId);
             
             return self::$INSTANCE->check();
         }
@@ -81,7 +82,7 @@ abstract class LicenseAbstract implements LicenseInterface {
     }
     
     public function check() {
-        $this->setOptionsLicenses($this->getLicensesByUserId($this->userId), $this->route);
+        $this->setOptionsLicenses($this->getLicensesByUserId($this->userId));
         
         //Si no existe configurado ningún permiso, se permite el acceso total
         return $this->noLicenseConfigured || !empty($this->currentOptionLicense);
@@ -89,12 +90,13 @@ abstract class LicenseAbstract implements LicenseInterface {
     
     /**
      * @param array $licensesId
-     * @param Route $route
      */
-    private function setOptionsLicenses($licensesId, $route) {
-        $pageName                   = $route->getControllerName();
-        $methodName                 = $route->getMethodName();
-        $optionsLicensesManager     = new OptionsLicensesManager();
+    private function setOptionsLicenses($licensesId) {
+        $pageName                   = $this->router->getRoute()
+                                                   ->getControllerName();
+        $methodName                 = $this->router->getRoute()
+                                                   ->getMethodName();
+        $optionsLicensesManager     = new OptionsLicensesManager($this->router->getConnectionDB());
         $this->noLicenseConfigured  = $optionsLicensesManager->count() == 0;
         $this->optionsLicenses      = $optionsLicensesManager->searchAllByLicensesId($licensesId);
         $currentOptionLicense       = array_filter($this->optionsLicenses, function(OptionLicense $optionLicense) use ($pageName, $methodName) {
@@ -104,7 +106,7 @@ abstract class LicenseAbstract implements LicenseInterface {
     }
     
     private function getLicensesByUserId($userId) {
-        $profilesLicensesManager = new ProfilesLicensesManager();
+        $profilesLicensesManager = new ProfilesLicensesManager($this->router->getConnectionDB());
         $UserLicenses            = $profilesLicensesManager->searchAllByUserId($userId);
         
         return array_map(function(ProfileLicense $userLicense) {

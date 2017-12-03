@@ -5,14 +5,11 @@
 
 namespace SoftnCMS\controllers\theme;
 
-use SoftnCMS\controllers\template\PostTemplate;
-use SoftnCMS\controllers\ThemeControllerAbstract;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\Post;
-use SoftnCMS\rute\Router;
-use SoftnCMS\util\Util;
+use SoftnCMS\models\template\PostTemplate;
+use SoftnCMS\util\controller\ThemeControllerAbstract;
 
 /**
  * Class UserController
@@ -20,26 +17,29 @@ use SoftnCMS\util\Util;
  */
 class UserController extends ThemeControllerAbstract {
     
-    protected function read($id) {
-        $usersManager = new UsersManager();
+    public function index($id) {
+        $usersManager = new UsersManager($this->getConnectionDB());
         $user         = $usersManager->searchById($id);
         
         if (empty($user)) {
-            Util::redirect(Router::getSiteURL());
+            $this->redirect();
         }
         
-        $postStatus   = TRUE;
-        $postsManager = new PostsManager();
-        $count        = $postsManager->countByUserIdAndStatus($id, $postStatus);
-        $limit   = parent::pagination($count);
-        
+        $postStatus    = TRUE;
+        $postsManager  = new PostsManager($this->getConnectionDB());
+        $count         = $postsManager->countByUserIdAndStatus($id, $postStatus);
+        $limit         = $this->rowsPages($count);
         $posts         = $postsManager->searchByUserIdAndStatus($user->getId(), $postStatus, $limit);
         $postsTemplate = array_map(function(Post $post) {
-            return new PostTemplate($post, TRUE);
+            return new PostTemplate($post, TRUE, $this->getRequest()
+                                                      ->getSiteUrl(), $this->getConnectionDB());
         }, $posts);
         
-        ViewController::sendViewData('posts', $postsTemplate);
-        ViewController::sendViewData('user', $user);
+        $this->sendDataView([
+            'posts' => $postsTemplate,
+            'user'  => $user,
+        ]);
+        $this->view();
     }
     
 }

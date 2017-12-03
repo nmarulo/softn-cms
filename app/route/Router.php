@@ -6,9 +6,11 @@
 namespace SoftnCMS\rute;
 
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\route\Route;
 use SoftnCMS\util\Arrays;
+use SoftnCMS\util\controller\ControllerInterface;
+use SoftnCMS\util\database\DBAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Logger;
 use SoftnCMS\util\Util;
 
@@ -26,12 +28,6 @@ class Router {
     
     const EVENT_ERROR              = 4;
     
-    /** @var string */
-    private static $SITE_URL;
-    
-    /** @var string Directorio del controlador actual. */
-    private static $CURRENT_DIRECTORY;
-    
     /** @var string Nombre del controlador actual. */
     private static $CURRENT_NAME_CONTROLLER;
     
@@ -47,34 +43,36 @@ class Router {
     /** @var bool */
     private $canCallUserFunc;
     
+    /** @var DBInterface */
+    private $connectionDB;
+    
+    /** @var string */
+    private $siteUrl;
+    
+    /** @var \Closure */
+    private $funcCheckViewTheme;
+    
+    /** @var \Closure */
+    private $funcSiteUrl;
+    
     /**
      * Router constructor.
      */
     public function __construct() {
-        $this->canCallUserFunc = TRUE;
-        $this->request         = new Request();
-        $this->route           = $this->request->getRoute();
-        $this->events          = [
+        Logger::getInstance()
+              ->debug('Inicio de la aplicación.');
+        $this->connectionDB       = DBAbstract::getNewInstance();
+        $this->canCallUserFunc    = TRUE;
+        $this->request            = new Request();
+        $this->route              = $this->request->getRoute();
+        $this->funcCheckViewTheme = NULL;
+        $this->funcSiteUrl        = NULL;
+        $this->siteUrl            = "";
+        $this->events             = [
             self::EVENT_ERROR => function() {
                 throw new \Exception('Error');
             },
         ];
-        $optionsManager        = new OptionsManager();
-        self::$SITE_URL        = $optionsManager->getSiteUrl($this);
-    }
-    
-    /**
-     * @return string
-     */
-    public static function getSiteURL() {
-        return self::$SITE_URL;
-    }
-    
-    /**
-     * @return string
-     */
-    public static function getCurrentDirectory() {
-        return self::$CURRENT_DIRECTORY;
     }
     
     /**
@@ -82,6 +80,13 @@ class Router {
      */
     public static function getCurrentNameController() {
         return self::$CURRENT_NAME_CONTROLLER;
+    }
+    
+    /**
+     * @param \Closure $closure
+     */
+    public function setFuncSiteUrl($closure) {
+        $this->funcSiteUrl = $closure;
     }
     
     /**
@@ -110,6 +115,8 @@ class Router {
     }
     
     public function load() {
+        $this->initSiteUrl();
+        $this->checkViewTheme();
         $this->events(self::EVENT_INIT_LOAD);
         
         $instanceController = $this->instanceController();
@@ -121,6 +128,9 @@ class Router {
         $this->events(self::EVENT_BEFORE_CALL_METHOD);
         
         if ($this->canCallUserFunc) {
+            $instanceController->setConnectionDB($this->connectionDB);
+            $instanceController->setRequest($this->request);
+            $instanceController->setRouter($this);
             call_user_func_array([
                 $instanceController,
                 $method,
@@ -128,6 +138,23 @@ class Router {
         }
         
         $this->events(self::EVENT_AFTER_CALL_METHOD);
+    }
+    
+    private function initSiteUrl() {
+        $siteUrl = '';
+        
+        if (!defined('INSTALL') && is_callable($this->funcSiteUrl)) {
+            $siteUrl = call_user_func($this->funcSiteUrl);
+        }
+        
+        $this->request->setSiteUrl($siteUrl);
+        ViewController::setSiteUrl($this->request->getSiteUrl());
+    }
+    
+    private function checkViewTheme() {
+        if (is_callable($this->funcCheckViewTheme)) {
+            call_user_func($this->funcCheckViewTheme);
+        }
     }
     
     private function events($event) {
@@ -163,7 +190,7 @@ class Router {
     }
     
     /**
-     * @return mixed
+     * @return ControllerInterface
      */
     private function instanceController() {
         $controllerName      = $this->route->getControllerName() . 'Controller';
@@ -232,9 +259,31 @@ class Router {
     }
     
     private function setDirectoryView() {
-        self::$CURRENT_DIRECTORY = $this->route->getControllerDirectoryName();
+        ViewController::setCurrentDirectory($this->route->getControllerDirectoryName());
         ViewController::setDirectoryViews($this->route->getViewDirectoryName());
         ViewController::setDirectoryViewsController($this->route->getDirectoryNameViewController());
         ViewController::setViewPath($this->route->getViewPath());
     }
+    
+    /**
+     * @return DBInterface
+     */
+    public function getConnectionDB() {
+        return $this->connectionDB;
+    }
+    
+    /**
+     * @param DBInterface $connectionDB
+     */
+    public function setConnectionDB($connectionDB) {
+        $this->connectionDB = $connectionDB;
+    }
+    
+    /**
+     * @param \Closure $closure
+     */
+    public function setFuncCheckViewTheme($closure) {
+        $this->funcCheckViewTheme = $closure;
+    }
+    
 }

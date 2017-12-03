@@ -3,20 +3,21 @@
  * CategoryTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
-use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\PostsManager;
 use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Post;
+use SoftnCMS\models\TemplateAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Logger;
 
 /**
  * Class CategoryTemplate
  * @author Nicolás Marulanda P.
  */
-class CategoryTemplate extends Template {
+class CategoryTemplate extends TemplateAbstract {
     
     /** @var Category */
     private $category;
@@ -27,11 +28,13 @@ class CategoryTemplate extends Template {
     /**
      * CategoryTemplate constructor.
      *
-     * @param Category $category
-     * @param bool     $initRelationShip
+     * @param Category    $category
+     * @param bool        $initRelationShip
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(Category $category = NULL, $initRelationShip = FALSE) {
-        parent::__construct();
+    public function __construct(Category $category = NULL, $initRelationShip = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $this->category = $category;
         $this->posts    = [];
         
@@ -45,15 +48,15 @@ class CategoryTemplate extends Template {
     }
     
     public function initPosts() {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $this->posts  = $postsManager->searchAllByCategoryId($this->category->getId());
         $this->posts  = array_map(function(Post $post) {
-            return new PostTemplate($post);
+            return new PostTemplate($post, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }, $this->posts);
     }
     
     public function initCategory($categoryId) {
-        $categoriesManager = new CategoriesManager();
+        $categoriesManager = new CategoriesManager($this->getConnectionDB());
         $this->category    = $categoriesManager->searchById($categoryId);
         
         if (empty($this->category)) {

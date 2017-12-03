@@ -3,10 +3,10 @@
  * PostTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
 use SoftnCMS\classes\constants\OptionConstants;
-use SoftnCMS\controllers\Template;
+use SoftnCMS\models\TemplateAbstract;
 use SoftnCMS\models\managers\CategoriesManager;
 use SoftnCMS\models\managers\CommentsManager;
 use SoftnCMS\models\managers\OptionsManager;
@@ -17,6 +17,7 @@ use SoftnCMS\models\tables\Category;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\Post;
 use SoftnCMS\models\tables\Term;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Escape;
 use SoftnCMS\util\Logger;
 
@@ -24,7 +25,7 @@ use SoftnCMS\util\Logger;
  * Class PostTemplate
  * @author Nicolás Marulanda P.
  */
-class PostTemplate extends Template {
+class PostTemplate extends TemplateAbstract {
     
     /** @var Post */
     private $post;
@@ -47,17 +48,19 @@ class PostTemplate extends Template {
     /**
      * PostTemplate constructor.
      *
-     * @param Post $post
-     * @param bool $initRelationship
+     * @param Post        $post
+     * @param bool        $initRelationship
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(Post $post = NULL, $initRelationship = FALSE) {
-        parent::__construct();
+    public function __construct(Post $post = NULL, $initRelationship = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $post->setPostContents(Escape::htmlDecode($post->getPostContents()));
         $this->post               = $post;
         $this->categoriesTemplate = [];
         $this->termsTemplate      = [];
         $this->userTemplate       = NULL;
-        $optionsManager           = new OptionsManager();
+        $optionsManager           = new OptionsManager($this->getConnectionDB());
         $optionComment            = $optionsManager->searchByName(OptionConstants::COMMENT);
         $this->canCommentAnyUser  = !empty($optionComment->getOptionValue());
         
@@ -74,7 +77,7 @@ class PostTemplate extends Template {
     }
     
     public function initUser() {
-        $usersManager = new UsersManager();
+        $usersManager = new UsersManager($this->getConnectionDB());
         $user         = $usersManager->searchById($this->post->getUserId());
         
         if (empty($user)) {
@@ -83,31 +86,31 @@ class PostTemplate extends Template {
             throw new \Exception("El usuario no existe.");
         }
         
-        $this->userTemplate = new UserTemplate($user);
+        $this->userTemplate = new UserTemplate($user, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
     }
     
     public function initCategories() {
-        $categoriesManager        = new CategoriesManager();
+        $categoriesManager        = new CategoriesManager($this->getConnectionDB());
         $this->categoriesTemplate = $categoriesManager->searchByPostId($this->post->getId());
         $this->categoriesTemplate = array_map(function(Category $category) {
-            return new CategoryTemplate($category);
+            return new CategoryTemplate($category, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }, $this->categoriesTemplate);
     }
     
     public function initTerms() {
-        $termsManager        = new TermsManager();
+        $termsManager        = new TermsManager($this->getConnectionDB());
         $this->termsTemplate = $termsManager->searchByPostId($this->post->getId());
         $this->termsTemplate = array_map(function(Term $term) {
-            return new TermTemplate($term);
+            return new TermTemplate($term, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }, $this->termsTemplate);
     }
     
     public function initComments() {
         $commentStatus          = TRUE;
-        $commentsManager        = new CommentsManager();
+        $commentsManager        = new CommentsManager($this->getConnectionDB());
         $this->commentsTemplate = $commentsManager->searchByPostIdAndStatus($this->post->getId(), $commentStatus);
         $this->commentsTemplate = array_map(function(Comment $comment) {
-            return new CommentTemplate($comment);
+            return new CommentTemplate($comment, FALSE, $this->getSiteUrl(), $this->getConnectionDB());
         }, $this->commentsTemplate);
         
         $this->post->setPostCommentCount(count($this->commentsTemplate));
@@ -119,7 +122,7 @@ class PostTemplate extends Template {
      * @throws \Exception
      */
     public function initPost($postId) {
-        $postsManager = new PostsManager();
+        $postsManager = new PostsManager($this->getConnectionDB());
         $this->post   = $postsManager->searchById($postId);
         
         if ($this->post === FALSE) {

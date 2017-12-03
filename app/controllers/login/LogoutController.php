@@ -6,15 +6,14 @@
 namespace SoftnCMS\controllers\login;
 
 use SoftnCMS\models\managers\LoginManager;
-use SoftnCMS\models\managers\OptionsManager;
+use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\Messages;
-use SoftnCMS\util\Util;
 
 /**
  * Class LogoutController
  * @author Nicolás Marulanda P.
  */
-class LogoutController {
+class LogoutController extends ControllerAbstract {
     
     public function index() {
         if (LoginManager::isLogin()) {
@@ -28,7 +27,6 @@ class LogoutController {
         }
         
         Messages::addSuccess(__('Cierre de sesión correcto.'), TRUE);
-        $optionsManager = new OptionsManager();
-        Util::redirect($optionsManager->getSiteUrl(), 'login');
+        $this->redirect('login');
     }
 }

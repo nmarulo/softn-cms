@@ -25,6 +25,8 @@ define('URL_GET', 'url');
 /** Espacio de nombre de la aplicación. */
 define('APP_NAMESPACE', 'SoftnCMS\\');
 
+define('NAMESPACE_MANAGER_ABSTRACT', APP_NAMESPACE . 'util\\database\\ManagerAbstract');
+
 /** Espacio de nombre de los controladores. */
 define('NAMESPACE_CONTROLLERS', APP_NAMESPACE . 'controllers\\');
 
@@ -61,4 +63,4 @@ define('APP_THEMES', 'app' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATO
 define('REPLACE_SQL_SITE_URL', '#{SITE_URL}');
 define('REPLACE_SQL_PREFIX', '#{PREFIX}');
 /** Nombre del parámetro enviado por url para establecer el idioma de la web. */
-define('PARAM_LANGUAGE', 'lan');
+define('PARAM_LANGUAGE', 'lang');

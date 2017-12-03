@@ -27,7 +27,7 @@ class PostsTermsManager extends ManagerAbstract {
         $query      = sprintf('SELECT COUNT(*) AS COUNT FROM %1$s WHERE %2$s = :%2$s AND %3$s IN (SELECT %4$s FROM %5$s WHERE %6$s = :%6$s)', $table, self::TERM_ID, self::POST_ID, PostsManager::COLUMN_ID, $tablePosts, PostsManager::POST_STATUS);
         parent::addPrepareStatement(self::TERM_ID, $termId, \PDO::PARAM_INT);
         parent::addPrepareStatement(PostsManager::POST_STATUS, $postStatus, \PDO::PARAM_INT);
-        $result = Arrays::findFirst(parent::getDB()
+        $result = Arrays::findFirst(parent::getConnection()
                                           ->select($query));
         
         return empty($result) ? 0 : $result;
@@ -55,7 +55,7 @@ class PostsTermsManager extends ManagerAbstract {
     }
     
     private function updateTermPostCount($termId, $num) {
-        $termsManager = new TermsManager();
+        $termsManager = new TermsManager($this->getConnection());
         
         return $termsManager->updatePostCount($termId, $num);
     }
@@ -76,9 +76,10 @@ class PostsTermsManager extends ManagerAbstract {
      * @return bool
      */
     public function create($object) {
+        //"Create" retorna el id, pero, "posts_terms" no tiene "id" y retorna "0".
         $result = parent::create($object);
         
-        if (!empty($result)) {
+        if (!empty($result) || $result == 0) {
             $this->updateTermPostCount($object->getTermId(), 1);
         }
         

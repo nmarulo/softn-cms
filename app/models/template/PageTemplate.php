@@ -3,11 +3,12 @@
  * PageTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
-use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\PagesManager;
 use SoftnCMS\models\tables\Page;
+use SoftnCMS\models\TemplateAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Escape;
 use SoftnCMS\util\Logger;
 
@@ -15,7 +16,7 @@ use SoftnCMS\util\Logger;
  * Class PageTemplate
  * @author Nicolás Marulanda P.
  */
-class PageTemplate extends Template {
+class PageTemplate extends TemplateAbstract {
     
     /** @var Page */
     private $page;
@@ -23,11 +24,13 @@ class PageTemplate extends Template {
     /**
      * PageTemplate constructor.
      *
-     * @param Page $page
-     * @param bool $initRelationShip
+     * @param Page        $page
+     * @param bool        $initRelationShip
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(Page $page = NULL, $initRelationShip = FALSE) {
-        parent::__construct();
+    public function __construct(Page $page = NULL, $initRelationShip = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $page->setPageContents(Escape::htmlDecode($page->getPageContents()));
         $this->page = $page;
         
@@ -40,7 +43,7 @@ class PageTemplate extends Template {
     }
     
     public function initPage($pageId) {
-        $pagesManager = new PagesManager();
+        $pagesManager = new PagesManager($this->getConnectionDB());
         $this->page   = $pagesManager->searchById($pageId);
         
         if ($this->page === FALSE) {

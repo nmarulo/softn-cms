@@ -41,23 +41,32 @@ abstract class DBAbstract implements DBInterface {
     }
     
     /**
-     * @param string $parameter
-     * @param mixed  $value
-     * @param string $dataType
-     * @param string $column
+     * @return null|DBInterface
      */
-    public function prepareStatement($parameter, $value, $dataType = '', $column = '') {
-        self::addPrepareStatement($this->prepareStatement, $parameter, $value, $dataType, $column);
+    public static function getNewInstance() {
+        //TODO: Lista de tipos.
+        $connection = NULL;
+        
+        if (!defined('DB_TYPE')) {
+            return $connection;
+        }
+        
+        switch (DB_TYPE) {
+            case 'mysql':
+                $connection = new MySQL();
+                break;
+        }
+        
+        return $connection;
     }
     
     /**
-     * @param array  $array
      * @param string $parameter
      * @param mixed  $value
      * @param string $dataType
      * @param string $column
      */
-    public static function addPrepareStatement(&$array, $parameter, $value, $dataType = '', $column = '') {
+    public function addPrepareStatement($parameter, $value, $dataType = '', $column = '') {
         if (!is_null($value)) {
             if ($dataType === '') {
                 $dataType = self::getDataType($value);
@@ -67,7 +76,7 @@ abstract class DBAbstract implements DBInterface {
                 $column = $parameter;
             }
             
-            $array[":$parameter"] = [
+            $this->prepareStatement[":$parameter"] = [
                 'value'    => $value,
                 'dataType' => $dataType,
                 'column'   => $column,
@@ -98,13 +107,6 @@ abstract class DBAbstract implements DBInterface {
     }
     
     /**
-     * @param array $prepareStatement
-     */
-    public function setPrepareStatement($prepareStatement) {
-        $this->prepareStatement = $prepareStatement;
-    }
-    
-    /**
      * @param $query
      *
      * @return array|bool
@@ -117,7 +119,6 @@ abstract class DBAbstract implements DBInterface {
         }
         
         $result = $prepareObject->fetchAll();
-        $this->close();
         
         return $result;
     }
@@ -128,10 +129,11 @@ abstract class DBAbstract implements DBInterface {
      * @return bool|\PDOStatement
      */
     private function execute($query) {
-        $this->query   = $query;
-        $prepareObject = $this->prepareStatementObject($query);
+        $this->query = $query;
         
         try {
+            $prepareObject = $this->prepareStatementObject($query);
+            
             if (!empty($prepareObject) && $prepareObject->execute()) {
                 $this->rowCount = $prepareObject->rowCount();
                 
@@ -143,6 +145,8 @@ abstract class DBAbstract implements DBInterface {
         } catch (\Exception $ex) {
             Logger::getInstance()
                   ->error($ex->getMessage());
+        } finally {
+            $this->close();
         }
         
         return FALSE;
@@ -167,7 +171,10 @@ abstract class DBAbstract implements DBInterface {
                   ->error("Error al preparar la consulta.");
         } catch (\Exception $ex) {
             Logger::getInstance()
-                  ->error($ex->getMessage());
+                  ->error($ex->getMessage(), [
+                      'query'            => $query,
+                      'prepareStatement' => $this->prepareStatement,
+                  ]);
         }
         
         return FALSE;
@@ -226,13 +233,7 @@ abstract class DBAbstract implements DBInterface {
     
     public function close() {
         $this->prepareStatement = [];
-        $this->setConnection(NULL);
     }
-    
-    /**
-     * @param \PDO $value
-     */
-    protected abstract function setConnection($value);
     
     public function updateByColumn($column) {
         $columns = array_filter($this->prepareStatement, function($value) use ($column) {
@@ -270,11 +271,14 @@ abstract class DBAbstract implements DBInterface {
             return FALSE;
         }
         
-        $this->close();
-        
         return TRUE;
     }
     
+    /**
+     * @param string $allLogicalOperators
+     *
+     * @return bool
+     */
     public function deleteByPrepareStatement($allLogicalOperators = 'AND') {
         $where = $this->getKeyValue($this->prepareStatement);
         $where = implode(" $allLogicalOperators ", $where);
@@ -298,8 +302,6 @@ abstract class DBAbstract implements DBInterface {
         if (empty($prepareObject)) {
             return FALSE;
         }
-        
-        $this->close();
         
         return TRUE;
     }
@@ -328,10 +330,8 @@ abstract class DBAbstract implements DBInterface {
         
         $this->lastInsertId = $this->getConnection()
                                    ->lastInsertId();
-        $this->close();
         
         return TRUE;
-        
     }
     
     /**
@@ -361,5 +361,24 @@ abstract class DBAbstract implements DBInterface {
     public function setTable($table) {
         $this->table = $table;
     }
+    
+    /**
+     * @return array
+     */
+    public function getPrepareStatement() {
+        return $this->prepareStatement;
+    }
+    
+    /**
+     * @param array $prepareStatement
+     */
+    public function setPrepareStatement($prepareStatement) {
+        $this->prepareStatement = $prepareStatement;
+    }
+    
+    /**
+     * @param \PDO $value
+     */
+    protected abstract function setConnection($value);
     
 }

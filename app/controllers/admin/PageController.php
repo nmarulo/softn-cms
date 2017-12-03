@@ -6,66 +6,116 @@
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\controllers\CUDControllerAbstract;
-use SoftnCMS\controllers\ViewController;
 use SoftnCMS\models\managers\PagesManager;
 use SoftnCMS\models\tables\Page;
-use SoftnCMS\rute\Router;
-use SoftnCMS\util\Arrays;
+use SoftnCMS\util\controller\ControllerAbstract;
 use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputBooleanBuilder;
 use SoftnCMS\util\form\builders\InputHtmlBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
-use SoftnCMS\util\form\Form;
 use SoftnCMS\util\Messages;
+use SoftnCMS\util\Token;
 use SoftnCMS\util\Util;
 
 /**
  * Class PageController
  * @author Nicolás Marulanda P.
  */
-class PageController extends CUDControllerAbstract {
+class PageController extends ControllerAbstract {
+    
+    public function index() {
+        $pagesManager = new PagesManager($this->getConnectionDB());
+        $count        = $pagesManager->count();
+        
+        $this->sendDataView([
+            'pages' => $pagesManager->searchAll($this->rowsPages($count)),
+        ]);
+        $this->view();
+    }
     
     public function create() {
-        if (Form::submit(Constants::FORM_CREATE)) {
-            $form = $this->form();
-            
-            if (!empty($form)) {
-                $pagesManager = new PagesManager();
-                $page         = Arrays::get($form, 'page');
+        if ($this->checkSubmit(Constants::FORM_CREATE)) {
+            if ($this->isValidForm()) {
+                $pagesManager = new PagesManager($this->getConnectionDB());
+                $page         = $this->getForm('page');
                 
                 if ($pagesManager->create($page)) {
                     Messages::addSuccess(__('Pagina creada correctamente.'), TRUE);
-                    Util::redirect(Router::getSiteURL() . 'admin/page');
+                    $this->redirectToAction('index');
                 }
             }
             
             Messages::addDanger(__('Error al publicar la pagina.'));
         }
         
-        ViewController::sendViewData('isUpdate', FALSE);
-        ViewController::sendViewData('page', new Page());
-        ViewController::sendViewData('title', __('Publicar nueva pagina'));
-        ViewController::view('form');
+        $this->sendDataView([
+            'isUpdate' => FALSE,
+            'page'     => new Page(),
+            'title'    => __('Publicar nueva pagina'),
+        ]);
+        $this->view('form');
     }
     
-    protected function form() {
-        $inputs = $this->filterInputs();
+    public function update($id) {
+        $pagesManager = new PagesManager($this->getConnectionDB());
+        $page         = $pagesManager->searchById($id);
         
-        if (empty($inputs)) {
-            return FALSE;
+        if (empty($page)) {
+            Messages::addDanger(__('La pagina no existe.'), TRUE);
+            $this->redirectToAction('index');
+        } elseif ($this->checkSubmit(Constants::FORM_UPDATE)) {
+            if ($this->isValidForm()) {
+                $page = $this->getForm('page');
+                
+                if ($pagesManager->updateByColumnId($page)) {
+                    Messages::addSuccess(__('Pagina actualizada correctamente.'));
+                } else {
+                    Messages::addDanger(__('Error al actualizar la pagina.'));
+                }
+            } else {
+                Messages::addDanger(__('Error en los campos de la pagina.'));
+            }
         }
         
+        $this->sendDataView([
+            'isUpdate' => TRUE,
+            'linkPage' => $this->getRequest()
+                               ->getSiteUrl() . 'page/' . $page->getId(),
+            'page'     => $page,
+            'title'    => __('Actualizar pagina'),
+        ]);
+        $this->view('form');
+    }
+    
+    public function delete($id) {
+        if (Token::check()) {
+            $pagesManager = new PagesManager($this->getConnectionDB());
+            $result       = $pagesManager->deleteById($id);
+            $rowCount     = $pagesManager->getRowCount();
+            
+            if ($rowCount === 0) {
+                Messages::addWarning(__('La pagina no existe.'), TRUE);
+            } elseif ($result) {
+                Messages::addSuccess(__('Pagina borrada correctamente.'), TRUE);
+            } else {
+                Messages::addDanger(__('Error al borrar la pagina.'), TRUE);
+            }
+        }
+        
+        $this->redirectToAction('index');
+    }
+    
+    protected function formToObject() {
         $page = new Page();
-        $page->setId(Arrays::get($inputs, PagesManager::COLUMN_ID));
-        $page->setPageTitle(Arrays::get($inputs, PagesManager::PAGE_TITLE));
-        $page->setPageContents(Arrays::get($inputs, PagesManager::PAGE_CONTENTS));
-        $page->setPageStatus(Arrays::get($inputs, PagesManager::PAGE_STATUS));
-        $page->setPageCommentStatus(Arrays::get($inputs, PagesManager::PAGE_COMMENT_STATUS));
+        $page->setId($this->getInput(PagesManager::COLUMN_ID));
+        $page->setPageTitle($this->getInput(PagesManager::PAGE_TITLE));
+        $page->setPageContents($this->getInput(PagesManager::PAGE_CONTENTS));
+        $page->setPageStatus($this->getInput(PagesManager::PAGE_STATUS));
+        $page->setPageCommentStatus($this->getInput(PagesManager::PAGE_COMMENT_STATUS));
         $page->setPageDate(NULL);
         $page->setPageCommentCount(NULL);
         
-        if (Form::submit(Constants::FORM_CREATE)) {
+        if ($this->checkSubmit(Constants::FORM_CREATE)) {
             $page->setPageDate(Util::dateNow());
             $page->setPageCommentCount(0);
         }
@@ -73,8 +123,8 @@ class PageController extends CUDControllerAbstract {
         return ['page' => $page];
     }
     
-    protected function filterInputs() {
-        Form::setInput([
+    protected function formInputsBuilders() {
+        return [
             InputIntegerBuilder::init(PagesManager::COLUMN_ID)
                                ->build(),
             InputAlphanumericBuilder::init(PagesManager::PAGE_TITLE)
@@ -85,62 +135,7 @@ class PageController extends CUDControllerAbstract {
                             ->build(),
             InputBooleanBuilder::init(PagesManager::PAGE_COMMENT_STATUS)
                                ->build(),
-        ]);
-        
-        return Form::inputFilter();
-    }
-    
-    public function update($id) {
-        $pagesManager = new PagesManager();
-        $page         = $pagesManager->searchById($id);
-        
-        if (empty($page)) {
-            Messages::addDanger(__('La pagina no existe.'), TRUE);
-            Util::redirect(Router::getSiteURL() . 'admin/page');
-        }
-        
-        if (Form::submit(Constants::FORM_UPDATE)) {
-            $form = $this->form();
-            
-            if (empty($form)) {
-                Messages::addDanger(__('Error en los campos de la pagina.'));
-            } else {
-                $page = Arrays::get($form, 'page');
-                
-                if ($pagesManager->updateByColumnId($page)) {
-                    Messages::addSuccess(__('Pagina actualizada correctamente.'));
-                } else {
-                    Messages::addDanger(__('Error al actualizar la pagina.'));
-                }
-            }
-        }
-        
-        ViewController::sendViewData('isUpdate', TRUE);
-        $linkPage = Router::getSiteURL() . 'page/' . $page->getId();
-        ViewController::sendViewData('linkPage', $linkPage);
-        ViewController::sendViewData('page', $page);
-        ViewController::sendViewData('title', __('Actualizar pagina'));
-        ViewController::view('form');
-    }
-    
-    public function delete($id) {
-        $pagesManager = new PagesManager();
-        
-        if (empty($pagesManager->deleteById($id))) {
-            Messages::addDanger(__('Error al borrar la pagina.'));
-        } else {
-            Messages::addSuccess(__('Pagina borrada correctamente.'));
-        }
-        
-        parent::delete($id);
-    }
-    
-    protected function read() {
-        $pagesManager = new PagesManager();
-        $count        = $pagesManager->count();
-        $limit        = parent::pagination($count);
-        
-        ViewController::sendViewData('pages', $pagesManager->searchAll($limit));
+        ];
     }
     
 }

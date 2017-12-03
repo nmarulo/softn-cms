@@ -15,18 +15,16 @@ abstract class ManagerAbstract {
     
     const COLUMN_ID = 'id';
     
-    /** @var array */
-    private $prepareStatement;
-    
-    /** @var DBAbstract */
-    private $db;
+    /** @var DBInterface */
+    private $connection;
     
     /**
      * ManagerAbstract constructor.
+     *
+     * @param DBInterface $connection
      */
-    public function __construct() {
-        $this->prepareStatement = [];
-        $this->db               = NULL;
+    public function __construct(DBInterface $connection = NULL) {
+        $this->connection = $connection;
     }
     
     /**
@@ -60,7 +58,7 @@ abstract class ManagerAbstract {
     }
     
     protected function addPrepareStatement($parameter, $value, $dataType, $column = '') {
-        DBAbstract::addPrepareStatement($this->prepareStatement, $parameter, $value, $dataType, $column);
+        $this->connection->addPrepareStatement($parameter, $value, $dataType, $column);
     }
     
     /**
@@ -87,22 +85,7 @@ abstract class ManagerAbstract {
      * @return array|bool
      */
     protected function search($query) {
-        $db = $this->getDB();
-        
-        return $this->checkResult($db->select($query));
-    }
-    
-    /**
-     * @return MySQL
-     */
-    protected function getDB() {
-        $db = new MySQL();
-        $db->setTable($this->getTableWithPrefix());
-        $db->setPrepareStatement($this->prepareStatement);
-        $this->prepareStatement = [];
-        $this->db               = $db;
-        
-        return $db;
+        return $this->checkResult($this->connection->select($query));
     }
     
     /**
@@ -133,8 +116,7 @@ abstract class ManagerAbstract {
     
     public function count() {
         $query  = 'SELECT COUNT(*) AS COUNT FROM ' . $this->getTableWithPrefix();
-        $db     = $this->getDB();
-        $result = $db->select($query);
+        $result = $this->connection->select($query);
         $result = Arrays::findFirst($result);
         
         return empty($result) ? 0 : $result;
@@ -172,13 +154,14 @@ abstract class ManagerAbstract {
         
         if (!empty($object)) {
             $this->prepareStatement($object);
+            $prepareStatement = $this->connection->getPrepareStatement();
             
-            if (!empty($this->prepareStatement)) {
+            if (!empty($prepareStatement)) {
                 $conditionsMap = array_map(function($key, $value) {
                     $column = Arrays::get($value, 'column');
                     
                     return "$column = $key";
-                }, array_keys($this->prepareStatement), $this->prepareStatement);
+                }, array_keys($prepareStatement), $prepareStatement);
                 
                 $conditions = ' WHERE ' . implode(" AND ", $conditionsMap) . $conditions;
             }
@@ -205,10 +188,10 @@ abstract class ManagerAbstract {
         }
         
         $this->prepareStatement($object);
-        $db = $this->getDB();
+        $this->connection->setTable($this->getTableWithPrefix());
         
-        if ($db->insert()) {
-            return $db->getLastInsetId();
+        if ($this->connection->insert()) {
+            return $this->connection->getLastInsetId();
         }
         
         return FALSE;
@@ -229,9 +212,9 @@ abstract class ManagerAbstract {
         }
         
         $this->prepareStatement($object);
-        $db = $this->getDB();
+        $this->connection->setTable($this->getTableWithPrefix());
         
-        return $db->updateByColumn($columnName);
+        return $this->connection->updateByColumn($columnName);
     }
     
     /**
@@ -249,20 +232,25 @@ abstract class ManagerAbstract {
         return $this->deleteByPrepareStatement();
     }
     
+    /**
+     * @param string $allLogicalOperators
+     *
+     * @return bool
+     */
     protected function deleteByPrepareStatement($allLogicalOperators = 'AND') {
-        if (empty($this->prepareStatement)) {
+        if (empty($this->connection->getPrepareStatement())) {
             return FALSE;
         }
         
-        $db = $this->getDB();
+        $this->connection->setTable($this->getTableWithPrefix());
         
-        return $db->deleteByPrepareStatement($allLogicalOperators);
+        return $this->connection->deleteByPrepareStatement($allLogicalOperators);
     }
     
     /**
      * @param int $id
      *
-     * @return int
+     * @return bool
      */
     public function deleteById($id) {
         if (empty($id)) {
@@ -278,7 +266,7 @@ abstract class ManagerAbstract {
      * @return int
      */
     public function getLastInsertId() {
-        return $this->db->getLastInsetId();
+        return $this->connection->getLastInsetId();
     }
     
     public function delete($query) {
@@ -286,16 +274,30 @@ abstract class ManagerAbstract {
             return FALSE;
         }
         
-        $db = $this->getDB();
+        $this->connection->setTable($this->getTableWithPrefix());
         
-        return $db->delete($query);
+        return $this->connection->delete($query);
     }
     
     /**
      * @return int
      */
     public function getRowCount() {
-        return $this->db->getRowCount();
+        return $this->connection->getRowCount();
+    }
+    
+    /**
+     * @return DBInterface
+     */
+    protected function getConnection() {
+        return $this->connection;
+    }
+    
+    /**
+     * @param DBAbstract $connection
+     */
+    public function setConnection($connection) {
+        $this->connection = $connection;
     }
     
     protected function deleteByColumn($value, $column, $dataType) {
@@ -312,6 +314,7 @@ abstract class ManagerAbstract {
      * @return string
      */
     protected function getQuery() {
-        return $this->db->getQuery();
+        return $this->connection->getQuery();
     }
+    
 }

@@ -6,7 +6,6 @@
 namespace SoftnCMS\controllers;
 
 use SoftnCMS\route\Route;
-use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\Logger;
 
@@ -40,11 +39,31 @@ class ViewController {
     /** @var \Closure */
     private static $VIEW_DATA_BASE_CLOSURE;
     
+    /** @var string */
+    private static $SITE_URL;
+    
+    /** @var string Directorio del controlador actual. */
+    private static $CURRENT_DIRECTORY;
+    
     /**
      * @param string $viewPath
      */
     public static function setViewPath($viewPath) {
         self::$VIEW_PATH = $viewPath;
+    }
+    
+    /**
+     * @param string $siteUrl
+     */
+    public static function setSiteUrl($siteUrl) {
+        self::$SITE_URL = $siteUrl;
+    }
+    
+    /**
+     * @param string $currentDirectory
+     */
+    public static function setCurrentDirectory($currentDirectory) {
+        self::$CURRENT_DIRECTORY = $currentDirectory;
     }
     
     /**
@@ -73,6 +92,16 @@ class ViewController {
         self::$CONTROLLER_VIEW_PATH = self::getControllerViewPath($fileName);
         self::includePath(self::getPathView('index'));
         self::$VIEW_DATA = [];
+    }
+    
+    private static function callViewDataBase() {
+        if (is_callable(self::$VIEW_DATA_BASE_CLOSURE)) {
+            $data = call_user_func(self::$VIEW_DATA_BASE_CLOSURE);
+            
+            if (is_array($data)) {
+                self::$VIEW_DATA = array_merge($data, self::$VIEW_DATA);
+            }
+        }
     }
     
     private static function getControllerViewPath($fileName) {
@@ -216,7 +245,7 @@ class ViewController {
     }
     
     public static function registerScriptRoute($scriptRute) {
-        $scriptRute = Router::getSiteURL() . $scriptRute;
+        $scriptRute = self::$SITE_URL . $scriptRute;
         
         if (Arrays::valueExists(self::$VIEW_SCRIPTS, $scriptRute) === FALSE) {
             self::$VIEW_SCRIPTS[] = $scriptRute;
@@ -231,7 +260,7 @@ class ViewController {
     }
     
     private static function getPathTheme() {
-        if (Router::getCurrentDirectory() == Route::CONTROLLER_DIRECTORY_NAME_THEME) {
+        if (self::$CURRENT_DIRECTORY == Route::CONTROLLER_DIRECTORY_NAME_THEME) {
             //$DIRECTORY_VIEWS contiene el nombre del tema.
             return '/themes/' . self::$DIRECTORY_VIEWS;
         }
@@ -244,7 +273,7 @@ class ViewController {
     }
     
     public static function registerStyleRoute($styleRute) {
-        $styleRute = Router::getSiteURL() . $styleRute;
+        $styleRute = self::$SITE_URL . $styleRute;
         
         if (Arrays::valueExists(self::$VIEW_STYLES, $styleRute) === FALSE) {
             self::$VIEW_STYLES[] = $styleRute;
@@ -259,15 +288,5 @@ class ViewController {
      */
     public static function setViewDataBase($closure) {
         self::$VIEW_DATA_BASE_CLOSURE = $closure;
-    }
-    
-    private static function callViewDataBase() {
-        if (is_callable(self::$VIEW_DATA_BASE_CLOSURE)) {
-            $data = call_user_func(self::$VIEW_DATA_BASE_CLOSURE);
-            
-            if (is_array($data)) {
-                self::$VIEW_DATA = array_merge($data, self::$VIEW_DATA);
-            }
-        }
     }
 }

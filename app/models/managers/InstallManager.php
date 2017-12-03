@@ -44,7 +44,6 @@ class InstallManager {
         try {
             $this->connection = new \PDO($dsn, $dbUser, $dbPass);
         } catch (\PDOException $pdoEx) {
-            Messages::addDanger(__('Error al establecer la conexión con la base de datos.'));
             Logger::getInstance()
                   ->withName('INSTALL')
                   ->error($pdoEx->getMessage());
@@ -57,7 +56,7 @@ class InstallManager {
     public function createFileConfig($dataInput) {
         //Compruebo si puedo escribir en la carpeta donde están los archivo
         if (!is_writable(ABSPATH)) {
-            Messages::addDanger(__('No es posible escribir en el directorio %1$s.', ABSPATH));
+            Messages::addDanger(__('No es posible escribir en el directorio de la aplicación.', ABSPATH));
             Logger::getInstance()
                   ->withName('INSTALL')
                   ->debug('No es posible escribir en el directorio.', ['directory' => ABSPATH]);
@@ -65,21 +64,65 @@ class InstallManager {
             return FALSE;
         }
         
-        $configFile      = $this->getDataFileConfig($dataInput);
-        $configFile_path = ABSPATH . 'config.php';
-        $handle          = fopen($configFile_path, 'w');
-        foreach ($configFile as $line) {
-            fwrite($handle, $line);
-        }
-        fclose($handle);
-        chmod($configFile_path, 0666);
+        $dataConfigSample = $this->getDataFileConfig($dataInput);
+        $pathConfig       = ABSPATH . 'config.php';
+        $handle           = fopen($pathConfig, 'w');
+        $notError         = TRUE;
+        $len              = count($dataConfigSample);
         
-        return TRUE;
+        if ($handle === FALSE) {
+            Messages::addDanger(__('Error al abrir el archivo de configuración en modo escritura.'));
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->error(__('Error al abrir el archivo de configuración en modo escritura.'), ['pathConfig' => $pathConfig]);
+            
+            return FALSE;
+        }
+        
+        for ($i = 0; $i < $len && $notError; ++$i) {
+            if (fwrite($handle, $dataConfigSample[$i]) === FALSE) {
+                $notError = FALSE;
+                Logger::getInstance()
+                      ->withName('INSTALL')
+                      ->error('Error al escribir en el archivo de configuración.', ['line' => $dataConfigSample[$i]]);
+            }
+        }
+        
+        if (fclose($handle) === FALSE) {
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->error('Error al cerrar el archivo de configuración.');
+            $notError = FALSE;
+        }
+        
+        if ($notError && chmod($pathConfig, 0666) === FALSE) {
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->error('Error al establecer los permisos del archivo de configuración.');
+            $notError = FALSE;
+        }
+        
+        return $notError;
     }
     
+    /**
+     * @param $dataInput
+     *
+     * @return array|bool
+     */
     private function getDataFileConfig($dataInput) {
         $this->createConstants($dataInput);
-        $configFile = file(ABSPATH . 'config-sample.php');
+        $pathConfigSample = ABSPATH . 'config-sample.php';
+        $configFile       = file($pathConfigSample);
+        
+        if ($configFile === FALSE) {
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->error(__('Error al abrir el archivo base de configuración.'), ['pathConfigSample' => $pathConfigSample]);
+            Messages::addDanger(__('Error al abrir el archivo base de configuración.'));
+            
+            return [];
+        }
         
         foreach ($configFile as $num => $line) {
             //Si no encuentra la excreción regular en la linea, pasa a la siguiente iteración
@@ -137,16 +180,42 @@ class InstallManager {
     }
     
     public function createTables() {
-        $fileScriptSQL = ABSPATH . '../softn_cms.sql';
+        $pathScriptSQL = sprintf('%1$s%2$s%3$s%4$s', ABSPATH, '..', DIRECTORY_SEPARATOR, 'softn_cms.sql');
         
-        if (!is_readable($fileScriptSQL)) {
+        if (!is_readable($pathScriptSQL)) {
+            Messages::addDanger(__('No se puede leer el script de instalación SQL.'));
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->error(__('No se puede leer el script de instalación SQL.'), ['pathScriptSQL' => $pathScriptSQL]);
+            
             return FALSE;
         }
         
-        $scriptSQL = file_get_contents($fileScriptSQL);
+        $scriptSQL = file_get_contents($pathScriptSQL);
+        
+        if ($scriptSQL === FALSE) {
+            Messages::addDanger(__('Error al obtener el contenido del script de instalación SQL.'));
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->error('Error al obtener el contenido del script de instalación SQL.', ['pathScriptSQL' => $pathScriptSQL]);
+            
+            return FALSE;
+        }
+        
         $scriptSQL = str_replace(REPLACE_SQL_SITE_URL, URL_WEB, $scriptSQL);
         $scriptSQL = str_replace(REPLACE_SQL_PREFIX, DB_PREFIX, $scriptSQL);
         
-        return $this->connection->exec($scriptSQL) !== FALSE;
+        if ($this->connection->exec($scriptSQL) === FALSE) {
+            Logger::getInstance()
+                  ->withName('INSTALL')
+                  ->error(__('Error al ejecutar el script de instalación SQL.'), [
+                      'errorInfo' => $this->connection->errorInfo(),
+                      'errorCode' => $this->connection->errorCode(),
+                  ]);
+            
+            return FALSE;
+        }
+        
+        return TRUE;
     }
 }

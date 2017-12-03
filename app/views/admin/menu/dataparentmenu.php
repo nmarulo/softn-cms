@@ -1,9 +1,9 @@
 <?php
 
 use SoftnCMS\controllers\ViewController;
-use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\tables\Menu;
 
+$menusManager  = ViewController::getViewData('menusManager');
 $siteUrl       = ViewController::getViewData('siteUrl');
 $siteUrlUpdate = $siteUrl . 'admin/menu/update/';
 $siteUrlCreate = $siteUrl . 'admin/menu/create/?parentMenu=';
@@ -21,8 +21,8 @@ $subMenuId     = $subMenu->getId();
                     <a class='btn btn-primary' href='<?php echo $siteUrlUpdate . $subMenuId; ?>' title='Editar'>
                         <span class='glyphicon glyphicon-edit'></span>
                     </a>
-                    <button class='btn btn-danger' data-id="<?php echo $subMenuId; ?>" title='Borrar'>
-                        <span class='glyphicon glyphicon-remove'></span>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-data-delete" data-id="<?php echo $subMenuId; ?>" title="Borrar">
+                        <span class="glyphicon glyphicon-remove-sign"></span>
                     </button>
                     <?php echo $subMenu->getMenuTitle(); ?>
                 </div>
@@ -61,8 +61,7 @@ $subMenuId     = $subMenu->getId();
     <?php if ($subMenu->getMenuTotalChildren() > 0) { ?>
         <ul class="list-unstyled">
             <?php
-            $menusManager = new MenusManager();
-            $menus        = $menusManager->searchByMenuSub($subMenu->getId());
+            $menus = $menusManager->searchByMenuSub($subMenu->getId());
 
             array_walk($menus, function(Menu $menu) {
                 ViewController::sendViewData('subMenu', $menu);

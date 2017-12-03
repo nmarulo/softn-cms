@@ -1,15 +1,23 @@
 /* BOOTSTRAP ================================= */
+.pagination > li > a,
+.modal-content,
 .alert,
 .panel,
 .list-group-item {
     border: 0;
 }
 
+.modal-content,
 .panel,
 .dropdown-menu {
     box-shadow: none;
 }
 
+.pagination > li:first-child > a,
+.pagination > li:first-child > span,
+.pagination > li:last-child > a,
+.pagination > li:last-child > span,
+.modal-content,
 .input-group-addon,
 .btn,
 .input-lg,
@@ -26,8 +34,6 @@
     padding: 20px 30px;
 }
 
-.pagination > li > a,
-.pagination > li > span,
 .form-control,
 .input-group-addon {
     border: 1px solid #DDDDDD;
@@ -35,6 +41,11 @@
 
 ul.list-unstyled > li > ul.list-unstyled {
     padding-left: 50px;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+    margin-left: 1px;
 }
 
 /* COMÚN ================================= */
@@ -286,7 +297,7 @@ ul.list-group li {list-style: none;}
     -ms-user-select: none;
     user-select: none;
     background-color: transparent;
-    border: 0px solid transparent;
+    border: 0 solid transparent;
 }
 
 .btn-nostyle.disabled {
@@ -322,6 +333,6 @@ ul.list-untyped:first-child {
 }
 
 #option-license .panel-default.form-input-checkboxes > .panel-heading:hover {
-    background-color: #3f454c;
+    background-color: #3F454C;
     color: #FFFFFF;
 }

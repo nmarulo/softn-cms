@@ -10,7 +10,7 @@ $siteUrlMenu   = $siteUrl . 'admin/menu/';
 $menu          = ViewController::getViewData('menu');
 $menuId        = $menu->getId();
 ?>
-<div class="page-container" data-url="<?php echo $siteUrlMenu; ?>" data-add-url="<?php echo "edit=$menuId"; ?>">
+<div class="page-container" data-url="<?php echo $siteUrlMenu; ?>" data-reload-param="<?php echo $menuId; ?>" data-reload-view="dataedit" data-reload-action="edit">
     <div>
         <h1><?php echo __('Menu'); ?>: <?php echo $menu->getMenuTitle(); ?>
             <a class="btn btn-success" href="<?php echo $siteUrlCreate . $menuId; ?>" title="Agregar"><span class="glyphicon glyphicon-plus"></span></a>
@@ -20,4 +20,5 @@ $menuId        = $menu->getId();
     <div id="data-container">
         <?php ViewController::singleView('dataedit'); ?>
     </div>
+    <?php ViewController::singleRootView('modaldelete'); ?>
 </div>

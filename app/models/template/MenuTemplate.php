@@ -3,18 +3,19 @@
  * MenuTemplate.php
  */
 
-namespace SoftnCMS\controllers\template;
+namespace SoftnCMS\models\template;
 
-use SoftnCMS\controllers\Template;
 use SoftnCMS\models\managers\MenusManager;
 use SoftnCMS\models\tables\Menu;
+use SoftnCMS\models\TemplateAbstract;
+use SoftnCMS\util\database\DBInterface;
 use SoftnCMS\util\Logger;
 
 /**
  * Class MenuTemplate
  * @author Nicolás Marulanda P.
  */
-class MenuTemplate extends Template {
+class MenuTemplate extends TemplateAbstract {
     
     /** @var array */
     private $subMenuList;
@@ -25,11 +26,13 @@ class MenuTemplate extends Template {
     /**
      * MenuTemplate constructor.
      *
-     * @param Menu $menu
-     * @param bool $initRelationShip
+     * @param Menu        $menu
+     * @param bool        $initRelationShip
+     * @param string      $siteUrl
+     * @param DBInterface $connectionDB
      */
-    public function __construct(Menu $menu = NULL, $initRelationShip = FALSE) {
-        parent::__construct();
+    public function __construct(Menu $menu = NULL, $initRelationShip = FALSE, $siteUrl = '', DBInterface $connectionDB = NULL) {
+        parent::__construct($siteUrl, $connectionDB);
         $this->menu        = $menu;
         $this->subMenuList = [];
         
@@ -44,17 +47,17 @@ class MenuTemplate extends Template {
     
     public function initSubMenuList() {
         if (!empty($this->menu)) {
-            $menusManager = new MenusManager();
+            $menusManager = new MenusManager($this->getConnectionDB());
             $menuList     = $menusManager->searchByMenuSub($this->menu->getId());
             
             $this->subMenuList = array_map(function(Menu $menu) {
-                return new MenuTemplate($menu, TRUE);
+                return new MenuTemplate($menu, TRUE, $this->getSiteUrl(), $this->getConnectionDB());
             }, $menuList);
         }
     }
     
     public function initMenu($menuId) {
-        $menusManager = new MenusManager();
+        $menusManager = new MenusManager($this->getConnectionDB());
         $this->menu   = $menusManager->searchById($menuId);
         
         if (empty($this->menu)) {
