@@ -78,6 +78,8 @@ class OptionController extends ControllerAbstract {
                     $notError = $optionsManager->updateByColumnName(Arrays::get($options, $i));
                 }
                 
+                $optionsManager->language();
+                
                 if ($notError) {
                     Messages::addSuccess(__('Actualizado correctamente.'));
                 } else {

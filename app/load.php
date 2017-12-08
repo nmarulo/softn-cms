@@ -76,16 +76,10 @@ $router->setEvent(Router::EVENT_INIT_LOAD, function() use ($router) {
                   ->debug('Redireccionando a la pagina de instalación.');
             Util::redirect($siteUrl . 'install');
         }
-    } else {
-        $optionsManager = new OptionsManager($router->getConnectionDB());
-        $optionLanguage = $optionsManager->searchByName(OptionConstants::LANGUAGE);
-        
-        if (!empty($optionLanguage)) {
-            $language = $optionLanguage->getOptionValue();
-        }
     }
     
-    \SoftnCMS\util\Language::load($language);
+    $optionsManager = new OptionsManager($router->getConnectionDB());
+    $optionsManager->language();
     
     if ($directoryController == Route::CONTROLLER_DIRECTORY_NAME_ADMIN && !LoginManager::isLogin()) {
         Messages::addWarning(__('Debes iniciar sesión.'), TRUE);

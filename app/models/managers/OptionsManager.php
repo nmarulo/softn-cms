@@ -10,6 +10,7 @@ use SoftnCMS\models\tables\Option;
 use SoftnCMS\rute\Router;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\database\ManagerAbstract;
+use SoftnCMS\util\Language;
 use SoftnCMS\util\Util;
 
 /**
@@ -66,6 +67,21 @@ class OptionsManager extends ManagerAbstract {
      */
     public function updateByColumnName($option) {
         return parent::updateByColumn($option, self::OPTION_NAME);
+    }
+    
+    public function language() {
+        $language = NULL;
+        
+        if ($this->getConnection() != NULL) {
+            $optionsManager = new OptionsManager($this->getConnection());
+            $optionLanguage = $optionsManager->searchByName(OptionConstants::LANGUAGE);
+            
+            if (!empty($optionLanguage)) {
+                $language = $optionLanguage->getOptionValue();
+            }
+        }
+        
+        Language::load($language);
     }
     
     /**
