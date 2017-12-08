@@ -44,6 +44,7 @@ class InstallManager {
         try {
             $this->connection = new \PDO($dsn, $dbUser, $dbPass);
         } catch (\PDOException $pdoEx) {
+            //TODO: Control de excepción: "Warning: PDO::__construct(): php_network_getaddresses: getaddrinfo failed: Host desconocido."
             Logger::getInstance()
                   ->withName('INSTALL')
                   ->error($pdoEx->getMessage());
