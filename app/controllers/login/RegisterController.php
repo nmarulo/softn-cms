@@ -48,13 +48,14 @@ class RegisterController extends ControllerAbstract {
     }
     
     protected function formToObject() {
-        $pass = $this->getInput(UsersManager::USER_PASSWORD);
+        $pass  = $this->getInput(UsersManager::USER_PASSWORD);
         $passR = $this->getInput(UsersManager::USER_PASSWORD_REWRITE);
         
         if ($pass != $passR) {
             return FALSE;
         }
         
+        $usersManager   = new UsersManager($this->getConnectionDB());
         $optionsManager = new OptionsManager($this->getConnectionDB());
         $pass           = Util::encrypt($pass, LOGGED_KEY);
         $user           = new User();
@@ -66,6 +67,8 @@ class RegisterController extends ControllerAbstract {
         $user->setUserPostCount(0);
         $user->setProfileId($optionsManager->searchByName(OptionConstants::DEFAULT_PROFILE)
                                            ->getOptionValue());
+        $gravatar = $usersManager->getGravatar($user->getUserEmail());
+        $user->setUserUrlImage($gravatar->get());
         
         return ['user' => $user];
     }

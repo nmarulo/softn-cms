@@ -5,10 +5,12 @@
 
 namespace SoftnCMS\models\managers;
 
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\models\tables\Comment;
 use SoftnCMS\models\tables\User;
 use SoftnCMS\util\Arrays;
 use SoftnCMS\util\database\ManagerAbstract;
+use SoftnCMS\util\Gravatar;
 
 /**
  * Class UsersManager
@@ -185,6 +187,21 @@ class UsersManager extends ManagerAbstract {
         }
         
         return $result;
+    }
+    
+    public function getGravatar($email) {
+        $optionsManager = new OptionsManager($this->getConnection());
+        $gravatarOption = $optionsManager->searchByName(OptionConstants::GRAVATAR);
+        
+        if (empty($gravatarOption->getOptionValue())) {
+            $gravatar = new Gravatar();
+        } else {
+            $gravatar = unserialize($gravatarOption->getOptionValue());
+        }
+        
+        $gravatar->setEmail($email);
+        
+        return $gravatar;
     }
     
     /**

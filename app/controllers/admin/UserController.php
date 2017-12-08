@@ -6,9 +6,7 @@
 namespace SoftnCMS\controllers\admin;
 
 use SoftnCMS\classes\constants\Constants;
-use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\models\managers\LoginManager;
-use SoftnCMS\models\managers\OptionsManager;
 use SoftnCMS\models\managers\ProfilesManager;
 use SoftnCMS\models\managers\UsersManager;
 use SoftnCMS\models\tables\User;
@@ -17,7 +15,6 @@ use SoftnCMS\util\form\builders\InputAlphanumericBuilder;
 use SoftnCMS\util\form\builders\InputEmailBuilder;
 use SoftnCMS\util\form\builders\InputIntegerBuilder;
 use SoftnCMS\util\form\builders\InputUrlBuilder;
-use SoftnCMS\util\Gravatar;
 use SoftnCMS\util\Messages;
 use SoftnCMS\util\Token;
 use SoftnCMS\util\Util;
@@ -39,10 +36,11 @@ class UserController extends ControllerAbstract {
     }
     
     public function create() {
+        $usersManager = new UsersManager($this->getConnectionDB());
+        
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
             if ($this->isValidForm()) {
-                $usersManager = new UsersManager($this->getConnectionDB());
-                $user         = $this->getForm('user');
+                $user = $this->getForm('user');
                 
                 if ($usersManager->create($user)) {
                     Messages::addSuccess(__('Usuario creado correctamente.'), TRUE);
@@ -55,7 +53,7 @@ class UserController extends ControllerAbstract {
         
         $this->sendViewProfiles();
         $user     = new User();
-        $gravatar = $this->getGravatar();
+        $gravatar = $usersManager->getGravatar(NULL);
         //En el panel de administración el tamaño sera 128px
         $gravatar->setSize(128);
         $user->setUserUrlImage($gravatar->get());
@@ -70,19 +68,6 @@ class UserController extends ControllerAbstract {
     private function sendViewProfiles() {
         $profilesManager = new ProfilesManager($this->getConnectionDB());
         $this->sendDataView(['profiles' => $profilesManager->searchAll()]);
-    }
-    
-    private function getGravatar() {
-        $optionsManager = new OptionsManager($this->getConnectionDB());
-        $gravatarOption = $optionsManager->searchByName(OptionConstants::GRAVATAR);
-        
-        if (empty($gravatarOption->getOptionValue())) {
-            $gravatar = new Gravatar();
-        } else {
-            $gravatar = unserialize($gravatarOption->getOptionValue());
-        }
-        
-        return $gravatar;
     }
     
     public function update($id) {
@@ -108,10 +93,9 @@ class UserController extends ControllerAbstract {
         }
         
         $this->sendViewProfiles();
-        $gravatar = $this->getGravatar();
+        $gravatar = $usersManager->getGravatar($user->getUserEmail());
         //En el panel de administración el tamaño sera 128px
         $gravatar->setSize(128);
-        $gravatar->setEmail($user->getUserEmail());
         $user->setUserUrlImage($gravatar->get());
         $this->sendDataView([
             'isUpdate'          => TRUE,
@@ -158,8 +142,8 @@ class UserController extends ControllerAbstract {
             $pass = Util::encrypt($pass, LOGGED_KEY);
         }
         
-        $gravatar = $this->getGravatar();
-        $user     = new User();
+        $usersManager = new UsersManager($this->getConnectionDB());
+        $user         = new User();
         $user->setId($this->getInput(UsersManager::COLUMN_ID));
         $user->setUserEmail($this->getInput(UsersManager::USER_EMAIL));
         $user->setUserLogin($this->getInput(UsersManager::USER_LOGIN));
@@ -169,7 +153,7 @@ class UserController extends ControllerAbstract {
         $user->setUserPassword($pass);
         $user->setUserPostCount(NULL);
         $user->setProfileId($this->getInput(UsersManager::PROFILE_ID));
-        $gravatar->setEmail($user->getUserEmail());
+        $gravatar = $usersManager->getGravatar($user->getUserEmail());
         $user->setUserUrlImage($gravatar->get());
         
         if ($this->checkSubmit(Constants::FORM_CREATE)) {
