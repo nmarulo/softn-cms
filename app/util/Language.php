@@ -7,6 +7,7 @@ namespace SoftnCMS\util;
 
 use Gettext\Translations;
 use Gettext\Translator;
+use SoftnCMS\classes\constants\OptionConstants;
 use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
 
 /**
@@ -16,13 +17,17 @@ use SoftnCMS\util\form\builders\InputAlphabeticBuilder;
 class Language {
     
     public static function load($language) {
-        $paramLang  = InputAlphabeticBuilder::init(PARAM_LANGUAGE)
-                                            ->setMethod($_GET)
-                                            ->setSpecialChar(TRUE)
-                                            ->build()
-                                            ->filter();
+        $paramLang  = '';
         $translator = new Translator();
         $translator->register();
+        
+        if (Arrays::keyExists($_GET, PARAM_LANGUAGE)) {
+            $paramLang = InputAlphabeticBuilder::init(PARAM_LANGUAGE)
+                                               ->setMethod($_GET)
+                                               ->setSpecialChar(TRUE)
+                                               ->build()
+                                               ->filter();
+        }
         
         if (empty($language) && empty($paramLang)) {
             $language = self::getDefaultLan();

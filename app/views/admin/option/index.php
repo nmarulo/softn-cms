@@ -105,7 +105,6 @@ $commentChecked              = empty($optionComment->getOptionValue()) ? '' : 'c
                 <label class="col-sm-2 control-label"><?php echo __('Seleccionar idioma'); ?></label>
                 <div class="col-sm-10">
                     <select class="form-control" name="<?php echo $optionLanguage->getOptionName(); ?>">
-                        <option value="es">es</option>
                         <?php array_walk($listLanguages, function($language) use ($currentLanguage) {
                             $selected = '';
         
