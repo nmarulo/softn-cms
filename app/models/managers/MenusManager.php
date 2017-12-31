@@ -288,7 +288,8 @@ class MenusManager extends ManagerAbstract {
         $query = 'SELECT %1$s AS POSITION FROM %2$s WHERE %3$s = :%3$s ORDER BY %1$s DESC LIMIT 1';
         $query = sprintf($query, self::MENU_POSITION, parent::getTableWithPrefix(), self::MENU_SUB);
         parent::addPrepareStatement(self::MENU_SUB, $parentMenuId, \PDO::PARAM_INT);
-        $result = Arrays::findFirst(parent::search($query));
+        $result = Arrays::findFirst(parent::getConnection()
+                                          ->select($query));
         
         return empty($result) ? 0 : $result;
     }
