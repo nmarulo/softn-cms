@@ -67,6 +67,7 @@ class TestController extends ControllerAbstract {
               ->info("Inicio: generado de datos con FAKER");
         //Ejecutar uno a uno
 //        $this->createMenus(10);
+//        $this->createMenus(100, true);
 //        $this->createSidebars(10);
 //        $this->createTerms(100);
 //        $this->createCategories(100);
