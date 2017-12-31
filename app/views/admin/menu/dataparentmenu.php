@@ -26,8 +26,8 @@ $subMenuId     = $subMenu->getId();
                     </button>
                     <?php echo $subMenu->getMenuTitle(); ?>
                 </div>
-                <!--                <div class="pull-right">-->
-                <!--                    <ul class="list-inline">-->
+                                <div class="pull-right">
+                                    <ul class="list-inline">
                 <!--                        <li>-->
                 <!--                            <button class="btn btn-success">-->
                 <!--                                <span class="glyphicon glyphicon-arrow-up"></span>-->
@@ -38,9 +38,9 @@ $subMenuId     = $subMenu->getId();
                 <!--                                <span class="glyphicon glyphicon-arrow-down"></span>-->
                 <!--                            </button>-->
                 <!--                        </li>-->
-                <!--                        <li>-->
-                <!--                            <span class="badge">--><?php //echo $subMenu->getMenuPosition(); ?><!--</span>-->
-                <!--                        </li>-->
+                                        <li>
+                                            <span class="badge"><?php echo $subMenu->getMenuPosition(); ?></span>
+                                        </li>
                 <!--                        <li>-->
                 <!--                            <button class="btn btn-success">-->
                 <!--                                <span class="glyphicon glyphicon-arrow-up"></span>-->
@@ -53,8 +53,8 @@ $subMenuId     = $subMenu->getId();
                 <!--                                <span class="glyphicon glyphicon-arrow-down"></span>-->
                 <!--                            </button>-->
                 <!--                        </li>-->
-                <!--                    </ul>-->
-                <!--                </div>-->
+                                    </ul>
+                                </div>
             </div>
         </div>
     </div>
