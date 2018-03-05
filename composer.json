@@ -2,30 +2,32 @@
     "name": "softn/cms",
     "description": "Sistema gestor de contenido",
     "type": "project",
-    "require": {
-        "twbs/bootstrap": "3.3.*",
-        "fortawesome/font-awesome": "4.6.*",
-        "tinymce/tinymce": "4.4.*",
-        "ezyang/htmlpurifier": "4.8.*",
-        "firebase/php-jwt": "v5.0.*",
-        "phpunit/phpunit": "5.5.*",
-        "gettext/gettext": "v4.4.*",
-        "monolog/monolog": "1.23.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "SoftnCMS\\": "app"
-        }
-    },
-    "config": {
-        "vendor-dir": "app/vendor",
-        "optimize-autoloader": true
-    },
     "license": "MIT",
     "authors": [
         {
-            "name": "Nicolas Marulanda P.",
+            "name": "Nicolás Marulanda P.",
             "email": "info@softn.red"
         }
-    ]
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "silverengine/components": "dev-master",
+        "lotfio-lakehal/ouch": "dev-develop",
+        "twbs/bootstrap": "3.3.*",
+        "tinymce/tinymce": "4.4.*",
+        "firebase/php-jwt": "v5.0.*",
+        "phpunit/phpunit": "5.5.*"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "App\\" : "App/",
+            "Silver\\": "System/",
+            "Database\\": "Database/"
+        }
+    },
+
+    "autoload-dev": {
+        "psr-4": {
+        }
+    }
 }
