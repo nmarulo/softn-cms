@@ -29,7 +29,7 @@ return [
             'hostname'      => 'localhost',
             'username'      => 'root',
             'password'      => 'root',
-            'basename'      => 'softn_cms',
+            'basename'      => 'softn_cms_framework',
             'limit_request' => 25,
         ]
     ],

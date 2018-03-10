@@ -12,7 +12,6 @@
     "minimum-stability": "dev",
     "require": {
         "silverengine/components": "dev-master",
-        "lotfio-lakehal/ouch": "dev-develop",
         "twbs/bootstrap": "3.3.*",
         "tinymce/tinymce": "4.4.*",
         "firebase/php-jwt": "v5.0.*",

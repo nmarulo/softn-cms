@@ -14,5 +14,5 @@ namespace App\Routes;
 
 use Silver\Core\Route;
 
-Route::get('/', 'Welcome@welcome', 'home', 'public');
-Route::get('/demo', 'Welcome@demo', 'home', 'public');
+// Route for Dashboard controller.
+Route::get('/', 'Dashboard@index', 'dashboard', 'public');
