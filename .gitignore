@@ -1,9 +1,9 @@
 .idea
-app/vendor/
+vendor/
 *.mwb*
 test-*
 *.vpp*
 *.vux
 *.temp.*
-app/config.php
-app/log/
+Storage/Logs/*.log
+*.lock

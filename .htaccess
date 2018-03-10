@@ -1,8 +1,25 @@
-Options -Indexes
 <IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-l
-RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]
+
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+    # redirect all request from silver to public
+    RewriteRule ^(.*)$ public/$1 [L]
+
 </IfModule>
+
+#in case of public_html you can do something like this
+
+#<IfModule mod_rewrite.c>
+
+#<IfModule mod_negotiation.c>
+#     Options -MultiViews -Indexes
+#  </IfModule>
+
+#     RewriteEngine On
+#     #redirect all request from public html to silver/public
+#     RewriteRule ^(.*)$ silver/public/$1 [L]
+
+#</IfModule>

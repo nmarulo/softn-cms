@@ -1,0 +1,57 @@
+#!/usr/bin/php
+<?php
+
+/**
+ * SilverEngine  - PHP MVC framework
+ *
+ * @package   SilverEngine
+ * @author    SilverEngine Team
+ * @copyright 2015-2017
+ * @license   MIT
+ * @link      https://github.com/SilverEngine/Framework
+ */
+
+namespace Silver;
+
+use Silver\Engine\CLI;
+
+/**
+ * Defining framework root directory
+ * and jump into it.
+ */
+$CWD = str_replace('\\', '/', dirname(__FILE__));
+$CWD = str_replace('/System/Engine/CLI', '', $CWD);
+//ltrim($CWD);
+define('ROOT', $CWD . '/');
+
+
+/**
+ * @param $data
+ * @param bool $param
+ */
+if (!function_exists('dd')) {
+    function dd($data, $param = false)
+    {
+        if ($param)
+            var_dump('<pre>', $data, '<pre>');
+        else
+            var_dump($data);
+
+        exit();
+    }
+}
+
+/**
+ * Defining php extension.
+ */
+define('EXT', '.php');
+// directory separator to prevent conflict in different OS
+define('DS', DIRECTORY_SEPARATOR);
+
+include_once(ROOT.'System/Core/Blueprints/RenderInterface'.EXT);
+include_once(ROOT.'System/Engine/Ghost/Template'.EXT);
+
+include_once('System/Engine/CLI/index.php');
+include_once(ROOT.'System/Core/Env'.EXT);
+
+return new CLI($argv);

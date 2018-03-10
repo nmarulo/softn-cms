@@ -3,7 +3,7 @@ SoftN CMS
 
 SoftN CMS es un sistema de gestión de contenido con el que puedes crear sitios web dinámicos e interactivos, con una interfaces amigable e intuitiva que se adapta a cualquier tipo de resolución. Desarrollado en PHP como lenguaje de programación y MySQL como gestor de base de datos.
 
-> **Versión 0.4 Alfa - Fenix** Este proyecto está todavía en fase de desarrollo.
+> **Versión 0.5 Alfa - Fenix** Este proyecto está todavía en fase de desarrollo.
 
 > **branch:develop** Últimos cambios realizados. https://github.com/nmarulo/softn-cms/tree/develop
 
