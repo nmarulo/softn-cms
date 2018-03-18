@@ -27,6 +27,11 @@ body {
     border-color: transparent;
 }
 
+#login-container {
+    max-width: 600px;
+    margin-top: 100px;
+}
+
 /* NAVBAR ================================ */
 @media (min-width: 768px) {
     .navbar-sidebar {

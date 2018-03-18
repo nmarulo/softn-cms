@@ -20,3 +20,9 @@ Route::group(['prefix' => 'dashboard'], function() {
     Route::get('/users', 'Users@index', 'users', 'public');
     
 });
+
+// Route for Login controller.
+Route::get('/login', 'Login@index', 'login', 'public');
+
+// Route for Register controller.
+Route::get('/register', 'Register@index', 'register', 'public');
