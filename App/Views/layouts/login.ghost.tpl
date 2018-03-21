@@ -12,20 +12,10 @@
     </script>
 </head>
 <body>
-    <header>
-        {{ include('includes.navbar') }}
-    </header>
-    <main id="main-container" class="main-container">
-        <div class="container-fluid">
-            #block(content)
-        </div>
+    <main class="container-fluid">
+        #block(content)
     </main>
-    <footer class="main-container container-fluid">
-        <div class="clearfix">
-            <p class="pull-left">SoftN CMS</p>
-            <p class="pull-right">v0.5</p>
-        </div>
-    </footer>
+    <footer></footer>
     <script src="{{ asset('js/jquery-3.3.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/common.js') }}" type="text/javascript"></script>

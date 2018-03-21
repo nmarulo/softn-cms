@@ -1,4 +1,101 @@
-body{
-  background: white;
+/* ==========================================
+ * BOOTSTRAP
+ */
+
+/* ==========================================
+ * GENERAL
+ */
+body {
+    white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+    -ms-word-wrap: break-word;
+    background-color: #FAFBFC;
+    color: #666666;
 }
 
+#main-container {
+    margin-top: 70px;
+}
+
+@media (min-width: 768px) {
+    .main-container {
+        margin-left: 250px;
+    }
+}
+
+.navbar-button {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+#login-container {
+    max-width: 600px;
+    margin-top: 100px;
+}
+
+/* NAVBAR ================================ */
+@media (min-width: 768px) {
+    .navbar-sidebar {
+        position: fixed;
+        overflow-y: auto;
+        left: 0;
+        width: 250px;
+        height: 100%;
+        top: 50px;
+        background-color: #222222;
+    }
+
+    .navbar-sidebar li.dropdown > ul.dropdown-menu {
+        position: relative;
+        float: none;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .navbar-sidebar li.dropdown > ul.dropdown-menu > li > a {
+        padding: 10px 15px;
+    }
+}
+
+.navbar-inverse .navbar-sidebar > li > a {
+    color: #9D9D9D;
+}
+
+.navbar-inverse .navbar-sidebar > li > a:hover,
+.navbar-inverse .navbar-sidebar > li > a:focus {
+    color: #FFFFFF;
+    background-color: transparent;
+}
+
+#btn-navbar-menu-toggle {
+    width: 50px;
+}
+
+.navbar-button {
+    margin-right: 15px;
+}
+
+.navbar-brand.navbar-button:hover {
+    background-color: #EEEEEE;
+    color: #222222;
+}
+
+/* JAVASCRIPT ============================= */
+@media (min-width: 768px) {
+    .toggle ul.navbar-sidebar {
+        width: 50px;
+        white-space: nowrap;
+    }
+
+    .toggle ul.navbar-sidebar > li > a > span.glyphicon,
+    .toggle ul.navbar-sidebar > li.dropdown > ul.dropdown-menu > li > a > span.glyphicon {
+        padding-right: 25px;
+    }
+
+    .main-container.toggle {
+        margin-left: 50px;
+    }
+}

@@ -1,5 +1,5 @@
 {{ extends('layouts.master') }}
 
 #set[content]
-    Page Dashboard
+<h1>Page Dashboard</h1>
 #end
