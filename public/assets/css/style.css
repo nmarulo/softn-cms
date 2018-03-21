@@ -10,6 +10,8 @@ body {
     white-space: -o-pre-wrap; /* Opera 7 */
     word-wrap: break-word; /* Internet Explorer 5.5+ */
     -ms-word-wrap: break-word;
+    background-color: #FAFBFC;
+    color: #666666;
 }
 
 #main-container {
@@ -17,7 +19,7 @@ body {
 }
 
 @media (min-width: 768px) {
-    #main-container {
+    .main-container {
         margin-left: 250px;
     }
 }
@@ -93,7 +95,7 @@ body {
         padding-right: 25px;
     }
 
-    #main-container.toggle {
+    .main-container.toggle {
         margin-left: 50px;
     }
 }
