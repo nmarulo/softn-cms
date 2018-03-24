@@ -23,10 +23,9 @@ class UsersController extends Controller {
             $user = new Users();
         } else {
             $user = Users::find($id);
-            
         }
         
-        if (Request::method() == 'post') {
+        if (Utils::isRequestMethod('post')) {
             $user->user_name       = Request::input('user_name');
             $user->user_login      = Request::input('user_login');
             $user->user_email      = Request::input('user_email');

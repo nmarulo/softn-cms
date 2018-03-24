@@ -5,6 +5,8 @@
 
 namespace App\Helpers;
 
+use Silver\Core\Bootstrap\Facades\Request;
+
 /**
  * Class Utils
  * @author Nicolás Marulanda P.
@@ -19,4 +21,9 @@ class Utils {
         return \DateTime::createFromFormat($format, $time)
                         ->format($toFormat);
     }
+    
+    public function isRequestMethod($requestMethodName) {
+        return Request::method() == $requestMethodName;
+    }
+    
 }
