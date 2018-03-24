@@ -31,15 +31,9 @@
             </ul>
             <ul class="nav navbar-sidebar">
                 <li>
-                    <a href="#">
+                    <a href="{{ url('/dashboard/users') }}">
                         <span class="glyphicon glyphicon-triangle-right"></span>
-                        Action 1
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="glyphicon glyphicon-triangle-right"></span>
-                        Action 2
+                        Usuarios
                     </a>
                 </li>
                 <li class="dropdown">
@@ -66,12 +60,6 @@
                     <a href="#">
                         <span class="glyphicon glyphicon-triangle-right"></span>
                         Action 3
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="glyphicon glyphicon-triangle-right"></span>
-                        Action 4
                     </a>
                 </li>
             </ul>

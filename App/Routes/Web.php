@@ -17,8 +17,11 @@ Route::group(['prefix' => 'dashboard'], function() {
     // Route for Dashboard controller.
     Route::get('/', 'Dashboard@index', 'dashboard', 'public');
     // Route for Users controller.
-    Route::get('/users', 'Users@index', 'users', 'public');
-    
+    Route::group(['prefix' => 'users'], function() {
+        Route::get('/', 'Users@index', 'users', 'public');
+        Route::get('/form/{id?}', 'Users@form', 'users', 'public');
+        Route::post('/form/{id?}', 'Users@form', 'users', 'public');
+    });
 });
 
 // Route for Login controller.
