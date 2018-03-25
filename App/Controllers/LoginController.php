@@ -2,7 +2,10 @@
 
 namespace App\Controllers;
 
+use App\Facades\Auth;
+use App\Facades\Token;
 use Silver\Core\Controller;
+use Silver\Http\Redirect;
 use Silver\Http\View;
 
 /**
@@ -11,10 +14,21 @@ use Silver\Http\View;
 class LoginController extends Controller {
     
     public function index() {
-        return View::make('login.index');
+        Token::generate();
+        
+        return View::make('login.index')
+                   ->with('token', Token::getToken());
     }
     
-    public function postForm() {
-    
+    public function form() {
+        $redirect = URL;
+        
+        if (Auth::basic()) {
+            $redirect .= '/dashboard';
+        } else {
+            $redirect .= '/login';
+        }
+        
+        Redirect::to($redirect);
     }
 }
