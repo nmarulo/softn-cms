@@ -23,7 +23,7 @@ class LoginController extends Controller {
     public function form() {
         $redirect = URL;
         
-        if (Auth::basic()) {
+        if (Auth::login()) {
             $redirect .= '/dashboard';
         } else {
             $redirect .= '/login';

@@ -11,6 +11,8 @@
 
 namespace App\Middlewares;
 
+use App\Facades\Token;
+use App\Facades\Utils;
 use Closure;
 use Silver\Core\Blueprints\MiddlewareInterface;
 use Silver\Http\Redirect;
@@ -42,6 +44,12 @@ class Auth implements MiddlewareInterface {
         //Si no encuentra ninguno redirecciona a la pagina de error.
         if(array_search($middleware, $this->unguard) === FALSE) {
             return View::error('404');
+        }
+        
+        //Se comprueba el token
+        if(!Utils::isRequestMethod('GET') && !Token::check($request->input('jwt_token'))){
+            //TODO: agregar mensaje de error al comprobar el token.
+            Redirect::to(URL . '/login');
         }
         
         //Si esta intentado acceder al panel de control y no ha iniciado sesión.

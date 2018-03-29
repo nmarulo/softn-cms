@@ -23,7 +23,7 @@ class Utils {
     }
     
     public function isRequestMethod($requestMethodName) {
-        return Request::method() == $requestMethodName;
+        return Request::method() == strtolower($requestMethodName);
     }
     
 }
