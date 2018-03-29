@@ -5,7 +5,7 @@
 
 namespace App\Helpers;
 
-use App\Models\Settings;
+use Silver\Core\Bootstrap\Facades\Request;
 
 /**
  * Class Utils
@@ -13,23 +13,17 @@ use App\Models\Settings;
  */
 class Utils {
     
-    public function dateNow($format = 'Y-m-d') {
+    public function dateNow($format = 'Y-m-d H:i:s') {
         return date($format, time());
     }
     
-    public function stringToDate($time, $format, $toFormat = 'Y-m-d') {
+    public function stringToDate($time, $format, $toFormat = 'Y-m-d H:m:s') {
         return \DateTime::createFromFormat($format, $time)
                         ->format($toFormat);
     }
     
-    public function getDateFormat() {
-        $dateFormat = Settings::where('option_key', '=', 'setting_date_format')
-                              ->first();
-        
-        if (!$dateFormat) {
-            return 'Y-m-d';
-        }
-        
-        return $dateFormat->option_value;
+    public function isRequestMethod($requestMethodName) {
+        return Request::method() == strtolower($requestMethodName);
     }
+    
 }

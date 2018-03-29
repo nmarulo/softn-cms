@@ -5,6 +5,9 @@
     <div class="panel-body">
         <h1>
             Lista de usuarios
+            <a class="btn btn-success" href="{{ url('/dashboard/users/form') }}">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
         </h1>
         <div class="table-responsive">
             <table class="table table-striped">
@@ -30,9 +33,9 @@
                 #foreach($users as $user)
                 <tr>
                     <td>
-                        <button class="btn btn-primary" type="button">
+                        <a class="btn btn-primary" href="{{ url('/dashboard/users/form/') }}{{$user->id}}">
                             <span class="glyphicon glyphicon-edit"></span>
-                        </button>
+                        </a>
                         <button class="btn btn-danger" type="button">
                             <span class="glyphicon glyphicon-remove"></span>
                         </button>
