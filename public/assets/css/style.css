@@ -83,6 +83,14 @@ body {
     color: #222222;
 }
 
+/* MESSAGES =============================== */
+#messages{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+}
+
 /* JAVASCRIPT ============================= */
 @media (min-width: 768px) {
     .toggle ul.navbar-sidebar {
