@@ -63,6 +63,11 @@
                     </a>
                 </li>
             </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="{{ url('/logout') }}">Cerrar sesión</a>
+                </li>
+            </ul>
         </div>
     </div>
 </nav>
