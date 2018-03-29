@@ -53,6 +53,10 @@ class Token {
      * @return \Lcobucci\JWT\Token
      */
     public function getToken() {
+        if(empty($this->token)){
+            $this->generate();
+        }
+        
         return $this->token;
     }
     

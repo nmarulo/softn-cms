@@ -37,6 +37,10 @@ class AuthMiddleware implements MiddlewareInterface {
             return $next();
         }
         
+        if(Utils::isRequestMethod('GET')){
+            Token::generate();
+        }
+        
         $middleware = $request->route()
                               ->middleware();
         
