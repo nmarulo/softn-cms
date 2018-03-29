@@ -8,7 +8,7 @@
     <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet" type="text/css"/>
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css"/>
     <script type="application/javascript">
-        //var globalURL = '{{$globalUrl}}';
+        var globalURL = '{{ url('/') }}';
     </script>
 </head>
 <body>
