@@ -15,12 +15,12 @@ use Silver\Core\Route;
 
 Route::group(['prefix' => 'dashboard'], function() {
     // Route for Dashboard controller.
-    Route::get('/', 'Dashboard@index', 'dashboard', 'dashboard');
+    Route::get('/', 'Dashboard/Dashboard@index', 'dashboard', 'dashboard');
     // Route for Users controller.
     Route::group(['prefix' => 'users'], function() {
-        Route::get('/', 'Users@index', 'users', 'dashboard');
-        Route::get('/form/{id?}', 'Users@form', 'users', 'dashboard');
-        Route::post('/form/{id?}', 'Users@form', 'users', 'dashboard');
+        Route::get('/', 'Dashboard/Users@index', 'users', 'dashboard');
+        Route::get('/form/{id?}', 'Dashboard/Users@form', 'users', 'dashboard');
+        Route::post('/form/{id?}', 'Dashboard/Users@form', 'users', 'dashboard');
     });
 });
 
