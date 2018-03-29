@@ -18,18 +18,17 @@ use Silver\Core\Blueprints\MiddlewareInterface;
 use Silver\Http\Redirect;
 use Silver\Http\Request;
 use Silver\Http\Response;
-use App\Facades\Auth as AuthHelp;
+use App\Facades\Auth;
 use Silver\Http\View;
 
-//TODO: cambiar el nombre de la clase
-class Auth implements MiddlewareInterface {
+class AuthMiddleware implements MiddlewareInterface {
     
     // put the name to make it public
     private $unguard = [
-        'unguard',
-        'guest',
-        'public',
-        'dashboard'
+            'unguard',
+            'guest',
+            'public',
+            'dashboard',
     ];
     
     public function execute(Request $request, Response $response, Closure $next) {
@@ -42,18 +41,18 @@ class Auth implements MiddlewareInterface {
                               ->middleware();
         
         //Si no encuentra ninguno redirecciona a la pagina de error.
-        if(array_search($middleware, $this->unguard) === FALSE) {
+        if (array_search($middleware, $this->unguard) === FALSE) {
             return View::error('404');
         }
         
         //Se comprueba el token
-        if(!Utils::isRequestMethod('GET') && !Token::check($request->input('jwt_token'))){
+        if (!Utils::isRequestMethod('GET') && !Token::check($request->input('jwt_token'))) {
             //TODO: agregar mensaje de error al comprobar el token.
             Redirect::to(URL . '/login');
         }
         
         //Si esta intentado acceder al panel de control y no ha iniciado sesión.
-        if($middleware == 'dashboard' && !AuthHelp::session()){
+        if ($middleware == 'dashboard' && !Auth::session()) {
             Redirect::to(URL . '/login');
         }
         
