@@ -26,9 +26,10 @@ class UsersController extends Controller {
         }
         
         if (Utils::isRequestMethod('post')) {
-            $user->user_name       = Request::input('user_name');
-            $user->user_login      = Request::input('user_login');
-            $user->user_email      = Request::input('user_email');
+            $user->user_name  = Request::input('user_name');
+            $user->user_login = Request::input('user_login');
+            $user->user_email = Request::input('user_email');
+            //TODO: cifrar.
             $user->user_password   = Request::input('user_password');
             $user->user_registered = empty($id) ? Utils::dateNow() : $user->user_registered;
             $user                  = $user->save();
@@ -36,5 +37,13 @@ class UsersController extends Controller {
         
         return View::make('dashboard.users.form')
                    ->with('user', $user);
+    }
+    
+    public function delete() {
+        $id = Request::input('id');
+        
+        if ($user = Users::find($id)) {
+            $user->delete();
+        }
     }
 }

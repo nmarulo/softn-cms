@@ -36,7 +36,7 @@
                         <a class="btn btn-primary" href="{{ url('/dashboard/users/form/') }}{{$user->id}}">
                             <span class="glyphicon glyphicon-edit"></span>
                         </a>
-                        <button class="btn btn-danger" type="button">
+                        <button class="btn btn-danger" type="button" data-delete-id="{{$user->id}}" data-toggle="modal" data-target="#modal-delete" data-form-action="/dashboard/users/delete">
                             <span class="glyphicon glyphicon-remove"></span>
                         </button>
                     </td>
@@ -51,4 +51,9 @@
         </div>
     </div>
 </div>
+{{ include('includes.modaldelete') }}
+#end
+
+#set[scripts]
+<script src="{{ asset('js/modal-dialog.js') }}" type="text/javascript"></script>
 #end
