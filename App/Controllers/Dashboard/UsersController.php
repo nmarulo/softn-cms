@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Dashboard;
 
+use App\Facades\Messages;
 use App\Facades\Utils;
 use App\Models\Users;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -44,6 +45,9 @@ class UsersController extends Controller {
         
         if ($user = Users::find($id)) {
             $user->delete();
+            Messages::addSuccess('Usuario borrado correctamente.');
+        } else {
+            Messages::addDanger('El usuario no existe.');
         }
     }
 }
