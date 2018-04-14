@@ -1,12 +1,11 @@
 var deleteFormAction = '';
-var dataUpdate = '';
 var btnModalDelete = null;
 
 $(function () {
     $('#modal-delete').on('show.bs.modal', function (event) {
         btnModalDelete = $(event.relatedTarget); // Button that triggered the modal
         deleteFormAction = btnModalDelete.data('delete-action');
-        dataUpdate = btnModalDelete.data('update');
+        setCurrentElementTriggeringAction(btnModalDelete);
         $(this).find('#modal-delete-input-id').val(btnModalDelete.data('delete-id'));
     });
     
@@ -15,13 +14,11 @@ $(function () {
         event.preventDefault();
         
         var deleteCallback = function (deleteData) {
-            var updateCallback = function (dataHTML) {
-                viewUpdate(dataUpdate, dataHTML);
-            };
-            
-            makeRequest('GET', getRoute(), '', updateCallback);
+            makeRequest('GET', getRoute(), createDataToSendPagination(), function (dataHTML) {
+                viewUpdate(dataHTML);
+            });
         };
         
-        makeRequest('POST', deleteFormAction, $(this).serialize(), deleteCallback);
+        makeRequest('POST', deleteFormAction, $(this).serializeArray(), deleteCallback);
     });
 });
