@@ -6,9 +6,7 @@ var messagesTimeout = null;
 var messagesTimeoutMillisecond = 5000;
 
 $(function () {
-    if (getMessagesContent().length > 0) {
-        initMessagesTimeout();
-    }
+    initMessagesTimeout();
 });
 
 function initMessagesTimeout() {
@@ -17,9 +15,12 @@ function initMessagesTimeout() {
         messagesTimeout = null;
     }
     
-    messagesTimeout = setTimeout(function () {
-        removeFirstMessage();
-    }, messagesTimeoutMillisecond);
+    if (getMessagesContent().length > 0) {
+        messagesTimeout = setTimeout(function () {
+            removeFirstMessage();
+            initMessagesTimeout();
+        }, messagesTimeoutMillisecond);
+    }
 }
 
 function removeFirstMessage() {
@@ -28,7 +29,6 @@ function removeFirstMessage() {
     //Si hay más de un mensaje borro el primero
     if (currentMessagesContent.length > 0) {
         currentMessagesContent.get(0).remove();
-        initMessagesTimeout();
     }
 }
 
