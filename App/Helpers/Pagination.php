@@ -48,18 +48,18 @@ class Pagination {
     /** @var string */
     private $route;
     
-    public function viewMake($template, $currentModel, $nameModel, $dataModelClosure = NULL, $count = null) {
+    public function viewMake($template, $currentModel, $nameModel, $dataModelClosure = NULL, $count = NULL) {
         $currentPage = 1;
         
         if (Request::ajax()) {
             $currentPage = Request::input('page', 1);
         }
         
-        if($count == null){
+        if ($count == NULL) {
             $totalData = Query::count()
                               ->from($currentModel::tableName())
                               ->single();
-        }else{
+        } else {
             $totalData = $count;
         }
         
@@ -192,8 +192,9 @@ class Pagination {
         for ($i = $startPageNumber; $i <= $endPageNumber; ++$i) {
             $styleClass = '';
             $attrData   = [
-                    'url'  => $this->route,
-                    'page' => $i,
+                    'route'  => $this->route,
+                    'page'   => $i,
+                    'update' => '.pagination',
             ];
             
             if ($this->currentPageValue == $i) {
@@ -207,7 +208,10 @@ class Pagination {
     
     private function initArrows() {
         $styleClass = "disabled";
-        $attrData   = ['url' => $this->route];
+        $attrData   = [
+                'route'  => $this->route,
+                'update' => '.pagination',
+        ];
         $this->setLeftArrow($styleClass, $attrData);
         $this->setRightArrow($styleClass, $attrData);
     }

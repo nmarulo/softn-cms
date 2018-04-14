@@ -1,3 +1,5 @@
+var currentElementTriggeringAction = null;
+
 $(function () {
     $('#btn-navbar-menu-toggle').click(function () {
         navbarToggle();
@@ -9,17 +11,31 @@ function navbarToggle() {
     $('.main-container').toggleClass('toggle');
 }
 
-function makeRequest(method, route, data, callback, parseJSON) {
+function makeRequest(method, route, dataToSend, callback, parseJSON) {
     $.ajax({
         method: method,
-        url: globalURL + route,
-        data: data
+        url: formatterURL(route),
+        data: dataToSend
     }).done(function (data, textStatus, jqXHR) {
         callbackRequest(data, callback, parseJSON);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         //TODO: registrar error.
         console.log(jqXHR.statusText + '[' + jqXHR.status + '] ' + jqXHR.responseText);
     });
+}
+
+function formatterURL(route) {
+    var url = globalURL;
+    
+    if (url.substr(url.length - 1, 1) != '/') {
+        url += '/';
+    }
+    
+    if (route.substr(0, 1) == '/') {
+        route = route.substring(1);
+    }
+    
+    return url + route;
 }
 
 function callbackRequest(data, callback, parseJSON) {
@@ -38,18 +54,33 @@ function getRoute() {
     return document.URL.replace(globalURL, '');
 }
 
-function viewUpdate(idBlocks, html) {
+function viewUpdate(html) {
+    if (currentElementTriggeringAction == null) {
+        return;
+    }
+    
     var currentDocument = $(document);
     var documentHTML = $('<div />').append($.parseHTML(html));
     
-    idBlocks.split(" ").forEach(function (value) {
-        var idBlock = '#' + value;
-        var findHTML = documentHTML.find(idBlock).html();
+    currentElementTriggeringAction.data('update').split(" ").forEach(function (value) {
+        var findHTML = documentHTML.find(value).html();
         
         if ($(findHTML).hasClass(messagesClassDiv)) {
             addMessagesContent(findHTML);
         } else {
-            currentDocument.find(idBlock).html(findHTML);
+            currentDocument.find(value).html(findHTML);
         }
     });
+}
+
+function setCurrentElementTriggeringAction(element) {
+    currentElementTriggeringAction = element;
+}
+
+function createRepresentationDataToSendRequest(name, value, currentDataToSend) {
+    if (currentDataToSend == null || !(currentDataToSend instanceof Array)) {
+        currentDataToSend = [];
+    }
+    
+    return currentDataToSend.concat({'name': name, 'value': value});
 }
