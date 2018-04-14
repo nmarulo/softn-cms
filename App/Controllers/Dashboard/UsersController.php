@@ -3,6 +3,7 @@
 namespace App\Controllers\Dashboard;
 
 use App\Facades\Messages;
+use App\Facades\Pagination;
 use App\Facades\Utils;
 use App\Models\Users;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -15,8 +16,7 @@ use Silver\Http\View;
 class UsersController extends Controller {
     
     public function index() {
-        return View::make('dashboard.users.index')
-                   ->with('users', Users::all());
+        return Pagination::viewMake('dashboard.users.index', Users::class, 'users');
     }
     
     public function form($id) {
