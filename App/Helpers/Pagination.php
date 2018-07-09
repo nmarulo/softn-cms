@@ -5,9 +5,7 @@
 
 namespace App\Helpers;
 
-use Silver\Database\Query;
 use Silver\Core\Bootstrap\Facades\Request;
-use Silver\Http\View;
 
 /**
  * Class Pagination
@@ -48,39 +46,7 @@ class Pagination {
     /** @var string */
     private $route;
     
-    public function viewMake($template, $currentModel, $nameModel, $dataModelClosure = NULL, $count = NULL) {
-        $currentPage = 1;
-        
-        if (Request::ajax()) {
-            $currentPage = Request::input('page', 1);
-        }
-        
-        if ($count == NULL) {
-            $totalData = Query::count()
-                              ->from($currentModel::tableName())
-                              ->single();
-        } else {
-            $totalData = $count;
-        }
-        
-        $this->instance($currentPage, $totalData);
-        
-        if ($dataModelClosure == NULL || !is_callable($dataModelClosure)) {
-            $dataModel = $currentModel::query()
-                                      ->orderBy('id', 'desc')
-                                      ->limit($this->numberRowShow)
-                                      ->offset($this->beginRow)
-                                      ->all();
-        } else {
-            $dataModel = $dataModelClosure($this->numberRowShow, $this->beginRow);
-        }
-        
-        return View::make($template)
-                   ->with($nameModel, $dataModel)
-                   ->withComponent($this, 'pagination');
-    }
-    
-    public function instance($currentPageValue, $totalData, $maxNumberPagesShow = 3) {
+    public function getInstance($currentPageValue, $totalData, $maxNumberPagesShow = 3) {
         $this->currentPageValue   = $currentPageValue;
         $this->totalData          = intval($totalData);
         $this->maxNumberPagesShow = $maxNumberPagesShow;
@@ -267,6 +233,13 @@ class Pagination {
      */
     public function isRendered() {
         return $this->rendered;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getNumberRowShow() {
+        return $this->numberRowShow;
     }
     
 }
