@@ -8,6 +8,7 @@ use App\Facades\ViewFacade;
 use App\Models\Users;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
+use Silver\Http\Redirect;
 use Silver\Http\View;
 
 /**
@@ -23,9 +24,11 @@ class UsersController extends Controller {
     
     public function form($id) {
         if (empty($id)) {
-            $user = new Users();
+            $user    = new Users();
+            $message = 'Usuario creado correctamente';
         } else {
-            $user = Users::find($id);
+            $user    = Users::find($id);
+            $message = 'Usuario actualizado correctamente.';
         }
         
         if (Utils::isRequestMethod('post')) {
@@ -36,6 +39,11 @@ class UsersController extends Controller {
             $user->user_password   = Request::input('user_password');
             $user->user_registered = empty($id) ? Utils::dateNow() : $user->user_registered;
             $user                  = $user->save();
+            Messages::addSuccess($message);
+            
+            if (empty($id)) {
+                Redirect::to(sprintf('%1$s/dashboard/users/form/%2$s', URL, $user->id));
+            }
         }
         
         return View::make('dashboard.users.form')
