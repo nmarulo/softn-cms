@@ -76,14 +76,10 @@ function initPagination(element) {
     });
 }
 
-function getActivePageNumber() {
-    return $(document).find('.pagination-container .pagination li.active > a').text();
+function getActivePageNumber(element) {
+    return element.find('.pagination-container:eq(0) .pagination li.active > a').text();
 }
 
 function createDataToSendPagination(page, currentDataToSend) {
-    if (page == null) {
-        page = getActivePageNumber();
-    }
-    
     return createRepresentationDataToSendRequest('page', page, currentDataToSend);
 }
