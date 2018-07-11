@@ -1,4 +1,4 @@
-<div class="pagination-container" data-update=".pagination">
+<div class="pagination-container">
     #if(isset($component_pagination) && $component_pagination->isRendered())
     <nav>
         <ul class="pagination clearfix">

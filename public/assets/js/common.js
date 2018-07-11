@@ -79,6 +79,17 @@ function createRepresentationDataToSendRequest(name, value, currentDataToSend) {
     return currentDataToSend.concat({'name': name, 'value': value});
 }
 
+function elementDataAttr(element, key, value) {
+    element.attr('data-' + key, value);
+    element.data(key, value);//Se agrega también, ya que al obtener su valor es nulo si no existe
+}
+
+function elementDataAttrRemove(element, key) {
+    element.removeAttr('data-' + key);
+    element.data(key, '');//$.removeData() no esta funcionando, por eso lo dejo vació.
+}
+
+
 function getDataIdUpdateElement(element) {
     var data = element.data('update');
     
