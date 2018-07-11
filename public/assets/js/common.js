@@ -1,5 +1,3 @@
-var currentElementTriggeringAction = null;
-
 $(function () {
     $('#btn-navbar-menu-toggle').click(function () {
         navbarToggle();
@@ -54,15 +52,15 @@ function getRoute() {
     return document.URL.replace(globalURL, '');
 }
 
-function viewUpdate(html) {
-    if (currentElementTriggeringAction == null) {
+function viewUpdate(html, dataIdUpdate) {
+    if (!Array.isArray(dataIdUpdate)) {
         return;
     }
     
     var currentDocument = $(document);
     var documentHTML = $('<div />').append($.parseHTML(html));
     
-    currentElementTriggeringAction.data('update').split(" ").forEach(function (value) {
+    dataIdUpdate.forEach(function (value) {
         var findHTML = documentHTML.find(value).html();
         
         if ($(findHTML).hasClass(messagesClassDiv)) {
@@ -73,14 +71,20 @@ function viewUpdate(html) {
     });
 }
 
-function setCurrentElementTriggeringAction(element) {
-    currentElementTriggeringAction = element;
-}
-
 function createRepresentationDataToSendRequest(name, value, currentDataToSend) {
     if (currentDataToSend == null || !(currentDataToSend instanceof Array)) {
         currentDataToSend = [];
     }
     
     return currentDataToSend.concat({'name': name, 'value': value});
+}
+
+function getDataIdUpdateElement(element) {
+    var data = element.data('update');
+    
+    if (data === undefined) {
+        return [];
+    }
+    
+    return data.split(" ");
 }

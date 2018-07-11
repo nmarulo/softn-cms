@@ -60,22 +60,19 @@ function dataListSpanGlyphicon(spanGlyphicon, sort) {
 
 function initPagination(element) {
     var page = element.data('page');
-    //TODO: eliminar route de la paginación?
-    var route = element.data('route');
-    var parentDataUpdate = $('.pagination-container').parent('div[data-update]');
-    
-    if (parentDataUpdate.length > 0) {
-        element.data('update', element.data('update') + ' ' + parentDataUpdate.data('update'));
-    }
     
     if (page == null) {
         return false;
     }
     
-    setCurrentElementTriggeringAction(element);
+    //TODO: eliminar route de la paginación?
+    var route = element.data('route');
+    var paginationContainer = $('.pagination-container');
+    var dataIdUpdate = getDataIdUpdateElement(paginationContainer.parent('div[data-update]'));
+    dataIdUpdate = dataIdUpdate.concat(getDataIdUpdateElement(element.closest('div.pagination-container')));
     
     makeRequest('GET', getRoute(), createDataToSendPagination(page), function (dataHTML) {
-        viewUpdate(dataHTML);
+        viewUpdate(dataHTML, dataIdUpdate);
     });
 }
 

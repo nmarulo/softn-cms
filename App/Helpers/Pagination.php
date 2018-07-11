@@ -160,7 +160,6 @@ class Pagination {
             $attrData   = [
                     'route'  => $this->route,
                     'page'   => $i,
-                    'update' => '.pagination',
             ];
             
             if ($this->currentPageValue == $i) {
@@ -176,7 +175,6 @@ class Pagination {
         $styleClass = "disabled";
         $attrData   = [
                 'route'  => $this->route,
-                'update' => '.pagination',
         ];
         $this->setLeftArrow($styleClass, $attrData);
         $this->setRightArrow($styleClass, $attrData);
