@@ -79,7 +79,8 @@ class ViewHelper {
     }
     
     public function sort($currentModel, $nameModel) {
-        $value = [];
+        $value      = [];
+        $sortColumn = NULL;
         
         if (Request::ajax()) {
             $sortColumn = Request::input('sortColumn');
@@ -93,13 +94,21 @@ class ViewHelper {
                     
                     foreach ($sortColumn as $value) {
                         $value = (array)$value;
+                        
+                        if (empty($value['column']) || empty($value['sort'])) {
+                            continue;
+                        }
+                        
                         $query = $query->orderBy($value['column'], $value['sort']);
                     }
                     
                     $value = $query->all();
                 }
             }
-        } else {
+        }
+        
+        //Si no se envía el filtro, se retornan todos
+        if (empty($sortColumn)) {
             $value = $currentModel::query()
                                   ->orderBy('id', 'desc')
                                   ->all();
