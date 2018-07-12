@@ -9,7 +9,7 @@
                 <span class="glyphicon glyphicon-plus"></span>
             </a>
         </h1>
-        <div id="container-user-table" class="container-table-data" data-update="#container-user-table">
+        <div id="container-user-table" class="container-table-data" data-update="#container-user-table:.container-pagination,tbody">
             {{ component('pagination') }}
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -56,7 +56,7 @@
         <br/>
         <hr/>
         <br/>
-        <div id="container-user-table-test" class="container-table-data" data-update="#container-user-table-test">
+        <div id="container-user-table-test" class="container-table-data" data-update="#container-user-table-test:.container-pagination,tbody">
             {{ component('pagination') }}
             <div class="table-responsive">
                 <table class="table table-striped">

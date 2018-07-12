@@ -1,27 +1,23 @@
-var deleteFormAction = '';
-var btnModalDelete = null;
-var modalDialogDataIdUpdate;
-var modalDialogActivePageNumber;
+var elementBtnTriggerModalDelete;
 
 $(function () {
     $('#modal-delete').on('show.bs.modal', function (event) {
-        btnModalDelete = $(event.relatedTarget); // Button that triggered the modal
-        deleteFormAction = btnModalDelete.data('delete-action');
-        modalDialogDataIdUpdate = getDataIdUpdateElement(btnModalDelete);
-        $(this).find('#modal-delete-input-id').val(btnModalDelete.data('delete-id'));
-        modalDialogActivePageNumber = getActivePageNumber(getContainerTableData(btnModalDelete));
+        elementBtnTriggerModalDelete = $(event.relatedTarget); // Button that triggered the modal
+        $(this).find('#modal-delete-input-id').val(elementBtnTriggerModalDelete.data('delete-id'));
     });
     
+    modalDeleteTableData();
+});
+
+function modalDeleteTableData() {
     $('#modal-delete-form').submit(function (event) {
         $('#modal-delete').modal('hide');
         event.preventDefault();
         
         var deleteCallback = function (deleteData) {
-            makeGetRequest(createDataToSendPagination(modalDialogActivePageNumber), function (dataHTML) {
-                viewUpdate(dataHTML, modalDialogDataIdUpdate);
-            });
+            tableDataRequest(elementBtnTriggerModalDelete);
         };
         
-        makeRequest('POST', deleteFormAction, $(this).serializeArray(), deleteCallback);
+        makeRequest('POST', elementBtnTriggerModalDelete.data('delete-action'), $(this).serializeArray(), deleteCallback);
     });
-});
+}

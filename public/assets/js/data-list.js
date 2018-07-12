@@ -7,21 +7,31 @@ $(function () {
     sortDesc = 'desc';
     glyphiconTH = '<span class="glyphicon glyphicon-triangle-bottom"></span>';
     
-    $(document).on('click', '.pagination-container .pagination li > a', function (event) {
+    initTableDataPagination();
+    initTableDataSortColumn();
+});
+
+function initTableDataPagination() {
+    $(document).on('click', '.container-pagination .pagination li > a', function (event) {
         event.preventDefault();
-        var element = $(this);
+        var elementA = $(this);
+        var elementParent = elementA.parent();
         
-        if (element.parent().hasClass('disabled') || element.parent().hasClass('active')) {
-            return false;
+        if (elementParent.hasClass('disabled') || elementParent.hasClass('active') || elementA.data('page') === undefined) {
+            return;
         }
         
-        initPagination(element);
+        elementA.closest('.pagination').find('li').removeClass('active');
+        elementParent.addClass('active');//Le agrego la clase, para que "tableDataRequest" busque correctamente.
+        
+        tableDataRequest(elementA);
     });
-    
+}
+
+function initTableDataSortColumn() {
     $(document).on('click', 'table th[data-column]', function () {
         var elementTH = $(this);
         var sort = elementTH.data('sort');
-        var columnName = elementTH.data('column');
         
         //Cuando es igual a desc lo quita
         if (elementTH.hasClass('active') && sort === sortAsc) {
@@ -40,19 +50,42 @@ $(function () {
             elementTH.prepend(glyphiconTH);
         }
         
-        var containerTableData = getContainerTableData(elementTH);
-        var dataToSend = createDataToSendPagination(getActivePageNumber(containerTableData));
-        //Obtener todas las columnas y su correspondiente orden
-        var sortColumn = JSON.stringify([{'column': columnName, 'sort': elementTH.data('sort')}]);
-        
-        dataToSend = createRepresentationDataToSendRequest('sortColumn', sortColumn, dataToSend);
-        //realizar una petición enviando la pagina activa, las columnas ordenadas
-        makeGetRequest(dataToSend, function (dataHTML) {
-            viewUpdate(dataHTML, getDataIdUpdateElement(containerTableData));
-        });
-        //TODO: ahora cuando se realiza la petición necesito establecer los filtros en la vista.
+        tableDataRequest(elementTH);
     });
-});
+}
+
+function getActivePageNumber(element) {
+    return element.find('.container-pagination:eq(0) .pagination li.active > a').text();
+}
+
+function createDataToSendPagination(page, currentDataToSend) {
+    if (page === undefined || page.length === 0) {
+        return checkArray(currentDataToSend);
+    }
+    
+    return createRepresentationDataToSendRequest('page', page, currentDataToSend);
+}
+
+function createDataToSendSortColumn(containerTableData, currentDataToSend) {
+    var value = getSortColumns(containerTableData);
+    
+    if (value.length === 0) {
+        return checkArray(currentDataToSend);
+    }
+    
+    return createRepresentationDataToSendRequest('sortColumn', JSON.stringify(value), currentDataToSend);
+}
+
+function getSortColumns(containerTableData) {
+    var sortColumns = [];
+    var elementTH = containerTableData.find('table thead > tr > th[data-column][data-sort]');
+    
+    elementTH.each(function () {
+        sortColumns = sortColumns.concat({'column': $(this).data('column'), 'sort': $(this).data('sort')});
+    });
+    
+    return sortColumns;
+}
 
 function dataListSpanGlyphicon(spanGlyphicon, sort) {
     if (sort === sortAsc) {
@@ -64,26 +97,15 @@ function dataListSpanGlyphicon(spanGlyphicon, sort) {
     }
 }
 
-function initPagination(element) {
-    var page = element.data('page');
+function tableDataRequest(elementTrigger) {
+    var containerTableData = getContainerTableData(elementTrigger);
+    var dataToSend = createDataToSendPagination(getActivePageNumber(containerTableData));
+    //Obtener todas las columnas y su correspondiente orden
+    dataToSend = createDataToSendSortColumn(containerTableData, dataToSend);
+    console.table(dataToSend);
     
-    if (page == null) {
-        return false;
-    }
-    
-    //TODO: eliminar route de la paginación?
-    var route = element.data('route');
-    var elementParent = element.closest('.pagination-container').parent('div[data-update]');
-    
-    makeGetRequest(createDataToSendPagination(page), function (dataHTML) {
-        viewUpdate(dataHTML, getDataIdUpdateElement(elementParent));
+    //realizar una petición enviando la pagina activa y las columnas que serán ordenadas
+    makeGetRequest(dataToSend, function (dataHTML) {
+        viewUpdate(dataHTML, getDataIdUpdateElement(containerTableData));
     });
-}
-
-function getActivePageNumber(element) {
-    return element.find('.pagination-container:eq(0) .pagination li.active > a').text();
-}
-
-function createDataToSendPagination(page, currentDataToSend) {
-    return createRepresentationDataToSendRequest('page', page, currentDataToSend);
 }

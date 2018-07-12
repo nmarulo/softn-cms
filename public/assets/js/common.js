@@ -65,22 +65,32 @@ function viewUpdate(html, dataIdUpdate) {
     var documentHTML = $('<div />').append($.parseHTML(html));
     
     dataIdUpdate.forEach(function (value) {
-        var findHTML = documentHTML.find(value).html();
-        
-        if ($(findHTML).hasClass(messagesClassDiv)) {
-            addMessagesContent(findHTML);
+        var findHTML;
+        //Si contiene ':', buscara en el elemento de la posición 0 (contiene el identificador), todos los elementos de la posición 1
+        //EJ: #my-id:.my-class1,.my-class2,.my-class3,#my-id2,table
+        if (value.search(':') === -1) {
+            findHTML = documentHTML.find(value).html();
+            
+            if ($(findHTML).hasClass(messagesClassDiv)) {
+                addMessagesContent(findHTML);
+            } else {
+                currentDocument.find(value).html(findHTML);
+            }
         } else {
-            currentDocument.find(value).html(findHTML);
+            var valueSplit = value.split(':');
+            var valueID = valueSplit[0];
+            var currentDocumentFind = currentDocument.find(valueID);
+            findHTML = documentHTML.find(valueID);
+            
+            valueSplit[1].split(',').forEach(function (find) {
+                currentDocumentFind.find(find).html(findHTML.find(find).html())
+            });
         }
     });
 }
 
 function createRepresentationDataToSendRequest(name, value, currentDataToSend) {
-    if (currentDataToSend == null || !(currentDataToSend instanceof Array)) {
-        currentDataToSend = [];
-    }
-    
-    return currentDataToSend.concat({'name': name, 'value': value});
+    return checkArray(currentDataToSend).concat({'name': name, 'value': value});
 }
 
 function elementDataAttr(element, key, value) {
@@ -105,4 +115,12 @@ function getDataIdUpdateElement(element) {
 
 function getContainerTableData(element) {
     return element.closest('.container-table-data');
+}
+
+function checkArray(array) {
+    if (array === undefined || !(array instanceof Array)) {
+        return [];
+    }
+    
+    return array;
 }
