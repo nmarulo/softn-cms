@@ -22,6 +22,10 @@ function makeRequest(method, route, dataToSend, callback, parseJSON) {
     });
 }
 
+function makeGetRequest(dataToSend, callback, parseJson) {
+    makeRequest('GET', getRoute(), dataToSend, callback, parseJson);
+}
+
 function formatterURL(route) {
     var url = globalURL;
     
@@ -89,7 +93,6 @@ function elementDataAttrRemove(element, key) {
     element.data(key, '');//$.removeData() no esta funcionando, por eso lo dejo vació.
 }
 
-
 function getDataIdUpdateElement(element) {
     var data = element.data('update');
     
@@ -98,4 +101,8 @@ function getDataIdUpdateElement(element) {
     }
     
     return data.split(" ");
+}
+
+function getContainerTableData(element) {
+    return element.closest('.container-table-data');
 }

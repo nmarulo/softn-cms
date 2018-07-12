@@ -77,4 +77,36 @@ class ViewHelper {
     public function get() {
         return $this->view;
     }
+    
+    public function sort($currentModel, $nameModel) {
+        $value = [];
+        
+        if (Request::ajax()) {
+            $sortColumn = Request::input('sortColumn');
+            
+            if (!empty($sortColumn)) {
+                $sortColumn = (array)json_decode($sortColumn);
+                
+                if (is_array($sortColumn)) {
+                    $query = Query::select()
+                                  ->from($currentModel::tableName());
+                    
+                    foreach ($sortColumn as $value) {
+                        $value = (array)$value;
+                        $query = $query->orderBy($value['column'], $value['sort']);
+                    }
+                    
+                    $value = $query->all();
+                }
+            }
+        } else {
+            $value = $currentModel::query()
+                                  ->orderBy('id', 'desc')
+                                  ->all();
+        }
+        
+        $this->view->with($nameModel, $value);
+        
+        return $this;
+    }
 }

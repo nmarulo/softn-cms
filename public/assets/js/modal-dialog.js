@@ -9,7 +9,7 @@ $(function () {
         deleteFormAction = btnModalDelete.data('delete-action');
         modalDialogDataIdUpdate = getDataIdUpdateElement(btnModalDelete);
         $(this).find('#modal-delete-input-id').val(btnModalDelete.data('delete-id'));
-        modalDialogActivePageNumber = getActivePageNumber(btnModalDelete.closest('.container-table-data'));
+        modalDialogActivePageNumber = getActivePageNumber(getContainerTableData(btnModalDelete));
     });
     
     $('#modal-delete-form').submit(function (event) {
@@ -17,7 +17,7 @@ $(function () {
         event.preventDefault();
         
         var deleteCallback = function (deleteData) {
-            makeRequest('GET', getRoute(), createDataToSendPagination(modalDialogActivePageNumber), function (dataHTML) {
+            makeGetRequest(createDataToSendPagination(modalDialogActivePageNumber), function (dataHTML) {
                 viewUpdate(dataHTML, modalDialogDataIdUpdate);
             });
         };

@@ -40,7 +40,17 @@ $(function () {
             elementTH.prepend(glyphiconTH);
         }
         
+        var containerTableData = getContainerTableData(elementTH);
+        var dataToSend = createDataToSendPagination(getActivePageNumber(containerTableData));
+        //Obtener todas las columnas y su correspondiente orden
+        var sortColumn = JSON.stringify([{'column': columnName, 'sort': elementTH.data('sort')}]);
         
+        dataToSend = createRepresentationDataToSendRequest('sortColumn', sortColumn, dataToSend);
+        //realizar una petición enviando la pagina activa, las columnas ordenadas
+        makeGetRequest(dataToSend, function (dataHTML) {
+            viewUpdate(dataHTML, getDataIdUpdateElement(containerTableData));
+        });
+        //TODO: ahora cuando se realiza la petición necesito establecer los filtros en la vista.
     });
 });
 
@@ -65,7 +75,7 @@ function initPagination(element) {
     var route = element.data('route');
     var elementParent = element.closest('.pagination-container').parent('div[data-update]');
     
-    makeRequest('GET', getRoute(), createDataToSendPagination(page), function (dataHTML) {
+    makeGetRequest(createDataToSendPagination(page), function (dataHTML) {
         viewUpdate(dataHTML, getDataIdUpdateElement(elementParent));
     });
 }
