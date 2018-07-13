@@ -16,9 +16,16 @@ function initTableDataPagination() {
         event.preventDefault();
         var elementA = $(this);
         var elementParent = elementA.parent();
+        var dataPage = elementA.data('page');
         
-        if (elementParent.hasClass('disabled') || elementParent.hasClass('active') || elementA.data('page') === undefined) {
+        if (elementParent.hasClass('disabled') || elementParent.hasClass('active') || dataPage === undefined) {
             return;
+        }
+        
+        if (elementA.data('type') === 'arrow') {
+            elementParent = elementA.closest('.pagination')
+                .find('a[data-type=page][data-page=' + dataPage + ']')
+                .parent();
         }
         
         elementA.closest('.pagination').find('li').removeClass('active');
