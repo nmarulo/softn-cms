@@ -14,10 +14,7 @@ use Silver\Http\View;
 class LoginController extends Controller {
     
     public function index() {
-        Token::generate();
-        
-        return View::make('login.index')
-                   ->with('token', Token::getToken());
+        return View::make('login.index');
     }
     
     public function form() {

@@ -15,7 +15,7 @@
                     <label class="control-label" for="user-password">Contraseña:</label>
                     <input class="form-control" type="password" name="user_password" id="user-password">
                 </div>
-                <input type="hidden" name="jwt_token" value="{{$token}}"/>
+                {{ include('includes.token') }}
                 <button class="btn btn-success" type="submit">Acceder</button>
             </form>
         </div>

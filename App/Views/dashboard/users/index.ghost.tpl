@@ -9,7 +9,10 @@
                 <span class="glyphicon glyphicon-plus"></span>
             </a>
         </h1>
-        <div class="table-responsive">
+        <div data-update="#data-table">
+            {{ component('pagination') }}
+        </div>
+        <div id="data-table" class="table-responsive">
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -36,7 +39,7 @@
                         <a class="btn btn-primary" href="{{ url('/dashboard/users/form/') }}{{$user->id}}">
                             <span class="glyphicon glyphicon-edit"></span>
                         </a>
-                        <button class="btn btn-danger" type="button">
+                        <button class="btn btn-danger" type="button" data-delete-id="{{$user->id}}" data-toggle="modal" data-target="#modal-delete" data-delete-action="/dashboard/users/delete" data-update="#data-table #messages .pagination-container">
                             <span class="glyphicon glyphicon-remove"></span>
                         </button>
                     </td>
@@ -51,4 +54,10 @@
         </div>
     </div>
 </div>
+{{ include('includes.modaldelete') }}
+#end
+
+#set[scripts]
+<script src="{{ asset('js/modal-dialog.js') }}" type="text/javascript"></script>
+<script src="{{ asset('js/data-list.js') }}" type="text/javascript"></script>
 #end
