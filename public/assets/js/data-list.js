@@ -61,8 +61,14 @@ function initTableDataSortColumn() {
     });
 }
 
-function getActivePageNumber(element) {
-    return element.find('.container-pagination:eq(0) .pagination li.active > a').text();
+function getActivePageNumber(elementTrigger) {
+    var containerPagination = elementTrigger.closest('.container-pagination');
+    
+    if (containerPagination.length === 0) {
+        containerPagination = elementTrigger.find('.container-pagination:eq(0)');
+    }
+    
+    return containerPagination.find('.pagination li.active > a').text();
 }
 
 function createDataToSendPagination(page, currentDataToSend) {
@@ -106,7 +112,7 @@ function dataListSpanGlyphicon(spanGlyphicon, sort) {
 
 function tableDataRequest(elementTrigger) {
     var containerTableData = getContainerTableData(elementTrigger);
-    var dataToSend = createDataToSendPagination(getActivePageNumber(containerTableData));
+    var dataToSend = createDataToSendPagination(getActivePageNumber(elementTrigger));
     //Obtener todas las columnas y su correspondiente orden
     dataToSend = createDataToSendSortColumn(containerTableData, dataToSend);
     console.table(dataToSend);
