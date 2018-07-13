@@ -1,24 +1,23 @@
-var deleteFormAction = '';
-var btnModalDelete = null;
+var elementBtnTriggerModalDelete;
 
 $(function () {
     $('#modal-delete').on('show.bs.modal', function (event) {
-        btnModalDelete = $(event.relatedTarget); // Button that triggered the modal
-        deleteFormAction = btnModalDelete.data('delete-action');
-        setCurrentElementTriggeringAction(btnModalDelete);
-        $(this).find('#modal-delete-input-id').val(btnModalDelete.data('delete-id'));
+        elementBtnTriggerModalDelete = $(event.relatedTarget); // Button that triggered the modal
+        $(this).find('#modal-delete-input-id').val(elementBtnTriggerModalDelete.data('delete-id'));
     });
     
+    modalDeleteTableData();
+});
+
+function modalDeleteTableData() {
     $('#modal-delete-form').submit(function (event) {
         $('#modal-delete').modal('hide');
         event.preventDefault();
         
         var deleteCallback = function (deleteData) {
-            makeRequest('GET', getRoute(), createDataToSendPagination(), function (dataHTML) {
-                viewUpdate(dataHTML);
-            });
+            tableDataRequest(elementBtnTriggerModalDelete);
         };
         
-        makeRequest('POST', deleteFormAction, $(this).serializeArray(), deleteCallback);
+        makeRequest('POST', elementBtnTriggerModalDelete.data('delete-action'), $(this).serializeArray(), deleteCallback);
     });
-});
+}

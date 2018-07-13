@@ -1,5 +1,3 @@
-var currentElementTriggeringAction = null;
-
 $(function () {
     $('#btn-navbar-menu-toggle').click(function () {
         navbarToggle();
@@ -22,6 +20,10 @@ function makeRequest(method, route, dataToSend, callback, parseJSON) {
         //TODO: registrar error.
         console.log(jqXHR.statusText + '[' + jqXHR.status + '] ' + jqXHR.responseText);
     });
+}
+
+function makeGetRequest(dataToSend, callback, parseJson) {
+    makeRequest('GET', getRoute(), dataToSend, callback, parseJson);
 }
 
 function formatterURL(route) {
@@ -54,33 +56,71 @@ function getRoute() {
     return document.URL.replace(globalURL, '');
 }
 
-function viewUpdate(html) {
-    if (currentElementTriggeringAction == null) {
+function viewUpdate(html, dataIdUpdate) {
+    if (!Array.isArray(dataIdUpdate)) {
         return;
     }
     
     var currentDocument = $(document);
     var documentHTML = $('<div />').append($.parseHTML(html));
     
-    currentElementTriggeringAction.data('update').split(" ").forEach(function (value) {
-        var findHTML = documentHTML.find(value).html();
-        
-        if ($(findHTML).hasClass(messagesClassDiv)) {
-            addMessagesContent(findHTML);
+    dataIdUpdate.forEach(function (value) {
+        var findHTML;
+        //Si contiene ':', buscara en el elemento de la posición 0 (contiene el identificador), todos los elementos de la posición 1
+        //EJ: #my-id:.my-class1,.my-class2,.my-class3,#my-id2,table
+        if (value.search(':') === -1) {
+            findHTML = documentHTML.find(value).html();
+            
+            if ($(findHTML).hasClass(messagesClassDiv)) {
+                addMessagesContent(findHTML);
+            } else {
+                currentDocument.find(value).html(findHTML);
+            }
         } else {
-            currentDocument.find(value).html(findHTML);
+            var valueSplit = value.split(':');
+            var valueID = valueSplit[0];
+            var currentDocumentFind = currentDocument.find(valueID);
+            findHTML = documentHTML.find(valueID);
+            
+            valueSplit[1].split(',').forEach(function (find) {
+                currentDocumentFind.find(find).html(findHTML.find(find).html())
+            });
         }
     });
 }
 
-function setCurrentElementTriggeringAction(element) {
-    currentElementTriggeringAction = element;
+function createRepresentationDataToSendRequest(name, value, currentDataToSend) {
+    return checkArray(currentDataToSend).concat({'name': name, 'value': value});
 }
 
-function createRepresentationDataToSendRequest(name, value, currentDataToSend) {
-    if (currentDataToSend == null || !(currentDataToSend instanceof Array)) {
-        currentDataToSend = [];
+function elementDataAttr(element, key, value) {
+    element.attr('data-' + key, value);
+    element.data(key, value);//Se agrega también, ya que al obtener su valor es nulo si no existe
+}
+
+function elementDataAttrRemove(element, key) {
+    element.removeAttr('data-' + key);
+    element.data(key, '');//$.removeData() no esta funcionando, por eso lo dejo vació.
+}
+
+function getDataIdUpdateElement(element) {
+    var data = element.data('update');
+    
+    if (data === undefined) {
+        return [];
     }
     
-    return currentDataToSend.concat({'name': name, 'value': value});
+    return data.split(" ");
+}
+
+function getContainerTableData(element) {
+    return element.closest('.container-table-data');
+}
+
+function checkArray(array) {
+    if (array === undefined || !(array instanceof Array)) {
+        return [];
+    }
+    
+    return array;
 }

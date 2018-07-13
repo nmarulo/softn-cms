@@ -5,12 +5,12 @@ namespace App\Facades;
 use Silver\Support\Facade;
 
 /**
- * ViewFacade event provider
+ * ModelFacade event provider
  */
-class ViewFacade extends Facade {
+class ModelFacade extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\ViewHelper';
+        return 'App\Helpers\ModelHelper';
     }
     
 }

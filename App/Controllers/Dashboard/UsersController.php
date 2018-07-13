@@ -3,8 +3,8 @@
 namespace App\Controllers\Dashboard;
 
 use App\Facades\Messages;
+use App\Facades\ModelFacade;
 use App\Facades\Utils;
-use App\Facades\ViewFacade;
 use App\Models\Users;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
@@ -17,9 +17,14 @@ use Silver\Http\View;
 class UsersController extends Controller {
     
     public function index() {
-        return ViewFacade::make('dashboard.users.index')
-                         ->pagination(Users::class, 'users')
-                         ->get();
+        $userModel = ModelFacade::model(Users::class)
+                                ->pagination()
+                                ->sort();
+        $users     = $userModel->all();
+        
+        return View::make('dashboard.users.index')
+                   ->with('users', $users)
+                   ->withComponent($userModel->getPagination(), 'pagination');
     }
     
     public function form($id) {
