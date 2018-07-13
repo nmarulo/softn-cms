@@ -65,7 +65,7 @@ function getActivePageNumber(elementTrigger) {
     var containerPagination = elementTrigger.closest('.container-pagination');
     
     if (containerPagination.length === 0) {
-        containerPagination = elementTrigger.find('.container-pagination:eq(0)');
+        containerPagination = getContainerTableData(elementTrigger).find('.container-pagination:eq(0)');
     }
     
     return containerPagination.find('.pagination li.active > a').text();
