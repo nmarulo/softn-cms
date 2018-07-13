@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Silver\Core\Bootstrap\Facades\Request;
+use Silver\Database\Model;
 use Silver\Database\Query;
 use Silver\Http\View;
 use App\Facades\Pagination;
@@ -14,6 +15,16 @@ class ViewHelper {
     
     /** @var View */
     private $view;
+    
+    /** @var array Key=tabla Value=Query */
+    private $query;
+    
+    /**
+     * ViewHelper constructor.
+     */
+    public function __construct() {
+        $this->query = [];
+    }
     
     public function make($template, $data = []) {
         $this->view = View::make($template, $data);
@@ -27,21 +38,31 @@ class ViewHelper {
         return $this;
     }
     
-    public function withComponent($value = TRUE, $key = FALSE) {
-        $this->view->withComponent($value, $key);
-        
-        return $this;
-    }
-    
+    /**
+     * @param Model          $currentModel
+     * @param string|boolean $nameModel
+     * @param \Closure       $dataModelClosure
+     * @param int            $count
+     *
+     * @return $this
+     */
     public function pagination($currentModel, $nameModel, $dataModelClosure = NULL, $count = NULL) {
         $pagination = $this->getPaginationInstance($currentModel, $count);
-        $dataModel  = $this->getDataModel($pagination, $currentModel, $dataModelClosure);
-        $this->view->with($nameModel, $dataModel)
-                   ->withComponent($pagination, 'pagination');
+        $query      = $this->getQuery($currentModel, $nameModel);
+        $query      = $this->getDataModel($pagination, $query, $dataModelClosure);
+        
+        $this->withComponent($pagination, 'pagination');
+        $this->setQuery($currentModel, $query, $nameModel);
         
         return $this;
     }
     
+    /**
+     * @param Model $currentModel
+     * @param int   $count
+     *
+     * @return mixed
+     */
     private function getPaginationInstance($currentModel, $count = NULL) {
         $currentPage = 1;
         $totalData   = $count;
@@ -59,38 +80,92 @@ class ViewHelper {
         return Pagination::getInstance($currentPage, $totalData);
     }
     
-    private function getDataModel($pagination, $currentModel, $dataModelClosure = NULL) {
+    /**
+     * @param Model          $currentModel
+     * @param string|boolean $nameModel
+     *
+     * @return mixed
+     */
+    private function getQuery($currentModel, $nameModel) {
+        $nameModel = $this->checkAndGetNameModel($currentModel, $nameModel);
+        
+        if (!array_key_exists($nameModel, $this->query)) {
+            $this->query[$nameModel] = $currentModel::query();
+        }
+        
+        return $this->query[$nameModel];
+    }
+    
+    /**
+     * @param Model          $currentModel
+     * @param string|boolean $nameModel
+     *
+     * @return mixed
+     */
+    private function checkAndGetNameModel($currentModel, $nameModel) {
+        return empty($nameModel) ? $currentModel::tableName() : $nameModel;
+    }
+    
+    /**
+     * @param \App\Helpers\Pagination $pagination
+     * @param mixed                   $query
+     * @param \Closure                $dataModelClosure
+     *
+     * @return Query
+     */
+    private function getDataModel($pagination, $query, $dataModelClosure = NULL) {
         $numberRowShow = $pagination->getNumberRowShow();
         $beginRow      = $pagination->getBeginRow();
         
         if ($dataModelClosure == NULL || !is_callable($dataModelClosure)) {
-            return $currentModel::query()
-                                ->orderBy('id', 'desc')
-                                ->limit($numberRowShow)
-                                ->offset($beginRow)
-                                ->all();
+            return $query->limit($numberRowShow)
+                         ->offset($beginRow);
         }
         
-        return $dataModelClosure($numberRowShow, $beginRow);
+        return $dataModelClosure($query, $numberRowShow, $beginRow);
     }
     
+    public function withComponent($value, $key) {
+        $this->view->withComponent($value, $key);
+        
+        return $this;
+    }
+    
+    /**
+     * @param Model          $currentModel
+     * @param Query          $query
+     * @param string|boolean $nameModel
+     */
+    private function setQuery($currentModel, $query, $nameModel) {
+        $this->query[$this->checkAndGetNameModel($currentModel, $nameModel)] = $query;
+    }
+    
+    /**
+     * @return View
+     */
     public function get() {
+        foreach ($this->query as $key => $value) {
+            $this->view->with($key, $value->all());
+        }
+        
         return $this->view;
     }
     
-    public function sort($currentModel, $nameModel) {
-        $value      = [];
-        $sortColumn = NULL;
+    /**
+     * @param Model          $currentModel
+     * @param string|boolean $nameModel
+     *
+     * @return $this
+     */
+    public function sort($currentModel, $nameModel = FALSE) {
+        $sortColumn = Request::input('sortColumn');
+        $query      = $this->getQuery($currentModel, $nameModel);
         
         if (Request::ajax()) {
-            $sortColumn = Request::input('sortColumn');
-            
             if (!empty($sortColumn)) {
                 $sortColumn = (array)json_decode($sortColumn);
                 
                 if (is_array($sortColumn)) {
-                    $query = Query::select()
-                                  ->from($currentModel::tableName());
                     
                     foreach ($sortColumn as $value) {
                         $value = (array)$value;
@@ -102,19 +177,11 @@ class ViewHelper {
                         $query = $query->orderBy($value['column'], $value['sort']);
                     }
                     
-                    $value = $query->all();
                 }
             }
         }
         
-        //Si no se envía el filtro, se retornan todos
-        if (empty($sortColumn)) {
-            $value = $currentModel::query()
-                                  ->orderBy('id', 'desc')
-                                  ->all();
-        }
-        
-        $this->view->with($nameModel, $value);
+        $this->setQuery($currentModel, $query, $nameModel);
         
         return $this;
     }

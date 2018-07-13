@@ -43,9 +43,6 @@ class Pagination {
     /** @var int */
     private $beginRow;
     
-    /** @var string */
-    private $route;
-    
     public function getInstance($currentPageValue, $totalData, $maxNumberPagesShow = 3) {
         $this->currentPageValue   = $currentPageValue;
         $this->totalData          = intval($totalData);
@@ -54,7 +51,6 @@ class Pagination {
         $this->totalNumberPages   = 0;
         $this->rendered           = FALSE;
         $this->beginRow           = 0;
-        $this->route              = Request::getUri();
         //TODO: configurar en base de datos.
         $this->setNumberRowShow(2);
         $this->init();
@@ -158,8 +154,8 @@ class Pagination {
         for ($i = $startPageNumber; $i <= $endPageNumber; ++$i) {
             $styleClass = '';
             $attrData   = [
-                    'route'  => $this->route,
-                    'page'   => $i,
+                    'page' => $i,
+                    'type' => 'page',
             ];
             
             if ($this->currentPageValue == $i) {
@@ -174,7 +170,7 @@ class Pagination {
     private function initArrows() {
         $styleClass = "disabled";
         $attrData   = [
-                'route'  => $this->route,
+                'type' => 'arrow',
         ];
         $this->setLeftArrow($styleClass, $attrData);
         $this->setRightArrow($styleClass, $attrData);
