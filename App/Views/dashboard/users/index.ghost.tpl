@@ -9,7 +9,7 @@
                 <span class="glyphicon glyphicon-plus"></span>
             </a>
         </h1>
-        <div id="container-user-table" class="container-table-data" data-update="#container-user-table:.container-pagination,tbody">
+        <div id="container-user-table" class="container-table-data" data-update="#container-user-table:.container-pagination,tbody #messages">
             {{ component('pagination') }}
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -38,7 +38,7 @@
                             <a class="btn btn-primary" href="{{ url('/dashboard/users/form/') }}{{$user->id}}">
                                 <span class="glyphicon glyphicon-edit"></span>
                             </a>
-                            <button class="btn btn-danger" type="button" data-delete-id="{{$user->id}}" data-toggle="modal" data-target="#modal-delete" data-delete-action="/dashboard/users/delete" data-update="#container-user-table #messages">
+                            <button class="btn btn-danger" type="button" data-delete-id="{{$user->id}}" data-toggle="modal" data-target="#modal-delete" data-delete-action="/dashboard/users/delete">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </td>

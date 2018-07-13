@@ -115,7 +115,6 @@ function tableDataRequest(elementTrigger) {
     var dataToSend = createDataToSendPagination(getActivePageNumber(elementTrigger));
     //Obtener todas las columnas y su correspondiente orden
     dataToSend = createDataToSendSortColumn(containerTableData, dataToSend);
-    console.table(dataToSend);
     
     //realizar una petición enviando la pagina activa y las columnas que serán ordenadas
     makeGetRequest(dataToSend, function (dataHTML) {
