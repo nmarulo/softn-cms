@@ -10,7 +10,24 @@
             </a>
         </h1>
         <div id="container-user-table" class="container-table-data" data-update="#container-user-table:.container-pagination,tbody #messages">
-            {{ component('pagination') }}
+            <div class="row clearfix">
+                <div class="col-sm-6">
+                    {{ component('pagination') }}
+                </div>
+                <div class="col-sm-6">
+                    <form class="form-search-table-data">
+                        <div class="input-group">
+                            <input class="form-control" type="text" name="search-value" placeholder="login:admin email:info@softn.red">
+                            <span class="input-group-addon">
+                                <input type="checkbox" name="search-strict">
+                            </span>
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="submit">Buscar</button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
