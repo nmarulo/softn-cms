@@ -18,11 +18,19 @@ use Silver\Database\Model;
  */
 class Users extends Model {
     
-    protected static $_table   = 'users';
+    protected static $_table     = 'users';
     
-    protected static $_primary = 'id';
+    protected static $_primary   = 'id';
     
-    protected        $hidden   = [
-        'user_password',
+    protected        $hidden     = [
+            'user_password',
     ];
+    
+    protected        $searchable = [
+            'user_login',
+            'user_name',
+            'user_email',
+            'user_registered',
+    ];
+    
 }

@@ -18,6 +18,7 @@ class UsersController extends Controller {
     
     public function index() {
         $userModel = ModelFacade::model(Users::class)
+                                ->search()
                                 ->pagination()
                                 ->sort();
         $users     = $userModel->all();
