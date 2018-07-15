@@ -13,11 +13,14 @@ use Silver\Database\Query;
 
 class ModelHelper {
     
-    /** @var Query */
+    /** @var mixed */
     private $query;
     
     /** @var Pagination */
     private $pagination;
+    
+    /** @var boolean */
+    private $hasPagination;
     
     /** @var Model */
     private $model;
@@ -25,31 +28,44 @@ class ModelHelper {
     /** @var SearchModelHelper */
     private $searchModel;
     
+    /** @var \Closure */
+    private $paginationDataClosure;
+    
     /**
      * ViewHelper constructor.
      */
     public function __construct() {
-        $this->query       = NULL;
-        $this->pagination  = NULL;
-        $this->model       = NULL;
-        $this->searchModel = NULL;
+        $this->query         = NULL;
+        $this->pagination    = NULL;
+        $this->model         = NULL;
+        $this->searchModel   = NULL;
+        $this->hasPagination = FALSE;
     }
     
     /**
-     * @param Model   $model
-     * @param boolean $searchModel
+     * @param Model $model
      *
      * @return $this
      */
-    public function model($model, $searchModel = FALSE) {
+    public function model($model) {
+        $this->query = $model::query();
         $this->model = $model;
         
-        if ($searchModel) {
-            $this->searchModel = SearchModelFacade::model($model);
-            $this->query       = $this->searchModel->getQuery();
-        }
+        return $this;
+    }
+    
+    public function search() {
+        $this->searchModel = SearchModelFacade::getInstance($this->model, $this->query);
+        $this->setQuery($this->searchModel->getQuery());
         
         return $this;
+    }
+    
+    /**
+     * @param Query $query
+     */
+    private function setQuery($query) {
+        $this->query = $query;
     }
     
     /**
@@ -58,10 +74,32 @@ class ModelHelper {
      * @return $this
      */
     public function pagination($dataModelClosure = NULL) {
-        $this->instancePagination();
-        $this->paginationDataClosure($this->getQuery(), $dataModelClosure);
+        $this->hasPagination         = TRUE;
+        $this->paginationDataClosure = $dataModelClosure;
         
         return $this;
+    }
+    
+    /**
+     * @return array
+     */
+    public function all() {
+        //En caso de llamar al método "all" antes que "getPagination".
+        //Solo es para instanciar "Pagination", en caso de que lo este previamente.
+        $this->getPagination();
+        
+        return $this->query->all();
+    }
+    
+    /**
+     * @return Pagination
+     */
+    public function getPagination() {
+        if ($this->hasPagination && empty($this->pagination)) {
+            $this->instancePagination();
+        }
+        
+        return $this->pagination;
     }
     
     private function instancePagination() {
@@ -79,6 +117,7 @@ class ModelHelper {
         }
         
         $this->pagination = \App\Facades\Pagination::getInstance($currentPage, $totalData);
+        $this->paginationDataClosure($this->paginationDataClosure);
     }
     
     private function getTotalNumDataSearchModel() {
@@ -96,10 +135,10 @@ class ModelHelper {
     }
     
     /**
-     * @param mixed    $query
      * @param \Closure $dataModelClosure
      */
-    private function paginationDataClosure($query, $dataModelClosure = NULL) {
+    private function paginationDataClosure($dataModelClosure = NULL) {
+        $query         = $this->query;
         $numberRowShow = $this->pagination->getNumberRowShow();
         $beginRow      = $this->pagination->getBeginRow();
         
@@ -114,47 +153,11 @@ class ModelHelper {
     }
     
     /**
-     * @param Query $query
-     */
-    private function setQuery($query) {
-        $this->query = $query;
-    }
-    
-    /**
-     * @param Model $currentModel
-     *
-     * @return mixed
-     */
-    private function getQuery() {
-        $model = $this->model;
-        
-        if (empty($this->query)) {
-            $this->query = $model::query();
-        }
-        
-        return $this->query;
-    }
-    
-    /**
-     * @return array
-     */
-    public function all() {
-        return $this->query->all();
-    }
-    
-    /**
-     * @return Pagination
-     */
-    public function getPagination() {
-        return $this->pagination;
-    }
-    
-    /**
      * @return $this
      */
     public function sort() {
         $sortColumn = Request::input('sortColumn');
-        $query      = $this->getQuery();
+        $query      = $this->query;
         
         if (Request::ajax() && !empty($sortColumn)) {
             $sortColumn = (array)json_decode($sortColumn);

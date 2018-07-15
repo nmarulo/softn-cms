@@ -27,14 +27,14 @@ class SearchModelHelper {
     
     /**
      * @param Model $currentModel
+     * @param Query $query
      *
      * @return $this
      */
-    public function model($currentModel) {
+    public function getInstance($currentModel, $query) {
         $matches      = [];
         $search       = Request::input('search-value');//login_t:admin email:info@sofn.red
         $searchable   = (new $currentModel())->getSearchable();
-        $query        = $currentModel::query();
         $queryCount   = Query::count()
                              ->from($currentModel::tableName());
         $strictSearch = Request::input('search-strict', FALSE) == 'on';

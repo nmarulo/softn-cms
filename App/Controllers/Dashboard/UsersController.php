@@ -17,10 +17,11 @@ use Silver\Http\View;
 class UsersController extends Controller {
     
     public function index() {
-        $userModel   = ModelFacade::model(Users::class, true)
-                                  ->pagination()
-                                  ->sort();
-        $users       = $userModel->all();
+        $userModel = ModelFacade::model(Users::class)
+                                ->search()
+                                ->pagination()
+                                ->sort();
+        $users     = $userModel->all();
         
         return View::make('dashboard.users.index')
                    ->with('users', $users)
