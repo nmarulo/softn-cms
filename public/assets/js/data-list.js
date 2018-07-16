@@ -10,7 +10,42 @@ $(function () {
     initTableDataPagination();
     initTableDataSortColumn();
     initTableDataSearch();
+    initTableDataHideColumns()
 });
+
+function initTableDataHideColumns() {
+    $(document).on('change', '.container-hide-columns input[type=checkbox]', function () {
+        var element = $(this);
+        var columnName = element.attr('name');
+        var tableData = getContainerTableData(element).find('table');
+        var posColumn = 0;
+        var show = !element.is(':checked');
+        
+        tableData.find('thead > tr > th').each(function () {
+            if ($(this).data('column') === columnName) {
+                return false;
+            }
+            
+            ++posColumn;
+        });
+        
+        //TODO: falta solucionar. Cuando se realiza una peticion AJAX (paginar, buscar u ordenar) la columna oculta en "tbody" vuelve a mostrarse, obviamente, ya que estoy reemplazando todo su contenido "html".
+        
+        tableShowHideColumns(tableData, posColumn, show, 'thead', 'th');
+        tableShowHideColumns(tableData, posColumn, show, 'tfoot', 'th');
+        tableShowHideColumns(tableData, posColumn, show, 'tbody', 'td');
+    });
+}
+
+function tableShowHideColumns(table, pos, show, find, findColumn) {
+    table.find(find + ' > tr').each(function () {
+        if (show) {
+            $(this).find(findColumn + ':eq(' + pos + ')').removeClass('hidden');
+        } else {
+            $(this).find(findColumn + ':eq(' + pos + ')').addClass('hidden');
+        }
+    });
+}
 
 function initTableDataSearch() {
     $(document).on('submit', 'form.form-search-table-data', function (event) {
