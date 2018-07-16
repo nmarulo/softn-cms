@@ -9,9 +9,17 @@ $(function () {
     
     initTableDataPagination();
     initTableDataSortColumn();
-    initTableDataSearch();
-    initTableDataHideColumns()
+    initTableDataHideColumns();
+    initTableDataForm('form-search-table-data');
+    initTableDataForm('form-filter-table-data');
 });
+
+function initTableDataForm(classForm) {
+    $(document).on('submit', 'form.' + classForm, function (event) {
+        event.preventDefault();
+        tableDataRequest($(this));
+    });
+}
 
 function initTableDataHideColumns() {
     $(document).on('change', '.container-hide-columns input[type=checkbox]', function () {
@@ -33,13 +41,6 @@ function tableShowHideColumns(table, pos, show) {
     } else {
         columns.addClass('hidden');
     }
-}
-
-function initTableDataSearch() {
-    $(document).on('submit', 'form.form-search-table-data', function (event) {
-        event.preventDefault();
-        tableDataRequest($(this));
-    });
 }
 
 function initTableDataPagination() {
@@ -110,12 +111,12 @@ function createDataToSendSortColumn(containerTableData, currentDataToSend) {
     return createRepresentationDataToSendRequest('sortColumn', JSON.stringify(value), currentDataToSend);
 }
 
-function createDataToSendSearch(elementForm, currentDataToSend) {
+function createDataToSendForm(elementForm, classForm, currentDataToSend) {
     var element = elementForm;
     var dataToSend = checkArray(currentDataToSend);
     
-    if (!elementForm.hasClass('form-search-table-data')) {
-        element = getContainerTableData(elementForm).find('form.form-search-table-data');
+    if (!elementForm.hasClass(classForm)) {
+        element = getContainerTableData(elementForm).find('form.' + classForm);
     }
     
     var input = element.find('input');
@@ -163,7 +164,8 @@ function tableDataRequest(elementTrigger) {
     var dataToSend = createDataToSendPagination(getActivePageNumber(elementTrigger));
     //Obtener todas las columnas y su correspondiente orden
     dataToSend = createDataToSendSortColumn(containerTableData, dataToSend);
-    dataToSend = createDataToSendSearch(elementTrigger, dataToSend);
+    dataToSend = createDataToSendForm(elementTrigger, 'form-search-table-data', dataToSend);
+    dataToSend = createDataToSendForm(elementTrigger, 'form-filter-table-data', dataToSend);
     
     //realizar una petición para actualizar los datos de la tabla
     makeGetRequest(dataToSend, function (dataHTML) {

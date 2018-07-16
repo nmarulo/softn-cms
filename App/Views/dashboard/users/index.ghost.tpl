@@ -43,6 +43,28 @@
                             </li>
                         </ul>
                     </div>
+                    <div class="container-filter btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Filtros <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form class="form-filter-table-data">
+                                    <div class="form-group">
+                                        <label class="control-label">Inicio</label>
+                                        <input type="date" class="form-control" name="filter-start">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Fin</label>
+                                        <input type="date" class="form-control" name="filter-final">
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Enviar</button>
+                                    </div>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="col-sm-9">
                     <form class="form-search-table-data">
@@ -57,8 +79,14 @@
                         </div>
                     </form>
                 </div>
-                <div class="col-sm-12">
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
                     {{ component('pagination') }}
+                </div>
+                <div class="col-sm-6">
+
+
                 </div>
             </div>
             <div class="table-responsive">
