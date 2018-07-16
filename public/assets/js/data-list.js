@@ -10,7 +10,30 @@ $(function () {
     initTableDataPagination();
     initTableDataSortColumn();
     initTableDataSearch();
+    initTableDataHideColumns()
 });
+
+function initTableDataHideColumns() {
+    $(document).on('change', '.container-hide-columns input[type=checkbox]', function () {
+        var element = $(this);
+        var columnName = element.attr('name');
+        var tableData = getContainerTableData(element).find('table');
+        var show = !element.is(':checked');
+        var posColumn = tableData.find('thead > tr > th[data-column=' + columnName + ']').index();
+        
+        tableShowHideColumns(tableData, ++posColumn, show);
+    });
+}
+
+function tableShowHideColumns(table, pos, show) {
+    var columns = table.find('tr > td:nth-child(' + pos + '), tr > th:nth-child(' + pos + ')');
+    
+    if (show) {
+        columns.removeClass('hidden');
+    } else {
+        columns.addClass('hidden');
+    }
+}
 
 function initTableDataSearch() {
     $(document).on('submit', 'form.form-search-table-data', function (event) {
@@ -145,5 +168,14 @@ function tableDataRequest(elementTrigger) {
     //realizar una petición para actualizar los datos de la tabla
     makeGetRequest(dataToSend, function (dataHTML) {
         viewUpdate(dataHTML, getDataIdUpdateElement(containerTableData));
+        updateTableBodyHideColumns();
+    });
+}
+
+function updateTableBodyHideColumns() {
+    var table = $(document).find('.container-table-data table > thead > tr > th.hidden').closest('table');
+    
+    table.find('thead > tr > th.hidden').each(function () {
+        table.find('tbody > tr > td:nth-child(' + ($(this).index() + 1) + ')').addClass('hidden');
     });
 }

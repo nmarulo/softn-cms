@@ -11,10 +11,40 @@
         </h1>
         <div id="container-user-table" class="container-table-data" data-update="#container-user-table:.container-pagination,tbody #messages">
             <div class="row clearfix">
-                <div class="col-sm-6">
-                    {{ component('pagination') }}
+                <div class="col-sm-3">
+                    <div class="container-hide-columns btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Columnas <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="user_name">
+                                    Nombre
+                                </label>
+                            </li>
+                            <li class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="user_login">
+                                    Login
+                                </label>
+                            </li>
+                            <li class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="user_email">
+                                    Email
+                                </label>
+                            </li>
+                            <li class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="user_registered">
+                                    Fecha
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-9">
                     <form class="form-search-table-data">
                         <div class="input-group">
                             <input class="form-control" type="text" name="search-value" placeholder="login:admin email:info@softn.red">
@@ -26,6 +56,9 @@
                             </span>
                         </div>
                     </form>
+                </div>
+                <div class="col-sm-12">
+                    {{ component('pagination') }}
                 </div>
             </div>
             <div class="table-responsive">
