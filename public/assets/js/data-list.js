@@ -18,33 +18,21 @@ function initTableDataHideColumns() {
         var element = $(this);
         var columnName = element.attr('name');
         var tableData = getContainerTableData(element).find('table');
-        var posColumn = 0;
         var show = !element.is(':checked');
+        var posColumn = tableData.find('thead > tr > th[data-column=' + columnName + ']').index();
         
-        tableData.find('thead > tr > th').each(function () {
-            if ($(this).data('column') === columnName) {
-                return false;
-            }
-            
-            ++posColumn;
-        });
-        
-        //TODO: falta solucionar. Cuando se realiza una peticion AJAX (paginar, buscar u ordenar) la columna oculta en "tbody" vuelve a mostrarse, obviamente, ya que estoy reemplazando todo su contenido "html".
-        
-        tableShowHideColumns(tableData, posColumn, show, 'thead', 'th');
-        tableShowHideColumns(tableData, posColumn, show, 'tfoot', 'th');
-        tableShowHideColumns(tableData, posColumn, show, 'tbody', 'td');
+        tableShowHideColumns(tableData, ++posColumn, show);
     });
 }
 
-function tableShowHideColumns(table, pos, show, find, findColumn) {
-    table.find(find + ' > tr').each(function () {
-        if (show) {
-            $(this).find(findColumn + ':eq(' + pos + ')').removeClass('hidden');
-        } else {
-            $(this).find(findColumn + ':eq(' + pos + ')').addClass('hidden');
-        }
-    });
+function tableShowHideColumns(table, pos, show) {
+    var columns = table.find('tr > td:nth-child(' + pos + '), tr > th:nth-child(' + pos + ')');
+    
+    if (show) {
+        columns.removeClass('hidden');
+    } else {
+        columns.addClass('hidden');
+    }
 }
 
 function initTableDataSearch() {
@@ -180,5 +168,14 @@ function tableDataRequest(elementTrigger) {
     //realizar una petición para actualizar los datos de la tabla
     makeGetRequest(dataToSend, function (dataHTML) {
         viewUpdate(dataHTML, getDataIdUpdateElement(containerTableData));
+        updateTableBodyHideColumns();
+    });
+}
+
+function updateTableBodyHideColumns() {
+    var table = $(document).find('.container-table-data table > thead > tr > th.hidden').closest('table');
+    
+    table.find('thead > tr > th.hidden').each(function () {
+        table.find('tbody > tr > td:nth-child(' + ($(this).index() + 1) + ')').addClass('hidden');
     });
 }
