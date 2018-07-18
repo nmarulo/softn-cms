@@ -47,8 +47,12 @@ class ModelHelper {
      *
      * @return $this
      */
-    public function model($model) {
-        $this->query = $model::query();
+    public function model($model, $query) {
+        if (empty($query)) {
+            $query = $model::query();
+        }
+        
+        $this->query = $query;
         $this->model = $model;
         
         return $this;

@@ -17,7 +17,18 @@ use Silver\Http\View;
 class UsersController extends Controller {
     
     public function index() {
-        $userModel = ModelFacade::model(Users::class)
+        $query = NULL;
+        
+        if (Request::ajax()) {
+            $filterStart = Request::input('filter-start');
+            $filterFinal = Request::input('filter-final');
+            $query       = Users::query()
+                                ->where('user_registered', '>=', $filterStart)
+                                ->where('user_registered', '<=', $filterFinal);
+            //TODO: no puedo buscar y filtrar a la vez ya que no esta funcionando el "where" con paréntesis.
+        }
+        
+        $userModel = ModelFacade::model(Users::class, $query)
                                 ->search()
                                 ->pagination()
                                 ->sort();
