@@ -28,8 +28,7 @@ class Token {
         $builder = (new Builder())->setIssuer(URL)// Configures the issuer (iss claim)
                                   ->setAudience(URL)// Configures the audience (aud claim)
                                     //http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#rfc.section.4.1.7
-                                    //TODO: Identificador del token
-                                  ->setId('4f1g23a12aa', TRUE)// Configures the id (jti claim), replicating as a header item
+                                  ->setId(Env::get('token_id'), TRUE)// Configures the id (jti claim), replicating as a header item
                                   ->setIssuedAt(time())// Configures the time that the token was issue (iat claim)
                                   ->setNotBefore(time() + 60)// Configures the time that the token can be used (nbf claim)
                                   ->setExpiration(time() + 3600);// Configures the expiration time of the token (exp claim)

@@ -37,7 +37,7 @@ class UsersController extends Controller {
             $message = 'Usuario actualizado correctamente.';
         }
         
-        if (Utils::isRequestMethod('post')) {
+        if (Utils::isPostRequest()) {
             $user->user_name  = Request::input('user_name');
             $user->user_login = Request::input('user_login');
             $user->user_email = Request::input('user_email');
