@@ -5,7 +5,7 @@
 
 namespace App\Helpers\Api;
 
-use App\Facades\Token;
+use App\Facades\TokenFacade;
 use App\Facades\Utils;
 use Lcobucci\JWT\Builder;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -204,9 +204,9 @@ class RestCallHelper {
     private function checkAndGenerateNewToken() {
         $token = Request::input('token');
         
-        if (Token::check($token)) {
-            Token::generate(function(Builder $builder) use ($token) {
-                $userLogin = Token::getCustomData($token, 'user_login');
+        if (TokenFacade::check($token)) {
+            TokenFacade::generate(function(Builder $builder) use ($token) {
+                $userLogin = TokenFacade::getCustomData($token, 'user_login');
                 $builder->set('user_login', $userLogin);
                 
                 return $builder;
@@ -222,7 +222,7 @@ class RestCallHelper {
                 'version'       => Env::get('api_version', '0.0.0'),
                 'http_status'   => $httpStatus,
                 'request_limit' => Env::get('api_request_limit', 25),
-                'token'         => Token::getToken(),
+                'token'         => TokenFacade::getToken(),
         ];
         
         switch ($httpStatus) {

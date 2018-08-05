@@ -11,7 +11,7 @@ use Silver\Core\Env;
 /**
  * token Helper
  */
-class Token {
+class TokenHelper {
     
     /**
      * @var \Lcobucci\JWT\Token

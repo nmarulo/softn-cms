@@ -3,7 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Facades\Api\RestCallFacade;
-use App\Facades\Token;
+use App\Facades\TokenFacade;
 use Lcobucci\JWT\Builder;
 use Silver\Core\Controller;
 
@@ -18,13 +18,13 @@ class TokenApiController extends Controller {
     public function generate() {
         return RestCallFacade::makeResponse(function($request) {
             $userLogin = $request['user_login'];
-            Token::generate(function(Builder $builder) use ($userLogin) {
+            TokenFacade::generate(function(Builder $builder) use ($userLogin) {
                 $builder->set('user_login', $userLogin);
                 
                 return $builder;
             });
             
-            return Token::getToken();
+            return TokenFacade::getToken();
         });
     }
     
