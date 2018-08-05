@@ -13,7 +13,8 @@ use Silver\Http\View;
 class LogoutController extends Controller {
     
     public function index() {
-        Session::delete('session_user');
+        Session::delete('user_login');
+        Session::delete('token');
         Redirect::to(URL . '/login');
     }
     
