@@ -18,7 +18,46 @@ class Token {
      */
     private $token;
     
+    public function check($payload) {
+        $this->token = $this->parser($payload); // Parses from a string
+        
+        return $this->verify() && $this->validate();
+    }
+    
+    private function parser($token) {
+        return (new Parser())->parse((string)$token);
+    }
+    
+    private function verify() {
+        return $this->token->verify(new Sha256(), Env::get('app_key'));
+    }
+    
+    private function validate() {
+        $validationData = new ValidationData(time() + 60);
+        $validationData->setIssuer($this->token->getClaim('iss'));
+        $validationData->setAudience($this->token->getClaim('aud'));
+        $validationData->setId($this->token->getClaim('jti'));
+        
+        return $this->token->validate($validationData);
+    }
+    
+    public function getCustomData($token, $key) {
+        $parser = $this->parser($token);
+        
+        return $parser->getClaim($key);
+    }
+    
+    public function getToken() {
+        if (empty($this->token)) {
+            $this->generate();
+        }
+        
+        return (string)$this->token;
+    }
+    
     public function generate($closureClaim = FALSE) {
+        sleep(1);//Para que genere un token distinto en cada llamada.
+        
         if (!is_callable($closureClaim)) {
             $closureClaim = function(Builder $builder) {
                 return $builder;
@@ -38,38 +77,6 @@ class Token {
         $this->token = $closureClaim($builder)
                 ->sign(new Sha256(), Env::get('app_key'))// creates a signature using "testing" as key
                 ->getToken();// Retrieves the generated token
-    }
-    
-    public function check($payload) {
-        $this->token = (new Parser())->parse((string)$payload); // Parses from a string
-//        $token->getHeaders(); // Retrieves the token header
-//        $token->getClaims(); // Retrieves the token claims
-        
-        return $this->verify() && $this->validate();
-    }
-    
-    /**
-     * @return \Lcobucci\JWT\Token
-     */
-    public function getToken() {
-        if(empty($this->token)){
-            $this->generate();
-        }
-        
-        return $this->token;
-    }
-    
-    private function verify() {
-        return $this->token->verify(new Sha256(), Env::get('app_key'));
-    }
-    
-    private function validate() {
-        $validationData = new ValidationData(time() + 60);
-        $validationData->setIssuer($this->token->getClaim('iss'));
-        $validationData->setAudience($this->token->getClaim('aud'));
-        $validationData->setId($this->token->getClaim('jti'));
-    
-        return $this->token->validate($validationData);
     }
     
 }
