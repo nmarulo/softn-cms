@@ -5,11 +5,13 @@
 
 namespace App\Helpers\Api;
 
+use App\Facades\Token;
 use App\Facades\Utils;
+use Lcobucci\JWT\Builder;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Env;
-use Silver\Http\Curl;
 use Silver\Database\Model;
+use Silver\Http\Curl;
 use Silver\Http\Session;
 
 /**
@@ -49,23 +51,27 @@ class RestCallHelper {
         return $this->messageError;
     }
     
-    public function makePostRequest($dataToSend, $serviceName, $serviceMethod, $returnType) {
+    public function makePostRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
         return $this->makeRequest('POST', $dataToSend, $serviceName, $serviceMethod, $returnType);
     }
     
     public function makeRequest($type, $dataToSend, $serviceName, $serviceMethod, $returnType, $options = []) {
         $response = [];
         $url      = $this->createUrl($serviceName, $serviceMethod);
-        $this->headerToken();
+        //$this->headerToken();
         
         switch ($type) {
             case 'GET':
-                $url      .= $this->formatDataToSendRequestGet((array)$dataToSend);
-                $response = Curl::get($url, NULL, $options);
+                $dataToSend          = (array)$dataToSend;
+                $dataToSend['token'] = $this->getToken();
+                $url                 .= $this->formatDataToSendRequestGet($dataToSend);
+                $response            = Curl::get($url, NULL, $options);
                 break;
             case 'POST':
-                $dataToSend = $this->formatDataToSendRequestPost((array)$dataToSend);
-                $response   = Curl::post($url, $dataToSend, $options);
+                //Si "dataToSend" no es un array, dara error.
+                $dataToSend          = $this->formatDataToSendRequestPost($dataToSend);
+                $dataToSend['token'] = $this->getToken();
+                $response            = (array)json_decode(Curl::post($url, $dataToSend, $options));
                 break;
             case 'PUT':
                 //$response = Curl::put($url);
@@ -80,26 +86,21 @@ class RestCallHelper {
         
         $this->httpRequestStatus = $this->getValueByKey($response, 'http_status', 0);
         $this->messageError      = $this->getValueByKey($response, 'errors', []);
-        //TODO: generar nuevo token. cuando se realiza la petición, la respuesta podría retornar un nuevo token en el encabezado
-        $this->setToken('');
+        $this->setToken($this->getValueByKey($response, 'token', ''));
         
         if (is_callable($returnType)) {
-            return $returnType($response);
+            return $returnType($this->getResponsePayload($response));
         }
         
-        return $response;
+        return $this->getResponsePayload($response);
     }
     
     private function createUrl($serviceName, $serviceMethod) {
         return sprintf('%1$s/api/%2$s/%3$s', URL, $serviceName, $serviceMethod);
     }
     
-    private function headerToken() {
-        header('token:' . $this->getToken());
-    }
-    
     public function getToken() {
-        return Session::get('token', Request::input('token'));
+        return Session::get('token', Request::input('token', ''));
     }
     
     private function formatDataToSendRequestGet($dataToSend) {
@@ -115,6 +116,12 @@ class RestCallHelper {
     }
     
     private function formatDataToSendRequestPost($dataToSend) {
+        if ($dataToSend instanceof Model) {
+            $dataToSend = $dataToSend->data();
+        } elseif (gettype($dataToSend) == 'object') {
+            throw new \RuntimeException('No puedes enviar este objeto en una petición POST.');
+        }
+        
         return [
                 'payload' => $dataToSend,
         ];
@@ -129,7 +136,27 @@ class RestCallHelper {
     }
     
     public function setToken($token) {
+        Session::set('token', $token);
+    }
     
+    private function getResponsePayload($response) {
+        $response = $this->getValueByKey($response, 'payload', '');
+        
+        return $this->objectToArray($response);
+    }
+    
+    private function objectToArray($object, $recursive = TRUE) {
+        if (gettype($object) == 'object') {
+            $object = (array)$object;
+        }
+        
+        if ($recursive && is_array($object)) {
+            $object = array_map(function($value) {
+                return $this->objectToArray($value);
+            }, $object);
+        }
+        
+        return $object;
     }
     
     public function makeGetRequest($serviceName, $serviceMethod, $returnType, $dataToSend = []) {
@@ -139,9 +166,15 @@ class RestCallHelper {
     public function makeResponse($callback) {
         header('Content-Type: application/json');
         $response = [];
-        $request  = $this->getDataRequest();//TODO: comprobar el tipo
+        $request  = $this->getDataRequest();//recibe un array
         
         try {
+            //Si la petición es para obtener el token, no se comprueba el token, ya que aun no existe.
+            if (Request::route()
+                       ->name() != 'token') {
+                $this->checkAndGenerateNewToken();
+            }
+            
             if (!is_callable($callback)) {
                 throw new \Exception('El método no se puede ejecutar.');
             }
@@ -168,22 +201,39 @@ class RestCallHelper {
         return Request::input('payload');
     }
     
+    private function checkAndGenerateNewToken() {
+        $token = Request::input('token');
+        
+        if (Token::check($token)) {
+            Token::generate(function(Builder $builder) use ($token) {
+                $userLogin = Token::getCustomData($token, 'user_login');
+                $builder->set('user_login', $userLogin);
+                
+                return $builder;
+            });
+        } else {
+            throw new \RuntimeException('El token no es valido.');
+        }
+    }
+    
     private function createResponseFormat($httpStatus, $dataToSend = FALSE) {
         $payload = [
-                'debug'       => Env::get('api_debug', FALSE),
-                'version'     => Env::get('api_version', '0.0.0'),
-                'http_status' => $httpStatus,
+                'debug'         => Env::get('api_debug', FALSE),
+                'version'       => Env::get('api_version', '0.0.0'),
+                'http_status'   => $httpStatus,
+                'request_limit' => Env::get('api_request_limit', 25),
+                'token'         => Token::getToken(),
         ];
         
         switch ($httpStatus) {
             case self::$HTTP_STATUS_OK:
-                $payload['payload']       = $this->formatDataToSendResponse($dataToSend);
-                $payload['request_limit'] = Env::get('api_request_limit', 25);
+                $payload['payload'] = $this->formatDataToSendResponse($dataToSend);
                 break;
             case self::$HTTP_STATUS_NO_CONTENT:
-                $payload['request_limit'] = Env::get('api_request_limit', 25);
                 break;
             default:
+                unset($payload['token']);
+                unset($payload['request_limit']);
                 $payload['errors'] = [
                         'message' => $dataToSend,
                         'check'   => TRUE,
@@ -209,6 +259,10 @@ class RestCallHelper {
         }
         
         return $dataToSend;
+    }
+    
+    private function headerToken() {
+        header('token:' . $this->getToken());
     }
     
 }
