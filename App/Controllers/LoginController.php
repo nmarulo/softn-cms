@@ -2,10 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Facades\Auth;
-use App\Facades\Token;
+use App\Facades\Api\RestCallFacade;
+use App\Models\Users;
+use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
+use Silver\Http\Session;
 use Silver\Http\View;
 
 /**
@@ -18,9 +20,16 @@ class LoginController extends Controller {
     }
     
     public function form() {
-        $redirect = URL;
+        $redirect            = URL;
+        $user                = new Users();
+        $user->user_login    = Request::input('user_login');
+        $user->user_password = Request::input('user_password');
         
-        if (Auth::login()) {
+        RestCallFacade::makePostRequest($user, 'token');//Internamente se establece el token en la sesión
+        $result = RestCallFacade::makePostRequest($user, 'login');
+        
+        if ($result) {
+            Session::set('user_login', $user->user_login);
             $redirect .= '/dashboard';
         } else {
             $redirect .= '/login';
