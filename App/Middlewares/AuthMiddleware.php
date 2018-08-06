@@ -27,6 +27,7 @@ class AuthMiddleware implements MiddlewareInterface {
             'guest',
             'public',
             'dashboard',
+            'login'
     ];
     
     public function execute(Request $request, Response $response, Closure $next) {
