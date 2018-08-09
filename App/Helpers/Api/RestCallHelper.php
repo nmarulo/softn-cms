@@ -71,7 +71,7 @@ class RestCallHelper {
                 //Si "dataToSend" no es un array, dara error.
                 $dataToSend          = $this->formatDataToSendRequestPost($dataToSend);
                 $dataToSend['token'] = $this->getToken();
-                $response            = (array)json_decode(Curl::post($url, $dataToSend, $options));
+                $response            = json_decode(Curl::post($url, $dataToSend, $options), true);
                 break;
             case 'PUT':
                 //$response = Curl::put($url);
@@ -84,9 +84,14 @@ class RestCallHelper {
                 break;
         }
         
+        $response = $this->objectToArray($response);
+        
         $this->httpRequestStatus = $this->getValueByKey($response, 'http_status', 0);
         $this->messageError      = $this->getValueByKey($response, 'errors', []);
-        $this->setToken($this->getValueByKey($response, 'token', ''));
+        //En caso de error no settea el token
+        if (empty($this->messageError)) {
+            $this->setToken($this->getValueByKey($response, 'token', ''));
+        }
         
         if (is_callable($returnType)) {
             return $returnType($this->getResponsePayload($response));
@@ -118,13 +123,27 @@ class RestCallHelper {
     private function formatDataToSendRequestPost($dataToSend) {
         if ($dataToSend instanceof Model) {
             $dataToSend = $dataToSend->data();
-        } elseif (gettype($dataToSend) == 'object') {
+        } elseif (is_object($dataToSend)) {
             throw new \RuntimeException('No puedes enviar este objeto en una petición POST.');
         }
         
         return [
                 'payload' => $dataToSend,
         ];
+    }
+    
+    private function objectToArray($object, $recursive = TRUE) {
+        if (is_object($object)) {
+            $object = (array)$object;
+        }
+        
+        if ($recursive && is_array($object)) {
+            $object = array_map(function($value) {
+                return $this->objectToArray($value);
+            }, $object);
+        }
+        
+        return $object;
     }
     
     private function getValueByKey($response, $key, $default) {
@@ -145,21 +164,12 @@ class RestCallHelper {
         return $this->objectToArray($response);
     }
     
-    private function objectToArray($object, $recursive = TRUE) {
-        if (gettype($object) == 'object') {
-            $object = (array)$object;
+    public function makeGetRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
+        if (is_array($dataToSend)) {
+            //TODO: ERROR: solo al enviar, por get, "'uri' => '/dashboard/users'", por eso lo elimino, en caso de enviarlo.
+            unset($dataToSend['uri']);
         }
         
-        if ($recursive && is_array($object)) {
-            $object = array_map(function($value) {
-                return $this->objectToArray($value);
-            }, $object);
-        }
-        
-        return $object;
-    }
-    
-    public function makeGetRequest($serviceName, $serviceMethod, $returnType, $dataToSend = []) {
         return $this->makeRequest('GET', $dataToSend, $serviceName, $serviceMethod, $returnType);
     }
     
