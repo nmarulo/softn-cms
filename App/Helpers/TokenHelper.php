@@ -19,6 +19,10 @@ class TokenHelper {
     private $token;
     
     public function check($payload) {
+        if (empty($payload)) {
+            return FALSE;
+        }
+        
         $this->token = $this->parser($payload); // Parses from a string
         
         return $this->verify() && $this->validate();
