@@ -11,6 +11,7 @@
 
 namespace App\Middlewares;
 
+use App\Facades\TokenFacade;
 use Closure;
 use Silver\Core\Blueprints\MiddlewareInterface;
 use Silver\Http\Redirect;
@@ -27,7 +28,7 @@ class AuthMiddleware implements MiddlewareInterface {
             'guest',
             'public',
             'dashboard',
-            'login'
+            'login',
     ];
     
     public function execute(Request $request, Response $response, Closure $next) {
@@ -49,8 +50,8 @@ class AuthMiddleware implements MiddlewareInterface {
         }
         
         //Si esta intentado acceder al panel de control y no ha iniciado sesión.
-        if ($middleware == 'dashboard' && !Session::exists('user_login')) {
-            Redirect::to(URL . '/login');
+        if ($middleware == 'dashboard' && (!Session::exists('user_login') || !TokenFacade::check(Session::get('token', '')))) {
+            Redirect::to(URL . '/logout');
         }
         
         //Si es uno publico continua
