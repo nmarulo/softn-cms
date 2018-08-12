@@ -2,8 +2,9 @@
 
 namespace App\Controllers\Dashboard;
 
+use App\Facades\Api\RestCallFacade;
 use App\Facades\Messages;
-use App\Facades\ModelFacade;
+use App\Facades\Pagination;
 use App\Facades\Utils;
 use App\Models\Users;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -17,15 +18,22 @@ use Silver\Http\View;
 class UsersController extends Controller {
     
     public function index() {
-        $userModel = ModelFacade::model(Users::class)
-                                ->search()
-                                ->pagination()
-                                ->sort();
-        $users     = $userModel->all();
+        $result     = RestCallFacade::makeGetRequest(Request::all(), 'dashboard/users');
+        $pagination = Pagination::jsonUnSerialize($result['pagination']);
+        $users      = array_map(function($value) {
+            $user                  = new Users();
+            $user->id              = $value['id'];
+            $user->user_name       = $value['user_name'];
+            $user->user_login      = $value['user_login'];
+            $user->user_email      = $value['user_email'];
+            $user->user_registered = $value['user_registered'];
+            
+            return $user;
+        }, $result['users']);
         
         return View::make('dashboard.users.index')
                    ->with('users', $users)
-                   ->withComponent($userModel->getPagination(), 'pagination');
+                   ->withComponent($pagination, 'pagination');
     }
     
     public function form($id) {
