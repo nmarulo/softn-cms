@@ -47,7 +47,7 @@ class ApiMiddleware {
             $builder->set('user_login', $userLogin);
             
             return $builder;
-        }, TRUE);
+        });
         
         return $next();
     }

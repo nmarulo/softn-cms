@@ -52,16 +52,10 @@ class TokenHelper {
     }
     
     public function getToken() {
-        if (empty($this->token)) {
-            $this->generate();
-        }
-        
         return (string)$this->token;
     }
     
     public function generate($closureClaim = FALSE) {
-        sleep(1);//Para que genere un token distinto en cada llamada.
-        
         if (!is_callable($closureClaim)) {
             $closureClaim = function(Builder $builder) {
                 return $builder;
