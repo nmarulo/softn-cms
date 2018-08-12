@@ -3,7 +3,9 @@
 namespace App\Controllers\Api;
 
 use App\Facades\Api\RestCallFacade;
+use App\Facades\TokenFacade;
 use App\Models\Users;
+use Lcobucci\JWT\Builder;
 use Silver\Core\Controller;
 
 /**
@@ -17,7 +19,17 @@ class LoginApiController extends Controller {
                          ->first();
             
             //Si el usuario existe y su contraseña es igual
-            return $user && $user->user_password == $request['user_password'];
+            if ($user && $user->user_password == $request['user_password']) {
+                TokenFacade::generate(function(Builder $builder) use ($user) {
+                    $builder->set('user_login', $user->user_login);
+                    
+                    return $builder;
+                });
+                
+                return TRUE;
+            }
+            
+            return FALSE;
         });
     }
     

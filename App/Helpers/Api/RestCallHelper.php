@@ -7,11 +7,12 @@ namespace App\Helpers\Api;
 
 use App\Facades\TokenFacade;
 use App\Facades\Utils;
-use Lcobucci\JWT\Builder;
+use App\Helpers\Messages;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Env;
 use Silver\Database\Model;
 use Silver\Http\Curl;
+use Silver\Http\Redirect;
 use Silver\Http\Session;
 
 /**
@@ -71,7 +72,7 @@ class RestCallHelper {
                 //Si "dataToSend" no es un array, dara error.
                 $dataToSend          = $this->formatDataToSendRequestPost($dataToSend);
                 $dataToSend['token'] = $this->getToken();
-                $response            = json_decode(Curl::post($url, $dataToSend, $options), true);
+                $response            = json_decode(Curl::post($url, $dataToSend, $options), TRUE);
                 break;
             case 'PUT':
                 //$response = Curl::put($url);
@@ -83,7 +84,6 @@ class RestCallHelper {
                 throw new \RuntimeException('Tipo de petición no valido');
                 break;
         }
-        
         $response = $this->objectToArray($response);
         
         $this->httpRequestStatus = $this->getValueByKey($response, 'http_status', 0);
@@ -91,6 +91,11 @@ class RestCallHelper {
         //En caso de error no settea el token
         if (empty($this->messageError)) {
             $this->setToken($this->getValueByKey($response, 'token', ''));
+        }
+        
+        if ($this->httpRequestStatus == 401) {
+            Messages::addDanger($this->messageError['message']);
+            Redirect::to(\URL . '/logout');
         }
         
         if (is_callable($returnType)) {
@@ -179,12 +184,6 @@ class RestCallHelper {
         $request  = $this->getDataRequest();//recibe un array
         
         try {
-            //Si la petición es para obtener el token, no se comprueba el token, ya que aun no existe.
-            if (Request::route()
-                       ->name() != 'token') {
-                $this->checkAndGenerateNewToken();
-            }
-            
             if (!is_callable($callback)) {
                 throw new \Exception('El método no se puede ejecutar.');
             }
@@ -211,22 +210,7 @@ class RestCallHelper {
         return Request::input('payload');
     }
     
-    private function checkAndGenerateNewToken() {
-        $token = Request::input('token');
-        
-        if (TokenFacade::check($token)) {
-            TokenFacade::generate(function(Builder $builder) use ($token) {
-                $userLogin = TokenFacade::getCustomData($token, 'user_login');
-                $builder->set('user_login', $userLogin);
-                
-                return $builder;
-            });
-        } else {
-            throw new \RuntimeException('El token no es valido.');
-        }
-    }
-    
-    private function createResponseFormat($httpStatus, $dataToSend = FALSE) {
+    public function createResponseFormat($httpStatus, $dataToSend = FALSE) {
         $payload = [
                 'debug'         => Env::get('api_debug', FALSE),
                 'version'       => Env::get('api_version', '0.0.0'),
@@ -272,7 +256,7 @@ class RestCallHelper {
     }
     
     private function headerToken() {
-        header('token:' . $this->getToken());
+        header('Authorization:' . $this->getToken());
     }
     
 }

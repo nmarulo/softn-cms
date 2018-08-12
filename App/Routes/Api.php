@@ -21,5 +21,4 @@ Route::group(['prefix' => 'api'], function() {
         });
     });
     Route::post('/login', 'Api/LoginApi@login', 'login', 'api');
-    Route::post('/token', 'Api/TokenApi@generate', 'token', 'api');
 });
