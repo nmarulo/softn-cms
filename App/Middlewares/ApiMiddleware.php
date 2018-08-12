@@ -5,7 +5,7 @@
 
 namespace App\Middlewares;
 
-use App\Facades\Api\RestCallFacade;
+use App\Facades\Api\ResponseApiFacade;
 use App\Facades\TokenFacade;
 use Closure;
 use Lcobucci\JWT\Builder;
@@ -39,7 +39,7 @@ class ApiMiddleware {
         if (!TokenFacade::check($token)) {
             header('Content-Type: application/json');
             
-            return RestCallFacade::createResponseFormat(401, 'El token no es valido.');
+            return ResponseApiFacade::createResponseFormat(401, 'El token no es valido.');
         }
         
         TokenFacade::generate(function(Builder $builder) use ($token) {

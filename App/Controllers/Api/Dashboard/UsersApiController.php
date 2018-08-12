@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Api\Dashboard;
 
-use App\Facades\Api\RestCallFacade;
+use App\Facades\Api\ResponseApiFacade;
 use App\Facades\ModelFacade;
 use App\Models\Users;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -14,7 +14,7 @@ use Silver\Core\Controller;
 class UsersApiController extends Controller {
     
     public function get() {
-        return RestCallFacade::makeResponse(function() {
+        return ResponseApiFacade::makeResponse(function() {
             $userModel = ModelFacade::model(Users::class)
                                     ->search()
                                     ->pagination()
@@ -28,7 +28,7 @@ class UsersApiController extends Controller {
     }
     
     public function post() {
-        return RestCallFacade::makeResponse(function() {
+        return ResponseApiFacade::makeResponse(function() {
             return Request::all();
         });
     }

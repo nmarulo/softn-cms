@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Dashboard;
 
-use App\Facades\Api\RestCallFacade;
+use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
 use App\Facades\Pagination;
 use App\Facades\Utils;
@@ -18,7 +18,7 @@ use Silver\Http\View;
 class UsersController extends Controller {
     
     public function index() {
-        $result     = RestCallFacade::makeGetRequest(Request::all(), 'dashboard/users');
+        $result     = RequestApiFacade::makeGetRequest(Request::all(), 'dashboard/users');
         $pagination = Pagination::jsonUnSerialize($result['pagination']);
         $users      = array_map(function($value) {
             $user                  = new Users();

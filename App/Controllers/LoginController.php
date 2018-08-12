@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Facades\Api\RestCallFacade;
+use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
 use App\Models\Users;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -25,7 +25,7 @@ class LoginController extends Controller {
         $user                = new Users();
         $user->user_login    = Request::input('user_login');
         $user->user_password = Request::input('user_password');
-        $result              = RestCallFacade::makePostRequest($user, 'login');
+        $result              = RequestApiFacade::makePostRequest($user, 'login');
         
         if ($result) {
             Messages::addSuccess('Inicio de sesión correcto.');

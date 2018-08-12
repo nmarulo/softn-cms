@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Api;
 
-use App\Facades\Api\RestCallFacade;
+use App\Facades\Api\ResponseApiFacade;
 use App\Facades\TokenFacade;
 use App\Models\Users;
 use Lcobucci\JWT\Builder;
@@ -14,7 +14,7 @@ use Silver\Core\Controller;
 class LoginApiController extends Controller {
     
     public function login() {
-        return RestCallFacade::makeResponse(function($request) {
+        return ResponseApiFacade::makeResponse(function($request) {
             $user = Users::where('user_login', '=', $request['user_login'])
                          ->first();
             
