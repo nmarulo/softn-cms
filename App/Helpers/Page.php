@@ -9,7 +9,7 @@ namespace App\Helpers;
  * Class Page
  * @author Nicolás Marulanda P.
  */
-class Page {
+class Page implements \JsonSerializable {
     
     /** @var string */
     private $styleClass;
@@ -34,6 +34,26 @@ class Page {
         }
         
         $this->attrData = $strAttrData;
+    }
+    
+    public function jsonSerialize() {
+        return [
+                'styleClass' => $this->styleClass,
+                'value'      => $this->value,
+                'attrData'   => $this->attrData,
+        ];
+    }
+    
+    public function jsonUnSerialize($values) {
+        if (is_string($values)) {
+            $values = json_decode($values, TRUE);
+        }
+        
+        $this->styleClass = $values['styleClass'];
+        $this->value      = $values['value'];
+        $this->attrData   = $values['attrData'];
+        
+        return $this;
     }
     
     /**
