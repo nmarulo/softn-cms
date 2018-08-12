@@ -25,9 +25,7 @@ class LoginController extends Controller {
         $user                = new Users();
         $user->user_login    = Request::input('user_login');
         $user->user_password = Request::input('user_password');
-        
-        RestCallFacade::makePostRequest($user, 'token');//Internamente se establece el token en la sesión
-        $result = RestCallFacade::makePostRequest($user, 'login');
+        $result              = RestCallFacade::makePostRequest($user, 'login');
         
         if ($result) {
             Messages::addSuccess('Inicio de sesión correcto.');
