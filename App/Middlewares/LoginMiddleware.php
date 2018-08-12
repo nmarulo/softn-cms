@@ -18,13 +18,13 @@ use Silver\Http\Session;
 class LoginMiddleware {
     
     public function execute(Request $request, Response $response, Closure $next) {
+        $route = $request->route();
         //El route es null cuando la dirección no existe. Mostrara la pagina de error 404.
-        if ($request->route() == NULL) {
+        if ($route == NULL) {
             return $next();
         }
-        
-        $middleware = $request->route()
-                              ->middleware();
+    
+        $middleware = $route->middleware();
         
         if ($middleware != 'login') {
             return $next();

@@ -11,7 +11,6 @@
 
 namespace App\Middlewares;
 
-use App\Facades\TokenFacade;
 use Closure;
 use Silver\Core\Blueprints\MiddlewareInterface;
 use Silver\Http\Redirect;
@@ -32,13 +31,13 @@ class AuthMiddleware implements MiddlewareInterface {
     ];
     
     public function execute(Request $request, Response $response, Closure $next) {
+        $route = $request->route();
         //El route es null cuando la dirección no existe. Mostrara la pagina de error 404.
-        if ($request->route() == NULL) {
+        if ($route == NULL) {
             return $next();
         }
         
-        $middleware = $request->route()
-                              ->middleware();
+        $middleware = $route->middleware();
         
         if ($middleware == 'api') {
             return $next();
@@ -50,7 +49,7 @@ class AuthMiddleware implements MiddlewareInterface {
         }
         
         //Si esta intentado acceder al panel de control y no ha iniciado sesión.
-        if ($middleware == 'dashboard' && (!Session::exists('user_login') || !TokenFacade::check(Session::get('token', '')))) {
+        if ($middleware == 'dashboard' && !Session::exists('user_login')) {
             Redirect::to(URL . '/logout');
         }
         
