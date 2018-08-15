@@ -16,7 +16,7 @@ use Silver\Core\Route;
 Route::group(['prefix' => 'api'], function() {
     Route::group(['prefix' => 'dashboard'], function() {
         Route::group(['prefix' => 'users'], function() {
-            Route::get('/', 'Api/Dashboard/UsersApi@get', 'users', 'api');
+            Route::get('/{id?}', 'Api/Dashboard/UsersApi@get', 'users', 'api');
             Route::post('/', 'Api/Dashboard/UsersApi@post', 'users', 'api');
         });
     });

@@ -5,8 +5,8 @@
 
 namespace App\Helpers\Api;
 
-use Silver\Core\Bootstrap\Facades\Request;
-use Silver\Http\Session;
+use Silver\Core\Bootstrap\Facades\Request as RequestFacade;
+use Silver\Http\Request;
 
 /**
  * Class ApiHelper
@@ -20,7 +20,17 @@ abstract class ApiHelper {
     
     public static $HTTP_STATUS_BAD_REQUEST           = 400;
     
+    public static $HTTP_STATUS_UNAUTHORIZED          = 401;
+    
     public static $HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
+    
+    public function getTokenHeader(Request $request = NULL) {
+        if ($request) {
+            return $request->header('AUTHORIZATION');
+        }
+        
+        return RequestFacade::header('AUTHORIZATION');
+    }
     
     protected function getValueByKey($response, $key, $default) {
         if (is_array($response) && array_key_exists($key, $response)) {
@@ -44,11 +54,10 @@ abstract class ApiHelper {
         return $object;
     }
     
-    private function headerToken() {
-        header('Authorization:' . $this->getToken());
+    protected function headerToken() {
+        return 'Authorization:' . $this->getToken();
     }
     
-    public function getToken() {
-        return Session::get('token', Request::input('token', ''));
-    }
+    protected abstract function getToken();
+    
 }

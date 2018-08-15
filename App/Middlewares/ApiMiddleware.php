@@ -34,7 +34,7 @@ class ApiMiddleware {
             return $next();
         }
         
-        $token = $request->input('token');
+        $token = ResponseApiFacade::getTokenHeader($request);
         
         if (!TokenFacade::check($token)) {
             header('Content-Type: application/json');
