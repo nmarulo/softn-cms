@@ -49,13 +49,17 @@ class ResponseApiHelper extends ApiHelper {
         return Request::input('payload');
     }
     
+    protected function getToken() {
+        return TokenFacade::getToken();
+    }
+    
     public function createResponseFormat($httpStatus, $dataToSend = FALSE) {
+        header($this->headerToken());
         $payload = [
                 'debug'         => Env::get('api_debug', FALSE),
                 'version'       => Env::get('api_version', '0.0.0'),
                 'http_status'   => $httpStatus,
                 'request_limit' => Env::get('api_request_limit', 25),
-                'token'         => TokenFacade::getToken(),
         ];
         
         switch ($httpStatus) {

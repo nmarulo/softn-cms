@@ -6,8 +6,8 @@
 namespace App\Helpers\Api;
 
 use App\Facades\Messages;
+use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Database\Model;
-use Silver\Http\Curl;
 use Silver\Http\Redirect;
 use Silver\Http\Session;
 
@@ -42,44 +42,44 @@ class RequestApiHelper extends ApiHelper {
     }
     
     public function makeRequest($type, $dataToSend, $serviceName, $serviceMethod, $returnType, $options = []) {
-        $response = [];
-        $url      = $this->createUrl($serviceName, $serviceMethod);
-        //$this->headerToken();
+        $header  = [];
+        $url     = $this->createUrl($serviceName, $serviceMethod);
+        $options += [CURLOPT_HTTPHEADER => [$this->headerToken()]];
         
         switch ($type) {
             case 'GET':
-                $dataToSend          = (array)$dataToSend;
-                $dataToSend['token'] = $this->getToken();
-                $url                 .= $this->formatDataToSendRequestGet($dataToSend);
-                $response            = Curl::get($url, NULL, $options);
+                $dataToSend = (array)$dataToSend;
+                $url        .= $this->formatDataToSendRequestGet($dataToSend);
+                $response   = $this->get($url, $header, $options);
                 break;
             case 'POST':
                 //Si "dataToSend" no es un array, dara error.
-                $dataToSend          = $this->formatDataToSendRequestPost($dataToSend);
-                $dataToSend['token'] = $this->getToken();
-                $response            = json_decode(Curl::post($url, $dataToSend, $options), TRUE);
+                $dataToSend = $this->formatDataToSendRequestPost($dataToSend);
+                $response   = $this->post($url, $dataToSend, $header, $options);
                 break;
             case 'PUT':
-                //$response = Curl::put($url);
+                $dataToSend = $this->formatDataToSendRequestPost($dataToSend);
+                $response   = $this->put($url, $dataToSend, $header, $options);
                 break;
             case 'DELETE':
-                //$response = Curl::delete($url);
+                $dataToSend = $this->formatDataToSendRequestPost($dataToSend);
+                $response   = $this->delete($url, $dataToSend, $header, $options);
                 break;
             default:
                 throw new \RuntimeException('Tipo de petición no valido');
                 break;
         }
         
-        $response = $this->objectToArray($response);
-        
+        $response                = $this->objectToArray($response);
         $this->httpRequestStatus = $this->getValueByKey($response, 'http_status', 0);
         $this->messageError      = $this->getValueByKey($response, 'errors', []);
+        
         //En caso de error no settea el token
         if (empty($this->messageError)) {
-            $this->setToken($this->getValueByKey($response, 'token', ''));
+            $this->setToken($this->getValueByKey($header, 'Authorization', ''));
         }
         
-        if ($this->httpRequestStatus == 401) {
+        if ($this->httpRequestStatus > self::$HTTP_STATUS_NO_CONTENT && !Request::ajax()) {
             Messages::addDanger($this->messageError['message']);
             Redirect::to(\URL . '/logout');
         }
@@ -107,6 +107,51 @@ class RequestApiHelper extends ApiHelper {
         return '';
     }
     
+    private function get($url, &$header = [], $options = []) {
+        return $this->curl($url, $header, $options);
+    }
+    
+    private function curl($url, &$header = [], $options = []) {
+        $defaults = [
+                CURLOPT_URL            => $url,
+                CURLOPT_HEADER         => 1,
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_TIMEOUT        => 4,
+        ];
+        
+        $ch = curl_init();
+        curl_setopt_array($ch, ($options + $defaults));
+        
+        if ($result = curl_exec($ch)) {
+            $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $headerTmp  = substr($result, 0, $headerSize);
+            $headerTmp  = preg_split('/\r\n/', $headerTmp);
+            $headerTmp  = array_filter($headerTmp, function($value) {
+                return !empty($value);
+            });
+            
+            foreach ($headerTmp as $value) {
+                $split = preg_split('/:\s{1}/', $value);
+                
+                if (count($split) == 1) {
+                    $header[] = $split[0];
+                    continue;
+                }
+                
+                $header[$split[0]] = $split[1];
+            }
+            
+            $result = substr($result, $headerSize);
+            //$httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        } else {
+            trigger_error(curl_error($ch));
+        }
+        
+        curl_close($ch);
+        
+        return json_decode($result, TRUE);
+    }
+    
     private function formatDataToSendRequestPost($dataToSend) {
         if ($dataToSend instanceof Model) {
             $dataToSend = $dataToSend->data();
@@ -119,6 +164,33 @@ class RequestApiHelper extends ApiHelper {
         ];
     }
     
+    private function post($url, $postFields = [], &$header = [], $options = []) {
+        return $this->curlBody($url, $postFields, $header, $options);
+    }
+    
+    private function curlBody($url, $postFields = [], &$header = [], $options = []) {
+        $options += [
+                CURLOPT_POST          => 1,
+                CURLOPT_POSTFIELDS    => http_build_query($postFields),
+                CURLOPT_FRESH_CONNECT => 1,
+                CURLOPT_FORBID_REUSE  => 1,
+        ];
+        
+        return $this->curl($url, $header, $options);
+    }
+    
+    private function put($url, $postFields = [], &$header = [], $options = []) {
+        $options += [CURLOPT_CUSTOMREQUEST => 'PUT'];
+        
+        return $this->curlBody($url, $postFields, $header, $options);
+    }
+    
+    private function delete($url, $postFields = [], &$header = [], $options = []) {
+        $options += [CURLOPT_CUSTOMREQUEST => 'DELETE'];
+        
+        return $this->curlBody($url, $postFields, $header, $options);
+    }
+    
     public function setToken($token) {
         Session::set('token', $token);
     }
@@ -127,6 +199,10 @@ class RequestApiHelper extends ApiHelper {
         $response = $this->getValueByKey($response, 'payload', '');
         
         return $this->objectToArray($response);
+    }
+    
+    public function getToken() {
+        return Session::get('token');
     }
     
     public function makeGetRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
