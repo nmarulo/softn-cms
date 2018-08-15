@@ -19,7 +19,7 @@ class TokenHelper {
     private $token;
     
     public function check($payload) {
-        if (empty($payload)) {
+        if (!is_string($payload) || empty($payload)) {
             return FALSE;
         }
         

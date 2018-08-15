@@ -42,6 +42,16 @@ class ModelHelper {
         $this->hasPagination = FALSE;
     }
     
+    public function arrayToObject($array, $model) {
+        $obj = new $model();
+        
+        foreach ($array as $key => $value) {
+            $obj->{$key} = $value;
+        }
+        
+        return $obj;
+    }
+    
     /**
      * @param Model $model
      *
