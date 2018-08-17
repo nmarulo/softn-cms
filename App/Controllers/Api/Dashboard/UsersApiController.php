@@ -26,7 +26,7 @@ class UsersApiController extends Controller {
             
             return [
                     'users'      => $userModel->all(),
-                    'pagination' => json_encode($userModel->getPagination()),
+                    'pagination' => $userModel->getPagination(),
             ];
         });
     }
