@@ -22,7 +22,7 @@ class UsersController extends Controller {
     
     public function index() {
         $result     = RequestApiFacade::makeGetRequest(Request::all(), $this->urlUsers);
-        $pagination = Pagination::jsonUnSerialize($result['pagination']);
+        $pagination = Pagination::arrayToObject($result['pagination']);
         $users      = array_map(function($value) {
             return ModelFacade::arrayToObject($value, Users::class);
         }, $result['users']);
