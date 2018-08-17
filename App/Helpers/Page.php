@@ -17,23 +17,21 @@ class Page implements \JsonSerializable {
     /** @var string */
     private $value;
     
-    /** @var string */
+    /** @var array */
     private $attrData;
     
     public function __construct($value, $styleClass = "", $attrData = []) {
         $this->styleClass = $styleClass;
         $this->value      = $value;
-        $this->setAttrData($attrData);
+        $this->attrData = $attrData;
     }
     
-    private function setAttrData($attrData) {
-        $strAttrData = "";
+    public function attrToString() {
+        $attr = array_map(function($key, $value){
+            return "data-${key}='${value}'";
+        }, array_keys($this->attrData), $this->attrData);
         
-        foreach ($attrData as $key => $value) {
-            $strAttrData .= " data-$key='$value' ";
-        }
-        
-        $this->attrData = $strAttrData;
+        return implode(' ', $attr);
     }
     
     public function jsonSerialize() {
@@ -44,20 +42,9 @@ class Page implements \JsonSerializable {
         ];
     }
     
-    public function jsonUnSerialize($values) {
-        if (is_string($values)) {
-            $values = json_decode($values, TRUE);
-        }
-        
-        $this->styleClass = $values['styleClass'];
-        $this->value      = $values['value'];
-        $this->attrData   = $values['attrData'];
-        
-        return $this;
-    }
     
     /**
-     * @return string
+     * @return array
      */
     public function getAttrData() {
         return $this->attrData;

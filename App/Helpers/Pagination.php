@@ -192,20 +192,17 @@ class Pagination implements \JsonSerializable {
         $this->rightArrow = new Page('&raquo;', $styleClass, $attrData);
     }
     
-    public function jsonUnSerialize($values) {
-        if (is_string($values)) {
-            $values = json_decode($values, TRUE);
-        }
-        
-        $leftArrow        = new Page('');
-        $rightArrow       = new Page('');
-        $pages            = json_decode($values['pages'], TRUE);
-        $pages            = array_map(function($value) {
-            return (new Page(''))->jsonUnSerialize($value);
+    public function arrayToObject($values) {
+        $pages            = $values['pages'];
+        $newPageClosure   = function($data) {
+            return new Page($data['value'], $data['styleClass'], $data['attrData']);
+        };
+        $pages            = array_map(function($value) use ($newPageClosure) {
+            return $newPageClosure($value);
         }, $pages);
         $this->rendered   = $values['rendered'];
-        $this->leftArrow  = $leftArrow->jsonUnSerialize($values['leftArrow']);
-        $this->rightArrow = $rightArrow->jsonUnSerialize($values['rightArrow']);
+        $this->leftArrow  = $newPageClosure($values['leftArrow']);
+        $this->rightArrow = $newPageClosure($values['rightArrow']);
         $this->pages      = $pages;
         
         return $this;
@@ -214,9 +211,9 @@ class Pagination implements \JsonSerializable {
     public function jsonSerialize() {
         return [
                 'rendered'   => $this->rendered,
-                'leftArrow'  => json_encode($this->leftArrow),
-                'rightArrow' => json_encode($this->rightArrow),
-                'pages'      => json_encode($this->pages),
+                'leftArrow'  => $this->leftArrow,
+                'rightArrow' => $this->rightArrow,
+                'pages'      => $this->pages,
         ];
     }
     
