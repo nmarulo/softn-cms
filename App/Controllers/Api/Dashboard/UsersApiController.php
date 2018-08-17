@@ -33,29 +33,45 @@ class UsersApiController extends Controller {
     
     public function post() {
         return ResponseApiFacade::makeResponse(function($request) {
-            $id = array_key_exists('id', $request) ? $request['id'] : 0;
+            $user                  = new Users();
+            $user->user_password   = $request['user_password']; //TODO: cifrar.
+            $user->user_registered = Utils::dateNow();
             
-            if (empty($id)) {
-                $user                  = new Users();
-                $user->user_password   = $request['user_password']; //TODO: cifrar.
-                $user->user_registered = Utils::dateNow();
-            } else {
-                $user = Users::find($id);
-            }
-            
-            $user->user_name  = $request['user_name'];
-            $user->user_login = $request['user_login'];
-            $user->user_email = $request['user_email'];
-            
-            return $user->save();
+            return $this->saveUser($request, $user);
         });
     }
     
+    /**
+     * @param       $request
+     * @param Users $user
+     *
+     * @return Users
+     */
+    function saveUser($request, $user) {
+        $user->user_name  = $request['user_name'];
+        $user->user_login = $request['user_login'];
+        $user->user_email = $request['user_email'];
+        
+        return $user->save();
+    }
+    
     public function put() {
-        echo 'Method: put';
+        return ResponseApiFacade::makeResponse(function($request) {
+            $user = Users::find($request['id']);
+            
+            return $this->saveUser($request, $user);
+        });
     }
     
     public function delete() {
-        echo 'Method: delete';
+        return ResponseApiFacade::makeResponse(function($request) {
+            if ($user = Users::find($request['id'])) {
+                $user->delete();
+                
+                return TRUE;
+            }
+            
+            return FALSE;
+        });
     }
 }

@@ -49,6 +49,11 @@ class ApiMiddleware {
             return $builder;
         });
         
+        if ($_SERVER['REQUEST_METHOD'] == 'PUT' || $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+            parse_str(file_get_contents("php://input"), $dataInput);
+            $_REQUEST = array_merge($_REQUEST, $dataInput);
+        }
+        
         return $next();
     }
 }
