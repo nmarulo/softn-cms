@@ -8,7 +8,6 @@ namespace App\Helpers\Api;
 use App\Facades\Messages;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Database\Model;
-use Silver\Http\Redirect;
 use Silver\Http\Session;
 
 /**
@@ -44,7 +43,11 @@ class RequestApiHelper extends ApiHelper {
     public function makeRequest($type, $dataToSend, $serviceName, $serviceMethod, $returnType, $options = []) {
         $header  = [];
         $url     = $this->createUrl($serviceName, $serviceMethod);
-        $options += [CURLOPT_HTTPHEADER => [$this->headerToken()]];
+        $options += [
+                CURLOPT_HTTPHEADER => [
+                        $this->headerToken(),
+                ],
+        ];
         
         switch ($type) {
             case 'GET':
@@ -79,9 +82,8 @@ class RequestApiHelper extends ApiHelper {
             $this->setToken($this->getValueByKey($header, 'Authorization', ''));
         }
         
-        if ($this->httpRequestStatus > self::$HTTP_STATUS_NO_CONTENT && !Request::ajax()) {
+        if ($this->httpRequestStatus > self::$HTTP_STATUS_NO_CONTENT) {
             Messages::addDanger($this->messageError['message']);
-            Redirect::to(\URL . '/logout');
         }
         
         if (is_callable($returnType)) {
@@ -165,12 +167,13 @@ class RequestApiHelper extends ApiHelper {
     }
     
     private function post($url, $postFields = [], &$header = [], $options = []) {
+        $options += [CURLOPT_POST => 1];
+        
         return $this->curlBody($url, $postFields, $header, $options);
     }
     
     private function curlBody($url, $postFields = [], &$header = [], $options = []) {
         $options += [
-                CURLOPT_POST          => 1,
                 CURLOPT_POSTFIELDS    => http_build_query($postFields),
                 CURLOPT_FRESH_CONNECT => 1,
                 CURLOPT_FORBID_REUSE  => 1,
@@ -199,6 +202,14 @@ class RequestApiHelper extends ApiHelper {
         $response = $this->getValueByKey($response, 'payload', '');
         
         return $this->objectToArray($response);
+    }
+    
+    public function makeDeleteRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
+        return $this->makeRequest('DELETE', $dataToSend, $serviceName, $serviceMethod, $returnType);
+    }
+    
+    public function makePutRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
+        return $this->makeRequest('PUT', $dataToSend, $serviceName, $serviceMethod, $returnType);
     }
     
     public function getToken() {
