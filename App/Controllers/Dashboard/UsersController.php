@@ -18,8 +18,10 @@ use Silver\Http\View;
  */
 class UsersController extends Controller {
     
+    private $urlUsers = 'dashboard/users';
+    
     public function index() {
-        $result     = RequestApiFacade::makeGetRequest(Request::all(), 'dashboard/users');
+        $result     = RequestApiFacade::makeGetRequest(Request::all(), $this->urlUsers);
         $pagination = Pagination::jsonUnSerialize($result['pagination']);
         $users      = array_map(function($value) {
             return ModelFacade::arrayToObject($value, Users::class);
@@ -32,18 +34,25 @@ class UsersController extends Controller {
     
     public function form($id) {
         if (Utils::isPostRequest()) {
-            $message       = empty($id) ? 'Usuario creado correctamente' : 'Usuario actualizado correctamente.';
-            $request       = Request::all();
-            $request['id'] = $id;
-            $user          = RequestApiFacade::makePostRequest($request, 'dashboard/users');
-            $user          = ModelFacade::arrayToObject($user, Users::class);
+            $message = 'Usuario actualizado correctamente.';
+            $request = Request::all();
+            
+            if (empty($id)) {
+                $message = 'Usuario creado correctamente';
+                $user    = RequestApiFacade::makePostRequest($request, $this->urlUsers);
+            } else {
+                $request['id'] = $id;
+                $user          = RequestApiFacade::makePutRequest($request, $this->urlUsers);
+            }
+            
+            $user = ModelFacade::arrayToObject($user, Users::class);
             Messages::addSuccess($message);
             
             if (empty($id)) {
-                Redirect::to(sprintf('%1$s/dashboard/users/form/%2$s', URL, $user->id));
+                Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $user->id));
             }
         } elseif ($id) {
-            $user = RequestApiFacade::makeGetRequest('', 'dashboard/users', $id);
+            $user = RequestApiFacade::makeGetRequest('', $this->urlUsers, $id);
             //TODO: comprobar el código de respuesta http
             $user = ModelFacade::arrayToObject($user, Users::class);
         } else {
@@ -55,11 +64,7 @@ class UsersController extends Controller {
     }
     
     public function delete() {
-        //TODO: petición delete.
-        $id = Request::input('id');
-        
-        if ($user = Users::find($id)) {
-            $user->delete();
+        if (RequestApiFacade::makeDeleteRequest(Request::all(), $this->urlUsers)) {
             Messages::addSuccess('Usuario borrado correctamente.');
         } else {
             Messages::addDanger('El usuario no existe.');
