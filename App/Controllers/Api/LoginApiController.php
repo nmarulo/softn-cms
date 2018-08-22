@@ -26,10 +26,10 @@ class LoginApiController extends Controller {
                     return $builder;
                 });
                 
-                return TRUE;
+                return "TRUE";
             }
             
-            return FALSE;
+            return "FALSE";
         });
     }
     

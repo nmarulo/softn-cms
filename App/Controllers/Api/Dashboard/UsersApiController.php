@@ -16,7 +16,7 @@ class UsersApiController extends Controller {
     public function get($id) {
         return ResponseApiFacade::makeResponse(function() use ($id) {
             if ($id) {
-                return Users::find($id);
+                return Users::find($id)?:"FALSE";
             }
             
             $userModel = ModelFacade::model(Users::class)
@@ -68,10 +68,10 @@ class UsersApiController extends Controller {
             if ($user = Users::find($request['id'])) {
                 $user->delete();
                 
-                return TRUE;
+                return "TRUE";
             }
             
-            return FALSE;
+            return "FALSE";
         });
     }
 }
