@@ -6,7 +6,6 @@
 namespace App\Helpers\Api;
 
 use App\Facades\Messages;
-use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Database\Model;
 use Silver\Http\Session;
 
@@ -158,12 +157,10 @@ class RequestApiHelper extends ApiHelper {
         if ($dataToSend instanceof Model) {
             $dataToSend = $dataToSend->data();
         } elseif (is_object($dataToSend)) {
-            throw new \RuntimeException('No puedes enviar este objeto en una petición POST.');
+            $dataToSend = (array)$dataToSend;
         }
         
-        return [
-                'payload' => $dataToSend,
-        ];
+        return $dataToSend;
     }
     
     private function post($url, $postFields = [], &$header = [], $options = []) {

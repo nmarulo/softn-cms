@@ -8,7 +8,6 @@ namespace App\Helpers\Api;
 use App\Facades\TokenFacade;
 use App\Facades\Utils;
 use Silver\Core\Bootstrap\Facades\Request;
-use Silver\Core\Env;
 use Silver\Database\Model;
 
 /**
@@ -46,34 +45,23 @@ class ResponseApiHelper extends ApiHelper {
     }
     
     public function getDataRequest() {
-        return Request::input('payload');
-    }
-    
-    protected function getToken() {
-        return TokenFacade::getToken();
+        return Request::all();
     }
     
     public function createResponseFormat($httpStatus, $dataToSend = FALSE) {
         header($this->headerToken());
-        $payload = [
-                'debug'         => Env::get('api_debug', FALSE),
-                'version'       => Env::get('api_version', '0.0.0'),
-                'http_status'   => $httpStatus,
-                'request_limit' => Env::get('api_request_limit', 25),
-        ];
+        $payload = [];
         
         switch ($httpStatus) {
             case self::$HTTP_STATUS_OK:
-                $payload['payload'] = $this->formatDataToSendResponse($dataToSend);
+                $payload = $this->formatDataToSendResponse($dataToSend);
                 break;
             case self::$HTTP_STATUS_NO_CONTENT:
                 break;
             default:
-                unset($payload['token']);
-                unset($payload['request_limit']);
                 $payload['errors'] = [
                         'message' => $dataToSend,
-                        'check'   => TRUE,
+                        'status'  => $httpStatus,
                 ];
                 break;
         }
@@ -96,6 +84,10 @@ class ResponseApiHelper extends ApiHelper {
         }
         
         return $dataToSend;
+    }
+    
+    protected function getToken() {
+        return TokenFacade::getToken();
     }
     
 }
