@@ -21,7 +21,10 @@ class UsersController extends Controller {
     private $urlUsers = 'dashboard/users';
     
     public function index() {
-        $result     = RequestApiFacade::makeGetRequest(Request::all(), $this->urlUsers);
+        $request = Request::all();
+        //TODO: ERROR: solo al enviar, por get, "'uri' => '/dashboard/users'", por eso lo elimino, en caso de enviarlo.
+        unset($request['uri']);
+        $result     = RequestApiFacade::makeGetRequest($request, $this->urlUsers);
         $pagination = Pagination::arrayToObject($result['pagination']);
         $users      = array_map(function($value) {
             return ModelFacade::arrayToObject($value, Users::class);
