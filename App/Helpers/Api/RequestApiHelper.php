@@ -15,24 +15,13 @@ use Silver\Http\Session;
  */
 class RequestApiHelper extends ApiHelper {
     
-    private $httpRequestStatus;
-    
+    /**
+     * @var array
+     */
     private $messageError;
     
     public function __construct() {
-        $this->httpRequestStatus = 0;
-        $this->messageError      = [];
-    }
-    
-    public function getHttpRequestStatus() {
-        return $this->httpRequestStatus;
-    }
-    
-    /**
-     * @return array
-     */
-    public function getMessageError() {
-        return $this->messageError;
+        $this->messageError = [];
     }
     
     public function makePostRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
@@ -72,17 +61,16 @@ class RequestApiHelper extends ApiHelper {
                 break;
         }
         
-        $response                = $this->objectToArray($response);
-        $this->httpRequestStatus = $this->getValueByKey($response, 'http_status', 0);
-        $this->messageError      = $this->getValueByKey($response, 'errors', []);
+        $response           = $this->objectToArray($response);
+        $this->messageError = $this->getValueByKey($response, 'errors', []);
         
         //En caso de error no settea el token
         if (empty($this->messageError)) {
             $this->setToken($this->getValueByKey($header, 'Authorization', ''));
         }
         
-        if ($this->httpRequestStatus > self::$HTTP_STATUS_NO_CONTENT) {
-            Messages::addDanger($this->messageError['message']);
+        if ($this->getHttpRequestStatus() > self::$HTTP_STATUS_NO_CONTENT) {
+            Messages::addDanger($this->getMessageError());
         }
         
         if (is_callable($returnType)) {
@@ -195,6 +183,17 @@ class RequestApiHelper extends ApiHelper {
         Session::set('token', $token);
     }
     
+    public function getHttpRequestStatus() {
+        return $this->getValueByKey($this->messageError, 'status', 0);
+    }
+    
+    /**
+     * @return string
+     */
+    public function getMessageError() {
+        return $this->getValueByKey($this->messageError, 'message', '');
+    }
+    
     public function makeDeleteRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
         return $this->makeRequest('DELETE', $dataToSend, $serviceName, $serviceMethod, $returnType);
     }
@@ -208,11 +207,6 @@ class RequestApiHelper extends ApiHelper {
     }
     
     public function makeGetRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
-        if (is_array($dataToSend)) {
-            //TODO: ERROR: solo al enviar, por get, "'uri' => '/dashboard/users'", por eso lo elimino, en caso de enviarlo.
-            unset($dataToSend['uri']);
-        }
-        
         return $this->makeRequest('GET', $dataToSend, $serviceName, $serviceMethod, $returnType);
     }
     
