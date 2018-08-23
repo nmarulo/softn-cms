@@ -86,10 +86,10 @@ class RequestApiHelper extends ApiHelper {
         }
         
         if (is_callable($returnType)) {
-            return $returnType($this->getResponsePayload($response));
+            return $returnType($response);
         }
         
-        return $this->getResponsePayload($response);
+        return $response;
     }
     
     private function createUrl($serviceName, $serviceMethod) {
@@ -150,14 +150,14 @@ class RequestApiHelper extends ApiHelper {
         
         curl_close($ch);
         
-        return json_decode($result, TRUE);
+        return json_decode($result, TRUE) ? : $result;
     }
     
     private function formatDataToSendRequestPost($dataToSend) {
         if ($dataToSend instanceof Model) {
             $dataToSend = $dataToSend->data();
         } elseif (is_object($dataToSend)) {
-            $dataToSend = (array)$dataToSend;
+            $dataToSend = $this->objectToArray($dataToSend);
         }
         
         return $dataToSend;
@@ -193,12 +193,6 @@ class RequestApiHelper extends ApiHelper {
     
     public function setToken($token) {
         Session::set('token', $token);
-    }
-    
-    private function getResponsePayload($response) {
-        $response = $this->getValueByKey($response, 'payload', '');
-        
-        return $this->objectToArray($response);
     }
     
     public function makeDeleteRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
