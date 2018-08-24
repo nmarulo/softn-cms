@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
+use App\Facades\ModelFacade;
 use App\Models\Users;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
@@ -25,15 +26,16 @@ class LoginController extends Controller {
         $user                = new Users();
         $user->user_login    = Request::input('user_login');
         $user->user_password = Request::input('user_password');
-        $result              = RequestApiFacade::makePostRequest($user, 'login');
+        RequestApiFacade::makePostRequest($user, 'login');
         
-        if ($result) {
+        if (RequestApiFacade::isError()) {
+            Messages::addDanger(RequestApiFacade::getMessageError());
+            $redirect .= '/login';
+        } else {
+            $user = ModelFacade::arrayToObject(RequestApiFacade::getResponse(), Users::class);
             Messages::addSuccess('Inicio de sesión correcto.');
             Session::set('user_login', $user->user_login);
             $redirect .= '/dashboard';
-        } else {
-            Messages::addDanger('Usuario y/o contraseña incorrecto(s).');
-            $redirect .= '/login';
         }
         
         Redirect::to($redirect);
