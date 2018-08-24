@@ -16,9 +16,11 @@
         #block(content)
     </main>
     <footer></footer>
+    {{ include('includes.messages') }}
     <script src="{{ asset('js/jquery-3.3.1.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/common.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('js/messages.js') }}" type="text/javascript"></script>
     #block(scripts)
 </body>
 </html>

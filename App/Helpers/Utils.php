@@ -22,8 +22,16 @@ class Utils {
                         ->format($toFormat);
     }
     
-    public function isRequestMethod($requestMethodName) {
+    public function isGetRequest() {
+        return $this->isRequestMethod('GET');
+    }
+    
+    private function isRequestMethod($requestMethodName) {
         return Request::method() == strtolower($requestMethodName);
+    }
+    
+    public function isPostRequest() {
+        return $this->isRequestMethod('POST');
     }
     
 }

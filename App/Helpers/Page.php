@@ -9,7 +9,7 @@ namespace App\Helpers;
  * Class Page
  * @author Nicolás Marulanda P.
  */
-class Page {
+class Page implements \JsonSerializable {
     
     /** @var string */
     private $styleClass;
@@ -17,27 +17,34 @@ class Page {
     /** @var string */
     private $value;
     
-    /** @var string */
+    /** @var array */
     private $attrData;
     
     public function __construct($value, $styleClass = "", $attrData = []) {
         $this->styleClass = $styleClass;
         $this->value      = $value;
-        $this->setAttrData($attrData);
+        $this->attrData = $attrData;
     }
     
-    private function setAttrData($attrData) {
-        $strAttrData = "";
+    public function attrToString() {
+        $attr = array_map(function($key, $value){
+            return "data-${key}='${value}'";
+        }, array_keys($this->attrData), $this->attrData);
         
-        foreach ($attrData as $key => $value) {
-            $strAttrData .= " data-$key='$value' ";
-        }
-        
-        $this->attrData = $strAttrData;
+        return implode(' ', $attr);
     }
+    
+    public function jsonSerialize() {
+        return [
+                'styleClass' => $this->styleClass,
+                'value'      => $this->value,
+                'attrData'   => $this->attrData,
+        ];
+    }
+    
     
     /**
-     * @return string
+     * @return array
      */
     public function getAttrData() {
         return $this->attrData;

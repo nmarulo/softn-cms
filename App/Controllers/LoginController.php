@@ -2,10 +2,13 @@
 
 namespace App\Controllers;
 
-use App\Facades\Auth;
-use App\Facades\Token;
+use App\Facades\Api\RequestApiFacade;
+use App\Facades\Messages;
+use App\Models\Users;
+use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
+use Silver\Http\Session;
 use Silver\Http\View;
 
 /**
@@ -18,11 +21,18 @@ class LoginController extends Controller {
     }
     
     public function form() {
-        $redirect = URL;
+        $redirect            = URL;
+        $user                = new Users();
+        $user->user_login    = Request::input('user_login');
+        $user->user_password = Request::input('user_password');
+        $result              = RequestApiFacade::makePostRequest($user, 'login');
         
-        if (Auth::login()) {
+        if ($result) {
+            Messages::addSuccess('Inicio de sesión correcto.');
+            Session::set('user_login', $user->user_login);
             $redirect .= '/dashboard';
         } else {
+            Messages::addDanger('Usuario y/o contraseña incorrecto(s).');
             $redirect .= '/login';
         }
         

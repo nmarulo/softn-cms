@@ -5,13 +5,11 @@
 
 namespace App\Helpers;
 
-use Silver\Core\Bootstrap\Facades\Request;
-
 /**
  * Class Pagination
  * @author Nicolás Marulanda P.
  */
-class Pagination {
+class Pagination implements \JsonSerializable {
     
     /** @var array */
     private $pages;
@@ -192,6 +190,31 @@ class Pagination {
         }
         
         $this->rightArrow = new Page('&raquo;', $styleClass, $attrData);
+    }
+    
+    public function arrayToObject($values) {
+        $pages            = $values['pages'];
+        $newPageClosure   = function($data) {
+            return new Page($data['value'], $data['styleClass'], $data['attrData']);
+        };
+        $pages            = array_map(function($value) use ($newPageClosure) {
+            return $newPageClosure($value);
+        }, $pages);
+        $this->rendered   = $values['rendered'];
+        $this->leftArrow  = $newPageClosure($values['leftArrow']);
+        $this->rightArrow = $newPageClosure($values['rightArrow']);
+        $this->pages      = $pages;
+        
+        return $this;
+    }
+    
+    public function jsonSerialize() {
+        return [
+                'rendered'   => $this->rendered,
+                'leftArrow'  => $this->leftArrow,
+                'rightArrow' => $this->rightArrow,
+                'pages'      => $this->pages,
+        ];
     }
     
     /**

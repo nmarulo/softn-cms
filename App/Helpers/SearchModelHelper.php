@@ -39,7 +39,7 @@ class SearchModelHelper {
                              ->from($currentModel::tableName());
         $strictSearch = Request::input('search-strict', FALSE) == 'on';
         
-        if (Request::ajax() && !empty($search)) {
+        if (!empty($search)) {
             $explode = explode(' ', $search);
             
             if (count($explode) > 0 && !empty(preg_match_all('/[a-zA-Z_]+:/', $search, $matches))) {

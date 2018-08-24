@@ -11,14 +11,12 @@
 
 namespace App\Middlewares;
 
-use App\Facades\Token;
-use App\Facades\Utils;
 use Closure;
 use Silver\Core\Blueprints\MiddlewareInterface;
 use Silver\Http\Redirect;
 use Silver\Http\Request;
 use Silver\Http\Response;
-use App\Facades\Auth;
+use Silver\Http\Session;
 use Silver\Http\View;
 
 class AuthMiddleware implements MiddlewareInterface {
@@ -29,35 +27,30 @@ class AuthMiddleware implements MiddlewareInterface {
             'guest',
             'public',
             'dashboard',
+            'login',
     ];
     
     public function execute(Request $request, Response $response, Closure $next) {
+        $route = $request->route();
         //El route es null cuando la dirección no existe. Mostrara la pagina de error 404.
-        if ($request->route() == NULL) {
+        if ($route == NULL) {
             return $next();
         }
         
-        if(Utils::isRequestMethod('GET')){
-            Token::generate();
-        }
+        $middleware = $route->middleware();
         
-        $middleware = $request->route()
-                              ->middleware();
+        if ($middleware == 'api') {
+            return $next();
+        }
         
         //Si no encuentra ninguno redirecciona a la pagina de error.
         if (array_search($middleware, $this->unguard) === FALSE) {
             return View::error('404');
         }
         
-        //Se comprueba el token
-        if (!Utils::isRequestMethod('GET') && !Token::check($request->input('jwt_token'))) {
-            //TODO: agregar mensaje de error al comprobar el token.
-            Redirect::to(URL . '/login');
-        }
-        
         //Si esta intentado acceder al panel de control y no ha iniciado sesión.
-        if ($middleware == 'dashboard' && !Auth::session()) {
-            Redirect::to(URL . '/login');
+        if ($middleware == 'dashboard' && !Session::exists('user_login')) {
+            Redirect::to(URL . '/logout');
         }
         
         //Si es uno publico continua
