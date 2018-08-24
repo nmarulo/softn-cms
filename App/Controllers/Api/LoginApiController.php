@@ -19,18 +19,23 @@ class LoginApiController extends Controller {
                          ->first();
             
             //Si el usuario existe y su contraseña es igual
-            if ($user && $user->user_password == $request['user_password']) {
+            if ($user && $this->checkPassword($user, $request)) {
                 TokenFacade::generate(function(Builder $builder) use ($user) {
                     $builder->set('user_login', $user->user_login);
                     
                     return $builder;
                 });
                 
-                return "TRUE";
+                return $user;
+            } else {
+                throw new \RuntimeException('Usuario y/o contraseña incorrecto(s).');
             }
-            
-            return "FALSE";
         });
+    }
+    
+    private function checkPassword($user, $request) {
+        //TODO: cifrar
+        return $user->user_password == $request['user_password'];
     }
     
 }
