@@ -5,7 +5,6 @@
 
 namespace App\Helpers\Api;
 
-use App\Facades\Messages;
 use Silver\Database\Model;
 use Silver\Http\Session;
 
@@ -20,12 +19,40 @@ class RequestApiHelper extends ApiHelper {
      */
     private $messageError;
     
+    /**
+     * @var array
+     */
+    private $response;
+    
     public function __construct() {
         $this->messageError = [];
+        $this->response     = [];
     }
     
-    public function makePostRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
-        return $this->makeRequest('POST', $dataToSend, $serviceName, $serviceMethod, $returnType);
+    /**
+     * @return array
+     */
+    public function getResponse() {
+        return $this->response;
+    }
+    
+    public function isError() {
+        return $this->getHttpRequestStatus() > self::$HTTP_STATUS_NO_CONTENT;
+    }
+    
+    public function getHttpRequestStatus() {
+        return $this->getValueByKey($this->messageError, 'status', 0);
+    }
+    
+    /**
+     * @return string
+     */
+    public function getMessageError() {
+        return $this->getValueByKey($this->messageError, 'message', '');
+    }
+    
+    public function makeDeleteRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
+        $this->makeRequest('DELETE', $dataToSend, $serviceName, $serviceMethod, $returnType);
     }
     
     public function makeRequest($type, $dataToSend, $serviceName, $serviceMethod, $returnType, $options = []) {
@@ -69,15 +96,11 @@ class RequestApiHelper extends ApiHelper {
             $this->setToken($this->getValueByKey($header, 'Authorization', ''));
         }
         
-        if ($this->getHttpRequestStatus() > self::$HTTP_STATUS_NO_CONTENT) {
-            Messages::addDanger($this->getMessageError());
-        }
-        
         if (is_callable($returnType)) {
-            return $returnType($response);
+            $response = $returnType($response);
         }
         
-        return $response;
+        $this->response = $response;
     }
     
     private function createUrl($serviceName, $serviceMethod) {
@@ -183,31 +206,20 @@ class RequestApiHelper extends ApiHelper {
         Session::set('token', $token);
     }
     
-    public function getHttpRequestStatus() {
-        return $this->getValueByKey($this->messageError, 'status', 0);
-    }
-    
-    /**
-     * @return string
-     */
-    public function getMessageError() {
-        return $this->getValueByKey($this->messageError, 'message', '');
-    }
-    
-    public function makeDeleteRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
-        return $this->makeRequest('DELETE', $dataToSend, $serviceName, $serviceMethod, $returnType);
-    }
-    
     public function makePutRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
-        return $this->makeRequest('PUT', $dataToSend, $serviceName, $serviceMethod, $returnType);
+        $this->makeRequest('PUT', $dataToSend, $serviceName, $serviceMethod, $returnType);
     }
     
     public function getToken() {
         return Session::get('token');
     }
     
+    public function makePostRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
+        $this->makeRequest('POST', $dataToSend, $serviceName, $serviceMethod, $returnType);
+    }
+    
     public function makeGetRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
-        return $this->makeRequest('GET', $dataToSend, $serviceName, $serviceMethod, $returnType);
+        $this->makeRequest('GET', $dataToSend, $serviceName, $serviceMethod, $returnType);
     }
     
 }
