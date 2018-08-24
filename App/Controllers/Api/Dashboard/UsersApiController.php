@@ -16,7 +16,7 @@ class UsersApiController extends Controller {
     public function get($id) {
         return ResponseApiFacade::makeResponse(function() use ($id) {
             if ($id) {
-                return Users::find($id)?:"FALSE";
+                return $this->getUserById($id);
             }
             
             $userModel = ModelFacade::model(Users::class)
@@ -29,6 +29,14 @@ class UsersApiController extends Controller {
                     'pagination' => $userModel->getPagination(),
             ];
         });
+    }
+    
+    private function getUserById($id) {
+        if ($user = Users::find($id)) {
+            return $user;
+        }
+        
+        throw new \RuntimeException("Usuario desconocido.");
     }
     
     public function post() {
@@ -57,21 +65,14 @@ class UsersApiController extends Controller {
     
     public function put() {
         return ResponseApiFacade::makeResponse(function($request) {
-            $user = Users::find($request['id']);
-            
-            return $this->saveUser($request, $user);
+            return $this->saveUser($request, $this->getUserById($request['id']));
         });
     }
     
     public function delete() {
         return ResponseApiFacade::makeResponse(function($request) {
-            if ($user = Users::find($request['id'])) {
-                $user->delete();
-                
-                return "TRUE";
-            }
-            
-            return "FALSE";
+            $user = $this->getUserById($request['id']);
+            $user->delete();
         });
     }
 }
