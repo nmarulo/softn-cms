@@ -29,7 +29,7 @@ class ResponseApiHelper extends ApiHelper {
             if (!Utils::isGetRequest() && empty($request)) {
                 $response = $this->createResponseFormat(self::$HTTP_STATUS_BAD_REQUEST, 'Faltan datos en la petición.');
             } else {
-                $dataToSend = $callback($request);
+                $dataToSend = $callback();
                 
                 if ($dataToSend === NULL) {
                     $response = $this->createResponseFormat(self::$HTTP_STATUS_NO_CONTENT);
