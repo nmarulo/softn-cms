@@ -11,6 +11,8 @@
 
 namespace App\Middlewares;
 
+use App\Facades\Api\RequestApiFacade;
+use App\Helpers\Api\ApiHelper;
 use Closure;
 use Silver\Core\Blueprints\MiddlewareInterface;
 use Silver\Http\Redirect;
@@ -53,8 +55,14 @@ class AuthMiddleware implements MiddlewareInterface {
             Redirect::to(URL . '/logout');
         }
         
+        $return = $next();
+        
+        if (!$request->ajax() && RequestApiFacade::getHttpRequestStatus() == ApiHelper::$HTTP_STATUS_UNAUTHORIZED) {
+            Redirect::to(URL . '/logout');
+        }
+        
         //Si es uno publico continua
-        return $next();
+        return $return;
     }
     
 }

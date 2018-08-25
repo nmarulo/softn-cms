@@ -22,6 +22,8 @@ abstract class ApiHelper {
     
     public static $HTTP_STATUS_UNAUTHORIZED          = 401;
     
+    public static $HTTP_STATUS_NOT_FOUND             = 404;
+    
     public static $HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
     
     public function getTokenHeader(Request $request = NULL) {

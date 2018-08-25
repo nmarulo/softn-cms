@@ -19,7 +19,7 @@ class ResponseApiHelper extends ApiHelper {
     public function makeResponse($callback) {
         header('Content-Type: application/json');
         $response = [];
-        $request  = $this->getDataRequest();//recibe un array
+        $request  = $this->getRequest();//recibe un array
         
         try {
             if (!is_callable($callback)) {
@@ -44,7 +44,7 @@ class ResponseApiHelper extends ApiHelper {
         return $response;
     }
     
-    public function getDataRequest() {
+    public function getRequest() {
         return Request::all();
     }
     
