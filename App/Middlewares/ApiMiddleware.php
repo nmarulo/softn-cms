@@ -18,6 +18,11 @@ use Silver\Http\Response;
  */
 class ApiMiddleware {
     
+    private $routeName = [
+            'login',
+            'register',
+    ];
+    
     public function execute(Request $request, Response $response, Closure $next) {
         
         $route = $request->route();
@@ -30,7 +35,7 @@ class ApiMiddleware {
         $middleware = $route->middleware();
         
         //En la petición al login no se comprueba el token.
-        if ($middleware != 'api' || $route->name() == 'login') {
+        if ($middleware != 'api' || array_search($route->name(), $this->routeName) !== FALSE) {
             return $next();
         }
         
