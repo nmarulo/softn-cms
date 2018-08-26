@@ -11,6 +11,7 @@ return [
         'app_key'           => 'mysupersecurekey',//TODO: establecer key
         'port'              => FALSE,
         'api_debug'         => TRUE,
+        'api_base_uri'      => 'api',
         'api_version'       => '0.5.0',
         'api_request_limit' => 25,
         'token_id'          => '4f1g23a12aa',//TODO: establecer id

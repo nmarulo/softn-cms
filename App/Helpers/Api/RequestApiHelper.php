@@ -5,6 +5,14 @@
 
 namespace App\Helpers\Api;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\RequestOptions;
+use Psr\Http\Message\ResponseInterface;
+use Silver\Core\Env;
 use Silver\Database\Model;
 use Silver\Http\Session;
 
@@ -15,153 +23,96 @@ use Silver\Http\Session;
 class RequestApiHelper extends ApiHelper {
     
     /**
-     * @var array
+     * @var Client
      */
-    private $messageError;
+    private $client;
     
     /**
-     * @var array
+     * @var ResponseInterface
      */
     private $response;
     
+    private $messageError;
+    
     public function __construct() {
-        $this->messageError = [];
-        $this->response     = [];
-    }
-    
-    /**
-     * @return array
-     */
-    public function getResponse() {
-        return $this->response;
-    }
-    
-    public function isError() {
-        return $this->getHttpRequestStatus() > self::$HTTP_STATUS_NO_CONTENT;
-    }
-    
-    public function getHttpRequestStatus() {
-        return $this->getValueByKey($this->messageError, 'status', 0);
-    }
-    
-    /**
-     * @return string
-     */
-    public function getMessageError() {
-        return $this->getValueByKey($this->messageError, 'message', '');
-    }
-    
-    public function makeDeleteRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
-        $this->makeRequest('DELETE', $dataToSend, $serviceName, $serviceMethod, $returnType);
-    }
-    
-    public function makeRequest($type, $dataToSend, $serviceName, $serviceMethod, $returnType, $options = []) {
-        $header  = [];
-        $url     = $this->createUrl($serviceName, $serviceMethod);
-        $options += [
-                CURLOPT_HTTPHEADER => [
-                        $this->headerToken(),
-                ],
-        ];
-        
-        switch ($type) {
-            case 'GET':
-                $dataToSend = (array)$dataToSend;
-                $url        .= $this->formatDataToSendRequestGet($dataToSend);
-                $response   = $this->get($url, $header, $options);
-                break;
-            case 'POST':
-                //Si "dataToSend" no es un array, dara error.
-                $dataToSend = $this->formatDataToSendRequestPost($dataToSend);
-                $response   = $this->post($url, $dataToSend, $header, $options);
-                break;
-            case 'PUT':
-                $dataToSend = $this->formatDataToSendRequestPost($dataToSend);
-                $response   = $this->put($url, $dataToSend, $header, $options);
-                break;
-            case 'DELETE':
-                $dataToSend = $this->formatDataToSendRequestPost($dataToSend);
-                $response   = $this->delete($url, $dataToSend, $header, $options);
-                break;
-            default:
-                throw new \RuntimeException('Tipo de petición no valido');
-                break;
-        }
-        
-        $response           = $this->objectToArray($response);
-        $this->messageError = $this->getValueByKey($response, 'errors', []);
-        
-        //En caso de error no settea el token
-        if (empty($this->messageError)) {
-            $this->setToken($this->getValueByKey($header, 'Authorization', ''));
-        }
-        
-        if (is_callable($returnType)) {
-            $response = $returnType($response);
-        }
-        
-        $this->response = $response;
-    }
-    
-    private function createUrl($serviceName, $serviceMethod) {
-        return sprintf('%1$s/api/%2$s/%3$s', URL, $serviceName, $serviceMethod);
-    }
-    
-    private function formatDataToSendRequestGet($dataToSend) {
-        if (!empty($dataToSend)) {
-            $dataToSend = array_map(function($key, $value) {
-                return sprintf('%1$s=%2$s', $key, $value);
-            }, array_keys($dataToSend), $dataToSend);
+        $this->response     = NULL;
+        $this->messageError = '';
+        $stack              = new HandlerStack();
+        $stack->setHandler(new CurlHandler());
+        $stack->push(Middleware::mapResponse(function(ResponseInterface $response) {
+            $decode = json_decode((string)$response->getBody(), TRUE);
+            $response->getBody()
+                     ->rewind();
             
-            return '?' . implode('&', $dataToSend);
-        }
-        
-        return '';
-    }
-    
-    private function get($url, &$header = [], $options = []) {
-        return $this->curl($url, $header, $options);
-    }
-    
-    private function curl($url, &$header = [], $options = []) {
-        $defaults = [
-                CURLOPT_URL            => $url,
-                CURLOPT_HEADER         => 1,
-                CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_TIMEOUT        => 4,
-        ];
-        
-        $ch = curl_init();
-        curl_setopt_array($ch, ($options + $defaults));
-        
-        if ($result = curl_exec($ch)) {
-            $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-            $headerTmp  = substr($result, 0, $headerSize);
-            $headerTmp  = preg_split('/\r\n/', $headerTmp);
-            $headerTmp  = array_filter($headerTmp, function($value) {
-                return !empty($value);
-            });
-            
-            foreach ($headerTmp as $value) {
-                $split = preg_split('/:\s{1}/', $value);
+            if (is_array($decode) && array_key_exists('errors', $decode)) {
+                $error = $decode['errors'];
                 
-                if (count($split) == 1) {
-                    $header[] = $split[0];
-                    continue;
-                }
-                
-                $header[$split[0]] = $split[1];
+                $response = new Response($error['status'], $response->getHeaders(), $response->getBody(), $response->getProtocolVersion(), $error['message']);
             }
             
-            $result = substr($result, $headerSize);
-            //$httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        } else {
-            trigger_error(curl_error($ch));
+            return $response;
+        }));
+        $this->client = new Client([
+                'base_uri' => $this->baseUri(),
+                'handler'  => $stack,
+        ]);
+    }
+    
+    private function baseUri() {
+        $uri    = URL;
+        $apiUri = Env::get('api_base_uri') ? : '';
+        
+        if (!empty($apiUri)) {
+            $apiUri = sprintf('/%1$s/', trim($apiUri, '/'));
         }
         
-        curl_close($ch);
+        return $uri . $apiUri;
+    }
+    
+    public function __call($name, $arguments) {
+        $uri = array_shift($arguments);
+        $this->options($name, $arguments, $options);
         
-        return json_decode($result, TRUE) ? : $result;
+        try {
+            $this->response = $this->client->{$name}($uri, $options);
+            $this->updateToken();
+        } catch (\Exception $exception) {
+            $this->messageError = $exception->getMessage();
+        }
+    }
+    
+    private function options($typeRequest, $arguments, &$options) {
+        $options = $options ? : [];
+        $default = [
+                RequestOptions::HEADERS => [
+                        'Accept'        => 'application/json',
+                        'Authorization' => $this->getToken(),
+                ],
+                RequestOptions::TIMEOUT => 5,
+        ];
+        
+        if (!empty($arguments)) {
+            $shift = array_shift($arguments);
+            
+            if (is_null($shift)) {
+                $shift = [];
+            }
+            
+            if ($typeRequest == 'get') {
+                $options[RequestOptions::QUERY] = $shift;
+            } else {
+                $options[RequestOptions::FORM_PARAMS] = $this->formatDataToSendRequestPost($shift);
+            }
+            
+            $shift   = array_shift($arguments);
+            $options += is_array($shift) ? $shift : [];
+        }
+        
+        $options += $default;
+    }
+    
+    public function getToken() {
+        return Session::get('token');
     }
     
     private function formatDataToSendRequestPost($dataToSend) {
@@ -174,52 +125,42 @@ class RequestApiHelper extends ApiHelper {
         return $dataToSend;
     }
     
-    private function post($url, $postFields = [], &$header = [], $options = []) {
-        $options += [CURLOPT_POST => 1];
+    private function updateToken() {
+        if ($this->isError()) {
+            return;
+        }
         
-        return $this->curlBody($url, $postFields, $header, $options);
-    }
-    
-    private function curlBody($url, $postFields = [], &$header = [], $options = []) {
-        $options += [
-                CURLOPT_POSTFIELDS    => http_build_query($postFields),
-                CURLOPT_FRESH_CONNECT => 1,
-                CURLOPT_FORBID_REUSE  => 1,
-        ];
-        
-        return $this->curl($url, $header, $options);
-    }
-    
-    private function put($url, $postFields = [], &$header = [], $options = []) {
-        $options += [CURLOPT_CUSTOMREQUEST => 'PUT'];
-        
-        return $this->curlBody($url, $postFields, $header, $options);
-    }
-    
-    private function delete($url, $postFields = [], &$header = [], $options = []) {
-        $options += [CURLOPT_CUSTOMREQUEST => 'DELETE'];
-        
-        return $this->curlBody($url, $postFields, $header, $options);
-    }
-    
-    public function setToken($token) {
+        $token = $this->response->getHeader('Authorization');
         Session::set('token', $token);
     }
     
-    public function makePutRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
-        $this->makeRequest('PUT', $dataToSend, $serviceName, $serviceMethod, $returnType);
+    public function isError() {
+        return is_null($this->response) || $this->getStatusCode() >= self::$HTTP_STATUS_BAD_REQUEST;
     }
     
-    public function getToken() {
-        return Session::get('token');
+    public function getStatusCode() {
+        if (is_null($this->response)) {
+            return 0;
+        }
+        
+        return $this->response->getStatusCode();
     }
     
-    public function makePostRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
-        $this->makeRequest('POST', $dataToSend, $serviceName, $serviceMethod, $returnType);
+    public function getResponse() {
+        return $this->response;
     }
     
-    public function makeGetRequest($dataToSend, $serviceName, $serviceMethod = '', $returnType = NULL) {
-        $this->makeRequest('GET', $dataToSend, $serviceName, $serviceMethod, $returnType);
+    public function responseJsonDecode($assoc = TRUE) {
+        return \GuzzleHttp\json_decode($this->getBody(), $assoc);
+    }
+    
+    public function getBody() {
+        return $this->response->getBody()
+                              ->getContents();
+    }
+    
+    public function getMessage() {
+        return empty($this->response) ? $this->messageError : $this->response->getReasonPhrase();
     }
     
 }
