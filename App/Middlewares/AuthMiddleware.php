@@ -57,7 +57,7 @@ class AuthMiddleware implements MiddlewareInterface {
         
         $return = $next();
         
-        if (!$request->ajax() && RequestApiFacade::getHttpRequestStatus() == ApiHelper::$HTTP_STATUS_UNAUTHORIZED) {
+        if (!$request->ajax() && RequestApiFacade::getStatusCode() == ApiHelper::$HTTP_STATUS_UNAUTHORIZED) {
             Redirect::to(URL . '/logout');
         }
         
