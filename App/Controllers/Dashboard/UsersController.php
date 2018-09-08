@@ -26,12 +26,12 @@ class UsersController extends Controller {
         $request    = Request::all();
         //TODO: ERROR: solo al enviar, por get, "'uri' => '/dashboard/users'", por eso lo elimino, en caso de enviarlo.
         unset($request['uri']);
-        RequestApiFacade::makeGetRequest($request, $this->urlUsers);
+        RequestApiFacade::get($this->urlUsers, $request);
         
         if (RequestApiFacade::isError()) {
-            Messages::addDanger(RequestApiFacade::getMessageError());
+            Messages::addDanger(RequestApiFacade::getMessage());
         } else {
-            $response   = RequestApiFacade::getResponse();
+            $response   = RequestApiFacade::responseJsonDecode();
             $pagination = Pagination::arrayToObject($response['pagination']);
             $users      = array_map(function($value) {
                 return ModelFacade::arrayToObject($value, Users::class);
@@ -46,38 +46,37 @@ class UsersController extends Controller {
     public function form($id) {
         $user = new Users();
         
-        if (Utils::isPostRequest()) {
+        if (RequestApiFacade::isPostRequest()) {
             $message = 'Usuario actualizado correctamente.';
             $request = Request::all();
             unset($request['uri']);
             
             if (empty($id)) {
                 $message = 'Usuario creado correctamente';
-                RequestApiFacade::makePostRequest($request, $this->urlUsers);
+                RequestApiFacade::post($this->urlUsers, $request);
             } else {
                 $request['id'] = $id;
-                RequestApiFacade::makePutRequest($request, $this->urlUsers);
+                RequestApiFacade::put($this->urlUsers, $request);
             }
             
-            
             if (RequestApiFacade::isError()) {
-                Messages::addDanger(RequestApiFacade::getMessageError());
+                Messages::addDanger(RequestApiFacade::getMessage());
                 $user = ModelFacade::arrayToObject($request, Users::class);
             } else {
                 Messages::addSuccess($message);
-                $user = ModelFacade::arrayToObject(RequestApiFacade::getResponse(), Users::class);
+                $user = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
                 
                 if (empty($id)) {
                     Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $user->id));
                 }
             }
         } elseif ($id) {
-            RequestApiFacade::makeGetRequest('', $this->urlUsers, $id);
+            RequestApiFacade::get($this->urlUsers, $id);
             
             if (RequestApiFacade::isError()) {
-                Messages::addDanger(RequestApiFacade::getMessageError());
+                Messages::addDanger(RequestApiFacade::getMessage());
             } else {
-                $user = ModelFacade::arrayToObject(RequestApiFacade::getResponse(), Users::class);
+                $user = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
             }
         }
         
@@ -86,10 +85,10 @@ class UsersController extends Controller {
     }
     
     public function delete() {
-        RequestApiFacade::makeDeleteRequest(Request::all(), $this->urlUsers);
+        RequestApiFacade::delete($this->urlUsers, Request::all());
         
         if (RequestApiFacade::isError()) {
-            Messages::addDanger(RequestApiFacade::getMessageError());
+            Messages::addDanger(RequestApiFacade::getMessage());
         } else {
             Messages::addSuccess('Usuario borrado correctamente.');
         }
