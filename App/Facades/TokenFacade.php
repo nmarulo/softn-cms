@@ -5,7 +5,10 @@ namespace App\Facades;
 use Silver\Support\Facade;
 
 /**
- * token event provider
+ * @method static bool check(string $payload)
+ * @method static mixed getCustomData(string $token, string $key)
+ * @method static string getToken()
+ * @method static generate(\Closure $closureClaim = FALSE)
  */
 class TokenFacade extends Facade {
     
