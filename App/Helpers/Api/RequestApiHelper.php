@@ -12,6 +12,7 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
+use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Env;
 use Silver\Database\Model;
 use Silver\Http\Session;
@@ -44,10 +45,19 @@ class RequestApiHelper extends ApiHelper {
             $response->getBody()
                      ->rewind();
             
-            if (is_array($decode) && array_key_exists('errors', $decode)) {
-                $error = $decode['errors'];
+            if (is_array($decode)) {
+                $status  = "";
+                $message = "";
                 
-                $response = new Response($error['status'], $response->getHeaders(), $response->getBody(), $response->getProtocolVersion(), $error['message']);
+                if (array_key_exists('errors', $decode)) {
+                    $status  = $decode['errors']['status'];
+                    $message = $decode['errors']['message'];
+                } elseif (array_key_exists('data', $decode)) {
+                    $status  = $decode['data']['code'];
+                    $message = $decode['data']['message'];
+                }
+                
+                $response = new Response($status, $response->getHeaders(), $response->getBody(), $response->getProtocolVersion(), $message);
             }
             
             return $response;
@@ -71,6 +81,7 @@ class RequestApiHelper extends ApiHelper {
     
     public function __call($name, $arguments) {
         $uri = array_shift($arguments);
+        $this->checkMethodGet($name, $uri, $arguments);
         $this->options($name, $arguments, $options);
         
         try {
@@ -79,6 +90,19 @@ class RequestApiHelper extends ApiHelper {
         } catch (\Exception $exception) {
             $this->messageError = $exception->getMessage();
         }
+    }
+    
+    private function checkMethodGet($name, &$uri, &$arguments) {
+        if ($this->isMethodGet($name) && !empty($arguments) && (is_numeric($arguments[0]) || is_string($arguments[0]))) {
+            $uri = sprintf('%1$s/%2$s', trim($uri, '/'), array_shift($arguments));
+        }
+    }
+    
+    private function isMethodGet($method) {
+        return array_search($method, [
+                        'get',
+                        'getAsync',
+                ]) !== FALSE;
     }
     
     private function options($typeRequest, $arguments, &$options) {
@@ -98,8 +122,10 @@ class RequestApiHelper extends ApiHelper {
                 $shift = [];
             }
             
-            if ($typeRequest == 'get') {
-                $options[RequestOptions::QUERY] = $shift;
+            if ($this->isMethodGet($typeRequest)) {
+                if (is_array($shift)) {
+                    $options[RequestOptions::QUERY] = $shift;
+                }
             } else {
                 $options[RequestOptions::FORM_PARAMS] = $this->formatDataToSendRequestPost($shift);
             }
@@ -131,7 +157,10 @@ class RequestApiHelper extends ApiHelper {
         }
         
         $token = $this->response->getHeader('Authorization');
-        Session::set('token', $token);
+        
+        if (!empty($token)) {
+            Session::set('token', $token);
+        }
     }
     
     public function isError() {
@@ -163,4 +192,15 @@ class RequestApiHelper extends ApiHelper {
         return empty($this->response) ? $this->messageError : $this->response->getReasonPhrase();
     }
     
+    public function isGetRequest() {
+        return $this->isRequestMethod('GET');
+    }
+    
+    private function isRequestMethod($requestMethodName) {
+        return Request::method() == strtolower($requestMethodName);
+    }
+    
+    public function isPostRequest() {
+        return $this->isRequestMethod('POST');
+    }
 }
