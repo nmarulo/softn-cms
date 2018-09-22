@@ -26,13 +26,13 @@ class LoginController extends Controller {
         $user                = new Users();
         $user->user_login    = Request::input('user_login');
         $user->user_password = Request::input('user_password');
-        RequestApiFacade::makePostRequest($user, 'login');
+        RequestApiFacade::post('login', $user);
         
         if (RequestApiFacade::isError()) {
-            Messages::addDanger(RequestApiFacade::getMessageError());
+            Messages::addDanger(RequestApiFacade::getMessage());
             $redirect .= '/login';
         } else {
-            $user = ModelFacade::arrayToObject(RequestApiFacade::getResponse(), Users::class);
+            $user = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
             Messages::addSuccess('Inicio de sesión correcto.');
             Session::set('user_login', $user->user_login);
             $redirect .= '/dashboard';

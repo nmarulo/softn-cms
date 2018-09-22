@@ -20,10 +20,10 @@ class RegisterController extends Controller {
     
     public function form() {
         $redirect = URL;
-        RequestApiFacade::makePostRequest(Request::all(), 'register');
+        RequestApiFacade::post('register', Request::all());
         
         if (RequestApiFacade::isError()) {
-            Messages::addDanger(RequestApiFacade::getMessageError());
+            Messages::addDanger(RequestApiFacade::getMessage());
             $redirect .= '/register';
         } else {
             Messages::addSuccess('Usuario creado correctamente.');

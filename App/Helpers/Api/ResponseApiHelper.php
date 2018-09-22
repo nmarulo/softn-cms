@@ -5,10 +5,11 @@
 
 namespace App\Helpers\Api;
 
+use App\Facades\Api\RequestApiFacade;
 use App\Facades\TokenFacade;
-use App\Facades\Utils;
-use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Database\Model;
+use Silver\Core\Bootstrap\Facades\Request as RequestFacade;
+use Silver\Http\Request;
 
 /**
  * Class ResponseApiHelper
@@ -26,7 +27,7 @@ class ResponseApiHelper extends ApiHelper {
                 throw new \Exception('El método no se puede ejecutar.');
             }
             
-            if (!Utils::isGetRequest() && empty($request)) {
+            if (!RequestApiFacade::isGetRequest() && empty($request)) {
                 $response = $this->createResponseFormat(self::$HTTP_STATUS_BAD_REQUEST, 'Faltan datos en la petición.');
             } else {
                 $dataToSend = $callback();
@@ -45,11 +46,11 @@ class ResponseApiHelper extends ApiHelper {
     }
     
     public function getRequest() {
-        return Request::all();
+        return RequestFacade::all();
     }
     
-    public function createResponseFormat($httpStatus, $dataToSend = FALSE) {
-        header($this->headerToken());
+    public function createResponseFormat($httpStatus, $dataToSend = []) {
+        header('Authorization:' . $this->getToken());
         $payload = [];
         
         switch ($httpStatus) {
@@ -69,6 +70,10 @@ class ResponseApiHelper extends ApiHelper {
         return $payload;
     }
     
+    public function getToken() {
+        return TokenFacade::getToken();
+    }
+    
     private function formatDataToSendResponse($dataToSend) {
         if ($dataToSend instanceof Model) {
             $hidden = $dataToSend->getHidden();
@@ -86,8 +91,12 @@ class ResponseApiHelper extends ApiHelper {
         return $dataToSend;
     }
     
-    protected function getToken() {
-        return TokenFacade::getToken();
+    public function getTokenHeader(Request $request = NULL) {
+        if ($request) {
+            return $request->header('AUTHORIZATION');
+        }
+        
+        return RequestFacade::header('AUTHORIZATION');
     }
     
 }

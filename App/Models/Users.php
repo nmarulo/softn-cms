@@ -14,7 +14,11 @@ namespace App\Models;
 use Silver\Database\Model;
 
 /**
- * Users Model
+ * @property string $user_login
+ * @property string $user_name
+ * @property string $user_email
+ * @property string $user_registered
+ * @property string $user_password
  */
 class Users extends Model {
     
