@@ -4,6 +4,9 @@ namespace App\Controllers;
 
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
+use App\Facades\ModelFacade;
+use App\Helpers\EMailerHelper;
+use App\Models\Users;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
@@ -27,6 +30,16 @@ class RegisterController extends Controller {
             $redirect .= '/register';
         } else {
             Messages::addSuccess('Usuario creado correctamente.');
+            $user                = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
+            $user->user_password = Request::input('user_password');
+            
+            try {
+                EMailerHelper::register($user)
+                             ->send('Registro de usuario');
+            } catch (\Exception $exception) {
+                //TODO: log
+            }
+            
             $redirect .= '/login';
         }
         
