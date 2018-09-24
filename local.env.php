@@ -44,5 +44,24 @@ return [
         'email'   => 'your@email.test',
         'name'    => 'Your Name',
     ],
-
+    
+    //TODO: obtener datos desde base de datos.
+    'php_mailer' => [
+            'activated'    => FALSE,
+            // Enable verbose debug output
+            'smtp_debug'   => 0,
+            // Specify main and backup SMTP servers
+            'host'         => 'smtp.gmail.com',
+            // Enable SMTP authentication
+            'smtp_auth'    => TRUE,
+            // SMTP username
+            'username'     => 'test.softn@gmail.com',
+            // SMTP password
+            'password'     => 'password',
+            // Enable TLS encryption, `ssl` also accepted
+            'smtp_secure'  => 'tls',
+            'port'         => 587,
+            'from_name'    => 'Softn CMS',
+            'from_address' => 'no-reply@softn.red',
+    ],
 ];
