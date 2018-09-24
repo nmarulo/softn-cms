@@ -113,8 +113,9 @@ Thanks
 
 Thanks to [JetBrains](https://www.jetbrains.com/?from=SoftN%20CMS) for providing a license for PHPStorm to develop this project.
 
-![jetbrains](https://github.com/nmarulo/softn-cms/blob/develop/jetbrains.svg "jetbrains")
-![phpstorm](https://github.com/nmarulo/softn-cms/blob/develop/phpstorm.svg "phpstorm")
+| JetBrains  | PHPStorm |
+| ------------- | ------------- |
+| ![jetbrains](https://github.com/nmarulo/softn-cms/blob/develop/jetbrains.svg "jetbrains") | ![phpstorm](https://github.com/nmarulo/softn-cms/blob/develop/phpstorm.svg "phpstorm") |
 
 
 Licencia (MIT https://opensource.org/licenses/MIT)
