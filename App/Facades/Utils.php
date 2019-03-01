@@ -5,7 +5,8 @@ namespace App\Facades;
 use Silver\Support\Facade;
 
 /**
- * utils event provider
+ * @method static false|string dateNow($format = 'Y-m-d H:i:s')
+ * @method static string stringToDate($time, $format, $toFormat = 'Y-m-d H:m:s')
  */
 class Utils extends Facade {
     

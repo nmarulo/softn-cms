@@ -27,15 +27,15 @@ Route::group(['prefix' => 'dashboard'], function() {
 
 // Route for Login controller.
 Route::group(['prefix' => 'login'], function() {
-    Route::get('/', 'Login@index', 'login', 'public');
-    Route::post('/', 'Login@form', 'login', 'public');
+    Route::get('/', 'Login@index', 'login', 'login');
+    Route::post('/', 'Login@form', 'login', 'login');
 });
 
 // Route for Register controller.
 Route::group(['prefix' => 'register'], function() {
-    Route::get('/', 'Register@index', 'register', 'public');
-    Route::post('/', 'Register@form', 'register', 'public');
+    Route::get('/', 'Register@index', 'register', 'login');
+    Route::post('/', 'Register@form', 'register', 'login');
 });
 
 // Route for Logout controller.
-Route::get('/logout', 'Logout@index', 'logout', 'dashboard');
+Route::get('/logout', 'Logout@index', 'logout', 'public');

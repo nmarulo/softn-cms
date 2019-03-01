@@ -42,6 +42,16 @@ class ModelHelper {
         $this->hasPagination = FALSE;
     }
     
+    public function arrayToObject($array, $model) {
+        $obj = new $model();
+        
+        foreach ($array as $key => $value) {
+            $obj->{$key} = $value;
+        }
+        
+        return $obj;
+    }
+    
     /**
      * @param Model $model
      *
@@ -109,10 +119,7 @@ class ModelHelper {
     private function instancePagination() {
         $currentPage = 1;
         $totalData   = $this->getTotalNumDataSearchModel();
-        
-        if (Request::ajax()) {
-            $currentPage = Request::input('page', 1);
-        }
+        $currentPage = Request::input('page', $currentPage);
         
         if ($totalData == NULL) {
             $totalData = Query::count()
@@ -163,7 +170,7 @@ class ModelHelper {
         $sortColumn = Request::input('sortColumn');
         $query      = $this->query;
         
-        if (Request::ajax() && !empty($sortColumn)) {
+        if (!empty($sortColumn)) {
             $sortColumn = (array)json_decode($sortColumn);
             
             if (is_array($sortColumn)) {

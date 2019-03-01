@@ -21,9 +21,4 @@ class Utils {
         return \DateTime::createFromFormat($format, $time)
                         ->format($toFormat);
     }
-    
-    public function isRequestMethod($requestMethodName) {
-        return Request::method() == strtolower($requestMethodName);
-    }
-    
 }

@@ -28,7 +28,6 @@
                 <label class="control-label" for="user-password">Contraseña</label>
                 <input class="form-control" type="password" name="user_password" id="user-password" value="{{$user->user_password}}"/>
             </div>
-            {{ include('includes.token') }}
             <button class="btn btn-success" type="submit">
                 #if(empty($user->id))
                     Crear

@@ -2,8 +2,10 @@
 
 namespace App\Controllers\Dashboard;
 
+use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
 use App\Facades\ModelFacade;
+use App\Facades\Pagination;
 use App\Facades\Utils;
 use App\Models\Users;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -16,50 +18,65 @@ use Silver\Http\View;
  */
 class UsersController extends Controller {
     
+    private $urlUsers = 'dashboard/users';
+    
     public function index() {
-        $query = NULL;
+        $pagination = NULL;
+        $users      = [];
+        $request    = Request::all();
+        //TODO: ERROR: solo al enviar, por get, "'uri' => '/dashboard/users'", por eso lo elimino, en caso de enviarlo.
+        unset($request['uri']);
+        RequestApiFacade::get($this->urlUsers, $request);
         
-        if (Request::ajax()) {
-            $filterStart = Request::input('filter-start');
-            $filterFinal = Request::input('filter-final');
-            $query       = Users::query()
-                                ->where('user_registered', '>=', $filterStart)
-                                ->where('user_registered', '<=', $filterFinal);
-            //TODO: no puedo buscar y filtrar a la vez ya que no esta funcionando el "where" con paréntesis.
+        if (RequestApiFacade::isError()) {
+            Messages::addDanger(RequestApiFacade::getMessage());
+        } else {
+            $response   = RequestApiFacade::responseJsonDecode();
+            $pagination = Pagination::arrayToObject($response['pagination']);
+            $users      = array_map(function($value) {
+                return ModelFacade::arrayToObject($value, Users::class);
+            }, $response['users']);
         }
-        
-        $userModel = ModelFacade::model(Users::class, $query)
-                                ->search()
-                                ->pagination()
-                                ->sort();
-        $users     = $userModel->all();
         
         return View::make('dashboard.users.index')
                    ->with('users', $users)
-                   ->withComponent($userModel->getPagination(), 'pagination');
+                   ->withComponent($pagination, 'pagination');
     }
     
     public function form($id) {
-        if (empty($id)) {
-            $user    = new Users();
-            $message = 'Usuario creado correctamente';
-        } else {
-            $user    = Users::find($id);
-            $message = 'Usuario actualizado correctamente.';
-        }
+        $user = new Users();
         
-        if (Utils::isRequestMethod('post')) {
-            $user->user_name  = Request::input('user_name');
-            $user->user_login = Request::input('user_login');
-            $user->user_email = Request::input('user_email');
-            //TODO: cifrar.
-            $user->user_password   = Request::input('user_password');
-            $user->user_registered = empty($id) ? Utils::dateNow() : $user->user_registered;
-            $user                  = $user->save();
-            Messages::addSuccess($message);
+        if (RequestApiFacade::isPostRequest()) {
+            $message = 'Usuario actualizado correctamente.';
+            $request = Request::all();
+            unset($request['uri']);
             
             if (empty($id)) {
-                Redirect::to(sprintf('%1$s/dashboard/users/form/%2$s', URL, $user->id));
+                $message = 'Usuario creado correctamente';
+                RequestApiFacade::post($this->urlUsers, $request);
+            } else {
+                $request['id'] = $id;
+                RequestApiFacade::put($this->urlUsers, $request);
+            }
+            
+            if (RequestApiFacade::isError()) {
+                Messages::addDanger(RequestApiFacade::getMessage());
+                $user = ModelFacade::arrayToObject($request, Users::class);
+            } else {
+                Messages::addSuccess($message);
+                $user = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
+                
+                if (empty($id)) {
+                    Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $user->id));
+                }
+            }
+        } elseif ($id) {
+            RequestApiFacade::get($this->urlUsers, $id);
+            
+            if (RequestApiFacade::isError()) {
+                Messages::addDanger(RequestApiFacade::getMessage());
+            } else {
+                $user = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
             }
         }
         
@@ -68,13 +85,12 @@ class UsersController extends Controller {
     }
     
     public function delete() {
-        $id = Request::input('id');
+        RequestApiFacade::delete($this->urlUsers, Request::all());
         
-        if ($user = Users::find($id)) {
-            $user->delete();
-            Messages::addSuccess('Usuario borrado correctamente.');
+        if (RequestApiFacade::isError()) {
+            Messages::addDanger(RequestApiFacade::getMessage());
         } else {
-            Messages::addDanger('El usuario no existe.');
+            Messages::addSuccess('Usuario borrado correctamente.');
         }
     }
 }
