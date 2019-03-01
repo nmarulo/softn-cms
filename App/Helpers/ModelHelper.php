@@ -54,6 +54,7 @@ class ModelHelper {
     
     /**
      * @param Model $model
+     * @param Query $query
      *
      * @return $this
      */
@@ -73,13 +74,6 @@ class ModelHelper {
         $this->setQuery($this->searchModel->getQuery());
         
         return $this;
-    }
-    
-    /**
-     * @param Query $query
-     */
-    private function setQuery($query) {
-        $this->query = $query;
     }
     
     /**
@@ -114,6 +108,41 @@ class ModelHelper {
         }
         
         return $this->pagination;
+    }
+    
+    /**
+     * @return $this
+     */
+    public function sort() {
+        $sortColumn = Request::input('sortColumn');
+        $query      = $this->query;
+        
+        if (!empty($sortColumn)) {
+            $sortColumn = (array)json_decode($sortColumn);
+            
+            if (is_array($sortColumn)) {
+                foreach ($sortColumn as $value) {
+                    $value = (array)$value;
+                    
+                    if (empty($value['column']) || empty($value['sort'])) {
+                        continue;
+                    }
+                    
+                    $query = $query->orderBy($value['column'], $value['sort']);
+                }
+            }
+        }
+        
+        $this->setQuery($query);
+        
+        return $this;
+    }
+    
+    /**
+     * @param Query $query
+     */
+    private function setQuery($query) {
+        $this->query = $query;
     }
     
     private function instancePagination() {
@@ -161,34 +190,6 @@ class ModelHelper {
         }
         
         $this->setQuery($query);
-    }
-    
-    /**
-     * @return $this
-     */
-    public function sort() {
-        $sortColumn = Request::input('sortColumn');
-        $query      = $this->query;
-        
-        if (!empty($sortColumn)) {
-            $sortColumn = (array)json_decode($sortColumn);
-            
-            if (is_array($sortColumn)) {
-                foreach ($sortColumn as $value) {
-                    $value = (array)$value;
-                    
-                    if (empty($value['column']) || empty($value['sort'])) {
-                        continue;
-                    }
-                    
-                    $query = $query->orderBy($value['column'], $value['sort']);
-                }
-            }
-        }
-        
-        $this->setQuery($query);
-        
-        return $this;
     }
     
 }

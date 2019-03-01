@@ -18,7 +18,18 @@ class UsersApiController extends Controller {
             return $this->getUserById($id);
         }
         
-        $userModel = ModelFacade::model(Users::class)
+        $query       = NULL;
+        $filterStart = Request::input('filter-start');
+        $filterFinal = Request::input('filter-final');
+        
+        if (!empty($filterStart) && !empty($filterFinal)) {
+            $query = Users::query()
+                          ->where('user_registered', '>=', $filterStart)
+                          ->where('user_registered', '<=', $filterFinal);
+            //TODO: no puedo buscar y filtrar a la vez ya que no esta funcionando el "where" con paréntesis.
+        }
+        
+        $userModel = ModelFacade::model(Users::class, $query)
                                 ->search()
                                 ->pagination()
                                 ->sort();
@@ -27,19 +38,6 @@ class UsersApiController extends Controller {
                 'users'      => $userModel->all(),
                 'pagination' => $userModel->getPagination(),
         ];
-    }
-    
-    /**
-     * @param $id
-     *
-     * @return Users
-     */
-    private function getUserById($id) {
-        if ($user = Users::find($id)) {
-            return $user;
-        }
-        
-        throw new \RuntimeException("Usuario desconocido.");
     }
     
     public function post() {
@@ -70,5 +68,18 @@ class UsersApiController extends Controller {
     public function delete() {
         $user = $this->getUserById(Request::input('id'));
         $user->delete();
+    }
+    
+    /**
+     * @param $id
+     *
+     * @return Users
+     */
+    private function getUserById($id) {
+        if ($user = Users::find($id)) {
+            return $user;
+        }
+        
+        throw new \RuntimeException("Usuario desconocido.");
     }
 }
