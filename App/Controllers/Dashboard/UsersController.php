@@ -5,9 +5,10 @@ namespace App\Controllers\Dashboard;
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
 use App\Facades\ModelFacade;
-use App\Facades\Pagination;
 use App\Facades\Utils;
 use App\Models\Users;
+use App\Rest\Request\UserRequest;
+use App\Rest\UsersRest;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
@@ -18,29 +19,19 @@ use Silver\Http\View;
  */
 class UsersController extends Controller {
     
+    /**
+     * @var string
+     */
     private $urlUsers = 'dashboard/users';
     
     public function index() {
-        $pagination = NULL;
-        $users      = [];
-        $request    = Request::all();
-        //TODO: ERROR: solo al enviar, por get, "'uri' => '/dashboard/users'", por eso lo elimino, en caso de enviarlo.
-        unset($request['uri']);
-        RequestApiFacade::get($this->urlUsers, $request);
-        
-        if (RequestApiFacade::isError()) {
-            Messages::addDanger(RequestApiFacade::getMessage());
-        } else {
-            $response   = RequestApiFacade::responseJsonDecode();
-            $pagination = Pagination::arrayToObject($response['pagination']);
-            $users      = array_map(function($value) {
-                return ModelFacade::arrayToObject($value, Users::class);
-            }, $response['users']);
-        }
+        $userRequest            = new UserRequest();
+        $userRequest->dataTable = Utils::getDataTable();
+        $response               = (new UsersRest())->getAll($userRequest);
         
         return View::make('dashboard.users.index')
-                   ->with('users', $users)
-                   ->withComponent($pagination, 'pagination');
+                   ->with('users', $response->users)
+                   ->withComponent($response->pagination, 'pagination');
     }
     
     public function form($id) {

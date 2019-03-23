@@ -47,9 +47,9 @@
                 <div class="col-sm-9">
                     <form class="form-search-table-data">
                         <div class="input-group">
-                            <input class="form-control" type="text" name="search-value" placeholder="login:admin email:info@softn.red">
+                            <input class="form-control" type="text" name="searchValue" placeholder="login:admin email:info@softn.red">
                             <span class="input-group-addon">
-                                <input type="checkbox" name="search-strict">
+                                <input type="checkbox" name="searchStrict">
                             </span>
                             <span class="input-group-btn">
                                 <button class="btn btn-primary" type="submit">Buscar</button>
