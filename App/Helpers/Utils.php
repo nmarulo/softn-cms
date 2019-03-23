@@ -5,8 +5,12 @@
 
 namespace App\Helpers;
 
+use App\Rest\Common\DataTable\DataTable;
+use App\Rest\Common\DataTable\Filter;
+use App\Rest\Common\DataTable\SortColumn;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
+use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Database\Model;
 
 /**
@@ -144,5 +148,37 @@ class Utils {
     public function stringToDate($time, $format, $toFormat = 'Y-m-d H:m:s') {
         return \DateTime::createFromFormat($format, $time)
                         ->format($toFormat);
+    }
+    
+    public function getDataTable(): DataTable {
+        $dataTable       = new DataTable();
+        $sortColumnInput = Request::input('sortColumn', '');
+        $searchValue     = Request::input('searchValue', '');
+        
+        if (!empty($sortColumnInput)) {
+            $sortColumnArray = [];
+            
+            $sortColumnInput = json_decode($sortColumnInput, TRUE);
+            
+            foreach ($sortColumnInput as $value) {
+                $sortColumn        = new SortColumn();
+                $sortColumn->name  = $value['column'];
+                $sortColumn->key   = $value['sort'];
+                $sortColumnArray[] = $sortColumn;
+            }
+            
+            $dataTable->sortColumn = $sortColumnArray;
+        }
+        
+        if (!empty($searchValue)) {
+            $filter            = new Filter();
+            $filter->value     = $searchValue;
+            $filter->strict    = Request::input('searchStrict', '') == 'on';
+            $dataTable->filter = $filter;
+        }
+        
+        $dataTable->page = Request::input('page');
+        
+        return $dataTable;
     }
 }
