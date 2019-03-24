@@ -92,10 +92,10 @@
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </td>
-                        <td>{{$user->user_name}}</td>
-                        <td>{{$user->user_login}}</td>
-                        <td>{{$user->user_email}}</td>
-                        <td>{{$user->user_registered}}</td>
+                        <td>{{$user->userName}}</td>
+                        <td>{{$user->userLogin}}</td>
+                        <td>{{$user->userEmail}}</td>
+                        <td>{{$user->userRegistered}}</td>
                     </tr>
                     #endforeach
                     </tbody>
@@ -139,10 +139,10 @@
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </td>
-                        <td>{{$user->user_name}}</td>
-                        <td>{{$user->user_login}}</td>
-                        <td>{{$user->user_email}}</td>
-                        <td>{{$user->user_registered}}</td>
+                        <td>{{$user->userName}}</td>
+                        <td>{{$user->userLogin}}</td>
+                        <td>{{$user->userEmail}}</td>
+                        <td>{{$user->userRegistered}}</td>
                     </tr>
                     #endforeach
                     </tbody>
