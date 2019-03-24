@@ -5,19 +5,20 @@
 
 namespace App\Rest\Dto;
 
+use App\Facades\Utils;
 use App\Rest\Common\Magic;
+use App\Rest\Common\ObjectToArray;
 
 /**
  * @property int       $id
  * @property string    $userLogin
  * @property string    $userName
  * @property string    $userEmail
- * @property string    $userPassword
  * @property \DateTime $userRegistered
  * Class Users
  * @author Nicolás Marulanda P.
  */
-class Users {
+class Users implements ObjectToArray {
     
     use Magic;
     
@@ -42,13 +43,12 @@ class Users {
     private $userEmail;
     
     /**
-     * @var string
-     */
-    private $userPassword;
-    
-    /**
      * @var \DateTime
      */
     private $userRegistered;
+    
+    public function toArray() {
+        return Utils::castObjectToArray($this);
+    }
     
 }

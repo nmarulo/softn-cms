@@ -5,8 +5,10 @@
 
 namespace App\Rest\Response;
 
+use App\Facades\Utils;
 use App\Helpers\Pagination;
 use App\Rest\Common\Magic;
+use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
 use App\Rest\Dto\Users;
 
@@ -16,7 +18,7 @@ use App\Rest\Dto\Users;
  * Class UserResponse
  * @author Nicolás Marulanda P.
  */
-class UserResponse implements ParseOfClass {
+class UserResponse implements ParseOfClass, ObjectToArray {
     
     use Magic;
     
@@ -40,4 +42,9 @@ class UserResponse implements ParseOfClass {
                 'Pagination' => Pagination::class,
         ];
     }
+    
+    public function toArray() {
+        return Utils::castObjectToArray($this);
+    }
+    
 }
