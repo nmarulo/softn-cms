@@ -2,14 +2,19 @@
 
 namespace App\Helpers;
 
-use Silver\Core\Bootstrap\Facades\Request;
+use App\Rest\Common\DataTable\Filter;
+use App\Rest\Common\Magic;
 use Silver\Database\Model;
 use Silver\Database\Query;
 
 /**
+ * @property int   $count
+ * @property Query $query
  * SearchModelHelper Helper
  */
-class SearchModelHelper {
+class SearchDataTable {
+    
+    use Magic;
     
     /** @var int */
     private $count;
@@ -21,23 +26,27 @@ class SearchModelHelper {
      * SearchModelHelper constructor.
      */
     public function __construct() {
-        $this->count = NULL;
-        $this->query = NULL;
+        $this->count = -1;
     }
     
     /**
-     * @param Model $currentModel
-     * @param Query $query
+     * @param Model  $mode
+     * @param Filter $filter
+     * @param Query  $query
      *
-     * @return $this
+     * @return SearchDataTable
      */
-    public function getInstance($currentModel, $query) {
+    public function filter(Model $mode, Filter $filter, Query $query): SearchDataTable {
+        if ($filter == NULL) {
+            return $this;
+        }
+        
         $matches      = [];
-        $search       = Request::input('search-value');//login_t:admin email:info@sofn.red
-        $searchable   = (new $currentModel())->getSearchable();
+        $search       = $filter->value;//login_t:admin email:info@sofn.red
+        $searchable   = $mode->getSearchable();
         $queryCount   = Query::count()
-                             ->from($currentModel::tableName());
-        $strictSearch = Request::input('search-strict', FALSE) == 'on';
+                             ->from($mode::tableName());
+        $strictSearch = is_null($filter->strict) ? FALSE : $filter->strict;
         
         if (!empty($search)) {
             $explode = explode(' ', $search);
@@ -68,7 +77,12 @@ class SearchModelHelper {
             }
         }
         
-        $this->count = $queryCount->single();
+        $count = $queryCount->single();
+        
+        if (is_numeric($count)) {
+            $this->count = intval($count);
+        }
+        
         $this->query = $query;
         
         return $this;
@@ -80,7 +94,7 @@ class SearchModelHelper {
      * @param string  $string
      * @param boolean $strictSearch
      */
-    private function searchFormat(&$query, $searchable, $string, $strictSearch) {
+    private function searchFormat(Query &$query, array $searchable, string $string, bool $strictSearch): void {
         //pos 0: columna
         //pos 1: valor
         $explode     = explode(':', $string);
@@ -98,7 +112,7 @@ class SearchModelHelper {
         }
     }
     
-    private function where(&$query, $column, $value, $strict = TRUE, $how = 'and') {
+    private function where(Query &$query, $column, $value, bool $strict = TRUE, string $how = 'and'): void {
         $op = '=';
         
         if (!$strict) {
@@ -107,20 +121,6 @@ class SearchModelHelper {
         }
         
         $query = $query->where($column, $op, $value, $how);
-    }
-    
-    /**
-     * @return int
-     */
-    public function getCount() {
-        return $this->count;
-    }
-    
-    /**
-     * @return Query
-     */
-    public function getQuery() {
-        return $this->query;
     }
     
 }
