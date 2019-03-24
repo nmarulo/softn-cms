@@ -6,7 +6,9 @@
 namespace App\Helpers;
 
 use App\Rest\Common\Magic;
+use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
+use \App\Facades\Utils;
 
 /**
  * @property Page[] $pages
@@ -22,7 +24,7 @@ use App\Rest\Common\ParseOfClass;
  * Class Pagination
  * @author Nicolás Marulanda P.
  */
-class Pagination implements ParseOfClass {
+class Pagination implements ParseOfClass, ObjectToArray {
     
     use Magic;
     
@@ -60,6 +62,10 @@ class Pagination implements ParseOfClass {
         return [
                 'Page' => Page::class,
         ];
+    }
+    
+    public function toArray() {
+        return Utils::castObjectToArray($this);
     }
     
     public function getInit($currentPageValue, $totalData, $maxNumberPagesShow = 3) {
