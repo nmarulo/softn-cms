@@ -28,37 +28,35 @@ abstract class RestCall {
     }
     
     /**
-     * @param null   $object
+     * @param mixed  $object
      * @param string $uri
-     * @param string $parseClass
      *
      * @return mixed
      * @throws \Exception
      */
-    protected function get($object = NULL, string $uri = '', string $parseClass = '') {
+    protected function get($object = NULL, string $uri = '') {
         $uri = $this->buildUri($object, $uri);
         
         if (is_object($object) && $object instanceof ObjectToArray) {
             $object = $object->toArray();
         }
         
-        return $this->makeCall('get', $object, $uri, $parseClass);
+        return $this->makeCall('get', $object, $uri);
     }
     
-    protected abstract function getClass(): string;
+    protected abstract function getParseToClass(): string;
     
     protected abstract function baseUri(): string;
     
     /**
      * @param string $type
-     * @param        $object
+     * @param mixed  $object
      * @param string $uri
-     * @param string $parseClass
      *
      * @return mixed
      * @throws \Exception
      */
-    private function makeCall(string $type, $object = NULL, string $uri = '', string $parseClass = '') {
+    private function makeCall(string $type, $object = NULL, string $uri = '') {
         $uri = trim($this->baseUri(), '/') . "/$uri";
         
         $this->requestApiHelper->$type($uri, $object);
@@ -67,13 +65,13 @@ abstract class RestCall {
             throw new \Exception($this->requestApiHelper->getMessage());
         }
         
-        $response = $this->requestApiHelper->responseJsonDecode();
-        
-        if (empty($parseClass)) {
-            return $response;
+        if (empty($this->getParseToClass())) {
+            throw new \Exception("Parse To Class no definida.");
         }
         
-        return Utils::parseOf($response, $parseClass);
+        $response = $this->requestApiHelper->responseJsonDecode();
+        
+        return Utils::parseOf($response, $this->getParseToClass());
     }
     
     private function buildUri(&$object, string $uri = ''): string {
