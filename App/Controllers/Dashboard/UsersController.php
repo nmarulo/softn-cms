@@ -5,10 +5,10 @@ namespace App\Controllers\Dashboard;
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
 use App\Facades\ModelFacade;
+use App\Facades\Rest\UsersRestFacade;
 use App\Facades\Utils;
 use App\Models\Users;
 use App\Rest\Request\UserRequest;
-use App\Rest\UsersRest;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
@@ -27,7 +27,7 @@ class UsersController extends Controller {
     public function index() {
         $userRequest            = new UserRequest();
         $userRequest->dataTable = Utils::getDataTable();
-        $response               = (new UsersRest())->getAll($userRequest);
+        $response               = UsersRestFacade::getAll($userRequest);
         
         return View::make('dashboard.users.index')
                    ->with('users', $response->users)
@@ -35,7 +35,7 @@ class UsersController extends Controller {
     }
     
     public function form($id) {
-        $user = new Users();
+        $userDTO = new \App\Rest\Dto\Users();
         
         if (RequestApiFacade::isPostRequest()) {
             $message = 'Usuario actualizado correctamente.';
@@ -62,17 +62,15 @@ class UsersController extends Controller {
                 }
             }
         } elseif ($id) {
-            RequestApiFacade::get($this->urlUsers, $id);
+            $userResponse = UsersRestFacade::getById($id);
             
-            if (RequestApiFacade::isError()) {
-                Messages::addDanger(RequestApiFacade::getMessage());
-            } else {
-                $user = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
+            if (isset($userResponse->users[0])) {
+                $userDTO = $userResponse->users[0];
             }
         }
         
         return View::make('dashboard.users.form')
-                   ->with('user', $user);
+                   ->with('user', $userDTO);
     }
     
     public function delete() {
