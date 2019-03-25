@@ -19,7 +19,9 @@ class UsersApiController extends Controller {
         $userResponse = new UserResponse();
         
         if ($id) {
-            $userResponse->users = $this->userModelToDTO($this->getUserById($id));
+            $userResponse->users = [
+                    $this->userModelToDTO($this->getUserById($id)),
+            ];
             
             return $userResponse->toArray();
         }
