@@ -19,7 +19,7 @@ Route::group(['prefix' => 'api'], function() {
             Route::get('/{id?}', 'Api/Dashboard/UsersApi@get', 'users', 'api');
             Route::post('/', 'Api/Dashboard/UsersApi@post', 'users', 'api');
             Route::delete('/', 'Api/Dashboard/UsersApi@delete', 'users', 'api');
-            Route::put('/', 'Api/Dashboard/UsersApi@put', 'users', 'api');
+            Route::put('/{id?}', 'Api/Dashboard/UsersApi@put', 'users', 'api');
         });
     });
     Route::post('/login', 'Api/LoginApi@login', 'login', 'api');
