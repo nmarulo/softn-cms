@@ -44,6 +44,37 @@ abstract class RestCall {
         return $this->makeCall('get', $object, $uri);
     }
     
+    /**
+     * @param        $object
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function post($object) {
+        return $this->makeCall('post', $object);
+    }
+    
+    /**
+     * @param int    $id
+     * @param        $object
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function put(int $id, $object) {
+        return $this->makeCall('put', $object, $id);
+    }
+    
+    /**
+     * @param int $id
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function delete(int $id) {
+        return $this->makeCall('delete', NULL, $id);
+    }
+    
     protected abstract function getParseToClass(): string;
     
     protected abstract function baseUri(): string;
