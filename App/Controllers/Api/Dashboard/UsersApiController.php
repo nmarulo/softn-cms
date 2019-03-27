@@ -15,6 +15,15 @@ use Silver\Core\Controller;
  */
 class UsersApiController extends Controller {
     
+    const COMPARISION_TABLE = [
+            'id'             => 'id',
+            'userLogin'      => 'user_login',
+            'userEmail'      => 'user_email',
+            'userName'       => 'user_name',
+            'userRegistered' => 'user_registered',
+            'userPassword'   => 'user_password',
+    ];
+    
     public function get($id) {
         $userResponse = new UserResponse();
         
@@ -34,8 +43,7 @@ class UsersApiController extends Controller {
                                 ->pagination()
                                 ->sort();
         
-        $users = $userModel->all();
-        
+        $users    = $userModel->all();
         $usersDTO = array_map(function(Users $user) {
             return $this->userModelToDTO($user);
         }, $users);
@@ -47,11 +55,7 @@ class UsersApiController extends Controller {
     }
     
     public function post() {
-        $user                  = new Users();
-        $user->user_password   = Request::input('user_password'); //TODO: cifrar.
-        $user->user_registered = Utils::dateNow();
-        
-        return $this->saveUser($user);
+        return $this->saveUser();
     }
     
     /**
@@ -59,16 +63,27 @@ class UsersApiController extends Controller {
      *
      * @return Users
      */
-    function saveUser($user) {
-        $user->user_login = Request::input('user_login');
-        $user->user_name  = Request::input('user_name', $user->user_login);
-        $user->user_email = Request::input('user_email');
+    function saveUser(?Users $user = NULL): array {
+        $response = new UserResponse();
+        $request  = Utils::parseOf(Request::all(), UserRequest::class);
         
-        return $user->save();
+        if (is_null($user)) {
+            $request->userRegistered = Utils::dateNow();
+        } else {
+            $request->id = $user->id;
+        }
+        
+        $user            = $this->userDtoToModel($request)
+                                ->save();
+        $response->users = [
+                $this->userModelToDTO($user),
+        ];
+        
+        return $response->toArray();
     }
     
-    public function put() {
-        return $this->saveUser($this->getUserById(Request::input('id')));
+    public function put($id) {
+        return $this->saveUser($this->getUserById($id));
     }
     
     public function delete() {
@@ -77,14 +92,29 @@ class UsersApiController extends Controller {
     }
     
     private function userModelToDTO(Users $user): \App\Rest\Dto\Users {
-        $userDTO                 = new \App\Rest\Dto\Users();
-        $userDTO->id             = $user->id;
-        $userDTO->userLogin      = $user->user_login;
-        $userDTO->userEmail      = $user->user_email;
-        $userDTO->userName       = $user->user_name;
-        $userDTO->userRegistered = $user->user_registered;
+        $userDTO            = new \App\Rest\Dto\Users();
+        $propertyNamesModel = array_keys($user->data());
+        
+        foreach (self::COMPARISION_TABLE as $propDto => $propModel) {
+            if (array_search($propModel, $propertyNamesModel, TRUE) !== FALSE) {
+                $userDTO->$propDto = $user->$propModel;
+            }
+        }
         
         return $userDTO;
+    }
+    
+    private function userDtoToModel(\App\Rest\Dto\Users $userDTO): Users {
+        $user               = new Users();
+        $propertyNamesModel = array_keys($userDTO->getProperties());
+        
+        foreach (self::COMPARISION_TABLE as $propDto => $propModel) {
+            if (array_search($propDto, $propertyNamesModel, TRUE) !== FALSE) {
+                $user->$propModel = $userDTO->$propDto;
+            }
+        }
+        
+        return $user;
     }
     
     /**
