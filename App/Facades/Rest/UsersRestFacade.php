@@ -15,6 +15,7 @@ use Silver\Support\Facade;
  * @method static UserResponse getById(int $id)
  * @method static UserResponse create(UserRequest $request)
  * @method static UserResponse update(int $id, UserRequest $request)
+ * @method static bool remove(int $id)
  * Class UsersRestFacade
  * @author Nicolás Marulanda P.
  */

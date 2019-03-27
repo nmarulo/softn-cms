@@ -61,7 +61,9 @@ class UsersRest extends RestCall {
     
     public function remove(int $id): bool {
         try {
-            return $this->delete($id);
+            $this->delete($id);
+            
+            return TRUE;
         } catch (\Exception $exception) {
             Messages::addDanger($exception->getMessage());
         }

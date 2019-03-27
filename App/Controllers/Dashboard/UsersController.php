@@ -67,12 +67,8 @@ class UsersController extends Controller {
                    ->with('user', $userDTO);
     }
     
-    public function delete() {
-        RequestApiFacade::delete($this->urlUsers, Request::all());
-        
-        if (RequestApiFacade::isError()) {
-            Messages::addDanger(RequestApiFacade::getMessage());
-        } else {
+    public function delete($id) {
+        if (UsersRestFacade::remove($id)) {
             Messages::addSuccess('Usuario borrado correctamente.');
         }
     }
