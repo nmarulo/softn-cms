@@ -88,7 +88,7 @@
                             <a class="btn btn-primary" href="{{ url('/dashboard/users/form/') }}{{$user->id}}">
                                 <span class="glyphicon glyphicon-edit"></span>
                             </a>
-                            <button class="btn btn-danger" type="button" data-delete-id="{{$user->id}}" data-toggle="modal" data-target="#modal-delete" data-delete-action="/dashboard/users/delete">
+                            <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#modal-delete" data-delete-action="/dashboard/users/delete/{{$user->id}}">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </td>
