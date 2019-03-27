@@ -39,34 +39,28 @@ class UsersController extends Controller {
         
         if (RequestApiFacade::isPostRequest()) {
             $message = 'Usuario actualizado correctamente.';
-            $request = Request::all();
-            unset($request['uri']);
+            $request = Utils::parseOf(Request::all(), UserRequest::class);
             
             if (empty($id)) {
-                $message = 'Usuario creado correctamente';
-                RequestApiFacade::post($this->urlUsers, $request);
+                $message      = 'Usuario creado correctamente';
+                $userResponse = UsersRestFacade::create($request);
             } else {
-                $request['id'] = $id;
-                RequestApiFacade::put($this->urlUsers, $request);
+                $userResponse = UsersRestFacade::update($id, $request);
             }
             
-            if (RequestApiFacade::isError()) {
-                Messages::addDanger(RequestApiFacade::getMessage());
-                $user = ModelFacade::arrayToObject($request, Users::class);
-            } else {
+            if (isset($userResponse->users[0])) {
                 Messages::addSuccess($message);
-                $user = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
                 
                 if (empty($id)) {
-                    Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $user->id));
+                    Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $userResponse->users[0]->id));
                 }
             }
         } elseif ($id) {
             $userResponse = UsersRestFacade::getById($id);
-            
-            if (isset($userResponse->users[0])) {
-                $userDTO = $userResponse->users[0];
-            }
+        }
+        
+        if (isset($userResponse->users[0])) {
+            $userDTO = $userResponse->users[0];
         }
         
         return View::make('dashboard.users.form')
