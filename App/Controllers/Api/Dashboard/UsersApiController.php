@@ -28,8 +28,9 @@ class UsersApiController extends Controller {
         $userResponse = new UserResponse();
         
         if ($id) {
+            $model = $this->getUserById($id);
             $userResponse->users = [
-                    $this->userModelToDTO($this->getUserById($id)),
+                    Utils::castModelToDto(self::COMPARISION_TABLE, $model, \App\Rest\Dto\Users::class),
             ];
             
             return $userResponse->toArray();
@@ -45,7 +46,7 @@ class UsersApiController extends Controller {
         
         $users    = $userModel->all();
         $usersDTO = array_map(function(Users $user) {
-            return $this->userModelToDTO($user);
+            return Utils::castModelToDto(self::COMPARISION_TABLE, $user, \App\Rest\Dto\Users::class);
         }, $users);
         
         $userResponse->users      = $usersDTO;
@@ -73,10 +74,10 @@ class UsersApiController extends Controller {
             $request->id = $id;
         }
         
-        $id              = $this->userDtoToModel($request, FALSE)
-                                ->save()->id;
+        $model           = Utils::castDtoToModel(self::COMPARISION_TABLE, $request, Users::class, FALSE);
+        $user            = $this->getUserById($model->save()->id);
         $response->users = [
-                $this->userModelToDTO($this->getUserById($id)),
+                Utils::castModelToDto(self::COMPARISION_TABLE, $user, \App\Rest\Dto\Users::class),
         ];
         
         return $response->toArray();
@@ -89,40 +90,6 @@ class UsersApiController extends Controller {
     public function delete() {
         $user = $this->getUserById(Request::input('id'));
         $user->delete();
-    }
-    
-    private function userModelToDTO(Users $user, bool $hideProps = TRUE): \App\Rest\Dto\Users {
-        $userDTO            = new \App\Rest\Dto\Users();
-        $propertyNamesModel = array_keys($user->data());
-        
-        foreach (self::COMPARISION_TABLE as $propDto => $propModel) {
-            if (array_search($propModel, $propertyNamesModel, TRUE) !== FALSE) {
-                if ($hideProps && Utils::isHiddenProperty($user, $propModel)) {
-                    continue;
-                }
-                
-                $userDTO->$propDto = $user->$propModel;
-            }
-        }
-        
-        return $userDTO;
-    }
-    
-    private function userDtoToModel(\App\Rest\Dto\Users $userDTO, bool $hideProps = TRUE): Users {
-        $user               = new Users();
-        $propertyNamesModel = array_keys($userDTO->getProperties());
-        
-        foreach (self::COMPARISION_TABLE as $propDto => $propModel) {
-            if (array_search($propDto, $propertyNamesModel, TRUE) !== FALSE) {
-                if ($hideProps && Utils::isHiddenProperty($user, $propModel)) {
-                    continue;
-                }
-                
-                $user->$propModel = $userDTO->$propDto;
-            }
-        }
-        
-        return $user;
     }
     
     /**
