@@ -3,18 +3,13 @@
 namespace App\Helpers;
 
 use App\Rest\Common\DataTable\Filter;
-use App\Rest\Common\Magic;
 use Silver\Database\Model;
 use Silver\Database\Query;
 
 /**
- * @property int   $count
- * @property Query $query
  * SearchModelHelper Helper
  */
 class SearchDataTable {
-    
-    use Magic;
     
     /** @var int */
     private $count;
@@ -86,6 +81,20 @@ class SearchDataTable {
         $this->query = $query;
         
         return $this;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getCount(): int {
+        return $this->count;
+    }
+    
+    /**
+     * @return Query
+     */
+    public function getQuery(): Query {
+        return $this->query;
     }
     
     /**

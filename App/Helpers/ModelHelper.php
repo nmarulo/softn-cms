@@ -95,8 +95,8 @@ class ModelHelper {
         }
         
         $searchDataTable = SearchDataTableFacade::filter($this->model, $this->dataTable->filter, $this->query);
-        $this->setQuery($searchDataTable->query);
-        $this->count = $searchDataTable->count;
+        $this->setQuery($searchDataTable->getQuery());
+        $this->count = $searchDataTable->getCount();
         
         return $this;
     }
