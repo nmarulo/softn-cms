@@ -19,9 +19,9 @@ class UsersRest extends RestCall {
         parent::__construct();
     }
     
-    public function getAll(UserRequest $users = NULL): UserResponse {
+    public function getAll(UserRequest $request = NULL): UserResponse {
         try {
-            return $this->get($users);
+            return $this->get($request);
         } catch (\Exception $exception) {
             Messages::addDanger($exception->getMessage());
         }
@@ -37,6 +37,36 @@ class UsersRest extends RestCall {
         }
         
         return new UserResponse();
+    }
+    
+    public function create(UserRequest $request): ?UserResponse {
+        try {
+            return $this->post($request);
+        } catch (\Exception $exception) {
+            Messages::addDanger($exception->getMessage());
+        }
+        
+        return new UserResponse();
+    }
+    
+    public function update(int $id, UserRequest $request): ?UserResponse {
+        try {
+            return $this->put($id, $request);
+        } catch (\Exception $exception) {
+            Messages::addDanger($exception->getMessage());
+        }
+        
+        return new UserResponse();
+    }
+    
+    public function remove(int $id): bool {
+        try {
+            return $this->delete($id);
+        } catch (\Exception $exception) {
+            Messages::addDanger($exception->getMessage());
+        }
+        
+        return FALSE;
     }
     
     protected function getParseToClass(): string {

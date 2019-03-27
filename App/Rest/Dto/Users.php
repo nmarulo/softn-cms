@@ -15,6 +15,7 @@ use App\Rest\Common\ObjectToArray;
  * @property string    $userName
  * @property string    $userEmail
  * @property \DateTime $userRegistered
+ * @property string    $userPassword
  * Class Users
  * @author Nicolás Marulanda P.
  */
@@ -46,6 +47,11 @@ class Users implements ObjectToArray {
      * @var \DateTime
      */
     private $userRegistered;
+    
+    /**
+     * @var string
+     */
+    private $userPassword;
     
     public function toArray() {
         return Utils::castObjectToArray($this);

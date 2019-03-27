@@ -11,8 +11,10 @@ use App\Rest\UsersRest;
 use Silver\Support\Facade;
 
 /**
- * @method static UserResponse getAll(UserRequest $users = NULL)
+ * @method static UserResponse getAll(UserRequest $request = NULL)
  * @method static UserResponse getById(int $id)
+ * @method static UserResponse create(UserRequest $request)
+ * @method static UserResponse update(int $id, UserRequest $request)
  * Class UsersRestFacade
  * @author Nicolás Marulanda P.
  */
