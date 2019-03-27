@@ -187,4 +187,44 @@ class Utils {
         
         return in_array($propName, $hiddenProps);
     }
+    
+    public function castModelToDto(array $comparisionProps, Model $model, string $classDto, bool $hideProps = TRUE) {
+        return $this->castObjectTo($comparisionProps, $model, $classDto, $hideProps);
+    }
+    
+    public function castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE) {
+        return $this->castObjectTo($comparisionProps, $dto, $classModel, $hideProps);
+    }
+    
+    private function castObjectTo(array $comparisionProps, $object, string $toClass, bool $hideProps = TRUE) {
+        $class     = new $toClass();
+        $model     = $class;
+        $needle    = 'propDto';
+        $keyClass  = 'propModel';
+        $keyObject = $needle;
+        
+        if ($object instanceof Model) {
+            $propertyNames = $object->data();
+            $model         = $object;
+            $needle        = 'propModel';
+            $keyObject     = $needle;
+            $keyClass      = 'propDto';
+        } else {
+            $propertyNames = $object->getProperties();
+        }
+        
+        $propertyNamesModel = array_keys($propertyNames);
+        
+        foreach ($comparisionProps as $propDto => $propModel) {
+            if (array_search($$needle, $propertyNamesModel, TRUE) !== FALSE) {
+                if ($hideProps && Utils::isHiddenProperty($model, $propModel)) {
+                    continue;
+                }
+                
+                $class->$$keyClass = $object->$$keyObject;
+            }
+        }
+        
+        return $class;
+    }
 }

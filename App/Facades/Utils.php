@@ -14,6 +14,8 @@ use Silver\Support\Facade;
  * @method static string stringToDate($time, $format, $toFormat = 'Y-m-d H:m:s')
  * @method static DataTable getDataTable()
  * @method static bool isHiddenProperty(Model $model, string $propName)
+ * @method static mixed castModelToDto(array $comparisionProps, Model $model, string $classDto, bool $hideProps = TRUE)
+ * @method static Model castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE)
  */
 class Utils extends Facade {
     
