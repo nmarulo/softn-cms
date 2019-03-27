@@ -87,9 +87,8 @@ class UsersApiController extends Controller {
         return $this->saveUser($id);
     }
     
-    public function delete() {
-        $user = $this->getUserById(Request::input('id'));
-        $user->delete();
+    public function delete($id) {
+        $this->getUserById($id)->delete();
     }
     
     /**

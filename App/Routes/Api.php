@@ -18,7 +18,7 @@ Route::group(['prefix' => 'api'], function() {
         Route::group(['prefix' => 'users'], function() {
             Route::get('/{id?}', 'Api/Dashboard/UsersApi@get', 'users', 'api');
             Route::post('/', 'Api/Dashboard/UsersApi@post', 'users', 'api');
-            Route::delete('/', 'Api/Dashboard/UsersApi@delete', 'users', 'api');
+            Route::delete('/{id?}', 'Api/Dashboard/UsersApi@delete', 'users', 'api');
             Route::put('/{id?}', 'Api/Dashboard/UsersApi@put', 'users', 'api');
         });
     });
