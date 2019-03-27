@@ -59,31 +59,31 @@ class UsersApiController extends Controller {
     }
     
     /**
-     * @param Users $user
+     * @param int $id
      *
-     * @return Users
+     * @return array
      */
-    function saveUser(?Users $user = NULL): array {
+    private function saveUser(?int $id = NULL): array {
         $response = new UserResponse();
         $request  = Utils::parseOf(Request::all(), UserRequest::class);
         
-        if (is_null($user)) {
+        if (is_null($id)) {
             $request->userRegistered = Utils::dateNow();
         } else {
-            $request->id = $user->id;
+            $request->id = $id;
         }
         
-        $user            = $this->userDtoToModel($request)
-                                ->save();
+        $id              = $this->userDtoToModel($request)
+                                ->save()->id;
         $response->users = [
-                $this->userModelToDTO($user),
+                $this->userModelToDTO($this->getUserById($id)),
         ];
         
         return $response->toArray();
     }
     
     public function put($id) {
-        return $this->saveUser($this->getUserById($id));
+        return $this->saveUser($id);
     }
     
     public function delete() {
