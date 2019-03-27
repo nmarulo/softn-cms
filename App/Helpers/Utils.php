@@ -181,4 +181,10 @@ class Utils {
         
         return $dataTable;
     }
+    
+    public function isHiddenProperty(Model $model, string $propName): bool {
+        $hiddenProps = $model->getHidden();
+        
+        return in_array($propName, $hiddenProps);
+    }
 }

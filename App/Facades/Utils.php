@@ -3,6 +3,7 @@
 namespace App\Facades;
 
 use App\Rest\Common\DataTable\DataTable;
+use Silver\Database\Model;
 use Silver\Support\Facade;
 
 /**
@@ -12,6 +13,7 @@ use Silver\Support\Facade;
  * @method static false|string dateNow($format = 'Y-m-d H:i:s')
  * @method static string stringToDate($time, $format, $toFormat = 'Y-m-d H:m:s')
  * @method static DataTable getDataTable()
+ * @method static bool isHiddenProperty(Model $model, string $propName)
  */
 class Utils extends Facade {
     
