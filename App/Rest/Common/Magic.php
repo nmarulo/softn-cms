@@ -11,17 +11,24 @@ namespace App\Rest\Common;
  */
 trait Magic {
     
+    /**
+     * @var array
+     */
+    private $properties;
+    
     public function __get($name) {
-        try {
-            return $this->$name;
-        } catch (\Exception $exception) {
-            $this->$name = NULL;
-            
-            return NULL;
+        if (isset($this->properties[$name])) {
+            return $this->properties[$name];
         }
+        
+        return NULL;
     }
     
     public function __set($name, $value) {
-        $this->$name = $value;
+        $this->properties[$name] = $value;
+    }
+    
+    public function getProperties(): array {
+        return $this->properties;
     }
 }
