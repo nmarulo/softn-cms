@@ -37,10 +37,6 @@ abstract class RestCall {
     protected function get($object = NULL, string $uri = '') {
         $uri = $this->buildUri($object, $uri);
         
-        if (is_object($object) && $object instanceof ObjectToArray) {
-            $object = $object->toArray();
-        }
-        
         return $this->makeCall('get', $object, $uri);
     }
     
@@ -89,6 +85,10 @@ abstract class RestCall {
      */
     private function makeCall(string $type, $object = NULL, string $uri = '') {
         $uri = trim($this->baseUri(), '/') . "/$uri";
+    
+        if (is_object($object) && $object instanceof ObjectToArray) {
+            $object = $object->toArray();
+        }
         
         $this->requestApiHelper->$type($uri, $object);
         
