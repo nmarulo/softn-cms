@@ -14,9 +14,9 @@ use App\Rest\Response\PaginationResponse;
  */
 class Pagination extends PaginationResponse {
     
-    public function getInit($currentPageValue, $totalData, $maxNumberPagesShow = 3) {
+    public function getInit(int $currentPageValue, int $totalData, int $maxNumberPagesShow = 3): Pagination {
         $this->currentPageValue   = $currentPageValue;
-        $this->totalData          = intval($totalData);
+        $this->totalData          = $totalData;
         $this->maxNumberPagesShow = $maxNumberPagesShow;
         $this->pages              = [];
         $this->totalNumberPages   = 0;
@@ -32,7 +32,7 @@ class Pagination extends PaginationResponse {
     /**
      * @param int $numberRowShow
      */
-    private function setNumberRowShow($numberRowShow) {
+    private function setNumberRowShow(int $numberRowShow): void {
         if ($numberRowShow <= 0) {
             $numberRowShow = 1;
         }
@@ -40,7 +40,7 @@ class Pagination extends PaginationResponse {
         $this->numberRowShow = $numberRowShow;
     }
     
-    private function initPagination() {
+    private function initPagination(): void {
         //Se comprueba que sea mayor que 0 para evitar error en la operaciones.
         if ($this->totalData > 0) {
             /*
@@ -59,7 +59,7 @@ class Pagination extends PaginationResponse {
                 $this->rendered = TRUE;
                 
                 //Se comprueba el valor de la pagina actual no es valida.
-                if (empty($this->currentPageValue) || intval($this->currentPageValue) <= 0) {
+                if ($this->currentPageValue <= 0) {
                     $this->currentPageValue = 1;
                 }
                 
@@ -76,7 +76,7 @@ class Pagination extends PaginationResponse {
         }
     }
     
-    private function initPages() {
+    private function initPages(): void {
         /*
          * Para evitar los casos donde el total de paginas es demasiado grande
          * se establece un maximo de paginas a mostrar ($maxNumberPagesShow)
@@ -121,7 +121,7 @@ class Pagination extends PaginationResponse {
         $this->initArrows();
     }
     
-    private function setPages($startPageNumber, $endPageNumber) {
+    private function setPages(int $startPageNumber, int $endPageNumber): void {
         $pages = [];
         
         for ($i = $startPageNumber; $i <= $endPageNumber; ++$i) {
@@ -142,7 +142,7 @@ class Pagination extends PaginationResponse {
         $this->pages = $pages;
     }
     
-    private function initArrows() {
+    private function initArrows(): void {
         $styleClass = "disabled";
         $attrData   = [
                 'type' => 'arrow',
@@ -151,7 +151,7 @@ class Pagination extends PaginationResponse {
         $this->setRightArrow($styleClass, $attrData);
     }
     
-    private function setLeftArrow($styleClass, $attrData) {
+    private function setLeftArrow($styleClass, $attrData): void {
         if ($this->currentPageValue > 1) {
             $styleClass       = "";
             $attrData['page'] = $this->currentPageValue - 1;
@@ -160,7 +160,7 @@ class Pagination extends PaginationResponse {
         $this->leftArrow = $this->newPage('&laquo;', $styleClass, $attrData);
     }
     
-    private function setRightArrow($styleClass, $attrData) {
+    private function setRightArrow($styleClass, $attrData): void {
         if ($this->currentPageValue < $this->totalNumberPages) {
             $styleClass       = "";
             $attrData['page'] = $this->currentPageValue + 1;
@@ -169,7 +169,7 @@ class Pagination extends PaginationResponse {
         $this->rightArrow = $this->newPage('&raquo;', $styleClass, $attrData);
     }
     
-    private function attrToString(array $attrData) {
+    private function attrToString(array $attrData): string {
         $attr = array_map(function($key, $value) {
             return "data-${key}='${value}'";
         }, array_keys($attrData), $attrData);
