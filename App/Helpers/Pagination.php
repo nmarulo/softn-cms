@@ -14,8 +14,8 @@ use App\Rest\Response\PaginationResponse;
  */
 class Pagination extends PaginationResponse {
     
-    public function getInit(int $currentPageValue, int $totalData, int $maxNumberPagesShow = 3): Pagination {
-        $this->currentPageValue   = $currentPageValue;
+    public function getInit(int $totalData, ?int $currentPageValue = NULL, int $maxNumberPagesShow = 3): Pagination {
+        $this->currentPageValue   = is_null($currentPageValue) ? 1 : $currentPageValue;
         $this->totalData          = $totalData;
         $this->maxNumberPagesShow = $maxNumberPagesShow;
         $this->pages              = [];

@@ -51,12 +51,11 @@ class ModelHelper {
     }
     
     /**
-     * @deprecated Usar Utils::parseOf()
-     *
      * @param $array
      * @param $model
      *
      * @return mixed
+     * @deprecated Usar Utils::parseOf()
      */
     public function arrayToObject($array, $model) {
         $obj = new $model();
@@ -186,7 +185,8 @@ class ModelHelper {
                               ->from($this->getTableName())
                               ->single();
         }
-        $this->pagination = \App\Facades\Pagination::getInit($currentPage, $totalData);
+        
+        $this->pagination = \App\Facades\Pagination::getInit($totalData, $currentPage);
         $this->paginationDataClosure($this->paginationDataClosure);
     }
     

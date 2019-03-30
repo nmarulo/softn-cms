@@ -31,10 +31,6 @@ class UserResponse implements ParseOfClass, ObjectToArray {
      */
     private $pagination;
     
-    public function __construct() {
-        $this->users = [];
-    }
-    
     public static function getParseOfClasses(): array {
         return [
                 'Users'              => Users::class,

@@ -5,7 +5,7 @@ namespace App\Facades;
 use Silver\Support\Facade;
 
 /**
- * @method static \App\Helpers\Pagination getInit(int $currentPageValue, int $totalData, int $maxNumberPagesShow = 3)
+ * @method static \App\Helpers\Pagination getInit(int $totalData, ?int $currentPageValue = NULL, int $maxNumberPagesShow = 3)
  */
 class Pagination extends Facade {
     
