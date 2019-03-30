@@ -3,17 +3,17 @@
     <nav>
         <ul class="pagination clearfix">
             <li class="{{$component_pagination->leftArrow->styleClass}}">
-                <a href="#" {{$component_pagination->leftArrow->attrToString()}}>
+                <a href="#" {{$component_pagination->leftArrow->attrData}}>
                     <span>{{html_entity_decode($component_pagination->leftArrow->value)}}</span>
                 </a>
             </li>
             #foreach($component_pagination->pages as $page)
             <li class="{{$page->styleClass}}">
-                <a href="#" {{$page->attrToString()}}>{{$page->value}}</a>
+                <a href="#" {{$page->attrData}}>{{$page->value}}</a>
             </li>
             #endforeach
             <li class="{{$component_pagination->rightArrow->styleClass}}">
-                <a href="#" {{$component_pagination->rightArrow->attrToString()}}>
+                <a href="#" {{$component_pagination->rightArrow->attrData}}>
                     <span>{{html_entity_decode($component_pagination->rightArrow->value)}}</span>
                 </a>
             </li>

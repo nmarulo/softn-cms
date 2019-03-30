@@ -5,68 +5,14 @@
 
 namespace App\Helpers;
 
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
-use App\Rest\Common\ParseOfClass;
-use \App\Facades\Utils;
+use App\Rest\Response\PageResponse;
+use App\Rest\Response\PaginationResponse;
 
 /**
- * @property Page[] $pages
- * @property Page   $leftArrow
- * @property Page   $rightArrow
- * @property int    $currentPageValue
- * @property int    $totalData
- * @property int    $numberRowShow
- * @property int    $maxNumberPagesShow
- * @property int    $totalNumberPages
- * @property bool   $rendered
- * @property int    $beginRow
  * Class Pagination
  * @author Nicolás Marulanda P.
  */
-class Pagination implements ParseOfClass, ObjectToArray {
-    
-    use Magic;
-    
-    /** @var Page[] */
-    private $pages;
-    
-    /** @var Page */
-    private $leftArrow;
-    
-    /** @var Page */
-    private $rightArrow;
-    
-    /** @var int */
-    private $currentPageValue;
-    
-    /** @var int */
-    private $totalData;
-    
-    /** @var int */
-    private $numberRowShow;
-    
-    /** @var int */
-    private $maxNumberPagesShow;
-    
-    /** @var int */
-    private $totalNumberPages;
-    
-    /** @var bool */
-    private $rendered;
-    
-    /** @var int */
-    private $beginRow;
-    
-    public static function getParseOfClasses(): array {
-        return [
-                'Page' => Page::class,
-        ];
-    }
-    
-    public function toArray() {
-        return Utils::castObjectToArray($this);
-    }
+class Pagination extends PaginationResponse {
     
     public function getInit($currentPageValue, $totalData, $maxNumberPagesShow = 3) {
         $this->currentPageValue   = $currentPageValue;
@@ -176,6 +122,8 @@ class Pagination implements ParseOfClass, ObjectToArray {
     }
     
     private function setPages($startPageNumber, $endPageNumber) {
+        $pages = [];
+        
         for ($i = $startPageNumber; $i <= $endPageNumber; ++$i) {
             $styleClass = '';
             $attrData   = [
@@ -188,13 +136,10 @@ class Pagination implements ParseOfClass, ObjectToArray {
                 unset($attrData['page']);
             }
             
-            $page             = new Page();
-            $page->value      = $i;
-            $page->styleClass = $styleClass;
-            $page->attrData   = $attrData;
-            
-            $this->pages[] = $page;
+            $pages[] = $this->newPage($i, $styleClass, $attrData);
         }
+        
+        $this->pages = $pages;
     }
     
     private function initArrows() {
@@ -212,12 +157,7 @@ class Pagination implements ParseOfClass, ObjectToArray {
             $attrData['page'] = $this->currentPageValue - 1;
         }
         
-        $page             = new Page();
-        $page->value      = '&laquo;';
-        $page->styleClass = $styleClass;
-        $page->attrData   = $attrData;
-        
-        $this->leftArrow = $page;
+        $this->leftArrow = $this->newPage('&laquo;', $styleClass, $attrData);
     }
     
     private function setRightArrow($styleClass, $attrData) {
@@ -226,12 +166,24 @@ class Pagination implements ParseOfClass, ObjectToArray {
             $attrData['page'] = $this->currentPageValue + 1;
         }
         
-        $page             = new Page();
-        $page->value      = '&raquo;';
-        $page->styleClass = $styleClass;
-        $page->attrData   = $attrData;
-        
-        $this->rightArrow = $page;
+        $this->rightArrow = $this->newPage('&raquo;', $styleClass, $attrData);
     }
     
+    private function attrToString(array $attrData) {
+        $attr = array_map(function($key, $value) {
+            return "data-${key}='${value}'";
+        }, array_keys($attrData), $attrData);
+        
+        return implode(' ', $attr);
+    }
+    
+    private function newPage(string $value, string $styleClass, array $attrData): PageResponse {
+        $page             = new PageResponse();
+        $page->value      = $value;
+        $page->styleClass = $styleClass;
+        $page->attrData   = $this->attrToString($attrData);
+        $page->attr       = $attrData;
+        
+        return $page;
+    }
 }
