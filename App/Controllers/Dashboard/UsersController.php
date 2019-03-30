@@ -27,9 +27,14 @@ class UsersController extends Controller {
         $userRequest            = new UserRequest();
         $userRequest->dataTable = Utils::getDataTable();
         $response               = UsersRestFacade::getAll($userRequest);
+        $users                  = $response->users;
+        
+        if (!is_array($users)) {
+            $users = [];
+        }
         
         return View::make('dashboard.users.index')
-                   ->with('users', $response->users)
+                   ->with('users', $users)
                    ->withComponent($response->pagination, 'pagination');
     }
     
