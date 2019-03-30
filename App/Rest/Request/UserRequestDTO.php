@@ -10,14 +10,14 @@ use App\Rest\Common\DataTable\DataTable;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
-use App\Rest\Dto\Users;
+use App\Rest\Dto\UsersDTO;
 
 /**
  * @property DataTable $dataTable
  * Class UserRequest
  * @author Nicolás Marulanda P.
  */
-class UserRequest extends Users implements ObjectToArray, ParseOfClass {
+class UserRequest extends UsersDTO implements ObjectToArray, ParseOfClass {
     
     use Magic;
     

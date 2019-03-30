@@ -9,10 +9,10 @@ use App\Facades\Utils;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
-use App\Rest\Dto\Users;
+use App\Rest\Dto\UsersDTO;
 
 /**
- * @property Users[]            $users
+ * @property UsersDTO[]         $users
  * @property PaginationResponse $pagination
  * Class UserResponse
  * @author Nicolás Marulanda P.
@@ -22,7 +22,7 @@ class UserResponse implements ParseOfClass, ObjectToArray {
     use Magic;
     
     /**
-     * @var Users[]
+     * @var UsersDTO[]
      */
     private $users;
     
@@ -33,7 +33,7 @@ class UserResponse implements ParseOfClass, ObjectToArray {
     
     public static function getParseOfClasses(): array {
         return [
-                'Users'              => Users::class,
+                'UsersDTO'           => UsersDTO::class,
                 'PaginationResponse' => PaginationResponse::class,
         ];
     }

@@ -5,6 +5,7 @@ namespace App\Controllers\Api\Dashboard;
 use App\Facades\ModelFacade;
 use App\Facades\Utils;
 use App\Models\Users;
+use App\Rest\Dto\UsersDTO;
 use App\Rest\Request\UserRequest;
 use App\Rest\Response\UserResponse;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -30,7 +31,7 @@ class UsersApiController extends Controller {
         if ($id) {
             $model = $this->getUserById($id);
             $userResponse->users = [
-                    Utils::castModelToDto(self::COMPARISION_TABLE, $model, \App\Rest\Dto\Users::class),
+                    Utils::castModelToDto(self::COMPARISION_TABLE, $model, UsersDTO::class),
             ];
             
             return $userResponse->toArray();
@@ -46,7 +47,7 @@ class UsersApiController extends Controller {
         
         $users    = $userModel->all();
         $usersDTO = array_map(function(Users $user) {
-            return Utils::castModelToDto(self::COMPARISION_TABLE, $user, \App\Rest\Dto\Users::class);
+            return Utils::castModelToDto(self::COMPARISION_TABLE, $user, UsersDTO::class);
         }, $users);
         
         $userResponse->users      = $usersDTO;
@@ -77,7 +78,7 @@ class UsersApiController extends Controller {
         $model           = Utils::castDtoToModel(self::COMPARISION_TABLE, $request, Users::class, FALSE);
         $user            = $this->getUserById($model->save()->id);
         $response->users = [
-                Utils::castModelToDto(self::COMPARISION_TABLE, $user, \App\Rest\Dto\Users::class),
+                Utils::castModelToDto(self::COMPARISION_TABLE, $user, UsersDTO::class),
         ];
         
         return $response->toArray();

@@ -1,6 +1,6 @@
 <?php
 /**
- * Users.php
+ * UsersDTO.php
  */
 
 namespace App\Rest\Dto;
@@ -16,10 +16,10 @@ use App\Rest\Common\ObjectToArray;
  * @property string    $userEmail
  * @property \DateTime $userRegistered
  * @property string    $userPassword
- * Class Users
+ * Class UsersDTO
  * @author Nicolás Marulanda P.
  */
-class Users implements ObjectToArray {
+class UsersDTO implements ObjectToArray {
     
     use Magic;
     
