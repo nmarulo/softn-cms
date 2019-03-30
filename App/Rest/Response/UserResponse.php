@@ -6,15 +6,14 @@
 namespace App\Rest\Response;
 
 use App\Facades\Utils;
-use App\Helpers\Pagination;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
 use App\Rest\Dto\Users;
 
 /**
- * @property Users[]    $users
- * @property Pagination $pagination
+ * @property Users[]            $users
+ * @property PaginationResponse $pagination
  * Class UserResponse
  * @author Nicolás Marulanda P.
  */
@@ -28,7 +27,7 @@ class UserResponse implements ParseOfClass, ObjectToArray {
     private $users;
     
     /**
-     * @var Pagination
+     * @var PaginationResponse
      */
     private $pagination;
     
@@ -38,8 +37,8 @@ class UserResponse implements ParseOfClass, ObjectToArray {
     
     public static function getParseOfClasses(): array {
         return [
-                'Users'      => Users::class,
-                'Pagination' => Pagination::class,
+                'Users'              => Users::class,
+                'PaginationResponse' => PaginationResponse::class,
         ];
     }
     
