@@ -29,7 +29,7 @@ class UsersApiController extends Controller {
         $userResponse = new UserResponse();
         
         if ($id) {
-            $model = $this->getUserById($id);
+            $model               = $this->getUserById($id);
             $userResponse->users = [
                     Utils::castModelToDto(self::COMPARISION_TABLE, $model, UsersDTO::class),
             ];
@@ -60,6 +60,15 @@ class UsersApiController extends Controller {
         return $this->saveUser();
     }
     
+    public function put($id) {
+        return $this->saveUser($id);
+    }
+    
+    public function delete($id) {
+        $this->getUserById($id)
+             ->delete();
+    }
+    
     /**
      * @param int $id
      *
@@ -82,14 +91,6 @@ class UsersApiController extends Controller {
         ];
         
         return $response->toArray();
-    }
-    
-    public function put($id) {
-        return $this->saveUser($id);
-    }
-    
-    public function delete($id) {
-        $this->getUserById($id)->delete();
     }
     
     /**

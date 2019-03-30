@@ -120,27 +120,6 @@ class Utils {
         return $object;
     }
     
-    private function getVarNameTypeDocument(string $document): string {
-        $start         = 5;
-        $len           = $start;
-        $propertyClass = '';
-        
-        if (preg_match('/@var\s[A-Z]{1}[A-Za-z]+\[\]/', $document, $varMatch) == 1) {
-            $len += 2;
-        } else {
-            preg_match('/@var\s[A-Z]{1}[A-Za-z]+/', $document, $varMatch);
-        }
-        
-        if (empty($varMatch)) {
-            return $propertyClass;
-        }
-        
-        $propertyClass = $varMatch[0];
-        $len           = strlen($propertyClass) - $len;
-        
-        return substr($propertyClass, $start, $len);
-    }
-    
     public function dateNow($format = 'Y-m-d H:i:s') {
         return date($format, time());
     }
@@ -194,6 +173,27 @@ class Utils {
     
     public function castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE) {
         return $this->castObjectTo($comparisionProps, $dto, $classModel, $hideProps);
+    }
+    
+    private function getVarNameTypeDocument(string $document): string {
+        $start         = 5;
+        $len           = $start;
+        $propertyClass = '';
+        
+        if (preg_match('/@var\s[A-Z]{1}[A-Za-z]+\[\]/', $document, $varMatch) == 1) {
+            $len += 2;
+        } else {
+            preg_match('/@var\s[A-Z]{1}[A-Za-z]+/', $document, $varMatch);
+        }
+        
+        if (empty($varMatch)) {
+            return $propertyClass;
+        }
+        
+        $propertyClass = $varMatch[0];
+        $len           = strlen($propertyClass) - $len;
+        
+        return substr($propertyClass, $start, $len);
     }
     
     private function castObjectTo(array $comparisionProps, $object, string $toClass, bool $hideProps = TRUE) {
