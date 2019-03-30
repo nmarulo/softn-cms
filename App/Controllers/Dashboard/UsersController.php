@@ -6,6 +6,7 @@ use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
 use App\Facades\Rest\UsersRestFacade;
 use App\Facades\Utils;
+use App\Rest\Dto\Users;
 use App\Rest\Request\UserRequest;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
@@ -33,7 +34,7 @@ class UsersController extends Controller {
     }
     
     public function form($id) {
-        $userDTO = new \App\Rest\Dto\Users();
+        $userDTO = new Users();
         
         if (RequestApiFacade::isPostRequest()) {
             $message = 'Usuario actualizado correctamente.';
