@@ -4,10 +4,8 @@ namespace App\Controllers\Dashboard;
 
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
-use App\Facades\ModelFacade;
 use App\Facades\Rest\UsersRestFacade;
 use App\Facades\Utils;
-use App\Models\Users;
 use App\Rest\Request\UserRequest;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
