@@ -36,7 +36,7 @@ class UserRequest extends UsersDTO implements ObjectToArray, ParseOf {
         return Utils::parseOf($values, UserRequest::class);
     }
     
-    public function toArray() {
+    public function toArray(): array {
         return Utils::castObjectToArray($this);
     }
 }

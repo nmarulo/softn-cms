@@ -42,7 +42,7 @@ class UserResponse implements ParseOf, ObjectToArray {
         return Utils::parseOf($value, UserResponse::class);
     }
     
-    public function toArray() {
+    public function toArray(): array {
         return Utils::castObjectToArray($this);
     }
     

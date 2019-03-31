@@ -43,7 +43,7 @@ class DataTable implements ObjectToArray, ParseOfClass {
         ];
     }
     
-    public function toArray() {
+    public function toArray(): array {
         return Utils::castObjectToArray($this);
     }
     

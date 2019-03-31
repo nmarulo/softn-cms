@@ -24,7 +24,7 @@ use App\Rest\Common\ParseOfClass;
  * Class PaginationResponse
  * @author Nicolás Marulanda P.
  */
-class PaginationResponse implements ParseOfClass, ObjectToArray  {
+class PaginationResponse implements ParseOfClass, ObjectToArray {
     
     use Magic;
     
@@ -64,7 +64,7 @@ class PaginationResponse implements ParseOfClass, ObjectToArray  {
         ];
     }
     
-    public function toArray() {
+    public function toArray(): array {
         return Utils::castObjectToArray($this);
     }
     

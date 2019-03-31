@@ -12,7 +12,7 @@ use App\Rest\Common\ObjectToArray;
 /**
  * @property string $styleClass
  * @property string $value
- * @property string  $attrData
+ * @property string $attrData
  * @property array  $attr
  * Class PageResponse
  * @author Nicolás Marulanda P.
@@ -33,7 +33,7 @@ class PageResponse implements ObjectToArray {
     /** @var array */
     private $attr;
     
-    public function toArray() {
+    public function toArray(): array {
         return Utils::castObjectToArray($this);
     }
 }

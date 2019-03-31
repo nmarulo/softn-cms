@@ -11,5 +11,5 @@ namespace App\Rest\Common;
  */
 interface ObjectToArray {
     
-    public function toArray();
+    public function toArray(): array;
 }

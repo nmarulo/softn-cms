@@ -29,7 +29,7 @@ class SortColumn implements ObjectToArray {
      */
     private $key;
     
-    public function toArray() {
+    public function toArray(): array {
         return Utils::castObjectToArray($this);
     }
     

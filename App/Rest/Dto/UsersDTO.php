@@ -73,7 +73,7 @@ class UsersDTO implements ObjectToArray, ConvertModel {
         return Utils::castModelToDto(self::COMPARISION_TABLE, $model, UsersDTO::class, $hideProps);
     }
     
-    public function toArray() {
+    public function toArray(): array {
         return Utils::castObjectToArray($this);
     }
     
