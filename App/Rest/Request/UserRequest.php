@@ -9,7 +9,7 @@ use App\Facades\Utils;
 use App\Rest\Common\DataTable\DataTable;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
-use App\Rest\Common\ParseOfClass;
+use App\Rest\Common\ParseOf;
 use App\Rest\Dto\UsersDTO;
 
 /**
@@ -17,7 +17,7 @@ use App\Rest\Dto\UsersDTO;
  * Class UserRequest
  * @author Nicolás Marulanda P.
  */
-class UserRequest extends UsersDTO implements ObjectToArray, ParseOfClass {
+class UserRequest extends UsersDTO implements ObjectToArray, ParseOf {
     
     use Magic;
     
@@ -30,6 +30,10 @@ class UserRequest extends UsersDTO implements ObjectToArray, ParseOfClass {
         return [
                 'DataTable' => DataTable::class,
         ];
+    }
+    
+    public static function parseOf(array $values): UserRequest {
+        return Utils::parseOf($values, UserRequest::class);
     }
     
     public function toArray() {
