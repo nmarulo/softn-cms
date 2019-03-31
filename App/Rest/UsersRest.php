@@ -71,8 +71,8 @@ class UsersRest extends RestCall {
         return FALSE;
     }
     
-    protected function getParseToClass(): string {
-        return UserResponse::class;
+    protected function parseResponseTo(array $value) {
+        return UserResponse::parseOf($value);
     }
     
     protected function baseUri(): string {

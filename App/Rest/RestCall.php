@@ -5,7 +5,6 @@
 
 namespace App\Rest;
 
-use App\Facades\Utils;
 use App\Helpers\Api\RequestApiHelper;
 use App\Rest\Common\ObjectToArray;
 
@@ -71,7 +70,12 @@ abstract class RestCall {
         return $this->makeCall('delete', NULL, $id);
     }
     
-    protected abstract function getParseToClass(): string;
+    /**
+     * @param array $value
+     *
+     * @return mixed
+     */
+    protected abstract function parseResponseTo(array $value);
     
     protected abstract function baseUri(): string;
     
@@ -85,7 +89,7 @@ abstract class RestCall {
      */
     private function makeCall(string $type, $object = NULL, string $uri = '') {
         $uri = trim($this->baseUri(), '/') . "/$uri";
-    
+        
         if (is_object($object) && $object instanceof ObjectToArray) {
             $object = $object->toArray();
         }
@@ -96,13 +100,9 @@ abstract class RestCall {
             throw new \Exception($this->requestApiHelper->getMessage());
         }
         
-        if (empty($this->getParseToClass())) {
-            throw new \Exception("Parse To Class no definida.");
-        }
-        
         $response = $this->requestApiHelper->responseJsonDecode();
         
-        return Utils::parseOf($response, $this->getParseToClass());
+        return $this->parseResponseTo($response);
     }
     
     private function buildUri(&$object, string $uri = ''): string {

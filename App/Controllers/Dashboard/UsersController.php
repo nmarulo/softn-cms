@@ -43,7 +43,7 @@ class UsersController extends Controller {
         
         if (RequestApiFacade::isPostRequest()) {
             $message = 'Usuario actualizado correctamente.';
-            $request = Utils::parseOf(Request::all(), UserRequest::class);
+            $request = UserRequest::parseOf(Request::all());
             
             if (empty($id)) {
                 $message      = 'Usuario creado correctamente';
