@@ -14,6 +14,7 @@ namespace App\Models;
 use Silver\Database\Model;
 
 /**
+ * @property int    $id
  * @property string $user_login
  * @property string $user_name
  * @property string $user_email

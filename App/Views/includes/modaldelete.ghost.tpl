@@ -11,8 +11,6 @@
                     </div>
                     <div class="col-xs-6">
                         <form id="modal-delete-form" method="get">
-                            <input id="modal-delete-input-id" type="hidden" name="id" value=""/>
-                            {{ include('includes.token') }}
                             <button type="submit" class="btn btn-default btn-block">Borrar</button>
                         </form>
                     </div>

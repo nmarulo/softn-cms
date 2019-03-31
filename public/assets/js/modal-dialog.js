@@ -3,7 +3,6 @@ var elementBtnTriggerModalDelete;
 $(function () {
     $('#modal-delete').on('show.bs.modal', function (event) {
         elementBtnTriggerModalDelete = $(event.relatedTarget); // Button that triggered the modal
-        $(this).find('#modal-delete-input-id').val(elementBtnTriggerModalDelete.data('delete-id'));
     });
     
     modalDeleteTableData();
@@ -18,6 +17,6 @@ function modalDeleteTableData() {
             tableDataRequest(elementBtnTriggerModalDelete);
         };
         
-        makeRequest('POST', elementBtnTriggerModalDelete.data('delete-action'), $(this).serializeArray(), deleteCallback);
+        makeRequest('POST', elementBtnTriggerModalDelete.data('delete-action'), [], deleteCallback);
     });
 }

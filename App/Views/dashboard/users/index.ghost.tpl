@@ -47,9 +47,9 @@
                 <div class="col-sm-9">
                     <form class="form-search-table-data">
                         <div class="input-group">
-                            <input class="form-control" type="text" name="search-value" placeholder="login:admin email:info@softn.red">
+                            <input class="form-control" type="text" name="searchValue" placeholder="login:admin email:info@softn.red">
                             <span class="input-group-addon">
-                                <input type="checkbox" name="search-strict">
+                                <input type="checkbox" name="searchStrict">
                             </span>
                             <span class="input-group-btn">
                                 <button class="btn btn-primary" type="submit">Buscar</button>
@@ -88,14 +88,14 @@
                             <a class="btn btn-primary" href="{{ url('/dashboard/users/form/') }}{{$user->id}}">
                                 <span class="glyphicon glyphicon-edit"></span>
                             </a>
-                            <button class="btn btn-danger" type="button" data-delete-id="{{$user->id}}" data-toggle="modal" data-target="#modal-delete" data-delete-action="/dashboard/users/delete">
+                            <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#modal-delete" data-delete-action="/dashboard/users/delete/{{$user->id}}">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </td>
-                        <td>{{$user->user_name}}</td>
-                        <td>{{$user->user_login}}</td>
-                        <td>{{$user->user_email}}</td>
-                        <td>{{$user->user_registered}}</td>
+                        <td>{{$user->userName}}</td>
+                        <td>{{$user->userLogin}}</td>
+                        <td>{{$user->userEmail}}</td>
+                        <td>{{$user->userRegistered}}</td>
                     </tr>
                     #endforeach
                     </tbody>
@@ -139,10 +139,10 @@
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </td>
-                        <td>{{$user->user_name}}</td>
-                        <td>{{$user->user_login}}</td>
-                        <td>{{$user->user_email}}</td>
-                        <td>{{$user->user_registered}}</td>
+                        <td>{{$user->userName}}</td>
+                        <td>{{$user->userLogin}}</td>
+                        <td>{{$user->userEmail}}</td>
+                        <td>{{$user->userRegistered}}</td>
                     </tr>
                     #endforeach
                     </tbody>

@@ -4,10 +4,10 @@ namespace App\Controllers\Dashboard;
 
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
-use App\Facades\ModelFacade;
-use App\Facades\Pagination;
+use App\Facades\Rest\UsersRestFacade;
 use App\Facades\Utils;
-use App\Models\Users;
+use App\Rest\Dto\UsersDTO;
+use App\Rest\Request\UserRequest;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
@@ -18,78 +18,61 @@ use Silver\Http\View;
  */
 class UsersController extends Controller {
     
+    /**
+     * @var string
+     */
     private $urlUsers = 'dashboard/users';
     
     public function index() {
-        $pagination = NULL;
-        $users      = [];
-        $request    = Request::all();
-        //TODO: ERROR: solo al enviar, por get, "'uri' => '/dashboard/users'", por eso lo elimino, en caso de enviarlo.
-        unset($request['uri']);
-        RequestApiFacade::get($this->urlUsers, $request);
+        $userRequest            = new UserRequest();
+        $userRequest->dataTable = Utils::getDataTable();
+        $response               = UsersRestFacade::getAll($userRequest);
+        $users                  = $response->users;
         
-        if (RequestApiFacade::isError()) {
-            Messages::addDanger(RequestApiFacade::getMessage());
-        } else {
-            $response   = RequestApiFacade::responseJsonDecode();
-            $pagination = Pagination::arrayToObject($response['pagination']);
-            $users      = array_map(function($value) {
-                return ModelFacade::arrayToObject($value, Users::class);
-            }, $response['users']);
+        if (!is_array($users)) {
+            $users = [];
         }
         
         return View::make('dashboard.users.index')
                    ->with('users', $users)
-                   ->withComponent($pagination, 'pagination');
+                   ->withComponent($response->pagination, 'pagination');
     }
     
     public function form($id) {
-        $user = new Users();
+        $userDTO = new UsersDTO();
         
         if (RequestApiFacade::isPostRequest()) {
             $message = 'Usuario actualizado correctamente.';
-            $request = Request::all();
-            unset($request['uri']);
+            $request = UserRequest::parseOf(Request::all());
             
             if (empty($id)) {
-                $message = 'Usuario creado correctamente';
-                RequestApiFacade::post($this->urlUsers, $request);
+                $message      = 'Usuario creado correctamente';
+                $userResponse = UsersRestFacade::create($request);
             } else {
-                $request['id'] = $id;
-                RequestApiFacade::put($this->urlUsers, $request);
+                $userResponse = UsersRestFacade::update($id, $request);
             }
             
-            if (RequestApiFacade::isError()) {
-                Messages::addDanger(RequestApiFacade::getMessage());
-                $user = ModelFacade::arrayToObject($request, Users::class);
-            } else {
+            if (isset($userResponse->users[0])) {
                 Messages::addSuccess($message);
-                $user = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
                 
                 if (empty($id)) {
-                    Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $user->id));
+                    Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $userResponse->users[0]->id));
                 }
             }
         } elseif ($id) {
-            RequestApiFacade::get($this->urlUsers, $id);
-            
-            if (RequestApiFacade::isError()) {
-                Messages::addDanger(RequestApiFacade::getMessage());
-            } else {
-                $user = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
-            }
+            $userResponse = UsersRestFacade::getById($id);
+        }
+        
+        if (isset($userResponse->users[0])) {
+            $userDTO = $userResponse->users[0];
         }
         
         return View::make('dashboard.users.form')
-                   ->with('user', $user);
+                   ->with('user', $userDTO);
     }
     
-    public function delete() {
-        RequestApiFacade::delete($this->urlUsers, Request::all());
-        
-        if (RequestApiFacade::isError()) {
-            Messages::addDanger(RequestApiFacade::getMessage());
-        } else {
+    public function delete($id) {
+        if (UsersRestFacade::remove($id)) {
             Messages::addSuccess('Usuario borrado correctamente.');
         }
     }

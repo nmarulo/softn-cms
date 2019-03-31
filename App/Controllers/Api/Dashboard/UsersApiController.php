@@ -5,6 +5,9 @@ namespace App\Controllers\Api\Dashboard;
 use App\Facades\ModelFacade;
 use App\Facades\Utils;
 use App\Models\Users;
+use App\Rest\Dto\UsersDTO;
+use App\Rest\Request\UserRequest;
+use App\Rest\Response\UserResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 
@@ -14,19 +17,70 @@ use Silver\Core\Controller;
 class UsersApiController extends Controller {
     
     public function get($id) {
+        $userResponse = new UserResponse();
+        
         if ($id) {
-            return $this->getUserById($id);
+            $model               = $this->getUserById($id);
+            $userResponse->users = [
+                    UsersDTO::convertOfModel($model),
+            ];
+            
+            return $userResponse->toArray();
         }
         
-        $userModel = ModelFacade::model(Users::class)
+        //TODO: Hasta que no encuentre una forma de capturar la instancia del controlador desde el middleware tendré que seguir usando la clase "Request".
+        $request   = UserRequest::parseOf(Request::all());
+        $userModel = ModelFacade::model(Users::class, $request->dataTable)
                                 ->search()
                                 ->pagination()
                                 ->sort();
         
-        return [
-                'users'      => $userModel->all(),
-                'pagination' => $userModel->getPagination(),
+        $users    = $userModel->all();
+        $usersDTO = array_map(function(Users $user) {
+            return UsersDTO::convertOfModel($user);
+        }, $users);
+        
+        $userResponse->users      = $usersDTO;
+        $userResponse->pagination = $userModel->getPagination();
+        
+        return $userResponse->toArray();
+    }
+    
+    public function post() {
+        return $this->saveUser();
+    }
+    
+    public function put($id) {
+        return $this->saveUser($id);
+    }
+    
+    public function delete($id) {
+        $this->getUserById($id)
+             ->delete();
+    }
+    
+    /**
+     * @param int $id
+     *
+     * @return array
+     */
+    private function saveUser(?int $id = NULL): array {
+        $response = new UserResponse();
+        $request  = UserRequest::parseOf(Request::all());
+        
+        if (is_null($id)) {
+            $request->userRegistered = Utils::dateNow();
+        } else {
+            $request->id = $id;
+        }
+        
+        $model           = UsersDTO::convertToModel($request, FALSE);
+        $user            = $this->getUserById($model->save()->id);
+        $response->users = [
+                UsersDTO::convertOfModel($user),
         ];
+        
+        return $response->toArray();
     }
     
     /**
@@ -40,35 +94,5 @@ class UsersApiController extends Controller {
         }
         
         throw new \RuntimeException("Usuario desconocido.");
-    }
-    
-    public function post() {
-        $user                  = new Users();
-        $user->user_password   = Request::input('user_password'); //TODO: cifrar.
-        $user->user_registered = Utils::dateNow();
-        
-        return $this->saveUser($user);
-    }
-    
-    /**
-     * @param Users $user
-     *
-     * @return Users
-     */
-    function saveUser($user) {
-        $user->user_login = Request::input('user_login');
-        $user->user_name  = Request::input('user_name', $user->user_login);
-        $user->user_email = Request::input('user_email');
-        
-        return $user->save();
-    }
-    
-    public function put() {
-        return $this->saveUser($this->getUserById(Request::input('id')));
-    }
-    
-    public function delete() {
-        $user = $this->getUserById(Request::input('id'));
-        $user->delete();
     }
 }

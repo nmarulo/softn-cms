@@ -2,8 +2,9 @@
 
 namespace App\Helpers;
 
-use App\Facades\SearchModelFacade;
-use Silver\Core\Bootstrap\Facades\Request;
+use App\Facades\SearchDataTableFacade;
+use App\Rest\Common\DataTable\DataTable;
+use App\Rest\Common\DataTable\SortColumn;
 use Silver\Database\Model;
 use Silver\Database\Query;
 
@@ -25,11 +26,18 @@ class ModelHelper {
     /** @var Model */
     private $model;
     
-    /** @var SearchModelHelper */
-    private $searchModel;
-    
     /** @var \Closure */
     private $paginationDataClosure;
+    
+    /**
+     * @var int
+     */
+    private $count;
+    
+    /**
+     * @var DataTable
+     */
+    private $dataTable;
     
     /**
      * ViewHelper constructor.
@@ -37,11 +45,18 @@ class ModelHelper {
     public function __construct() {
         $this->query         = NULL;
         $this->pagination    = NULL;
-        $this->model         = NULL;
-        $this->searchModel   = NULL;
+        $this->model         = "";
         $this->hasPagination = FALSE;
+        $this->count         = -1;
     }
     
+    /**
+     * @param $array
+     * @param $model
+     *
+     * @return mixed
+     * @deprecated Usar Utils::parseOf()
+     */
     public function arrayToObject($array, $model) {
         $obj = new $model();
         
@@ -53,29 +68,36 @@ class ModelHelper {
     }
     
     /**
-     * @param Model $model
+     * @param string         $model
+     * @param DataTable|null $dataTable
      *
      * @return $this
+     * @throws \Exception
      */
-    public function model($model) {
-        $this->query = $model::query();
-        $this->model = $model;
+    public function model(string $model, ?DataTable $dataTable = NULL) {
+        $object = new $model();
+        
+        if (!($object instanceof Model)) {
+            throw new \Exception("La clase no es una instancia de Model");
+        }
+        
+        $this->query     = $object::query();
+        $this->model     = $object;
+        $this->dataTable = $dataTable;
         
         return $this;
     }
     
     public function search() {
-        $this->searchModel = SearchModelFacade::getInstance($this->model, $this->query);
-        $this->setQuery($this->searchModel->getQuery());
+        if ($this->dataTable == NULL || $this->dataTable->filter == NULL) {
+            return $this;
+        }
+        
+        $searchDataTable = SearchDataTableFacade::filter($this->model, $this->dataTable->filter, $this->query);
+        $this->setQuery($searchDataTable->getQuery());
+        $this->count = $searchDataTable->getCount();
         
         return $this;
-    }
-    
-    /**
-     * @param Query $query
-     */
-    private function setQuery($query) {
-        $this->query = $query;
     }
     
     /**
@@ -112,27 +134,60 @@ class ModelHelper {
         return $this->pagination;
     }
     
+    /**
+     * @return $this
+     */
+    public function sort() {
+        if ($this->dataTable == NULL) {
+            return $this;
+        }
+        
+        $sortColumn = $this->dataTable->sortColumn;
+        $query      = $this->query;
+        
+        if (!empty($sortColumn)) {
+            foreach ($sortColumn as $value) {
+                if (!($value instanceof SortColumn) && empty($value->name)) {
+                    continue;
+                }
+                
+                if (is_null($value->key)) {
+                    $value->key = 'asc';
+                }
+                
+                $query = $query->orderBy($value->name, $value->key);
+            }
+        }
+        
+        $this->setQuery($query);
+    
+        return $this;
+    }
+    
+    /**
+     * @param Query $query
+     */
+    private function setQuery(Query $query) {
+        $this->query = $query;
+    }
+    
     private function instancePagination() {
         $currentPage = 1;
-        $totalData   = $this->getTotalNumDataSearchModel();
-        $currentPage = Request::input('page', $currentPage);
         
-        if ($totalData == NULL) {
+        if ($this->dataTable != NULL) {
+            $currentPage = $this->dataTable->page;
+        }
+        
+        $totalData = $this->count;
+        
+        if ($totalData == -1) {
             $totalData = Query::count()
                               ->from($this->getTableName())
                               ->single();
         }
         
-        $this->pagination = \App\Facades\Pagination::getInstance($currentPage, $totalData);
+        $this->pagination = \App\Facades\Pagination::getInit($totalData, $currentPage);
         $this->paginationDataClosure($this->paginationDataClosure);
-    }
-    
-    private function getTotalNumDataSearchModel() {
-        if (empty($this->searchModel)) {
-            return NULL;
-        }
-        
-        return $this->searchModel->getCount();
     }
     
     private function getTableName() {
@@ -146,8 +201,8 @@ class ModelHelper {
      */
     private function paginationDataClosure($dataModelClosure = NULL) {
         $query         = $this->query;
-        $numberRowShow = $this->pagination->getNumberRowShow();
-        $beginRow      = $this->pagination->getBeginRow();
+        $numberRowShow = $this->pagination->numberRowShow;
+        $beginRow      = $this->pagination->beginRow;
         
         if ($dataModelClosure == NULL || !is_callable($dataModelClosure)) {
             $query = $query->limit($numberRowShow)
@@ -157,34 +212,6 @@ class ModelHelper {
         }
         
         $this->setQuery($query);
-    }
-    
-    /**
-     * @return $this
-     */
-    public function sort() {
-        $sortColumn = Request::input('sortColumn');
-        $query      = $this->query;
-        
-        if (!empty($sortColumn)) {
-            $sortColumn = (array)json_decode($sortColumn);
-            
-            if (is_array($sortColumn)) {
-                foreach ($sortColumn as $value) {
-                    $value = (array)$value;
-                    
-                    if (empty($value['column']) || empty($value['sort'])) {
-                        continue;
-                    }
-                    
-                    $query = $query->orderBy($value['column'], $value['sort']);
-                }
-            }
-        }
-        
-        $this->setQuery($query);
-        
-        return $this;
     }
     
 }

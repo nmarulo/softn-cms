@@ -5,45 +5,18 @@
 
 namespace App\Helpers;
 
+use App\Rest\Response\PageResponse;
+use App\Rest\Response\PaginationResponse;
+
 /**
  * Class Pagination
  * @author Nicolás Marulanda P.
  */
-class Pagination implements \JsonSerializable {
+class Pagination extends PaginationResponse {
     
-    /** @var array */
-    private $pages;
-    
-    /** @var Page */
-    private $leftArrow;
-    
-    /** @var Page */
-    private $rightArrow;
-    
-    /** @var int */
-    private $currentPageValue;
-    
-    /** @var int */
-    private $totalData;
-    
-    /** @var int */
-    private $numberRowShow;
-    
-    /** @var int */
-    private $maxNumberPagesShow;
-    
-    /** @var int */
-    private $totalNumberPages;
-    
-    /** @var bool */
-    private $rendered;
-    
-    /** @var int */
-    private $beginRow;
-    
-    public function getInstance($currentPageValue, $totalData, $maxNumberPagesShow = 3) {
-        $this->currentPageValue   = $currentPageValue;
-        $this->totalData          = intval($totalData);
+    public function getInit(int $totalData, ?int $currentPageValue = NULL, int $maxNumberPagesShow = 3): Pagination {
+        $this->currentPageValue   = is_null($currentPageValue) ? 1 : $currentPageValue;
+        $this->totalData          = $totalData;
         $this->maxNumberPagesShow = $maxNumberPagesShow;
         $this->pages              = [];
         $this->totalNumberPages   = 0;
@@ -51,7 +24,7 @@ class Pagination implements \JsonSerializable {
         $this->beginRow           = 0;
         //TODO: configurar en base de datos.
         $this->setNumberRowShow(2);
-        $this->init();
+        $this->initPagination();
         
         return $this;
     }
@@ -59,7 +32,7 @@ class Pagination implements \JsonSerializable {
     /**
      * @param int $numberRowShow
      */
-    private function setNumberRowShow($numberRowShow) {
+    private function setNumberRowShow(int $numberRowShow): void {
         if ($numberRowShow <= 0) {
             $numberRowShow = 1;
         }
@@ -67,7 +40,7 @@ class Pagination implements \JsonSerializable {
         $this->numberRowShow = $numberRowShow;
     }
     
-    private function init() {
+    private function initPagination(): void {
         //Se comprueba que sea mayor que 0 para evitar error en la operaciones.
         if ($this->totalData > 0) {
             /*
@@ -86,7 +59,7 @@ class Pagination implements \JsonSerializable {
                 $this->rendered = TRUE;
                 
                 //Se comprueba el valor de la pagina actual no es valida.
-                if (empty($this->currentPageValue) || intval($this->currentPageValue) <= 0) {
+                if ($this->currentPageValue <= 0) {
                     $this->currentPageValue = 1;
                 }
                 
@@ -103,7 +76,7 @@ class Pagination implements \JsonSerializable {
         }
     }
     
-    private function initPages() {
+    private function initPages(): void {
         /*
          * Para evitar los casos donde el total de paginas es demasiado grande
          * se establece un maximo de paginas a mostrar ($maxNumberPagesShow)
@@ -148,7 +121,9 @@ class Pagination implements \JsonSerializable {
         $this->initArrows();
     }
     
-    private function setPages($startPageNumber, $endPageNumber) {
+    private function setPages(int $startPageNumber, int $endPageNumber): void {
+        $pages = [];
+        
         for ($i = $startPageNumber; $i <= $endPageNumber; ++$i) {
             $styleClass = '';
             $attrData   = [
@@ -161,11 +136,13 @@ class Pagination implements \JsonSerializable {
                 unset($attrData['page']);
             }
             
-            $this->pages[] = new Page($i, $styleClass, $attrData);
+            $pages[] = $this->newPage($i, $styleClass, $attrData);
         }
+        
+        $this->pages = $pages;
     }
     
-    private function initArrows() {
+    private function initArrows(): void {
         $styleClass = "disabled";
         $attrData   = [
                 'type' => 'arrow',
@@ -174,89 +151,39 @@ class Pagination implements \JsonSerializable {
         $this->setRightArrow($styleClass, $attrData);
     }
     
-    private function setLeftArrow($styleClass, $attrData) {
+    private function setLeftArrow($styleClass, $attrData): void {
         if ($this->currentPageValue > 1) {
             $styleClass       = "";
             $attrData['page'] = $this->currentPageValue - 1;
         }
         
-        $this->leftArrow = new Page('&laquo;', $styleClass, $attrData);
+        $this->leftArrow = $this->newPage('&laquo;', $styleClass, $attrData);
     }
     
-    private function setRightArrow($styleClass, $attrData) {
+    private function setRightArrow($styleClass, $attrData): void {
         if ($this->currentPageValue < $this->totalNumberPages) {
             $styleClass       = "";
             $attrData['page'] = $this->currentPageValue + 1;
         }
         
-        $this->rightArrow = new Page('&raquo;', $styleClass, $attrData);
+        $this->rightArrow = $this->newPage('&raquo;', $styleClass, $attrData);
     }
     
-    public function arrayToObject($values) {
-        $pages            = $values['pages'];
-        $newPageClosure   = function($data) {
-            return new Page($data['value'], $data['styleClass'], $data['attrData']);
-        };
-        $pages            = array_map(function($value) use ($newPageClosure) {
-            return $newPageClosure($value);
-        }, $pages);
-        $this->rendered   = $values['rendered'];
-        $this->leftArrow  = $newPageClosure($values['leftArrow']);
-        $this->rightArrow = $newPageClosure($values['rightArrow']);
-        $this->pages      = $pages;
+    private function attrToString(array $attrData): string {
+        $attr = array_map(function($key, $value) {
+            return "data-${key}='${value}'";
+        }, array_keys($attrData), $attrData);
         
-        return $this;
+        return implode(' ', $attr);
     }
     
-    public function jsonSerialize() {
-        return [
-                'rendered'   => $this->rendered,
-                'leftArrow'  => $this->leftArrow,
-                'rightArrow' => $this->rightArrow,
-                'pages'      => $this->pages,
-        ];
+    private function newPage(string $value, string $styleClass, array $attrData): PageResponse {
+        $page             = new PageResponse();
+        $page->value      = $value;
+        $page->styleClass = $styleClass;
+        $page->attrData   = $this->attrToString($attrData);
+        $page->attr       = $attrData;
+        
+        return $page;
     }
-    
-    /**
-     * @return mixed
-     */
-    public function getBeginRow() {
-        return $this->beginRow;
-    }
-    
-    /**
-     * @return array
-     */
-    public function getPages() {
-        return $this->pages;
-    }
-    
-    /**
-     * @return Page
-     */
-    public function getLeftArrow() {
-        return $this->leftArrow;
-    }
-    
-    /**
-     * @return Page
-     */
-    public function getRightArrow() {
-        return $this->rightArrow;
-    }
-    
-    /**
-     * @return bool
-     */
-    public function isRendered() {
-        return $this->rendered;
-    }
-    
-    /**
-     * @return int
-     */
-    public function getNumberRowShow() {
-        return $this->numberRowShow;
-    }
-    
 }
