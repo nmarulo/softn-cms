@@ -16,30 +16,20 @@ use Silver\Core\Controller;
  */
 class UsersApiController extends Controller {
     
-    const COMPARISION_TABLE = [
-            'id'             => 'id',
-            'userLogin'      => 'user_login',
-            'userEmail'      => 'user_email',
-            'userName'       => 'user_name',
-            'userRegistered' => 'user_registered',
-            'userPassword'   => 'user_password',
-    ];
-    
     public function get($id) {
         $userResponse = new UserResponse();
         
         if ($id) {
             $model               = $this->getUserById($id);
             $userResponse->users = [
-                    Utils::castModelToDto(self::COMPARISION_TABLE, $model, UsersDTO::class),
+                    UsersDTO::convertOfModel($model),
             ];
             
             return $userResponse->toArray();
         }
         
         //TODO: Hasta que no encuentre una forma de capturar la instancia del controlador desde el middleware tendré que seguir usando la clase "Request".
-        $request = Utils::parseOf(Request::all(), UserRequest::class);
-        
+        $request   = UserRequest::parseOf(Request::all());
         $userModel = ModelFacade::model(Users::class, $request->dataTable)
                                 ->search()
                                 ->pagination()
@@ -47,7 +37,7 @@ class UsersApiController extends Controller {
         
         $users    = $userModel->all();
         $usersDTO = array_map(function(Users $user) {
-            return Utils::castModelToDto(self::COMPARISION_TABLE, $user, UsersDTO::class);
+            return UsersDTO::convertOfModel($user);
         }, $users);
         
         $userResponse->users      = $usersDTO;
@@ -76,7 +66,7 @@ class UsersApiController extends Controller {
      */
     private function saveUser(?int $id = NULL): array {
         $response = new UserResponse();
-        $request  = Utils::parseOf(Request::all(), UserRequest::class);
+        $request  = UserRequest::parseOf(Request::all());
         
         if (is_null($id)) {
             $request->userRegistered = Utils::dateNow();
@@ -84,10 +74,10 @@ class UsersApiController extends Controller {
             $request->id = $id;
         }
         
-        $model           = Utils::castDtoToModel(self::COMPARISION_TABLE, $request, Users::class, FALSE);
+        $model           = UsersDTO::convertToModel($request, FALSE);
         $user            = $this->getUserById($model->save()->id);
         $response->users = [
-                Utils::castModelToDto(self::COMPARISION_TABLE, $user, UsersDTO::class),
+                UsersDTO::convertOfModel($user),
         ];
         
         return $response->toArray();
