@@ -8,7 +8,7 @@ namespace App\Rest\Response;
 use App\Facades\Utils;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
-use App\Rest\Common\ParseOfClass;
+use App\Rest\Common\ParseOf;
 use App\Rest\Dto\UsersDTO;
 
 /**
@@ -17,7 +17,7 @@ use App\Rest\Dto\UsersDTO;
  * Class UserResponse
  * @author Nicolás Marulanda P.
  */
-class UserResponse implements ParseOfClass, ObjectToArray {
+class UserResponse implements ParseOf, ObjectToArray {
     
     use Magic;
     
@@ -36,6 +36,10 @@ class UserResponse implements ParseOfClass, ObjectToArray {
                 'UsersDTO'           => UsersDTO::class,
                 'PaginationResponse' => PaginationResponse::class,
         ];
+    }
+    
+    public static function parseOf(array $value) {
+        return Utils::parseOf($value, UserResponse::class);
     }
     
     public function toArray() {
