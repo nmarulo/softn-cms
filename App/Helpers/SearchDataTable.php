@@ -66,8 +66,8 @@ class SearchDataTable {
                 $this->searchFormat($queryCount, $searchable, $search, $strictSearch);
             } else {
                 foreach ($searchable as $column) {
-                    $this->where($query, $column, $search, $strictSearch, 'or');
-                    $this->where($queryCount, $column, $search, $strictSearch, 'or');
+                    $this->where($query, $column, $search, $strictSearch);
+                    $this->where($queryCount, $column, $search, $strictSearch);
                 }
             }
         }
@@ -110,21 +110,21 @@ class SearchDataTable {
         $columnMatch = $explode[0];
         $value       = $explode[1];
         
-        $how = $strictSearch ? 'and' : 'or';
-        
         //compruebo que la columna existe.
         foreach ($searchable as $column) {
             if (!empty(preg_match(sprintf('/_%1$s$/', $columnMatch), $column))) {
-                $this->where($query, $column, $value, $strictSearch, $how);
+                $this->where($query, $column, $value, $strictSearch);
                 break;
             }
         }
     }
     
-    private function where(Query &$query, $column, $value, bool $strict = TRUE, string $how = 'and'): void {
-        $op = '=';
+    private function where(Query &$query, $column, $value, bool $strict = TRUE): void {
+        $op  = '=';
+        $how = 'and';
         
         if (!$strict) {
+            $how   = 'or';
             $op    = 'like';
             $value = sprintf('%1$s%2$s%1$s', '%', $value);
         }
