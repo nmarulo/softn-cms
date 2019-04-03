@@ -6,15 +6,15 @@
 namespace App\Facades\Rest;
 
 use App\Rest\Request\UserRequest;
-use App\Rest\Response\UserResponse;
+use App\Rest\Response\UsersResponse;
 use App\Rest\UsersRest;
 use Silver\Support\Facade;
 
 /**
- * @method static UserResponse getAll(UserRequest $request = NULL)
- * @method static UserResponse getById(int $id)
- * @method static UserResponse create(UserRequest $request)
- * @method static UserResponse update(int $id, UserRequest $request)
+ * @method static UsersResponse getAll(UserRequest $request = NULL)
+ * @method static UsersResponse getById(int $id)
+ * @method static UsersResponse create(UserRequest $request)
+ * @method static UsersResponse update(int $id, UserRequest $request)
  * @method static bool remove(int $id)
  * Class UsersRestFacade
  * @author Nicolás Marulanda P.

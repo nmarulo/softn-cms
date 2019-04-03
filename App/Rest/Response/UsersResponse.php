@@ -17,7 +17,7 @@ use App\Rest\Dto\UsersDTO;
  * Class UserResponse
  * @author Nicolás Marulanda P.
  */
-class UserResponse implements ParseOf, ObjectToArray {
+class UsersResponse implements ParseOf, ObjectToArray {
     
     use Magic;
     
@@ -39,7 +39,7 @@ class UserResponse implements ParseOf, ObjectToArray {
     }
     
     public static function parseOf(array $value) {
-        return Utils::parseOf($value, UserResponse::class);
+        return Utils::parseOf($value, UsersResponse::class);
     }
     
     public function toArray(): array {
