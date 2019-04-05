@@ -63,7 +63,7 @@ class UsersController extends Controller {
             $userResponse = UsersRestFacade::getById($id);
         }
         
-        if (isset($userResponse->users[0])) {
+        if (isset($userResponse, $userResponse->users[0])) {
             $userDTO = $userResponse->users[0];
         }
         
