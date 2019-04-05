@@ -19,7 +19,7 @@ class RegisterRest extends RestCall {
         parent::__construct();
     }
     
-    public function register(RegisterUserRequest $request): UserResponse {
+    public function register(RegisterUserRequest $request): ?UserResponse {
         try {
             return $this->post($request);
         } catch (\Exception $exception) {
