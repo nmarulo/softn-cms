@@ -7,7 +7,7 @@ use App\Facades\Utils;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Request\UserRequest;
-use App\Rest\Response\UserResponse;
+use App\Rest\Response\UsersResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 
@@ -17,7 +17,7 @@ use Silver\Core\Controller;
 class UsersApiController extends Controller {
     
     public function get($id) {
-        $userResponse = new UserResponse();
+        $userResponse = new UsersResponse();
         
         if ($id) {
             $model               = $this->getUserById($id);
@@ -65,7 +65,7 @@ class UsersApiController extends Controller {
      * @return array
      */
     private function saveUser(?int $id = NULL): array {
-        $response = new UserResponse();
+        $response = new UsersResponse();
         $request  = UserRequest::parseOf(Request::all());
         
         if (is_null($id)) {

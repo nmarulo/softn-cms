@@ -4,6 +4,9 @@ namespace App\Controllers\Api;
 
 use App\Facades\TokenFacade;
 use App\Models\Users;
+use App\Rest\Dto\UsersDTO;
+use App\Rest\Request\UserRequest;
+use App\Rest\Response\UserResponse;
 use Lcobucci\JWT\Builder;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
@@ -14,26 +17,30 @@ use Silver\Core\Controller;
 class LoginApiController extends Controller {
     
     public function login() {
-        $user = Users::where('user_login', '=', Request::input('user_login'))
-                     ->first();
+        $request = UserRequest::parseOf(Request::all());
+        $user    = Users::where('user_login', '=', $request->userLogin)
+                        ->first();
         
         //Si el usuario existe y su contraseña es igual
-        if ($user && $this->checkPassword($user)) {
-            TokenFacade::generate(function(Builder $builder) use ($user) {
-                $builder->set('user_login', $user->user_login);
+        if ($user && $this->checkPassword($user, $request)) {
+            $userDTO = UsersDTO::convertOfModel($user);
+            TokenFacade::generate(function(Builder $builder) use ($userDTO) {
+                $builder->set('user_login', $userDTO->userLogin);
                 
                 return $builder;
             });
             
-            return $user;
+            $response = UserResponse::parseOf($userDTO->toArray());
+            
+            return $response->toArray();
         } else {
             throw new \RuntimeException('Usuario y/o contraseña incorrecto(s).');
         }
     }
     
-    private function checkPassword($user) {
+    private function checkPassword(Users $user, UserRequest $request): bool {
         //TODO: cifrar
-        return $user->user_password == Request::input('user_password');
+        return $user->user_password == $request->userPassword;
     }
     
 }

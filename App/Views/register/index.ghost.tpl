@@ -9,19 +9,19 @@
             <form method="post">
                 <div class="form-group">
                     <label for="user-login" class="control-label">Usuario:</label>
-                    <input class="form-control" type="text" name="user_login" id="user-login" autofocus>
+                    <input class="form-control" type="text" name="userLogin" id="user-login" autofocus>
                 </div>
                 <div class="form-group">
                     <label for="user-email" class="control-label">Correo electrónico:</label>
-                    <input class="form-control" type="email" name="user_email" id="user-email">
+                    <input class="form-control" type="email" name="userEmail" id="user-email">
                 </div>
                 <div class="form-group">
                     <label for="user-password" class="control-label">Contraseña:</label>
-                    <input class="form-control" type="password" name="user_password" id="user-password">
+                    <input class="form-control" type="password" name="userPassword" id="user-password">
                 </div>
                 <div class="form-group">
                     <label for="user-password-re" class="control-label">Repetir contraseña:</label>
-                    <input class="form-control" type="password" name="user_password_re" id="user-password-re">
+                    <input class="form-control" type="password" name="userPasswordRe" id="user-password-re">
                 </div>
                 <button class="btn btn-success" type="submit">Registrar</button>
             </form>

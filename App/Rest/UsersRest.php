@@ -7,7 +7,7 @@ namespace App\Rest;
 
 use App\Facades\Messages;
 use App\Rest\Request\UserRequest;
-use App\Rest\Response\UserResponse;
+use App\Rest\Response\UsersResponse;
 
 /**
  * Class UsersRest
@@ -19,44 +19,44 @@ class UsersRest extends RestCall {
         parent::__construct();
     }
     
-    public function getAll(UserRequest $request = NULL): UserResponse {
+    public function getAll(UserRequest $request = NULL): UsersResponse {
         try {
             return $this->get($request);
         } catch (\Exception $exception) {
             Messages::addDanger($exception->getMessage());
         }
         
-        return new UserResponse();
+        return new UsersResponse();
     }
     
-    public function getById(int $id): ?UserResponse {
+    public function getById(int $id): ?UsersResponse {
         try {
             return $this->get(NULL, $id);
         } catch (\Exception $exception) {
             Messages::addDanger($exception->getMessage());
         }
         
-        return new UserResponse();
+        return new UsersResponse();
     }
     
-    public function create(UserRequest $request): ?UserResponse {
+    public function create(UserRequest $request): ?UsersResponse {
         try {
             return $this->post($request);
         } catch (\Exception $exception) {
             Messages::addDanger($exception->getMessage());
         }
         
-        return new UserResponse();
+        return new UsersResponse();
     }
     
-    public function update(int $id, UserRequest $request): ?UserResponse {
+    public function update(int $id, UserRequest $request): ?UsersResponse {
         try {
             return $this->put($id, $request);
         } catch (\Exception $exception) {
             Messages::addDanger($exception->getMessage());
         }
         
-        return new UserResponse();
+        return new UsersResponse();
     }
     
     public function remove(int $id): bool {
@@ -72,7 +72,7 @@ class UsersRest extends RestCall {
     }
     
     protected function parseResponseTo(array $value) {
-        return UserResponse::parseOf($value);
+        return UsersResponse::parseOf($value);
     }
     
     protected function baseUri(): string {

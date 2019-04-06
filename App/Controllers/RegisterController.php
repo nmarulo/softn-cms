@@ -2,11 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Facades\Api\RequestApiFacade;
 use App\Facades\Messages;
-use App\Facades\ModelFacade;
-use App\Helpers\EMailerHelper;
-use App\Models\Users;
+use App\Facades\Rest\RegisterRestFacade;
+use App\Rest\Request\RegisterUserRequest;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
@@ -22,25 +20,15 @@ class RegisterController extends Controller {
     }
     
     public function form() {
+        $request  = RegisterUserRequest::parseOf(Request::all());
+        $response = RegisterRestFacade::register($request);
         $redirect = URL;
-        RequestApiFacade::post('register', Request::all());
         
-        if (RequestApiFacade::isError()) {
-            Messages::addDanger(RequestApiFacade::getMessage());
-            $redirect .= '/register';
-        } else {
+        if ($response) {
             Messages::addSuccess('Usuario creado correctamente.');
-            $user                = ModelFacade::arrayToObject(RequestApiFacade::responseJsonDecode(), Users::class);
-            $user->user_password = Request::input('user_password');
-            
-            try {
-                EMailerHelper::register($user)
-                             ->send('Registro de usuario');
-            } catch (\Exception $exception) {
-                //TODO: log
-            }
-            
             $redirect .= '/login';
+        } else {
+            $redirect .= '/register';
         }
         
         Redirect::to($redirect);

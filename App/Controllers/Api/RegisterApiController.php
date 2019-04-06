@@ -2,8 +2,12 @@
 
 namespace App\Controllers\Api;
 
-use App\Controllers\Api\Dashboard\UsersApiController;
+use App\Facades\Utils;
+use App\Helpers\EMailerHelper;
 use App\Models\Users;
+use App\Rest\Dto\UsersDTO;
+use App\Rest\Request\RegisterUserRequest;
+use App\Rest\Response\UserResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 
@@ -13,20 +17,32 @@ use Silver\Core\Controller;
 class RegisterApiController extends Controller {
     
     public function register() {
-        $request = Request::all();
-        $user    = Users::where('user_login', '=', $request['user_login'])
-                        ->orWhere('user_email', '=', $request['user_email'])
+        $request = RegisterUserRequest::parseOf(Request::all());
+        $user    = Users::where('user_login', '=', $request->userLogin)
+                        ->orWhere('user_email', '=', $request->userEmail)
                         ->first();
         
         if ($user) {
             throw new \RuntimeException('No puedes registrar este usuario.');
         }
         
-        if ($request['user_password'] != $request['user_password_re']) {
+        if ($request->userPassword != $request->userPasswordRe) {
             throw new \RuntimeException('Las contraseñas no son iguales.');
         }
         
-        return (new UsersApiController())->post();
+        $request->userRegistered = Utils::dateNow();
+        $user                    = UsersDTO::convertToModel($request, FALSE);
+        $userDTO                 = UsersDTO::convertOfModel($user->save());
+        $response                = UserResponse::parseOf($userDTO->toArray());
+        
+        try {
+            EMailerHelper::register($user)
+                         ->send('Registro de usuario');
+        } catch (\Exception $exception) {
+            //TODO: log
+        }
+        
+        return $response->toArray();
     }
     
 }
