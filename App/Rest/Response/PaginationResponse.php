@@ -5,7 +5,7 @@
 
 namespace App\Rest\Response;
 
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
@@ -65,7 +65,7 @@ class PaginationResponse implements ParseOfClass, ObjectToArray {
     }
     
     public function toArray(): array {
-        return Utils::castObjectToArray($this);
+        return UtilsFacade::castObjectToArray($this);
     }
     
 }

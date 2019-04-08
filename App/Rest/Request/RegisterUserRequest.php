@@ -5,7 +5,7 @@
 
 namespace App\Rest\Request;
 
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Rest\Common\ParseOf;
 use App\Rest\Dto\UsersDTO;
 
@@ -22,7 +22,7 @@ class RegisterUserRequest extends UsersDTO implements ParseOf {
     private $userPasswordRe;
     
     public static function parseOf(array $value): RegisterUserRequest {
-        return Utils::parseOf($value, RegisterUserRequest::class);
+        return UtilsFacade::parseOf($value, RegisterUserRequest::class);
     }
     
     public static function getParseOfClasses(): array {

@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Facades\Messages;
+use App\Facades\MessagesFacade;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
 use Silver\Http\Session;
@@ -15,7 +15,7 @@ class LogoutController extends Controller {
     public function index() {
         Session::delete('user_login');
         Session::delete('token');
-        Messages::addSuccess('Sesión finalizada correctamente.');
+        MessagesFacade::addSuccess('Sesión finalizada correctamente.');
         Redirect::to(URL . '/login');
     }
     

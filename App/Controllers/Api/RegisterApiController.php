@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Api;
 
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Helpers\EMailerHelper;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
@@ -30,7 +30,7 @@ class RegisterApiController extends Controller {
             throw new \RuntimeException('Las contraseñas no son iguales.');
         }
         
-        $request->userRegistered = Utils::dateNow();
+        $request->userRegistered = UtilsFacade::dateNow();
         $user                    = UsersDTO::convertToModel($request, FALSE);
         $userDTO                 = UsersDTO::convertOfModel($user->save());
         $response                = UserResponse::parseOf($userDTO->toArray());

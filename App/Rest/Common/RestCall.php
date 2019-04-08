@@ -3,10 +3,9 @@
  * RestCall.php
  */
 
-namespace App\Rest;
+namespace App\Rest\Common;
 
 use App\Helpers\Api\RequestApiHelper;
-use App\Rest\Common\ObjectToArray;
 
 /**
  * Class RestCall

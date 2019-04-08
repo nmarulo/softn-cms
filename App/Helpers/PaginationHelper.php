@@ -12,9 +12,9 @@ use App\Rest\Response\PaginationResponse;
  * Class Pagination
  * @author Nicolás Marulanda P.
  */
-class Pagination extends PaginationResponse {
+class PaginationHelper extends PaginationResponse {
     
-    public function getInit(int $totalData, ?int $currentPageValue = NULL, int $maxNumberPagesShow = 3): Pagination {
+    public function getInit(int $totalData, ?int $currentPageValue = NULL, int $maxNumberPagesShow = 3): PaginationHelper {
         $this->currentPageValue   = is_null($currentPageValue) ? 1 : $currentPageValue;
         $this->totalData          = $totalData;
         $this->maxNumberPagesShow = $maxNumberPagesShow;

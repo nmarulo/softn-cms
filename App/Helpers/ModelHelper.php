@@ -17,7 +17,7 @@ class ModelHelper {
     /** @var mixed */
     private $query;
     
-    /** @var Pagination */
+    /** @var PaginationHelper */
     private $pagination;
     
     /** @var boolean */
@@ -124,7 +124,7 @@ class ModelHelper {
     }
     
     /**
-     * @return Pagination
+     * @return PaginationHelper
      */
     public function getPagination() {
         if ($this->hasPagination && empty($this->pagination)) {
@@ -186,7 +186,7 @@ class ModelHelper {
                               ->single();
         }
         
-        $this->pagination = \App\Facades\Pagination::getInit($totalData, $currentPage);
+        $this->pagination = \App\Facades\PaginationFacade::getInit($totalData, $currentPage);
         $this->paginationDataClosure($this->paginationDataClosure);
     }
     

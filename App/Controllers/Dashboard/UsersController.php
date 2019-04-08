@@ -3,9 +3,9 @@
 namespace App\Controllers\Dashboard;
 
 use App\Facades\Api\RequestApiFacade;
-use App\Facades\Messages;
+use App\Facades\MessagesFacade;
 use App\Facades\Rest\UsersRestFacade;
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Request\UserRequest;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -25,7 +25,7 @@ class UsersController extends Controller {
     
     public function index() {
         $userRequest            = new UserRequest();
-        $userRequest->dataTable = Utils::getDataTable();
+        $userRequest->dataTable = UtilsFacade::getDataTable();
         $response               = UsersRestFacade::getAll($userRequest);
         $users                  = $response->users;
         
@@ -53,7 +53,7 @@ class UsersController extends Controller {
             }
             
             if (isset($userResponse->users[0])) {
-                Messages::addSuccess($message);
+                MessagesFacade::addSuccess($message);
                 
                 if (empty($id)) {
                     Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $userResponse->users[0]->id));
@@ -73,7 +73,7 @@ class UsersController extends Controller {
     
     public function delete($id) {
         if (UsersRestFacade::remove($id)) {
-            Messages::addSuccess('Usuario borrado correctamente.');
+            MessagesFacade::addSuccess('Usuario borrado correctamente.');
         }
     }
 }

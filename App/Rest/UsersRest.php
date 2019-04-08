@@ -5,7 +5,8 @@
 
 namespace App\Rest;
 
-use App\Facades\Messages;
+use App\Facades\MessagesFacade;
+use App\Rest\Common\RestCall;
 use App\Rest\Request\UserRequest;
 use App\Rest\Response\UsersResponse;
 
@@ -23,7 +24,7 @@ class UsersRest extends RestCall {
         try {
             return $this->get($request);
         } catch (\Exception $exception) {
-            Messages::addDanger($exception->getMessage());
+            MessagesFacade::addDanger($exception->getMessage());
         }
         
         return new UsersResponse();
@@ -33,7 +34,7 @@ class UsersRest extends RestCall {
         try {
             return $this->get(NULL, $id);
         } catch (\Exception $exception) {
-            Messages::addDanger($exception->getMessage());
+            MessagesFacade::addDanger($exception->getMessage());
         }
         
         return new UsersResponse();
@@ -43,7 +44,7 @@ class UsersRest extends RestCall {
         try {
             return $this->post($request);
         } catch (\Exception $exception) {
-            Messages::addDanger($exception->getMessage());
+            MessagesFacade::addDanger($exception->getMessage());
         }
         
         return new UsersResponse();
@@ -53,7 +54,7 @@ class UsersRest extends RestCall {
         try {
             return $this->put($id, $request);
         } catch (\Exception $exception) {
-            Messages::addDanger($exception->getMessage());
+            MessagesFacade::addDanger($exception->getMessage());
         }
         
         return new UsersResponse();
@@ -65,7 +66,7 @@ class UsersRest extends RestCall {
             
             return TRUE;
         } catch (\Exception $exception) {
-            Messages::addDanger($exception->getMessage());
+            MessagesFacade::addDanger($exception->getMessage());
         }
         
         return FALSE;

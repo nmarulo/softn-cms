@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Facades\Messages;
+use App\Facades\MessagesFacade;
 use App\Facades\Rest\RegisterRestFacade;
 use App\Rest\Request\RegisterUserRequest;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -25,7 +25,7 @@ class RegisterController extends Controller {
         $redirect = URL;
         
         if ($response) {
-            Messages::addSuccess('Usuario creado correctamente.');
+            MessagesFacade::addSuccess('Usuario creado correctamente.');
             $redirect .= '/login';
         } else {
             $redirect .= '/register';

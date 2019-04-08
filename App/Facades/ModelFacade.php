@@ -6,7 +6,7 @@ use App\Helpers\ModelHelper;
 use App\Rest\Common\DataTable\DataTable;
 use Silver\Database\Model;
 use Silver\Support\Facade;
-use \App\Helpers\Pagination;
+use \App\Helpers\PaginationHelper;
 
 /**
  * @method static Model arrayToObject(array $array, string $class)
@@ -15,7 +15,7 @@ use \App\Helpers\Pagination;
  * @method static ModelHelper pagination(\Closure $dataModelClosure = NULL)
  * @method static ModelHelper sort()
  * @method static array all()
- * @method static Pagination getPagination()
+ * @method static PaginationHelper getPagination()
  */
 class ModelFacade extends Facade {
     

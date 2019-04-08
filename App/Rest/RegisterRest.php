@@ -5,7 +5,8 @@
 
 namespace App\Rest;
 
-use App\Facades\Messages;
+use App\Facades\MessagesFacade;
+use App\Rest\Common\RestCall;
 use App\Rest\Request\RegisterUserRequest;
 use App\Rest\Response\UserResponse;
 
@@ -23,7 +24,7 @@ class RegisterRest extends RestCall {
         try {
             return $this->post($request);
         } catch (\Exception $exception) {
-            Messages::addDanger($exception->getMessage());
+            MessagesFacade::addDanger($exception->getMessage());
         }
         
         return NULL;

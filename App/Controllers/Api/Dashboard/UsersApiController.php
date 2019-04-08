@@ -3,7 +3,7 @@
 namespace App\Controllers\Api\Dashboard;
 
 use App\Facades\ModelFacade;
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Request\UserRequest;
@@ -69,7 +69,7 @@ class UsersApiController extends Controller {
         $request  = UserRequest::parseOf(Request::all());
         
         if (is_null($id)) {
-            $request->userRegistered = Utils::dateNow();
+            $request->userRegistered = UtilsFacade::dateNow();
         } else {
             $request->id = $id;
         }

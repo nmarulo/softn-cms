@@ -5,7 +5,7 @@
 
 namespace App\Rest\Response;
 
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOf;
@@ -39,11 +39,11 @@ class UsersResponse implements ParseOf, ObjectToArray {
     }
     
     public static function parseOf(array $value) {
-        return Utils::parseOf($value, UsersResponse::class);
+        return UtilsFacade::parseOf($value, UsersResponse::class);
     }
     
     public function toArray(): array {
-        return Utils::castObjectToArray($this);
+        return UtilsFacade::castObjectToArray($this);
     }
     
 }
