@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Facades\PaginationFacade;
 use App\Facades\SearchDataTableFacade;
 use App\Rest\Common\DataTable\DataTable;
 use App\Rest\Common\DataTable\SortColumn;
@@ -186,7 +187,7 @@ class ModelHelper {
                               ->single();
         }
         
-        $this->pagination = \App\Facades\PaginationFacade::getInit($totalData, $currentPage);
+        $this->pagination = PaginationFacade::getInit($totalData, $currentPage);
         $this->paginationDataClosure($this->paginationDataClosure);
     }
     
