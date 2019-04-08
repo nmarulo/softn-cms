@@ -20,7 +20,7 @@ use Silver\Support\Facade;
 class Utils extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\Utils';
+        return Utils::class;
     }
     
 }

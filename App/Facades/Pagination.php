@@ -10,7 +10,7 @@ use Silver\Support\Facade;
 class Pagination extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\Pagination';
+        return Pagination::class;
     }
     
 }

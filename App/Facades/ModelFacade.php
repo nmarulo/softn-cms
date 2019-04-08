@@ -20,7 +20,7 @@ use \App\Helpers\Pagination;
 class ModelFacade extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\ModelHelper';
+        return ModelHelper::class;
     }
     
 }

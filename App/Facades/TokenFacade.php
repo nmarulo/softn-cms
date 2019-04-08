@@ -2,6 +2,7 @@
 
 namespace App\Facades;
 
+use App\Helpers\TokenHelper;
 use Silver\Support\Facade;
 
 /**
@@ -13,7 +14,7 @@ use Silver\Support\Facade;
 class TokenFacade extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\TokenHelper';
+        return TokenHelper::class;
     }
     
 }

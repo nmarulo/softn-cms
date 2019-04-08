@@ -11,7 +11,7 @@ use Silver\Support\Facade;
 class PHPMailerFacade extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\EMail\PHPMailerHelper';
+        return PHPMailerHelper::class;
     }
     
 }

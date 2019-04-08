@@ -14,7 +14,7 @@ use Silver\Support\Facade;
 class SearchDataTableFacade extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\SearchDataTable';
+        return SearchDataTable::class;
     }
     
 }

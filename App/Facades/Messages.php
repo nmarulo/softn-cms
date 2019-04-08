@@ -12,7 +12,7 @@ use Silver\Support\Facade;
 class Messages extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\Messages';
+        return Messages::class;
     }
     
 }
