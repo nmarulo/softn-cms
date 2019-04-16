@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Api\Dashboard;
 
-use App\Facades\ModelFacade;
+use App\Facades\SearchFacade;
 use App\Facades\UtilsFacade;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
@@ -30,10 +30,10 @@ class UsersApiController extends Controller {
         
         //TODO: Hasta que no encuentre una forma de capturar la instancia del controlador desde el middleware tendré que seguir usando la clase "Request".
         $request   = UserRequest::parseOf(Request::all());
-        $userModel = ModelFacade::model(Users::class, $request->dataTable)
-                                ->search()
-                                ->pagination()
-                                ->sort();
+        $userModel = SearchFacade::init(Users::class, $request->dataTable)
+                                 ->search()
+                                 ->pagination()
+                                 ->sort();
         
         $users    = $userModel->all();
         $usersDTO = array_map(function(Users $user) {

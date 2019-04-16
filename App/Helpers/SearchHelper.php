@@ -10,10 +10,10 @@ use Silver\Database\Model;
 use Silver\Database\Query;
 
 /*
- * ModelHelper Helper
+ * SearchHelper Helper
  */
 
-class ModelHelper {
+class SearchHelper {
     
     /** @var mixed */
     private $query;
@@ -52,30 +52,13 @@ class ModelHelper {
     }
     
     /**
-     * @param $array
-     * @param $model
-     *
-     * @return mixed
-     * @deprecated Usar Utils::parseOf()
-     */
-    public function arrayToObject($array, $model) {
-        $obj = new $model();
-        
-        foreach ($array as $key => $value) {
-            $obj->{$key} = $value;
-        }
-        
-        return $obj;
-    }
-    
-    /**
      * @param string         $model
      * @param DataTable|null $dataTable
      *
      * @return $this
      * @throws \Exception
      */
-    public function model(string $model, ?DataTable $dataTable = NULL) {
+    public function init(string $model, ?DataTable $dataTable = NULL) {
         $object = new $model();
         
         if (!($object instanceof Model)) {
