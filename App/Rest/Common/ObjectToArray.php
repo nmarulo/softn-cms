@@ -7,7 +7,7 @@ namespace App\Rest\Common;
 
 /**
  * Interface ObjectToArray
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
 interface ObjectToArray {
     

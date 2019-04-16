@@ -7,7 +7,7 @@ namespace App\Rest\Common;
 
 /**
  * Interface ParseArrayClass
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
 interface ParseOfClass {
     
