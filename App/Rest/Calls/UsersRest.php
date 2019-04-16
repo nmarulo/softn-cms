@@ -3,7 +3,7 @@
  * UsersRest.php
  */
 
-namespace App\Rest;
+namespace App\Rest\Calls;
 
 use App\Facades\MessagesFacade;
 use App\Rest\Common\RestCall;

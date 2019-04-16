@@ -7,7 +7,7 @@ namespace App\Facades\Rest;
 
 use App\Rest\Request\UserRequest;
 use App\Rest\Response\UsersResponse;
-use App\Rest\UsersRest;
+use App\Rest\Calls\UsersRest;
 use Silver\Support\Facade;
 
 /**
