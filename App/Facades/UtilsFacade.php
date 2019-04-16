@@ -16,7 +16,7 @@ use Silver\Support\Facade;
  * @method static DataTable getDataTable()
  * @method static bool isHiddenProperty(Model $model, string $propName)
  * @method static mixed castModelToDto(array $comparisionProps, Model $model, string $classDto, bool $hideProps = TRUE)
- * @method static Model castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE)
+ * @method static mixed castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE)
  */
 class UtilsFacade extends Facade {
     

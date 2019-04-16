@@ -8,6 +8,7 @@ namespace App\Helpers;
 use App\Rest\Common\DataTable\DataTable;
 use App\Rest\Common\DataTable\Filter;
 use App\Rest\Common\DataTable\SortColumn;
+use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -167,10 +168,28 @@ class Utils {
         return in_array($propName, $hiddenProps);
     }
     
-    public function castModelToDto(array $comparisionProps, Model $model, string $classDto, bool $hideProps = TRUE) {
+    /**
+     * @param array  $comparisionProps
+     * @param mixed  $model
+     * @param string $classDto
+     * @param bool   $hideProps
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function castModelToDto(array $comparisionProps, $model, string $classDto, bool $hideProps = TRUE) {
         return $this->castObjectTo($comparisionProps, $model, $classDto, $hideProps);
     }
     
+    /**
+     * @param array  $comparisionProps
+     * @param mixed  $dto
+     * @param string $classModel
+     * @param bool   $hideProps
+     *
+     * @return mixed
+     * @throws \Exception
+     */
     public function castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE) {
         return $this->castObjectTo($comparisionProps, $dto, $classModel, $hideProps);
     }
@@ -196,7 +215,26 @@ class Utils {
         return substr($propertyClass, $start, $len);
     }
     
+    /**
+     * @param array  $comparisionProps
+     * @param mixed  $object
+     * @param string $toClass
+     * @param bool   $hideProps
+     *
+     * @return mixed
+     * @throws \Exception
+     */
     private function castObjectTo(array $comparisionProps, $object, string $toClass, bool $hideProps = TRUE) {
+        if (is_array($object)) {
+            $result = [];
+            
+            foreach ($object as $value) {
+                $result[] = $this->castObjectTo($comparisionProps, $value, $toClass, $hideProps);
+            }
+            
+            return $result;
+        }
+        
         $class     = new $toClass();
         $model     = $class;
         $needle    = 'propDto';
@@ -209,8 +247,10 @@ class Utils {
             $needle        = 'propModel';
             $keyObject     = $needle;
             $keyClass      = 'propDto';
-        } else {
+        } elseif ($this->isUseTrait($object, Magic::class)) {
             $propertyNames = $object->getProperties();
+        } else {
+            throw new \Exception("La instancia del objeto no es valida.");
         }
         
         $propertyNamesModel = array_keys($propertyNames);
@@ -226,5 +266,9 @@ class Utils {
         }
         
         return $class;
+    }
+    
+    private function isUseTrait($object, string $classTrait): bool {
+        return array_key_exists($classTrait, class_uses($object));
     }
 }

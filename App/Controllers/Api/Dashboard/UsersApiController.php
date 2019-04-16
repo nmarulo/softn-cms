@@ -16,6 +16,12 @@ use Silver\Core\Controller;
  */
 class UsersApiController extends Controller {
     
+    /**
+     * @param $id
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function get($id) {
         $userResponse = new UsersResponse();
         
@@ -36,9 +42,7 @@ class UsersApiController extends Controller {
                                  ->sort();
         
         $users    = $userModel->all();
-        $usersDTO = array_map(function(Users $user) {
-            return UsersDTO::convertOfModel($user);
-        }, $users);
+        $usersDTO = UsersDTO::convertOfModel($users);
         
         $userResponse->users      = $usersDTO;
         $userResponse->pagination = $userModel->getPagination();

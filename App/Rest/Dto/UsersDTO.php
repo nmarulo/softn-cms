@@ -65,11 +65,11 @@ class UsersDTO implements ObjectToArray, ConvertModel {
      */
     private $userPassword;
     
-    public static function convertToModel($object, bool $hideProps = TRUE): Model {
+    public static function convertToModel($object, bool $hideProps = TRUE) {
         return UtilsFacade::castDtoToModel(self::COMPARISION_TABLE, $object, Users::class, $hideProps);
     }
     
-    public static function convertOfModel(Model $model, bool $hideProps = TRUE): UsersDTO {
+    public static function convertOfModel($model, bool $hideProps = TRUE) {
         return UtilsFacade::castModelToDto(self::COMPARISION_TABLE, $model, UsersDTO::class, $hideProps);
     }
     
