@@ -3,7 +3,7 @@
  * PaginationResponse.php
  */
 
-namespace App\Rest\Response;
+namespace App\Rest\Responses;
 
 use App\Facades\UtilsFacade;
 use App\Rest\Common\Magic;

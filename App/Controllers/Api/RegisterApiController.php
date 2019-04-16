@@ -6,8 +6,8 @@ use App\Facades\UtilsFacade;
 use App\Helpers\EMailerHelper;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
-use App\Rest\Request\RegisterUserRequest;
-use App\Rest\Response\UserResponse;
+use App\Rest\Requests\RegisterUserRequest;
+use App\Rest\Responses\UserResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 

@@ -5,8 +5,8 @@
 
 namespace App\Helpers;
 
-use App\Rest\Response\PageResponse;
-use App\Rest\Response\PaginationResponse;
+use App\Rest\Responses\PageResponse;
+use App\Rest\Responses\PaginationResponse;
 
 /**
  * Class Pagination

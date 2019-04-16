@@ -3,7 +3,7 @@
  * RegisterUserRequest.php
  */
 
-namespace App\Rest\Request;
+namespace App\Rest\Requests;
 
 use App\Facades\UtilsFacade;
 use App\Rest\Common\ParseOf;

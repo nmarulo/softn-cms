@@ -6,8 +6,8 @@ use App\Facades\ModelFacade;
 use App\Facades\UtilsFacade;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
-use App\Rest\Request\UserRequest;
-use App\Rest\Response\UsersResponse;
+use App\Rest\Requests\UserRequest;
+use App\Rest\Responses\UsersResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 
