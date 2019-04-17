@@ -2,12 +2,12 @@
 
 namespace App\Controllers\Api\Dashboard;
 
-use App\Facades\ModelFacade;
-use App\Facades\Utils;
+use App\Facades\SearchFacade;
+use App\Facades\UtilsFacade;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
-use App\Rest\Request\UserRequest;
-use App\Rest\Response\UsersResponse;
+use App\Rest\Requests\UserRequest;
+use App\Rest\Responses\UsersResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 
@@ -16,6 +16,12 @@ use Silver\Core\Controller;
  */
 class UsersApiController extends Controller {
     
+    /**
+     * @param $id
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function get($id) {
         $userResponse = new UsersResponse();
         
@@ -30,17 +36,12 @@ class UsersApiController extends Controller {
         
         //TODO: Hasta que no encuentre una forma de capturar la instancia del controlador desde el middleware tendré que seguir usando la clase "Request".
         $request   = UserRequest::parseOf(Request::all());
-        $userModel = ModelFacade::model(Users::class, $request->dataTable)
-                                ->search()
-                                ->pagination()
-                                ->sort();
+        $userModel = SearchFacade::init(Users::class, $request->dataTable)
+                                 ->search()
+                                 ->pagination()
+                                 ->sort();
         
-        $users    = $userModel->all();
-        $usersDTO = array_map(function(Users $user) {
-            return UsersDTO::convertOfModel($user);
-        }, $users);
-        
-        $userResponse->users      = $usersDTO;
+        $userResponse->users      = UsersDTO::convertOfModel($userModel->all());
         $userResponse->pagination = $userModel->getPagination();
         
         return $userResponse->toArray();
@@ -63,13 +64,14 @@ class UsersApiController extends Controller {
      * @param int $id
      *
      * @return array
+     * @throws \Exception
      */
     private function saveUser(?int $id = NULL): array {
         $response = new UsersResponse();
         $request  = UserRequest::parseOf(Request::all());
         
         if (is_null($id)) {
-            $request->userRegistered = Utils::dateNow();
+            $request->userRegistered = UtilsFacade::dateNow();
         } else {
             $request->id = $id;
         }

@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Facades\PaginationFacade;
 use App\Facades\SearchDataTableFacade;
 use App\Rest\Common\DataTable\DataTable;
 use App\Rest\Common\DataTable\SortColumn;
@@ -9,15 +10,15 @@ use Silver\Database\Model;
 use Silver\Database\Query;
 
 /*
- * ModelHelper Helper
+ * SearchHelper Helper
  */
 
-class ModelHelper {
+class SearchHelper {
     
     /** @var mixed */
     private $query;
     
-    /** @var Pagination */
+    /** @var PaginationHelper */
     private $pagination;
     
     /** @var boolean */
@@ -51,30 +52,13 @@ class ModelHelper {
     }
     
     /**
-     * @param $array
-     * @param $model
-     *
-     * @return mixed
-     * @deprecated Usar Utils::parseOf()
-     */
-    public function arrayToObject($array, $model) {
-        $obj = new $model();
-        
-        foreach ($array as $key => $value) {
-            $obj->{$key} = $value;
-        }
-        
-        return $obj;
-    }
-    
-    /**
      * @param string         $model
      * @param DataTable|null $dataTable
      *
      * @return $this
      * @throws \Exception
      */
-    public function model(string $model, ?DataTable $dataTable = NULL) {
+    public function init(string $model, ?DataTable $dataTable = NULL) {
         $object = new $model();
         
         if (!($object instanceof Model)) {
@@ -124,7 +108,7 @@ class ModelHelper {
     }
     
     /**
-     * @return Pagination
+     * @return PaginationHelper
      */
     public function getPagination() {
         if ($this->hasPagination && empty($this->pagination)) {
@@ -186,7 +170,7 @@ class ModelHelper {
                               ->single();
         }
         
-        $this->pagination = \App\Facades\Pagination::getInit($totalData, $currentPage);
+        $this->pagination = PaginationFacade::getInit($totalData, $currentPage);
         $this->paginationDataClosure($this->paginationDataClosure);
     }
     

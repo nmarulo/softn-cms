@@ -3,10 +3,9 @@
  * RestCall.php
  */
 
-namespace App\Rest;
+namespace App\Rest\Common;
 
 use App\Helpers\Api\RequestApiHelper;
-use App\Rest\Common\ObjectToArray;
 
 /**
  * Class RestCall
@@ -79,6 +78,8 @@ abstract class RestCall {
     
     protected abstract function baseUri(): string;
     
+    protected abstract function catchException(\Exception $exception): void;
+    
     /**
      * @param string $type
      * @param mixed  $object
@@ -94,15 +95,20 @@ abstract class RestCall {
             $object = $object->toArray();
         }
         
-        $this->requestApiHelper->$type($uri, $object);
-        
-        if ($this->requestApiHelper->isError()) {
-            throw new \Exception($this->requestApiHelper->getMessage());
+        try {
+            $this->requestApiHelper->$type($uri, $object);
+            
+            if ($this->requestApiHelper->isError()) {
+                throw new \Exception($this->requestApiHelper->getMessage());
+            }
+            
+            $response = $this->requestApiHelper->responseJsonDecode();
+            
+            return $this->parseResponseTo($response);
+        } catch (\Exception $exception) {
+            $this->catchException($exception);
+            throw $exception;
         }
-        
-        $response = $this->requestApiHelper->responseJsonDecode();
-        
-        return $this->parseResponseTo($response);
     }
     
     private function buildUri(&$object, string $uri = ''): string {

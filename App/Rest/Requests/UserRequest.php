@@ -3,9 +3,9 @@
  * UserRequest.php
  */
 
-namespace App\Rest\Request;
+namespace App\Rest\Requests;
 
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Rest\Common\DataTable\DataTable;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
@@ -33,10 +33,10 @@ class UserRequest extends UsersDTO implements ObjectToArray, ParseOf {
     }
     
     public static function parseOf(array $values): UserRequest {
-        return Utils::parseOf($values, UserRequest::class);
+        return UtilsFacade::parseOf($values, UserRequest::class);
     }
     
     public function toArray(): array {
-        return Utils::castObjectToArray($this);
+        return UtilsFacade::castObjectToArray($this);
     }
 }

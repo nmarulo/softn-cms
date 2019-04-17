@@ -2,6 +2,7 @@
 
 namespace App\Facades;
 
+use App\Helpers\MessagesHelper;
 use Silver\Support\Facade;
 
 /**
@@ -9,10 +10,10 @@ use Silver\Support\Facade;
  * @method static addSuccess(string $message)
  * @method static getMessages()
  */
-class Messages extends Facade {
+class MessagesFacade extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\Messages';
+        return MessagesHelper::class;
     }
     
 }

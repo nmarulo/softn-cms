@@ -5,7 +5,7 @@
 
 namespace App\Rest\Common\DataTable;
 
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
@@ -44,7 +44,7 @@ class DataTable implements ObjectToArray, ParseOfClass {
     }
     
     public function toArray(): array {
-        return Utils::castObjectToArray($this);
+        return UtilsFacade::castObjectToArray($this);
     }
     
 }

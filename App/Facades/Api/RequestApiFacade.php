@@ -2,6 +2,7 @@
 
 namespace App\Facades\Api;
 
+use App\Helpers\Api\RequestApiHelper;
 use Psr\Http\Message\ResponseInterface;
 use Silver\Database\Model;
 use Silver\Support\Facade;
@@ -32,7 +33,7 @@ use Silver\Support\Facade;
 class RequestApiFacade extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\Api\RequestApiHelper';
+        return RequestApiHelper::class;
     }
     
 }

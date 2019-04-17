@@ -2,9 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Facades\Messages;
+use App\Facades\MessagesFacade;
 use App\Facades\Rest\LoginRestFacade;
-use App\Rest\Request\UserRequest;
+use App\Rest\Requests\UserRequest;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
@@ -26,7 +26,7 @@ class LoginController extends Controller {
         $redirect = URL;
         
         if ($response) {
-            Messages::addSuccess('Inicio de sesión correcto.');
+            MessagesFacade::addSuccess('Inicio de sesión correcto.');
             Session::set('user_login', $response->userLogin);
             $redirect .= '/dashboard';
         } else {

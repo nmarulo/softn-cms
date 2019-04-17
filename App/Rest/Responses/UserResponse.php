@@ -3,9 +3,9 @@
  * UserResponse.php
  */
 
-namespace App\Rest\Response;
+namespace App\Rest\Responses;
 
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Rest\Common\ParseOf;
 use App\Rest\Dto\UsersDTO;
 
@@ -16,7 +16,7 @@ use App\Rest\Dto\UsersDTO;
 class UserResponse extends UsersDTO implements ParseOf {
     
     public static function parseOf(array $value): UserResponse {
-        return Utils::parseOf($value, UserResponse::class);
+        return UtilsFacade::parseOf($value, UserResponse::class);
     }
     
     public static function getParseOfClasses(): array {

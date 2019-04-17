@@ -7,7 +7,7 @@ namespace App\Rest\Common;
 
 /**
  * Interface ParseOf
- * @author MaruloPC-Desk
+ * @author Nicolás Marulanda P.
  */
 interface ParseOf extends ParseOfClass {
     

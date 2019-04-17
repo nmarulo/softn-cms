@@ -5,8 +5,8 @@ namespace App\Controllers\Api;
 use App\Facades\TokenFacade;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
-use App\Rest\Request\UserRequest;
-use App\Rest\Response\UserResponse;
+use App\Rest\Requests\UserRequest;
+use App\Rest\Responses\UserResponse;
 use Lcobucci\JWT\Builder;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
@@ -16,6 +16,10 @@ use Silver\Core\Controller;
  */
 class LoginApiController extends Controller {
     
+    /**
+     * @return array
+     * @throws \Exception
+     */
     public function login() {
         $request = UserRequest::parseOf(Request::all());
         $user    = Users::where('user_login', '=', $request->userLogin)

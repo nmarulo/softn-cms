@@ -9,7 +9,7 @@ use Silver\Database\Query;
 /**
  * SearchModelHelper Helper
  */
-class SearchDataTable {
+class SearchDataTableHelper {
     
     /** @var int */
     private $count;
@@ -29,9 +29,9 @@ class SearchDataTable {
      * @param Filter $filter
      * @param Query  $query
      *
-     * @return SearchDataTable
+     * @return SearchDataTableHelper
      */
-    public function filter(Model $mode, Filter $filter, Query $query): SearchDataTable {
+    public function filter(Model $mode, Filter $filter, Query $query): SearchDataTableHelper {
         if ($filter == NULL) {
             return $this;
         }

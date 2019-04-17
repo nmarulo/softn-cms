@@ -2,6 +2,7 @@
 
 namespace App\Facades\Api;
 
+use App\Helpers\Api\ResponseApiHelper;
 use Silver\Support\Facade;
 use Silver\Http\Request;
 
@@ -15,7 +16,7 @@ use Silver\Http\Request;
 class ResponseApiFacade extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\Api\ResponseApiHelper';
+        return ResponseApiHelper::class;
     }
     
 }

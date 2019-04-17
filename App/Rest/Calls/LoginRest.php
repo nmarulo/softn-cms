@@ -3,11 +3,12 @@
  * LoginRest.php
  */
 
-namespace App\Rest;
+namespace App\Rest\Calls;
 
-use App\Facades\Messages;
-use App\Rest\Request\UserRequest;
-use App\Rest\Response\UserResponse;
+use App\Facades\MessagesFacade;
+use App\Rest\Common\RestCall;
+use App\Rest\Requests\UserRequest;
+use App\Rest\Responses\UserResponse;
 
 /**
  * Class LoginRest
@@ -23,10 +24,8 @@ class LoginRest extends RestCall {
         try {
             return $this->post($request);
         } catch (\Exception $exception) {
-            Messages::addDanger($exception->getMessage());
+            return NULL;
         }
-        
-        return NULL;
     }
     
     protected function parseResponseTo(array $value) {
@@ -37,4 +36,7 @@ class LoginRest extends RestCall {
         return 'login';
     }
     
+    protected function catchException(\Exception $exception): void {
+        MessagesFacade::addDanger($exception->getMessage());
+    }
 }

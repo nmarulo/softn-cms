@@ -3,9 +3,9 @@
  * PageResponse.php
  */
 
-namespace App\Rest\Response;
+namespace App\Rest\Responses;
 
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 
@@ -34,6 +34,6 @@ class PageResponse implements ObjectToArray {
     private $attr;
     
     public function toArray(): array {
-        return Utils::castObjectToArray($this);
+        return UtilsFacade::castObjectToArray($this);
     }
 }

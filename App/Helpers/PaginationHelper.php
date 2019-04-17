@@ -5,16 +5,16 @@
 
 namespace App\Helpers;
 
-use App\Rest\Response\PageResponse;
-use App\Rest\Response\PaginationResponse;
+use App\Rest\Responses\PageResponse;
+use App\Rest\Responses\PaginationResponse;
 
 /**
  * Class Pagination
  * @author Nicolás Marulanda P.
  */
-class Pagination extends PaginationResponse {
+class PaginationHelper extends PaginationResponse {
     
-    public function getInit(int $totalData, ?int $currentPageValue = NULL, int $maxNumberPagesShow = 3): Pagination {
+    public function getInit(int $totalData, ?int $currentPageValue = NULL, int $maxNumberPagesShow = 3): PaginationHelper {
         $this->currentPageValue   = is_null($currentPageValue) ? 1 : $currentPageValue;
         $this->totalData          = $totalData;
         $this->maxNumberPagesShow = $maxNumberPagesShow;

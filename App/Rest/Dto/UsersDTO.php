@@ -5,7 +5,7 @@
 
 namespace App\Rest\Dto;
 
-use App\Facades\Utils;
+use App\Facades\UtilsFacade;
 use App\Models\Users;
 use App\Rest\Common\ConvertModel;
 use App\Rest\Common\Magic;
@@ -65,16 +65,16 @@ class UsersDTO implements ObjectToArray, ConvertModel {
      */
     private $userPassword;
     
-    public static function convertToModel($object, bool $hideProps = TRUE): Model {
-        return Utils::castDtoToModel(self::COMPARISION_TABLE, $object, Users::class, $hideProps);
+    public static function convertToModel($object, bool $hideProps = TRUE) {
+        return UtilsFacade::castDtoToModel(self::COMPARISION_TABLE, $object, Users::class, $hideProps);
     }
     
-    public static function convertOfModel(Model $model, bool $hideProps = TRUE): UsersDTO {
-        return Utils::castModelToDto(self::COMPARISION_TABLE, $model, UsersDTO::class, $hideProps);
+    public static function convertOfModel($model, bool $hideProps = TRUE) {
+        return UtilsFacade::castModelToDto(self::COMPARISION_TABLE, $model, UsersDTO::class, $hideProps);
     }
     
     public function toArray(): array {
-        return Utils::castObjectToArray($this);
+        return UtilsFacade::castObjectToArray($this);
     }
     
 }

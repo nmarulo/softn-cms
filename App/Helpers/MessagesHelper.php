@@ -7,7 +7,7 @@ use Silver\Http\Session;
 /**
  * messages Helper
  */
-class Messages {
+class MessagesHelper {
     
     private static $KEY = 'session_messages';
     

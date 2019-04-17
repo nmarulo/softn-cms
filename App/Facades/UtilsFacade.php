@@ -2,6 +2,7 @@
 
 namespace App\Facades;
 
+use App\Helpers\Utils;
 use App\Rest\Common\DataTable\DataTable;
 use Silver\Database\Model;
 use Silver\Support\Facade;
@@ -15,12 +16,12 @@ use Silver\Support\Facade;
  * @method static DataTable getDataTable()
  * @method static bool isHiddenProperty(Model $model, string $propName)
  * @method static mixed castModelToDto(array $comparisionProps, Model $model, string $classDto, bool $hideProps = TRUE)
- * @method static Model castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE)
+ * @method static mixed castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE)
  */
-class Utils extends Facade {
+class UtilsFacade extends Facade {
     
     protected static function getClass() {
-        return 'App\Helpers\Utils';
+        return Utils::class;
     }
     
 }
