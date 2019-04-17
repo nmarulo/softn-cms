@@ -16,6 +16,10 @@ use Silver\Core\Controller;
  */
 class LoginApiController extends Controller {
     
+    /**
+     * @return array
+     * @throws \Exception
+     */
     public function login() {
         $request = UserRequest::parseOf(Request::all());
         $user    = Users::where('user_login', '=', $request->userLogin)

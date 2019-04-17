@@ -41,10 +41,7 @@ class UsersApiController extends Controller {
                                  ->pagination()
                                  ->sort();
         
-        $users    = $userModel->all();
-        $usersDTO = UsersDTO::convertOfModel($users);
-        
-        $userResponse->users      = $usersDTO;
+        $userResponse->users      = UsersDTO::convertOfModel($userModel->all());
         $userResponse->pagination = $userModel->getPagination();
         
         return $userResponse->toArray();
@@ -67,6 +64,7 @@ class UsersApiController extends Controller {
      * @param int $id
      *
      * @return array
+     * @throws \Exception
      */
     private function saveUser(?int $id = NULL): array {
         $response = new UsersResponse();

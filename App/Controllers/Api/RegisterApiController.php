@@ -16,6 +16,10 @@ use Silver\Core\Controller;
  */
 class RegisterApiController extends Controller {
     
+    /**
+     * @return array
+     * @throws \Exception
+     */
     public function register() {
         $request = RegisterUserRequest::parseOf(Request::all());
         $user    = Users::where('user_login', '=', $request->userLogin)
