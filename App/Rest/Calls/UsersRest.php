@@ -24,40 +24,32 @@ class UsersRest extends RestCall {
         try {
             return $this->get($request);
         } catch (\Exception $exception) {
-            MessagesFacade::addDanger($exception->getMessage());
+            return new UsersResponse();
         }
-        
-        return new UsersResponse();
     }
     
     public function getById(int $id): ?UsersResponse {
         try {
             return $this->get(NULL, $id);
         } catch (\Exception $exception) {
-            MessagesFacade::addDanger($exception->getMessage());
+            return new UsersResponse();
         }
-        
-        return new UsersResponse();
     }
     
     public function create(UserRequest $request): ?UsersResponse {
         try {
             return $this->post($request);
         } catch (\Exception $exception) {
-            MessagesFacade::addDanger($exception->getMessage());
+            return new UsersResponse();
         }
-        
-        return new UsersResponse();
     }
     
     public function update(int $id, UserRequest $request): ?UsersResponse {
         try {
             return $this->put($id, $request);
         } catch (\Exception $exception) {
-            MessagesFacade::addDanger($exception->getMessage());
+            return new UsersResponse();
         }
-        
-        return new UsersResponse();
     }
     
     public function remove(int $id): bool {
@@ -66,10 +58,8 @@ class UsersRest extends RestCall {
             
             return TRUE;
         } catch (\Exception $exception) {
-            MessagesFacade::addDanger($exception->getMessage());
+            return FALSE;
         }
-        
-        return FALSE;
     }
     
     protected function parseResponseTo(array $value) {
@@ -78,6 +68,10 @@ class UsersRest extends RestCall {
     
     protected function baseUri(): string {
         return 'dashboard/users';
+    }
+    
+    protected function catchException(\Exception $exception): void {
+        MessagesFacade::addDanger($exception->getMessage());
     }
     
 }

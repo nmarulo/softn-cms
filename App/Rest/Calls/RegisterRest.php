@@ -24,10 +24,8 @@ class RegisterRest extends RestCall {
         try {
             return $this->post($request);
         } catch (\Exception $exception) {
-            MessagesFacade::addDanger($exception->getMessage());
+            return NULL;
         }
-        
-        return NULL;
     }
     
     protected function parseResponseTo(array $value) {
@@ -38,4 +36,7 @@ class RegisterRest extends RestCall {
         return 'register';
     }
     
+    protected function catchException(\Exception $exception): void {
+        MessagesFacade::addDanger($exception->getMessage());
+    }
 }
