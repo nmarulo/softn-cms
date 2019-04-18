@@ -14,7 +14,7 @@ trait Magic {
     /**
      * @var array
      */
-    private $properties;
+    private $properties = [];
     
     public function __get($name) {
         if (isset($this->properties[$name])) {
