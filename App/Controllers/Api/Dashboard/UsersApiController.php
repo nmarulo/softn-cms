@@ -36,8 +36,8 @@ class UsersApiController extends Controller {
         
         //TODO: Hasta que no encuentre una forma de capturar la instancia del controlador desde el middleware tendré que seguir usando la clase "Request".
         $request   = UserRequest::parseOf(Request::all());
-        $userModel = SearchFacade::init(Users::class, $request->dataTable)
-                                 ->search()
+        $userModel = SearchFacade::init(Users::class)
+                                 ->dataTable($request->dataTable)
                                  ->pagination()
                                  ->sort();
         
