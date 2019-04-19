@@ -5,6 +5,7 @@
 
 namespace App\Controllers\Api\Dashboard;
 
+use App\Facades\SearchFacade;
 use App\Models\SettingsModel;
 use App\Rest\Dto\SettingDTO;
 use App\Rest\Requests\SettingRequest;
@@ -12,7 +13,6 @@ use App\Rest\Responses\SettingResponse;
 use App\Rest\Responses\SettingsResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
-use Silver\Database\Model;
 
 /**
  * Class SettingsApiController
@@ -23,29 +23,30 @@ class SettingsApiController extends Controller {
     /**
      * @param $id
      *
-     * @return SettingResponse|array
+     * @return array
      * @throws \Exception
      */
     public function get($id) {
-        $settingModel = NULL;
-        
         if ($id) {
             $settingDTO = SettingDTO::convertOfModel($this->getSettingById($id));
             
             return SettingResponse::parseOf($settingDTO->toArray())
                                   ->toArray();
-        } else {
-            $request = SettingRequest::parseOf(Request::all());
-            
-            if ($request->getProperties()) {
-                $settingModel = SettingDTO::convertToModel($request);
-            }
-            
-            $settingModel = $this->search($settingModel);
         }
         
+        $model   = NULL;
+        $request = SettingRequest::parseOf(Request::all());
+        
+        if ($request->getProperties()) {
+            $model = SettingDTO::convertToModel($request);
+        }
+        
+        $model = SearchFacade::init(SettingsModel::class)
+                             ->search($model)
+                             ->all();
+        
         $response           = new SettingsResponse();
-        $response->settings = SettingDTO::convertOfModel($settingModel);
+        $response->settings = SettingDTO::convertOfModel($model);
         
         return $response->toArray();
     }
@@ -69,20 +70,6 @@ class SettingsApiController extends Controller {
         
         return SettingResponse::parseOf($settingDTO->toArray())
                               ->toArray();
-    }
-    
-    private function search(Model $model = NULL): array {
-        $query = SettingsModel::query();
-        
-        if ($model) {
-            $properties = $model->data();
-            
-            foreach ($properties as $key => $value) {
-                $query->where($key, '=', $value, 'and');
-            }
-        }
-        
-        return $query->all();
     }
     
     private function getSettingById($id) {
