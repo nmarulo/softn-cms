@@ -7,6 +7,7 @@ use App\Facades\UtilsFacade;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Requests\UserRequest;
+use App\Rest\Responses\UserResponse;
 use App\Rest\Responses\UsersResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
@@ -26,12 +27,10 @@ class UsersApiController extends Controller {
         $userResponse = new UsersResponse();
         
         if ($id) {
-            $model               = $this->getUserById($id);
-            $userResponse->users = [
-                    UsersDTO::convertOfModel($model),
-            ];
+            $dto = UsersDTO::convertOfModel($this->getUserById($id));
             
-            return $userResponse->toArray();
+            return UserResponse::parseOf($dto->toArray())
+                               ->toArray();
         }
         
         //TODO: Hasta que no encuentre una forma de capturar la instancia del controlador desde el middleware tendré que seguir usando la clase "Request".
