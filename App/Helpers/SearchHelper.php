@@ -52,27 +52,69 @@ class SearchHelper {
     }
     
     /**
-     * @param string         $model
-     * @param DataTable|null $dataTable
+     * @param string $model
      *
      * @return $this
      * @throws \Exception
      */
-    public function init(string $model, ?DataTable $dataTable = NULL) {
+    public function init(string $model) {
         $object = new $model();
         
         if (!($object instanceof Model)) {
             throw new \Exception("La clase no es una instancia de Model");
         }
         
-        $this->query     = $object::query();
-        $this->model     = $object;
-        $this->dataTable = $dataTable;
+        $this->query = $object::query();
+        $this->model = $object;
         
         return $this;
     }
     
-    public function search() {
+    /**
+     * @param Model|array $model
+     * @param bool        $strict
+     *
+     * @return SearchHelper
+     * @throws \Exception
+     */
+    public function search($model = NULL, bool $strict = TRUE): SearchHelper {
+        if (!$model) {
+            return $this;
+        }
+        
+        if (is_array($model)) {
+            foreach ($model as $item) {
+                $this->search($item, $strict);
+            }
+            
+            return $this;
+        }
+        
+        if (!($model instanceof Model)) {
+            throw new \Exception("El objeto no es una instancia de Model.");
+        }
+        
+        $properties = $model->data();
+        $op         = 'LIKE';
+        $how        = 'OR';
+        $sign       = '%';
+        
+        if ($strict) {
+            $op   = '=';
+            $how  = 'AND';
+            $sign = '';
+        }
+        
+        foreach ($properties as $key => $value) {
+            $this->query->where($key, $op, sprintf('%s%s%1$s', $sign, $value), $how);
+        }
+        
+        return $this;
+    }
+    
+    public function dataTable(?DataTable $dataTable = NULL) {
+        $this->dataTable = $dataTable;
+        
         if ($this->dataTable == NULL || $this->dataTable->filter == NULL) {
             return $this;
         }
@@ -144,7 +186,7 @@ class SearchHelper {
         }
         
         $this->setQuery($query);
-    
+        
         return $this;
     }
     
