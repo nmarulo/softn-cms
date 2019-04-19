@@ -34,19 +34,13 @@ class SettingsApiController extends Controller {
                                   ->toArray();
         }
         
-        $model   = NULL;
-        $request = SettingRequest::parseOf(Request::all());
+        $response = new SettingsResponse();
+        $request  = SettingRequest::parseOf(Request::all());
+        $models   = SearchFacade::init(SettingsModel::class)
+                                ->search(SettingDTO::convertToModel($request))
+                                ->all();
         
-        if ($request->getProperties()) {
-            $model = SettingDTO::convertToModel($request);
-        }
-        
-        $model = SearchFacade::init(SettingsModel::class)
-                             ->search($model)
-                             ->all();
-        
-        $response           = new SettingsResponse();
-        $response->settings = SettingDTO::convertOfModel($model);
+        $response->settings = SettingDTO::convertOfModel($models);
         
         return $response->toArray();
     }
