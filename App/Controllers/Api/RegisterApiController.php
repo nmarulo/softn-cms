@@ -37,7 +37,6 @@ class RegisterApiController extends Controller {
         $request->userRegistered = UtilsFacade::dateNow();
         $user                    = UsersDTO::convertToModel($request, FALSE);
         $userDTO                 = UsersDTO::convertOfModel($user->save());
-        $response                = UserResponse::parseOf($userDTO->toArray());
         
         try {
             EMailerHelper::register($user)
@@ -46,7 +45,8 @@ class RegisterApiController extends Controller {
             //TODO: log
         }
         
-        return $response->toArray();
+        return UserResponse::parseOf($userDTO->toArray())
+                           ->toArray();
     }
     
 }

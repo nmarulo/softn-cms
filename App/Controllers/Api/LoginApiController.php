@@ -34,9 +34,8 @@ class LoginApiController extends Controller {
                 return $builder;
             });
             
-            $response = UserResponse::parseOf($userDTO->toArray());
-            
-            return $response->toArray();
+            return UserResponse::parseOf($userDTO->toArray())
+                               ->toArray();
         } else {
             throw new \RuntimeException('Usuario y/o contraseña incorrecto(s).');
         }

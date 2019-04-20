@@ -47,10 +47,20 @@ class UsersApiController extends Controller {
         return $userResponse->toArray();
     }
     
+    /**
+     * @return array
+     * @throws \Exception
+     */
     public function post() {
         return $this->saveUser();
     }
     
+    /**
+     * @param $id
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function put($id) {
         return $this->saveUser($id);
     }
@@ -67,7 +77,6 @@ class UsersApiController extends Controller {
      * @throws \Exception
      */
     private function saveUser(?int $id = NULL): array {
-        $response = new UsersResponse();
         $request  = UserRequest::parseOf(Request::all());
         
         if (is_null($id)) {
@@ -76,13 +85,12 @@ class UsersApiController extends Controller {
             $request->id = $id;
         }
         
-        $model           = UsersDTO::convertToModel($request, FALSE);
-        $user            = $this->getUserById($model->save()->id);
-        $response->users = [
-                UsersDTO::convertOfModel($user),
-        ];
+        $model = UsersDTO::convertToModel($request, FALSE);
+        $model = $this->getUserById($model->save()->id);
+        $dto   = UsersDTO::convertOfModel($model);
         
-        return $response->toArray();
+        return UserResponse::parseOf($dto->toArray())
+                           ->toArray();
     }
     
     /**
