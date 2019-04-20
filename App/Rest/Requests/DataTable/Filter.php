@@ -5,9 +5,7 @@
 
 namespace App\Rest\Requests\DataTable;
 
-use App\Facades\UtilsFacade;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
+use App\Rest\Common\BaseRest;
 
 /**
  * @property string $value
@@ -15,9 +13,9 @@ use App\Rest\Common\ObjectToArray;
  * Class Filter
  * @author Nicolás Marulanda P.
  */
-class Filter implements ObjectToArray {
+class Filter {
     
-    use Magic;
+    use BaseRest;
     
     /**
      * @var string
@@ -28,9 +26,5 @@ class Filter implements ObjectToArray {
      * @var bool
      */
     private $strict;
-    
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
-    }
     
 }

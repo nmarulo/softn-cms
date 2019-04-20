@@ -6,16 +6,18 @@
 namespace App\Rest\Requests;
 
 use App\Facades\UtilsFacade;
-use App\Rest\Requests\DataTable\DataTable;
-use App\Rest\Common\ParseOf;
+use App\Rest\Common\BaseRest;
 use App\Rest\Dto\UsersDTO;
+use App\Rest\Requests\DataTable\DataTable;
 
 /**
  * @property DataTable $dataTable
  * Class UserRequest
  * @author Nicolás Marulanda P.
  */
-class UserRequest extends UsersDTO implements ParseOf {
+class UserRequest extends UsersDTO {
+    
+    use BaseRest;
     
     /**
      * @var DataTable

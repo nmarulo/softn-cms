@@ -6,18 +6,16 @@
 namespace App\Rest\Requests;
 
 use App\Facades\UtilsFacade;
-use App\Rest\Common\ParseOf;
+use App\Rest\Common\BaseRest;
 use App\Rest\Dto\SettingDTO;
 
 /**
  * Class SettingRequest
  * @author Nicolás Marulanda P.
  */
-class SettingRequest extends SettingDTO implements ParseOf {
+class SettingRequest extends SettingDTO {
     
-    public static function getParseOfClasses(): array {
-        return [];
-    }
+    use BaseRest;
     
     public static function parseOf(array $values): SettingRequest {
         return UtilsFacade::parseOf($values, self::class);

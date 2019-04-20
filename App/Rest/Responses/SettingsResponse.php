@@ -6,9 +6,7 @@
 namespace App\Rest\Responses;
 
 use App\Facades\UtilsFacade;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
-use App\Rest\Common\ParseOf;
+use App\Rest\Common\BaseRest;
 use App\Rest\Dto\SettingDTO;
 
 /**
@@ -16,9 +14,9 @@ use App\Rest\Dto\SettingDTO;
  * Class SettingsResponse
  * @author Nicolás Marulanda P.
  */
-class SettingsResponse implements ParseOf, ObjectToArray {
+class SettingsResponse {
     
-    use Magic;
+    use BaseRest;
     
     /**
      * @var SettingDTO[]
@@ -33,10 +31,6 @@ class SettingsResponse implements ParseOf, ObjectToArray {
         return [
                 'SettingDTO' => SettingDTO::class,
         ];
-    }
-    
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
     }
     
 }

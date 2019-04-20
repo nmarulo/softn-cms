@@ -6,10 +6,8 @@
 namespace App\Rest\Requests;
 
 use App\Facades\UtilsFacade;
+use App\Rest\Common\BaseRest;
 use App\Rest\Requests\DataTable\DataTable;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
-use App\Rest\Common\ParseOf;
 use App\Rest\Searches\UserSearch;
 
 /**
@@ -19,9 +17,9 @@ use App\Rest\Searches\UserSearch;
  * Class UsersRequest
  * @author Nicolás Marulanda P.
  */
-class UsersRequest implements ObjectToArray, ParseOf {
+class UsersRequest {
     
-    use Magic;
+    use BaseRest;
     
     /**
      * @var UserSearch[]
@@ -49,7 +47,4 @@ class UsersRequest implements ObjectToArray, ParseOf {
         return UtilsFacade::parseOf($values, self::class);
     }
     
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
-    }
 }

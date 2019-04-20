@@ -5,10 +5,7 @@
 
 namespace App\Rest\Requests\DataTable;
 
-use App\Facades\UtilsFacade;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
-use App\Rest\Common\ParseOfClass;
+use App\Rest\Common\BaseRest;
 
 /**
  * @property array  $sortColumn
@@ -17,9 +14,9 @@ use App\Rest\Common\ParseOfClass;
  * Class DataTable
  * @author Nicolás Marulanda P.
  */
-class DataTable implements ObjectToArray, ParseOfClass {
+class DataTable {
     
-    use Magic;
+    use BaseRest;
     
     /**
      * @var SortColumn[]
@@ -41,10 +38,6 @@ class DataTable implements ObjectToArray, ParseOfClass {
                 'SortColumn' => SortColumn::class,
                 'Filter'     => Filter::class,
         ];
-    }
-    
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
     }
     
 }

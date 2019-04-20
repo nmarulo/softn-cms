@@ -6,9 +6,7 @@
 namespace App\Rest\Responses;
 
 use App\Facades\UtilsFacade;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
-use App\Rest\Common\ParseOf;
+use App\Rest\Common\BaseRest;
 use App\Rest\Dto\UsersDTO;
 
 /**
@@ -17,9 +15,9 @@ use App\Rest\Dto\UsersDTO;
  * Class UserResponse
  * @author Nicolás Marulanda P.
  */
-class UsersResponse implements ParseOf, ObjectToArray {
+class UsersResponse {
     
-    use Magic;
+    use BaseRest;
     
     /**
      * @var UsersDTO[]
@@ -40,10 +38,6 @@ class UsersResponse implements ParseOf, ObjectToArray {
     
     public static function parseOf(array $value) {
         return UtilsFacade::parseOf($value, UsersResponse::class);
-    }
-    
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
     }
     
 }

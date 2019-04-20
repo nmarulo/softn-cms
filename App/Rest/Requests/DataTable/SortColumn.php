@@ -5,9 +5,7 @@
 
 namespace App\Rest\Requests\DataTable;
 
-use App\Facades\UtilsFacade;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
+use App\Rest\Common\BaseRest;
 
 /**
  * @property string $name
@@ -15,9 +13,9 @@ use App\Rest\Common\ObjectToArray;
  * Class SortColumn
  * @author Nicolás Marulanda P.
  */
-class SortColumn implements ObjectToArray {
+class SortColumn {
     
-    use Magic;
+    use BaseRest;
     
     /**
      * @var string
@@ -28,9 +26,5 @@ class SortColumn implements ObjectToArray {
      * @var string
      */
     private $key;
-    
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
-    }
     
 }

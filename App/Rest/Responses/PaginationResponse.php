@@ -5,10 +5,7 @@
 
 namespace App\Rest\Responses;
 
-use App\Facades\UtilsFacade;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
-use App\Rest\Common\ParseOfClass;
+use App\Rest\Common\BaseRest;
 
 /**
  * @property PageResponse[] $pages
@@ -24,9 +21,9 @@ use App\Rest\Common\ParseOfClass;
  * Class PaginationResponse
  * @author Nicolás Marulanda P.
  */
-class PaginationResponse implements ParseOfClass, ObjectToArray {
+class PaginationResponse {
     
-    use Magic;
+    use BaseRest;
     
     /** @var PageResponse[] */
     private $pages;
@@ -62,10 +59,6 @@ class PaginationResponse implements ParseOfClass, ObjectToArray {
         return [
                 'PageResponse' => PageResponse::class,
         ];
-    }
-    
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
     }
     
 }

@@ -5,9 +5,7 @@
 
 namespace App\Rest\Responses;
 
-use App\Facades\UtilsFacade;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
+use App\Rest\Common\BaseRest;
 
 /**
  * @property string $styleClass
@@ -17,9 +15,9 @@ use App\Rest\Common\ObjectToArray;
  * Class PageResponse
  * @author Nicolás Marulanda P.
  */
-class PageResponse implements ObjectToArray {
+class PageResponse {
     
-    use Magic;
+    use BaseRest;
     
     /** @var string */
     private $styleClass;
@@ -33,7 +31,4 @@ class PageResponse implements ObjectToArray {
     /** @var array */
     private $attr;
     
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
-    }
 }
