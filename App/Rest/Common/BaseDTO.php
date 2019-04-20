@@ -3,12 +3,9 @@
  * softn-cms
  */
 
-namespace App\Rest\Dto;
+namespace App\Rest\Common;
 
 use App\Facades\UtilsFacade;
-use App\Rest\Common\ConvertModel;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
 
 /**
  * Class BaseDTO

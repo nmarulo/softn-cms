@@ -6,6 +6,7 @@
 namespace App\Rest\Dto;
 
 use App\Models\Users;
+use App\Rest\Common\BaseDTO;
 
 /**
  * @property int       $id

@@ -5,6 +5,7 @@
 
 namespace App\Rest\Searches;
 
+use App\Rest\Common\BaseSearch;
 use App\Rest\Dto\UsersDTO;
 
 /**

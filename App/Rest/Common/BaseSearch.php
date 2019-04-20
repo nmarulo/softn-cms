@@ -3,9 +3,7 @@
  * softn-cms
  */
 
-namespace App\Rest\Searches;
-
-use App\Rest\Common\Magic;
+namespace App\Rest\Common;
 
 /**
  * @property bool $strict

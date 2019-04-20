@@ -6,6 +6,7 @@
 namespace App\Rest\Dto;
 
 use App\Models\SettingsModel;
+use App\Rest\Common\BaseDTO;
 
 /**
  * @property string $id

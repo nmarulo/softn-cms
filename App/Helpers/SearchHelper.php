@@ -8,7 +8,7 @@ use App\Facades\UtilsFacade;
 use App\Rest\Common\ConvertModel;
 use App\Rest\Common\DataTable\DataTable;
 use App\Rest\Common\DataTable\SortColumn;
-use App\Rest\Searches\BaseSearch;
+use App\Rest\Common\BaseSearch;
 use Silver\Database\Model;
 use Silver\Database\Query;
 
