@@ -6,8 +6,6 @@
 namespace App\Rest\Requests;
 
 use App\Facades\UtilsFacade;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOf;
 use App\Rest\Dto\SettingDTO;
 
@@ -15,9 +13,7 @@ use App\Rest\Dto\SettingDTO;
  * Class SettingRequest
  * @author Nicolás Marulanda P.
  */
-class SettingRequest extends SettingDTO implements ObjectToArray, ParseOf {
-    
-    use Magic;
+class SettingRequest extends SettingDTO implements ParseOf {
     
     public static function getParseOfClasses(): array {
         return [];
@@ -27,7 +23,4 @@ class SettingRequest extends SettingDTO implements ObjectToArray, ParseOf {
         return UtilsFacade::parseOf($values, self::class);
     }
     
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
-    }
 }
