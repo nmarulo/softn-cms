@@ -5,6 +5,7 @@
 
 namespace App\Helpers;
 
+use App\Rest\Common\BaseDTO;
 use App\Rest\Requests\DataTable\DataTable;
 use App\Rest\Requests\DataTable\Filter;
 use App\Rest\Requests\DataTable\SortColumn;
@@ -157,7 +158,7 @@ class Utils {
             $dataTable->filter = $filter;
         }
         
-        $dataTable->page = Request::input('page');
+        $dataTable->page = Request::input('page', 1);
         
         return $dataTable;
     }
@@ -169,29 +170,29 @@ class Utils {
     }
     
     /**
-     * @param array  $comparisionProps
-     * @param mixed  $model
-     * @param string $classDto
-     * @param bool   $hideProps
+     * @param array       $comparisionProps
+     * @param array|Model $object
+     * @param string      $classDto
+     * @param bool        $hideProps
      *
      * @return mixed
      * @throws \Exception
      */
-    public function castModelToDto(array $comparisionProps, $model, string $classDto, bool $hideProps = TRUE) {
-        return $this->castObjectTo($comparisionProps, $model, $classDto, $hideProps);
+    public function castModelToDto(array $comparisionProps, $object, string $classDto, bool $hideProps = TRUE) {
+        return $this->castObjectTo($comparisionProps, $object, $classDto, $hideProps);
     }
     
     /**
-     * @param array  $comparisionProps
-     * @param mixed  $dto
-     * @param string $classModel
-     * @param bool   $hideProps
+     * @param array         $comparisionProps
+     * @param array|BaseDTO $object
+     * @param string        $classModel
+     * @param bool          $hideProps
      *
      * @return mixed
      * @throws \Exception
      */
-    public function castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE) {
-        return $this->castObjectTo($comparisionProps, $dto, $classModel, $hideProps);
+    public function castDtoToModel(array $comparisionProps, $object, string $classModel, bool $hideProps = TRUE) {
+        return $this->castObjectTo($comparisionProps, $object, $classModel, $hideProps);
     }
     
     private function getVarNameTypeDocument(string $document): string {
@@ -216,10 +217,10 @@ class Utils {
     }
     
     /**
-     * @param array  $comparisionProps
-     * @param mixed  $object
-     * @param string $toClass
-     * @param bool   $hideProps
+     * @param array             $comparisionProps
+     * @param array|Model|Magic $object
+     * @param string            $toClass
+     * @param bool              $hideProps
      *
      * @return mixed
      * @throws \Exception
@@ -283,7 +284,9 @@ class Utils {
             
             if ($parentClass = $reflection->getParentClass()) {
                 $result = $this->isUseTrait($parentClass->getName(), $classTrait);
-            } else {
+            }
+            
+            if (!$result) {
                 foreach ($classUses as $class) {
                     if ($result = $this->isUseTrait($class, $classTrait)) {
                         break;
