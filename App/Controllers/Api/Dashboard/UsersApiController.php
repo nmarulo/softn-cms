@@ -7,6 +7,7 @@ use App\Facades\UtilsFacade;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Requests\UserRequest;
+use App\Rest\Requests\UsersRequest;
 use App\Rest\Responses\UserResponse;
 use App\Rest\Responses\UsersResponse;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -34,10 +35,10 @@ class UsersApiController extends Controller {
         }
         
         //TODO: Hasta que no encuentre una forma de capturar la instancia del controlador desde el middleware tendré que seguir usando la clase "Request".
-        $request   = UserRequest::parseOf(Request::all());
+        $request   = UsersRequest::parseOf(Request::all());
         $userModel = SearchFacade::init(Users::class)
+                                 ->search($request->users, $request->strict)
                                  ->dataTable($request->dataTable)
-                                 ->pagination()
                                  ->sort();
         
         $userResponse->users      = UsersDTO::convertOfModel($userModel->all());
