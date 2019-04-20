@@ -3,7 +3,6 @@
 namespace App\Facades;
 
 use App\Helpers\SearchHelper;
-use App\Rest\Common\DataTable\DataTable;
 use Silver\Support\Facade;
 
 /**

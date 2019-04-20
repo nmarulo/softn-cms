@@ -3,7 +3,7 @@
  * DataTable.php
  */
 
-namespace App\Rest\Common\DataTable;
+namespace App\Rest\Requests\DataTable;
 
 use App\Facades\UtilsFacade;
 use App\Rest\Common\Magic;

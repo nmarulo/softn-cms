@@ -3,7 +3,7 @@
 namespace App\Facades;
 
 use App\Helpers\Utils;
-use App\Rest\Common\DataTable\DataTable;
+use App\Rest\Requests\DataTable\DataTable;
 use Silver\Database\Model;
 use Silver\Support\Facade;
 

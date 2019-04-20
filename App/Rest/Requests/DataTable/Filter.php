@@ -1,33 +1,33 @@
 <?php
 /**
- * SortColumn.php
+ * Filter.php
  */
 
-namespace App\Rest\Common\DataTable;
+namespace App\Rest\Requests\DataTable;
 
 use App\Facades\UtilsFacade;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 
 /**
- * @property string $name
- * @property string $key
- * Class SortColumn
+ * @property string $value
+ * @property bool   $strict
+ * Class Filter
  * @author Nicolás Marulanda P.
  */
-class SortColumn implements ObjectToArray {
+class Filter implements ObjectToArray {
     
     use Magic;
     
     /**
      * @var string
      */
-    private $name;
+    private $value;
     
     /**
-     * @var string
+     * @var bool
      */
-    private $key;
+    private $strict;
     
     public function toArray(): array {
         return UtilsFacade::castObjectToArray($this);

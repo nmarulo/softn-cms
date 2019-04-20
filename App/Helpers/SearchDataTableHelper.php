@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Rest\Common\DataTable\Filter;
+use App\Rest\Requests\DataTable\Filter;
 use Silver\Database\Model;
 use Silver\Database\Query;
 

@@ -6,7 +6,7 @@
 namespace App\Rest\Requests;
 
 use App\Facades\UtilsFacade;
-use App\Rest\Common\DataTable\DataTable;
+use App\Rest\Requests\DataTable\DataTable;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOf;

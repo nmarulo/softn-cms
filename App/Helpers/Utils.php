@@ -5,9 +5,9 @@
 
 namespace App\Helpers;
 
-use App\Rest\Common\DataTable\DataTable;
-use App\Rest\Common\DataTable\Filter;
-use App\Rest\Common\DataTable\SortColumn;
+use App\Rest\Requests\DataTable\DataTable;
+use App\Rest\Requests\DataTable\Filter;
+use App\Rest\Requests\DataTable\SortColumn;
 use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
