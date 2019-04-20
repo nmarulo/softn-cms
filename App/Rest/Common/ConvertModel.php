@@ -14,21 +14,21 @@ use Silver\Database\Model;
 interface ConvertModel {
     
     /**
-     * @param mixed $object
-     * @param bool  $hideProps
+     * @param array|BaseDTO $object
+     * @param bool          $hideProps
      *
-     * @return mixed
+     * @return array|BaseDTO
      * @throws \Exception
      */
     public static function convertToModel($object, bool $hideProps = TRUE);
     
     /**
-     * @param Model $model
-     * @param bool  $hideProps
+     * @param array|Model $object
+     * @param bool        $hideProps
      *
-     * @return mixed
+     * @return array|Model
      * @throws \Exception
      */
-    public static function convertOfModel(Model $model, bool $hideProps = TRUE);
+    public static function convertOfModel($object, bool $hideProps = TRUE);
     
 }

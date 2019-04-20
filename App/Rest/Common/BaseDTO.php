@@ -21,10 +21,10 @@ abstract class BaseDTO implements ConvertModel {
         return UtilsFacade::castDtoToModel(self::getComparisionNames(), $object, $classModel, $hideProps);
     }
     
-    public static function convertOfModel($model, bool $hideProps = TRUE) {
+    public static function convertOfModel($object, bool $hideProps = TRUE) {
         $classDTO = self::getCalledClass()::getClassDTO();
         
-        return UtilsFacade::castModelToDto(self::getComparisionNames(), $model, $classDTO, $hideProps);
+        return UtilsFacade::castModelToDto(self::getComparisionNames(), $object, $classDTO, $hideProps);
     }
     
     protected static abstract function getComparisionNameDtoToModel(): array;
