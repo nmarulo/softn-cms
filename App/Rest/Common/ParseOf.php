@@ -9,13 +9,17 @@ namespace App\Rest\Common;
  * Interface ParseOf
  * @author Nicolás Marulanda P.
  */
-interface ParseOf extends ParseOfClass {
+trait ParseOf {
+    
+    use ParseOfClass;
     
     /**
      * @param array $value
      *
      * @return mixed
      */
-    public static function parseOf(array $value);
+    public static function parseOf(array $value) {
+        throw new \RuntimeException("Método no implementado.");
+    }
     
 }

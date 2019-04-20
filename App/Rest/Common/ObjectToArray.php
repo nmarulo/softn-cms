@@ -5,11 +5,15 @@
 
 namespace App\Rest\Common;
 
+use App\Facades\UtilsFacade;
+
 /**
  * Interface ObjectToArray
  * @author Nicolás Marulanda P.
  */
-interface ObjectToArray {
+trait ObjectToArray {
     
-    public function toArray(): array;
+    public function toArray(): array {
+        return UtilsFacade::castObjectToArray($this);
+    }
 }

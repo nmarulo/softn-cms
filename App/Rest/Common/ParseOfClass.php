@@ -9,8 +9,10 @@ namespace App\Rest\Common;
  * Interface ParseArrayClass
  * @author Nicolás Marulanda P.
  */
-interface ParseOfClass {
+trait ParseOfClass {
     
-    public static function getParseOfClasses(): array;
+    public static function getParseOfClasses(): array {
+        return [];
+    }
     
 }
