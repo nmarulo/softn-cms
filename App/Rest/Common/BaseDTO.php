@@ -11,9 +11,9 @@ use App\Facades\UtilsFacade;
  * Class BaseDTO
  * @author Nicolás Marulanda P.
  */
-abstract class BaseDTO implements ObjectToArray, ConvertModel {
+abstract class BaseDTO implements ConvertModel {
     
-    use Magic;
+    use Magic, ObjectToArray;
     
     public static function convertToModel($object, bool $hideProps = TRUE) {
         $classModel = self::getCalledClass()::getClassModel();
@@ -45,7 +45,4 @@ abstract class BaseDTO implements ObjectToArray, ConvertModel {
         return new $class();
     }
     
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
-    }
 }
