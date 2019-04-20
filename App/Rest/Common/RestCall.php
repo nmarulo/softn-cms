@@ -5,6 +5,7 @@
 
 namespace App\Rest\Common;
 
+use App\Facades\UtilsFacade;
 use App\Helpers\Api\RequestApiHelper;
 
 /**
@@ -91,7 +92,7 @@ abstract class RestCall {
     private function makeCall(string $type, $object = NULL, string $uri = '') {
         $uri = trim($this->baseUri(), '/') . "/$uri";
         
-        if (is_object($object) && $object instanceof ObjectToArray) {
+        if (is_object($object) && (UtilsFacade::isUseTrait($object, ObjectToArray::class) || $object instanceof ObjectToArray)) {
             $object = $object->toArray();
         }
         

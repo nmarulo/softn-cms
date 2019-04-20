@@ -52,11 +52,11 @@ class Utils {
             
             if (is_array($currentValue)) {
                 foreach ($currentValue as &$itemValue) {
-                    if (is_object($itemValue) && $itemValue instanceof ObjectToArray) {
+                    if (is_object($itemValue) && $this->isUseTrait($itemValue, ObjectToArray::class)) {
                         $itemValue = $this->castObjectToArray($itemValue);
                     }
                 }
-            } elseif (is_object($currentValue) && $currentValue instanceof ObjectToArray) {
+            } elseif (is_object($currentValue) && ($this->isUseTrait($currentValue, ObjectToArray::class) || $currentValue instanceof ObjectToArray)) {
                 $currentValue = $currentValue->toArray();
             }
             
@@ -74,7 +74,7 @@ class Utils {
         $object     = new $class();
         $arrayClass = [];
         
-        if ($object instanceof ParseOfClass) {
+        if ($this->isUseTrait($object, ParseOfClass::class) || $object instanceof ParseOfClass) {
             $arrayClass = $object::getParseOfClasses();
         }
         
@@ -269,7 +269,8 @@ class Utils {
     }
     
     public function isUseTrait($object, string $classTrait, bool $recursive = TRUE): bool {
-        $result = array_key_exists($classTrait, class_uses($object));
+        $classUses = class_uses($object);
+        $result    = array_key_exists($classTrait, $classUses);
         
         if ($result || !$recursive) {
             return $result;
@@ -282,6 +283,12 @@ class Utils {
             
             if ($parentClass = $reflection->getParentClass()) {
                 $result = $this->isUseTrait($parentClass->getName(), $classTrait);
+            } else {
+                foreach ($classUses as $class) {
+                    if ($result = $this->isUseTrait($class, $classTrait)) {
+                        break;
+                    }
+                }
             }
         } catch (\Exception $exception) {
             //TODO: log
