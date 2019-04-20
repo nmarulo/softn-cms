@@ -17,6 +17,7 @@ use Silver\Support\Facade;
  * @method static bool isHiddenProperty(Model $model, string $propName)
  * @method static mixed castModelToDto(array $comparisionProps, Model $model, string $classDto, bool $hideProps = TRUE)
  * @method static mixed castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE)
+ * @method static bool isUseTrait($object, string $classTrait, bool $recursive = TRUE)
  */
 class UtilsFacade extends Facade {
     

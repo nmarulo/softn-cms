@@ -268,7 +268,26 @@ class Utils {
         return $class;
     }
     
-    private function isUseTrait($object, string $classTrait): bool {
-        return array_key_exists($classTrait, class_uses($object));
+    public function isUseTrait($object, string $classTrait, bool $recursive = TRUE): bool {
+        $result = array_key_exists($classTrait, class_uses($object));
+        
+        if ($result || !$recursive) {
+            return $result;
+        }
+        
+        $objectClass = is_object($object) ? get_class($object) : $object;
+        
+        try {
+            $reflection = new \ReflectionClass($objectClass);
+            
+            if ($parentClass = $reflection->getParentClass()) {
+                $result = $this->isUseTrait($parentClass->getName(), $classTrait);
+            }
+        } catch (\Exception $exception) {
+            //TODO: log
+            $result = FALSE;
+        }
+        
+        return $result;
     }
 }
