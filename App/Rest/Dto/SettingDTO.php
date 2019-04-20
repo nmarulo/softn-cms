@@ -5,11 +5,7 @@
 
 namespace App\Rest\Dto;
 
-use App\Facades\UtilsFacade;
 use App\Models\SettingsModel;
-use App\Rest\Common\ConvertModel;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
 
 /**
  * @property string $id
@@ -19,16 +15,7 @@ use App\Rest\Common\ObjectToArray;
  * Class SettingDTO
  * @author Nicolás Marulanda P.
  */
-class SettingDTO implements ObjectToArray, ConvertModel {
-    
-    use Magic;
-    
-    const COMPARISION_TABLE = [
-            'id'                 => 'id',
-            'settingName'        => 'setting_name',
-            'settingValue'       => 'setting_value',
-            'settingDescription' => 'setting_description',
-    ];
+class SettingDTO extends BaseDTO {
     
     /**
      * @var int
@@ -50,16 +37,21 @@ class SettingDTO implements ObjectToArray, ConvertModel {
      */
     private $settingDescription;
     
-    public static function convertToModel($object, bool $hideProps = TRUE) {
-        return UtilsFacade::castDtoToModel(self::COMPARISION_TABLE, $object, SettingsModel::class, $hideProps);
+    protected static function getComparisionNameDtoToModel(): array {
+        return [
+                'id'                 => 'id',
+                'settingName'        => 'setting_name',
+                'settingValue'       => 'setting_value',
+                'settingDescription' => 'setting_description',
+        ];
     }
     
-    public static function convertOfModel($model, bool $hideProps = TRUE) {
-        return UtilsFacade::castModelToDto(self::COMPARISION_TABLE, $model, self::class, $hideProps);
+    protected static function getClassModel(): string {
+        return SettingsModel::class;
     }
     
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
+    protected static function getClassDTO(): string {
+        return self::class;
     }
     
 }

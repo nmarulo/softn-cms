@@ -5,12 +5,7 @@
 
 namespace App\Rest\Dto;
 
-use App\Facades\UtilsFacade;
 use App\Models\Users;
-use App\Rest\Common\ConvertModel;
-use App\Rest\Common\Magic;
-use App\Rest\Common\ObjectToArray;
-use Silver\Database\Model;
 
 /**
  * @property int       $id
@@ -22,18 +17,7 @@ use Silver\Database\Model;
  * Class UsersDTO
  * @author Nicolás Marulanda P.
  */
-class UsersDTO implements ObjectToArray, ConvertModel {
-    
-    use Magic;
-    
-    const COMPARISION_TABLE = [
-            'id'             => 'id',
-            'userLogin'      => 'user_login',
-            'userEmail'      => 'user_email',
-            'userName'       => 'user_name',
-            'userRegistered' => 'user_registered',
-            'userPassword'   => 'user_password',
-    ];
+class UsersDTO extends BaseDTO {
     
     /**
      * @var int
@@ -65,16 +49,23 @@ class UsersDTO implements ObjectToArray, ConvertModel {
      */
     private $userPassword;
     
-    public static function convertToModel($object, bool $hideProps = TRUE) {
-        return UtilsFacade::castDtoToModel(self::COMPARISION_TABLE, $object, Users::class, $hideProps);
+    protected static function getComparisionNameDtoToModel(): array {
+        return [
+                'id'             => 'id',
+                'userLogin'      => 'user_login',
+                'userEmail'      => 'user_email',
+                'userName'       => 'user_name',
+                'userRegistered' => 'user_registered',
+                'userPassword'   => 'user_password',
+        ];
     }
     
-    public static function convertOfModel($model, bool $hideProps = TRUE) {
-        return UtilsFacade::castModelToDto(self::COMPARISION_TABLE, $model, UsersDTO::class, $hideProps);
+    protected static function getClassModel(): string {
+        return Users::class;
     }
     
-    public function toArray(): array {
-        return UtilsFacade::castObjectToArray($this);
+    protected static function getClassDTO(): string {
+        return self::class;
     }
     
 }
