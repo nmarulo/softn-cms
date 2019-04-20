@@ -4,8 +4,11 @@ namespace App\Helpers;
 
 use App\Facades\PaginationFacade;
 use App\Facades\SearchDataTableFacade;
+use App\Facades\UtilsFacade;
+use App\Rest\Common\ConvertModel;
 use App\Rest\Common\DataTable\DataTable;
 use App\Rest\Common\DataTable\SortColumn;
+use App\Rest\Searches\BaseSearch;
 use Silver\Database\Model;
 use Silver\Database\Query;
 
@@ -71,38 +74,53 @@ class SearchHelper {
     }
     
     /**
-     * @param Model|array $model
-     * @param bool        $strict
+     * @param Model|BaseSearch|array $object
+     * @param bool                   $strict
      *
      * @return SearchHelper
      * @throws \Exception
      */
-    public function search($model = NULL, bool $strict = TRUE): SearchHelper {
-        if (!$model) {
+    public function search($object = NULL, ?bool $strict = TRUE): SearchHelper {
+        if (!$object) {
             return $this;
         }
         
-        if (is_array($model)) {
-            foreach ($model as $item) {
+        if (is_array($object)) {
+            if ($strict && count($object) > 1) {
+                $strict = FALSE;
+            }
+            
+            foreach ($object as $item) {
                 $this->search($item, $strict);
             }
             
             return $this;
         }
         
-        if (!($model instanceof Model)) {
-            throw new \Exception("El objeto no es una instancia de Model.");
-        }
+        $properties = [];
+        $how        = $strict ? 'AND' : 'OR';
+        $op         = '=';
+        $sign       = '';
         
-        $properties = $model->data();
-        $op         = 'LIKE';
-        $how        = 'OR';
-        $sign       = '%';
-        
-        if ($strict) {
-            $op   = '=';
-            $how  = 'AND';
-            $sign = '';
+        if ($object instanceof Model) {
+            $properties = $object->data();
+        } elseif (UtilsFacade::isUseTrait($object, BaseSearch::class)) {
+            if ($object instanceof ConvertModel) {
+                $model = $object::convertToModel($object);
+                
+                if ($model instanceof Model) {
+                    $properties = $model->data();
+                }
+            } else {
+                $properties = $object->getProperties();
+            }
+            
+            if (!$object->strict) {
+                $op   = 'LIKE';
+                $sign = '%';
+            }
+        } else {
+            throw new \Exception("El objeto no es una instancia valida.");
         }
         
         foreach ($properties as $key => $value) {
@@ -112,28 +130,27 @@ class SearchHelper {
         return $this;
     }
     
-    public function dataTable(?DataTable $dataTable = NULL) {
-        $this->dataTable = $dataTable;
-        
-        if ($this->dataTable == NULL || $this->dataTable->filter == NULL) {
-            return $this;
-        }
-        
-        $searchDataTable = SearchDataTableFacade::filter($this->model, $this->dataTable->filter, $this->query);
-        $this->setQuery($searchDataTable->getQuery());
-        $this->count = $searchDataTable->getCount();
-        
-        return $this;
-    }
-    
     /**
-     * @param \Closure $dataModelClosure
+     * @param DataTable|null $dataTable
+     * @param \Closure       $dataModelClosure
      *
      * @return $this
      */
-    public function pagination($dataModelClosure = NULL) {
+    public function dataTable(?DataTable $dataTable = NULL, $dataModelClosure = NULL) {
+        $this->dataTable = $dataTable;
+        
+        if ($this->dataTable == NULL) {
+            return $this;
+        }
+        
         $this->hasPagination         = TRUE;
         $this->paginationDataClosure = $dataModelClosure;
+        
+        if (!is_null($this->dataTable->filter)) {
+            $searchDataTable = SearchDataTableFacade::filter($this->model, $this->dataTable->filter, $this->query);
+            $this->setQuery($searchDataTable->getQuery());
+            $this->count = $searchDataTable->getCount();
+        }
         
         return $this;
     }
