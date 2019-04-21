@@ -52,19 +52,19 @@ class UsersController extends Controller {
                 $userResponse = UsersRestFacade::update($id, $request);
             }
             
-            if (isset($userResponse->users[0])) {
+            if (isset($userResponse->id)) {
                 MessagesFacade::addSuccess($message);
                 
                 if (empty($id)) {
-                    Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $userResponse->users[0]->id));
+                    Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $userResponse->id));
                 }
             }
         } elseif ($id) {
             $userResponse = UsersRestFacade::getById($id);
         }
         
-        if (isset($userResponse, $userResponse->users[0])) {
-            $userDTO = $userResponse->users[0];
+        if (isset($userResponse)) {
+            $userDTO = $userResponse;
         }
         
         return View::make('dashboard.users.form')
