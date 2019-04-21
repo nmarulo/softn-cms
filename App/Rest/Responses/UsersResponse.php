@@ -5,7 +5,6 @@
 
 namespace App\Rest\Responses;
 
-use App\Facades\UtilsFacade;
 use App\Rest\Common\BaseRest;
 use App\Rest\Dto\UsersDTO;
 
@@ -34,10 +33,6 @@ class UsersResponse {
                 'UsersDTO'           => UsersDTO::class,
                 'PaginationResponse' => PaginationResponse::class,
         ];
-    }
-    
-    public static function parseOf(array $value) {
-        return UtilsFacade::parseOf($value, UsersResponse::class);
     }
     
 }

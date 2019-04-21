@@ -5,7 +5,6 @@
 
 namespace App\Rest\Requests;
 
-use App\Facades\UtilsFacade;
 use App\Rest\Common\BaseRest;
 use App\Rest\Dto\SettingDTO;
 
@@ -16,9 +15,5 @@ use App\Rest\Dto\SettingDTO;
 class SettingRequest extends SettingDTO {
     
     use BaseRest;
-    
-    public static function parseOf(array $values): SettingRequest {
-        return UtilsFacade::parseOf($values, self::class);
-    }
     
 }

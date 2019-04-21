@@ -5,7 +5,6 @@
 
 namespace App\Rest\Requests;
 
-use App\Facades\UtilsFacade;
 use App\Rest\Common\BaseRest;
 use App\Rest\Requests\DataTable\DataTable;
 use App\Rest\Searches\UserSearch;
@@ -41,10 +40,6 @@ class UsersRequest {
                 'DataTable'  => DataTable::class,
                 'UserSearch' => UserSearch::class,
         ];
-    }
-    
-    public static function parseOf(array $values): UsersRequest {
-        return UtilsFacade::parseOf($values, self::class);
     }
     
 }

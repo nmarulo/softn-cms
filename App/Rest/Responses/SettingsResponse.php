@@ -5,7 +5,6 @@
 
 namespace App\Rest\Responses;
 
-use App\Facades\UtilsFacade;
 use App\Rest\Common\BaseRest;
 use App\Rest\Dto\SettingDTO;
 
@@ -22,10 +21,6 @@ class SettingsResponse {
      * @var SettingDTO[]
      */
     private $settings;
-    
-    public static function parseOf(array $value): SettingsResponse {
-        return UtilsFacade::parseOf($value, self::class);
-    }
     
     public static function getParseOfClasses(): array {
         return [

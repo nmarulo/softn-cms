@@ -5,7 +5,6 @@
 
 namespace App\Rest\Requests;
 
-use App\Facades\UtilsFacade;
 use App\Rest\Common\BaseRest;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Requests\DataTable\DataTable;
@@ -28,10 +27,6 @@ class UserRequest extends UsersDTO {
         return [
                 'DataTable' => DataTable::class,
         ];
-    }
-    
-    public static function parseOf(array $values): UserRequest {
-        return UtilsFacade::parseOf($values, UserRequest::class);
     }
     
 }
