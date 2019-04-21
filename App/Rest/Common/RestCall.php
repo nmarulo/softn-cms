@@ -20,21 +20,29 @@ abstract class RestCall {
     private $requestApiHelper;
     
     /**
+     * @var \Closure
+     */
+    private $methodGetClassParseTo;
+    
+    /**
      * RestCall constructor.
      */
     protected function __construct() {
-        $this->requestApiHelper = new RequestApiHelper();
+        $this->requestApiHelper      = new RequestApiHelper();
+        $this->methodGetClassParseTo = NULL;
     }
     
     /**
-     * @param mixed  $object
-     * @param string $uri
+     * @param mixed       $object
+     * @param string      $uri
+     * @param string|null $parseTo
      *
      * @return mixed
      * @throws \Exception
      */
-    protected function get($object = NULL, string $uri = '') {
-        $uri = $this->buildUri($object, $uri);
+    protected function get($object = NULL, string $uri = '', string $parseTo = NULL) {
+        $uri                         = $this->buildUri($object, $uri);
+        $this->methodGetClassParseTo = $parseTo;
         
         return $this->makeCall('get', $object, $uri);
     }
@@ -70,12 +78,7 @@ abstract class RestCall {
         return $this->makeCall('delete', NULL, $id);
     }
     
-    /**
-     * @param array $value
-     *
-     * @return mixed
-     */
-    protected abstract function parseResponseTo(array $value);
+    protected abstract function baseClassParseTo(): string;
     
     protected abstract function baseUri(): string;
     
@@ -92,7 +95,7 @@ abstract class RestCall {
     private function makeCall(string $type, $object = NULL, string $uri = '') {
         $uri = trim($this->baseUri(), '/') . "/$uri";
         
-        if (is_object($object) && (UtilsFacade::isUseTrait($object, ObjectToArray::class) || $object instanceof ObjectToArray)) {
+        if (is_object($object) && UtilsFacade::isUseTrait($object, ObjectToArray::class)) {
             $object = $object->toArray();
         }
         
@@ -103,9 +106,18 @@ abstract class RestCall {
                 throw new \Exception($this->requestApiHelper->getMessage());
             }
             
-            $response = $this->requestApiHelper->responseJsonDecode();
+            $response     = $this->requestApiHelper->responseJsonDecode();
+            $classParseOf = $this->baseClassParseTo();
             
-            return $this->parseResponseTo($response);
+            if ($type == 'get' && $this->methodGetClassParseTo) {
+                $classParseOf = $this->methodGetClassParseTo;
+            }
+            
+            if (!UtilsFacade::isUseTrait($classParseOf, ParseOf::class)) {
+                throw new \Exception("No se puede convertir la respuesta al tipo de clase especificado.");
+            }
+            
+            return $classParseOf::parseOf($response);
         } catch (\Exception $exception) {
             $this->catchException($exception);
             throw $exception;
