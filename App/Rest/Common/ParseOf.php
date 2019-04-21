@@ -5,8 +5,10 @@
 
 namespace App\Rest\Common;
 
+use App\Facades\UtilsFacade;
+
 /**
- * Interface ParseOf
+ * trait ParseOf
  * @author Nicolás Marulanda P.
  */
 trait ParseOf {
@@ -19,7 +21,7 @@ trait ParseOf {
      * @return mixed
      */
     public static function parseOf(array $value) {
-        throw new \RuntimeException("Método no implementado.");
+        return UtilsFacade::parseOf($value, get_called_class());
     }
     
 }
