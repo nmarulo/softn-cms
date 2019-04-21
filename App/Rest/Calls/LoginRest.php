@@ -28,8 +28,8 @@ class LoginRest extends RestCall {
         }
     }
     
-    protected function parseResponseTo(array $value) {
-        return UserResponse::parseOf($value);
+    protected function baseClassParseTo(): string {
+        return UserResponse::class;
     }
     
     protected function baseUri(): string {

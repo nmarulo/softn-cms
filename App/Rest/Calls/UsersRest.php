@@ -8,6 +8,7 @@ namespace App\Rest\Calls;
 use App\Facades\MessagesFacade;
 use App\Rest\Common\RestCall;
 use App\Rest\Requests\UserRequest;
+use App\Rest\Responses\UserResponse;
 use App\Rest\Responses\UsersResponse;
 
 /**
@@ -22,33 +23,33 @@ class UsersRest extends RestCall {
     
     public function getAll(UserRequest $request = NULL): UsersResponse {
         try {
-            return $this->get($request);
+            return $this->get($request, '', UsersResponse::class);
         } catch (\Exception $exception) {
             return new UsersResponse();
         }
     }
     
-    public function getById(int $id): ?UsersResponse {
+    public function getById(int $id): ?UserResponse {
         try {
             return $this->get(NULL, $id);
         } catch (\Exception $exception) {
-            return new UsersResponse();
+            return new UserResponse();
         }
     }
     
-    public function create(UserRequest $request): ?UsersResponse {
+    public function create(UserRequest $request): ?UserResponse {
         try {
             return $this->post($request);
         } catch (\Exception $exception) {
-            return new UsersResponse();
+            return new UserResponse();
         }
     }
     
-    public function update(int $id, UserRequest $request): ?UsersResponse {
+    public function update(int $id, UserRequest $request): ?UserResponse {
         try {
             return $this->put($id, $request);
         } catch (\Exception $exception) {
-            return new UsersResponse();
+            return new UserResponse();
         }
     }
     
@@ -62,8 +63,8 @@ class UsersRest extends RestCall {
         }
     }
     
-    protected function parseResponseTo(array $value) {
-        return UsersResponse::parseOf($value);
+    protected function baseClassParseTo(): string {
+        return UserResponse::class;
     }
     
     protected function baseUri(): string {
