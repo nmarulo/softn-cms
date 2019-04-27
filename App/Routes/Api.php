@@ -25,6 +25,12 @@ Route::group(['prefix' => 'api'], function() {
             Route::get('/{id?}', 'Api/Dashboard/SettingsApi@get', 'settings', 'api');
             Route::put('/{id?}', 'Api/Dashboard/SettingsApi@put', 'settings', 'api');
         });
+        Route::group(['prefix' => 'profiles'], function() {
+            Route::get('/{id?}', 'Api/Dashboard/Users/ProfilesApi@get', 'profiles', 'api');
+            Route::post('/', 'Api/Dashboard/Users/ProfilesApi@post', 'profiles', 'api');
+            Route::delete('/{id?}', 'Api/Dashboard/Users/ProfilesApi@delete', 'profiles', 'api');
+            Route::put('/{id?}', 'Api/Dashboard/Users/ProfilesApi@put', 'profiles', 'api');
+        });
     });
     Route::post('/login', 'Api/LoginApi@login', 'login', 'api');
     Route::post('/register', 'Api/RegisterApi@register', 'register', 'api');
