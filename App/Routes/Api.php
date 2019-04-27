@@ -31,6 +31,12 @@ Route::group(['prefix' => 'api'], function() {
             Route::delete('/{id?}', 'Api/Dashboard/Users/ProfilesApi@delete', 'profiles', 'api');
             Route::put('/{id?}', 'Api/Dashboard/Users/ProfilesApi@put', 'profiles', 'api');
         });
+        Route::group(['prefix' => 'permissions'], function() {
+            Route::get('/{id?}', 'Api/Dashboard/Users/PermissionsApi@get', 'permissions', 'api');
+            Route::post('/', 'Api/Dashboard/Users/PermissionsApi@post', 'permissions', 'api');
+            Route::delete('/{id?}', 'Api/Dashboard/Users/PermissionsApi@delete', 'permissions', 'api');
+            Route::put('/{id?}', 'Api/Dashboard/Users/PermissionsApi@put', 'permissions', 'api');
+        });
     });
     Route::post('/login', 'Api/LoginApi@login', 'login', 'api');
     Route::post('/register', 'Api/RegisterApi@register', 'register', 'api');
