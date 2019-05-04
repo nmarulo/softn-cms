@@ -6,8 +6,8 @@
 namespace App\Facades\Rest;
 
 use App\Rest\Calls\LoginRest;
-use App\Rest\Requests\UserRequest;
-use App\Rest\Responses\UserResponse;
+use App\Rest\Requests\Users\UserRequest;
+use App\Rest\Responses\Users\UserResponse;
 use Silver\Support\Facade;
 
 /**

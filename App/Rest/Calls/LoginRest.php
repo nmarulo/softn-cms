@@ -7,8 +7,8 @@ namespace App\Rest\Calls;
 
 use App\Facades\MessagesFacade;
 use App\Rest\Common\RestCall;
-use App\Rest\Requests\UserRequest;
-use App\Rest\Responses\UserResponse;
+use App\Rest\Requests\Users\UserRequest;
+use App\Rest\Responses\Users\UserResponse;
 
 /**
  * Class LoginRest

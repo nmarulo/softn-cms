@@ -3,16 +3,16 @@
  * softn-cms
  */
 
-namespace App\Rest\Requests;
+namespace App\Rest\Responses\Users;
 
 use App\Rest\Common\BaseRest;
 use App\Rest\Dto\ProfileDTO;
 
 /**
- * Class ProfileRequest
+ * Class ProfileResponse
  * @author Nicolás Marulanda P.
  */
-class ProfileRequest extends ProfileDTO {
+class ProfileResponse extends ProfileDTO {
     
     use BaseRest;
     

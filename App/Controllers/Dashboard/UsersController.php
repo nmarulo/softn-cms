@@ -7,7 +7,7 @@ use App\Facades\MessagesFacade;
 use App\Facades\Rest\UsersRestFacade;
 use App\Facades\UtilsFacade;
 use App\Rest\Dto\UsersDTO;
-use App\Rest\Requests\UserRequest;
+use App\Rest\Requests\Users\UserRequest;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;

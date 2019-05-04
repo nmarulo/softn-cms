@@ -3,10 +3,11 @@
  * UserResponse.php
  */
 
-namespace App\Rest\Responses;
+namespace App\Rest\Responses\Users;
 
 use App\Rest\Common\BaseRest;
 use App\Rest\Dto\UsersDTO;
+use App\Rest\Responses\PaginationResponse;
 
 /**
  * @property UsersDTO[]         $users

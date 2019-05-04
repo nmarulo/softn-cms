@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Facades\MessagesFacade;
 use App\Facades\Rest\LoginRestFacade;
-use App\Rest\Requests\UserRequest;
+use App\Rest\Requests\Users\UserRequest;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;

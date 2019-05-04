@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Controllers\Api\Dashboard;
+namespace App\Controllers\Api\Dashboard\Users;
 
 use App\Facades\SearchFacade;
 use App\Facades\UtilsFacade;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
-use App\Rest\Requests\UserRequest;
-use App\Rest\Requests\UsersRequest;
-use App\Rest\Responses\UserResponse;
-use App\Rest\Responses\UsersResponse;
+use App\Rest\Requests\Users\UserRequest;
+use App\Rest\Requests\Users\UsersRequest;
+use App\Rest\Responses\Users\UserResponse;
+use App\Rest\Responses\Users\UsersResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 

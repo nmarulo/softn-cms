@@ -3,7 +3,7 @@
  * softn-cms
  */
 
-namespace App\Rest\Requests;
+namespace App\Rest\Requests\Users;
 
 use App\Rest\Common\BaseRest;
 use App\Rest\Requests\DataTable\DataTable;

@@ -3,7 +3,7 @@
  * UserRequest.php
  */
 
-namespace App\Rest\Requests;
+namespace App\Rest\Requests\Users;
 
 use App\Rest\Common\BaseRest;
 use App\Rest\Dto\UsersDTO;

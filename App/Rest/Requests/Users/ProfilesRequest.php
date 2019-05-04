@@ -3,17 +3,17 @@
  * softn-cms
  */
 
-namespace App\Rest\Responses;
+namespace App\Rest\Requests\Users;
 
 use App\Rest\Common\BaseRest;
 use App\Rest\Dto\ProfileDTO;
 
 /**
  * @property array $profiles
- * Class ProfilesResponse
+ * Class ProfilesRequest
  * @author Nicolás Marulanda P.
  */
-class ProfilesResponse {
+class ProfilesRequest {
     
     use BaseRest;
     

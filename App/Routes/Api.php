@@ -16,10 +16,10 @@ use Silver\Core\Route;
 Route::group(['prefix' => 'api'], function() {
     Route::group(['prefix' => 'dashboard'], function() {
         Route::group(['prefix' => 'users'], function() {
-            Route::get('/{id?}', 'Api/Dashboard/UsersApi@get', 'users', 'api');
-            Route::post('/', 'Api/Dashboard/UsersApi@post', 'users', 'api');
-            Route::delete('/{id?}', 'Api/Dashboard/UsersApi@delete', 'users', 'api');
-            Route::put('/{id?}', 'Api/Dashboard/UsersApi@put', 'users', 'api');
+            Route::get('/{id?}', 'Api/Dashboard/Users/UsersApi@get', 'users', 'api');
+            Route::post('/', 'Api/Dashboard/Users/UsersApi@post', 'users', 'api');
+            Route::delete('/{id?}', 'Api/Dashboard/Users/UsersApi@delete', 'users', 'api');
+            Route::put('/{id?}', 'Api/Dashboard/Users/UsersApi@put', 'users', 'api');
         });
         Route::group(['prefix' => 'settings'], function(){
             Route::get('/{id?}', 'Api/Dashboard/SettingsApi@get', 'settings', 'api');
