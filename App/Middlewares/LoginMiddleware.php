@@ -5,6 +5,7 @@
 
 namespace App\Middlewares;
 
+use App\Facades\SessionFacade;
 use Closure;
 use Silver\Http\Redirect;
 use Silver\Http\Request;
@@ -31,7 +32,7 @@ class LoginMiddleware {
         }
         
         //Si esta intentado acceder al panel de control y no ha iniciado sesión.
-        if (Session::exists('user_login')) {
+        if (SessionFacade::isUserExists()) {
             Redirect::to(URL . '/dashboard');
         }
         

@@ -12,6 +12,7 @@
 namespace App\Middlewares;
 
 use App\Facades\Api\RequestApiFacade;
+use App\Facades\SessionFacade;
 use App\Helpers\Api\ApiHelper;
 use Closure;
 use Silver\Core\Blueprints\MiddlewareInterface;
@@ -51,7 +52,7 @@ class AuthMiddleware implements MiddlewareInterface {
         }
         
         //Si esta intentado acceder al panel de control y no ha iniciado sesión.
-        if ($middleware == 'dashboard' && !Session::exists('user_login')) {
+        if ($middleware == 'dashboard' && !SessionFacade::isUserExists()) {
             Redirect::to(URL . '/logout');
         }
         

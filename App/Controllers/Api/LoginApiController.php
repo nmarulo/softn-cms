@@ -3,6 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Facades\TokenFacade;
+use App\Helpers\ConstHelper;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Requests\Users\UserRequest;
@@ -29,7 +30,7 @@ class LoginApiController extends Controller {
         if ($user && $this->checkPassword($user, $request)) {
             $userDTO = UsersDTO::convertOfModel($user);
             TokenFacade::generate(function(Builder $builder) use ($userDTO) {
-                $builder->set('user_login', $userDTO->userLogin);
+                $builder->set(ConstHelper::USER_ID_STR, $userDTO->id);
                 
                 return $builder;
             });

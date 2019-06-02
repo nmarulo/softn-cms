@@ -7,6 +7,7 @@ namespace App\Middlewares;
 
 use App\Facades\Api\ResponseApiFacade;
 use App\Facades\TokenFacade;
+use App\Helpers\ConstHelper;
 use Closure;
 use Lcobucci\JWT\Builder;
 use Silver\Core\Route;
@@ -68,8 +69,8 @@ class ApiMiddleware {
             }
             
             TokenFacade::generate(function(Builder $builder) use ($token) {
-                $userLogin = TokenFacade::getCustomData($token, 'user_login');
-                $builder->set('user_login', $userLogin);
+                $userId = TokenFacade::getCustomData($token, ConstHelper::USER_ID_STR);
+                $builder->set(ConstHelper::USER_ID_STR, $userId);
                 
                 return $builder;
             });
