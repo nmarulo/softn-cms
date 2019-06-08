@@ -1,11 +1,13 @@
 var glyphiconTH;
+var glyphiconTHBase;
 var sortAsc;
 var sortDesc;
 
 $(function () {
     sortAsc = 'asc';
     sortDesc = 'desc';
-    glyphiconTH = '<span class="glyphicon glyphicon-triangle-bottom"></span>';
+    glyphiconTH = '<span class="glyphicon glyphicon-sort-by-attributes"></span>';
+    glyphiconTHBase = '<span class="glyphicon glyphicon-sort"></span>';
     
     initTableDataPagination();
     initTableDataSortColumn();
@@ -67,9 +69,20 @@ function initTableDataPagination() {
 }
 
 function initTableDataSortColumn() {
+    $(document).find('table th[data-column]').each(function () {
+        $(this).prepend(glyphiconTHBase);
+    });
+    
     $(document).on('click', 'table th[data-column]', function () {
         var elementTH = $(this);
         var sort = elementTH.data('sort');
+        //Lo dejo asi hasta que se me ocurra otra forma.
+        elementTH.children()
+                .filter(function (index, element) {
+                    return $(element).attr('class') === $(glyphiconTHBase).attr('class');
+                })
+                .first()
+                .remove();
         
         //Cuando es igual a desc lo quita
         if (elementTH.hasClass('active') && sort === sortAsc) {
@@ -80,7 +93,8 @@ function initTableDataSortColumn() {
             //Se eliminan todos los datos de la columna
             elementDataAttrRemove(elementTH, 'sort', '');
             elementTH.removeClass('active');
-            elementTH.find('span[class*=glyphicon-triangle-]').remove();
+            elementTH.find('span[class*=glyphicon-sort-by-attributes]').remove();
+            elementTH.prepend(glyphiconTHBase);
         } else {
             //ordenar asc
             elementTH.addClass('active');
@@ -150,11 +164,11 @@ function getSortColumns(containerTableData) {
 
 function dataListSpanGlyphicon(spanGlyphicon, sort) {
     if (sort === sortAsc) {
-        spanGlyphicon.removeClass('glyphicon-triangle-bottom');
-        spanGlyphicon.addClass('glyphicon-triangle-top');
+        spanGlyphicon.removeClass('glyphicon-sort-by-attributes');
+        spanGlyphicon.addClass('glyphicon-sort-by-attributes-alt');
     } else if (sort === sortDesc) {
-        spanGlyphicon.removeClass('glyphicon-triangle-top');
-        spanGlyphicon.addClass('glyphicon-triangle-bottom');
+        spanGlyphicon.removeClass('glyphicon-sort-by-attributes-alt');
+        spanGlyphicon.addClass('glyphicon-sort-by-attributes');
     }
 }
 

@@ -32,6 +32,10 @@ abstract class RestCall {
         $this->methodGetClassParseTo = NULL;
     }
     
+    public function isError() {
+        return $this->requestApiHelper->isError();
+    }
+    
     /**
      * @param mixed       $object
      * @param string      $uri
@@ -60,12 +64,13 @@ abstract class RestCall {
     /**
      * @param int    $id
      * @param        $object
+     * @param string $uri
      *
      * @return mixed
      * @throws \Exception
      */
-    protected function put(int $id, $object) {
-        return $this->makeCall('put', $object, $id);
+    protected function put(int $id, $object, string $uri = '') {
+        return $this->makeCall('put', $object, $this->buildUri($id, $uri));
     }
     
     /**

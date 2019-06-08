@@ -5,23 +5,26 @@
 
 namespace App\Rest\Requests\Users;
 
-use App\Rest\Common\BaseRest;
-use App\Rest\Dto\UsersDTO;
 use App\Rest\Requests\DataTable\DataTable;
+use App\Rest\Requests\RegisterUserRequest;
 
 /**
+ * @property string    userCurrentPassword
  * @property DataTable $dataTable
  * Class UserRequest
  * @author Nicolás Marulanda P.
  */
-class UserRequest extends UsersDTO {
-    
-    use BaseRest;
+class UserRequest extends RegisterUserRequest {
     
     /**
      * @var DataTable
      */
     private $dataTable;
+    
+    /**
+     * @var string
+     */
+    private $userCurrentPassword;
     
     public static function getParseOfClasses(): array {
         return [

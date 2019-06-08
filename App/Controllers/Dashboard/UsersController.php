@@ -42,33 +42,20 @@ class UsersController extends Controller {
         $userDTO = new UsersDTO();
         
         if (RequestApiFacade::isPostRequest()) {
-            $message = 'Usuario actualizado correctamente.';
             $request = UserRequest::parseOf(Request::all());
-            
-            if (empty($id)) {
-                $message      = 'Usuario creado correctamente';
-                $userResponse = UsersRestFacade::create($request);
-            } else {
-                $userResponse = UsersRestFacade::update($id, $request);
-            }
-            
-            if (isset($userResponse->id)) {
-                MessagesFacade::addSuccess($message);
-                
-                if (empty($id)) {
-                    Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $userResponse->id));
-                }
-            }
+            $this->create($id, $request);
+            $this->update($id, $request, $userDTO);
         } elseif ($id) {
-            $userResponse = UsersRestFacade::getById($id);
-        }
-        
-        if (isset($userResponse)) {
-            $userDTO = $userResponse;
+            $userDTO = UsersRestFacade::getById($id);
+            
+            if (UsersRestFacade::isError()) {
+                $this->redirectForm();
+            }
         }
         
         return View::make('dashboard.users.form')
-                   ->with('user', $userDTO);
+                   ->with('user', $userDTO)
+                   ->withComponent($userDTO, 'user');
     }
     
     public function delete($id) {
@@ -76,4 +63,45 @@ class UsersController extends Controller {
             MessagesFacade::addSuccess('Usuario borrado correctamente.');
         }
     }
+    
+    public function formPassword($id) {
+        $request = UserRequest::parseOf(Request::all());
+        UsersRestFacade::updatePassword($id, $request);
+        
+        if (!UsersRestFacade::isError()) {
+            MessagesFacade::addSuccess('Contraseña actualizada correctamente.');
+        }
+        
+        $this->redirectForm($id);
+    }
+    
+    private function create($id, UserRequest $request) {
+        if ($id) {
+            return;
+        }
+        
+        $userResponse = UsersRestFacade::create($request);
+        
+        if (!UsersRestFacade::isError()) {
+            MessagesFacade::addSuccess('Usuario creado correctamente.');
+            $this->redirectForm($userResponse->id);
+        }
+    }
+    
+    private function update($id, UserRequest $request, UsersDTO &$usersDTO) {
+        if (!$id) {
+            return;
+        }
+        
+        $usersDTO = UsersRestFacade::update($id, $request);
+        
+        if (!UsersRestFacade::isError()) {
+            MessagesFacade::addSuccess('Usuario actualizado correctamente.');
+        }
+    }
+    
+    private function redirectForm($id = '') {
+        Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $id));
+    }
+    
 }

@@ -5,6 +5,7 @@
 
 namespace App\Helpers\Api;
 
+use App\Facades\SessionFacade;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
@@ -15,7 +16,6 @@ use Psr\Http\Message\ResponseInterface;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Env;
 use Silver\Database\Model;
-use Silver\Http\Session;
 
 /**
  * Class RequestApiHelper
@@ -138,7 +138,7 @@ class RequestApiHelper extends ApiHelper {
     }
     
     public function getToken() {
-        return Session::get('token');
+        return SessionFacade::getToken();
     }
     
     private function formatDataToSendRequestPost($dataToSend) {
@@ -158,8 +158,8 @@ class RequestApiHelper extends ApiHelper {
         
         $token = $this->response->getHeader('Authorization');
         
-        if (!empty($token)) {
-            Session::set('token', $token);
+        if (isset($token[0])) {
+            SessionFacade::setToken($token[0]);
         }
     }
     

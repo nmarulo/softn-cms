@@ -20,6 +20,7 @@ Route::group(['prefix' => 'api'], function() {
             Route::post('/', 'Api/Dashboard/Users/UsersApi@post', 'users', 'api');
             Route::delete('/{id?}', 'Api/Dashboard/Users/UsersApi@delete', 'users', 'api');
             Route::put('/{id?}', 'Api/Dashboard/Users/UsersApi@put', 'users', 'api');
+            Route::put('/password/{id?}', 'Api/Dashboard/Users/UsersApi@putPassword', 'users', 'api');
         });
         Route::group(['prefix' => 'settings'], function(){
             Route::get('/{id?}', 'Api/Dashboard/SettingsApi@get', 'settings', 'api');
