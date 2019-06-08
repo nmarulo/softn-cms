@@ -71,15 +71,29 @@ class UsersApiController extends Controller {
     }
     
     /**
+     * @param $id
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function putPassword($id) {
+        $request = UserRequest::parseOf(Request::all());
+        $this->checkUpdatePassword($request, Users::find($id));
+        
+        return $this->saveUser($id);
+    }
+    
+    /**
      * @param int $id
      *
      * @return array
      * @throws \Exception
      */
     private function saveUser(?int $id = NULL): array {
-        $request  = UserRequest::parseOf(Request::all());
+        $request = UserRequest::parseOf(Request::all());
         
         if (is_null($id)) {
+            $this->checkPassword($request);
             $request->userRegistered = UtilsFacade::dateNow();
         } else {
             $request->id = $id;
@@ -104,5 +118,23 @@ class UsersApiController extends Controller {
         }
         
         throw new \RuntimeException("Usuario desconocido.");
+    }
+    
+    private function checkPassword(UserRequest $request) {
+        if ($request->userPassword == $request->userPasswordRe) {
+            return;
+        }
+        
+        throw new \RuntimeException("Las contraseñas no son coinciden.");
+    }
+    
+    private function checkUpdatePassword(UserRequest $request, Users $user) {
+        if ($request->userCurrentPassword == $user->user_password) {
+            $this->checkPassword($request);
+            
+            return;
+        }
+        
+        throw new \RuntimeException("La contraseña actual es incorrecta.");
     }
 }

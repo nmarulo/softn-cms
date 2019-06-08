@@ -1,45 +1,45 @@
 <div class="modal fade" id="modal-user-password" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form id="modal-user-password-form" class="form-horizontal" method="get">
+            <form id="modal-user-password-form" class="form-horizontal" action="{{ url('/dashboard/users/form/password/') }}{{$user->id}}" method="post">
                 <div class="modal-header">
                     <h3 class="modal-title text-center">Modificar contraseña</h3>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="user-current-password" class="control-label col-md-2">
+                        <label for="input-user-current-password" class="control-label col-md-2">
                             Actual
                         </label>
                         <div class="col-md-10">
-                            <input type="password" class="form-control" id="user-current-password" name="userCurrentPassword" placeholder="Contraseña actual">
+                            <input id="input-user-current-password" type="password" class="form-control" name="userCurrentPassword" placeholder="Contraseña actual">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="user-new-password" class="control-label col-md-2">
+                        <label for="input-user-new-password" class="control-label col-md-2">
                             Nueva
                         </label>
                         <div class="col-md-10">
-                            <input type="password" class="form-control" id="user-new-password" name="userNewPassword" placeholder="Nueva contraseña">
+                            <input id="input-user-new-password" type="password" class="form-control" name="userPassword" placeholder="Nueva contraseña">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="user-new-re-password" class="control-label col-md-2">
+                        <label for="input-user-new-password-re" class="control-label col-md-2">
                             Repetir
                         </label>
                         <div class="col-md-10">
-                            <input type="password" class="form-control" id="user-new-re-password" name="userNewRePassword" placeholder="Repetir nueva contraseña">
+                            <input id="input-user-new-password-re" type="password" class="form-control" name="userPasswordRe" placeholder="Repetir nueva contraseña">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <div class="row">
                         <div class="col-xs-6">
-                            <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">
+                            <button id="button-password-cancel" type="button" class="btn btn-primary btn-block" data-dismiss="modal">
                                 Cancelar
                             </button>
                         </div>
                         <div class="col-xs-6">
-                            <button type="submit" class="btn btn-default btn-block">Modificar</button>
+                            <button id="button-password-update" type="submit" class="btn btn-default btn-block">Modificar</button>
                         </div>
                     </div>
                 </div>

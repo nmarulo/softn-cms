@@ -64,6 +64,17 @@ class UsersController extends Controller {
         }
     }
     
+    public function formPassword($id) {
+        $request = UserRequest::parseOf(Request::all());
+        UsersRestFacade::updatePassword($id, $request);
+        
+        if (!UsersRestFacade::isError()) {
+            MessagesFacade::addSuccess('Contraseña actualizada correctamente.');
+        }
+        
+        $this->redirectForm($id);
+    }
+    
     private function create($id, UserRequest $request) {
         if ($id) {
             return;

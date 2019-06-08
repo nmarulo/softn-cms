@@ -21,6 +21,7 @@ Route::group(['prefix' => 'dashboard'], function() {
         Route::get('/', 'Dashboard/Users@index', 'users', 'dashboard');
         Route::get('/form/{id?}', 'Dashboard/Users@form', 'users', 'dashboard');
         Route::post('/form/{id?}', 'Dashboard/Users@form', 'users', 'dashboard');
+        Route::post('/form/password/{id?}', 'Dashboard/Users@formPassword', 'users', 'dashboard');
         Route::post('/delete/{id?}', 'Dashboard/Users@delete', 'users', 'dashboard');
     });
 });

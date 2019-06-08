@@ -53,6 +53,14 @@ class UsersRest extends RestCall {
         }
     }
     
+    public function updatePassword(int $id, UserRequest $request): ?UserResponse {
+        try {
+            return $this->put($id, $request, 'password');
+        } catch (\Exception $exception) {
+            return new UserResponse();
+        }
+    }
+    
     public function remove(int $id): bool {
         try {
             $this->delete($id);
