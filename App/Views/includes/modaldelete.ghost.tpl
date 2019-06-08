@@ -7,11 +7,11 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-6">
-                        <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button>
+                        <button id="button-delete-cancel" type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button>
                     </div>
                     <div class="col-xs-6">
                         <form id="modal-delete-form" method="get">
-                            <button type="submit" class="btn btn-default btn-block">Borrar</button>
+                            <button id="button-delete" type="submit" class="btn btn-default btn-block">Borrar</button>
                         </form>
                     </div>
                 </div>

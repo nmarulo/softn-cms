@@ -34,7 +34,10 @@
                     #block(header)
                     <ol class="breadcrumb">
                         <li>
-                            <a href="#"><i class="fa fa-tachometer-alt"></i> Inicio</a>
+                            <a id="link-breadcrumb-dashboard" href="{{ url('/dashboard') }}">
+                                <i class="fa fa-tachometer-alt"></i>
+                                Inicio
+                            </a>
                         </li>
                         #block(breadcrumb)
                     </ol>
