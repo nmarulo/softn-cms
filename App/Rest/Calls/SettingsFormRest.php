@@ -7,6 +7,7 @@ namespace App\Rest\Calls;
 
 use App\Facades\MessagesFacade;
 use App\Rest\Common\RestCall;
+use App\Rest\Requests\Settings\SettingsFormRequest;
 use App\Rest\Responses\Settings\SettingsFormResponse;
 
 /**
@@ -21,7 +22,15 @@ class SettingsFormRest extends RestCall {
     
     public function getForm(): ?SettingsFormResponse {
         try {
-            return $this->get(NULL, 'form');
+            return $this->get(NULL);
+        } catch (\Exception $exception) {
+            return NULL;
+        }
+    }
+    
+    public function putForm(SettingsFormRequest $request): ?SettingsFormResponse {
+        try {
+            return $this->put(NULL, $request);
         } catch (\Exception $exception) {
             return NULL;
         }
@@ -32,7 +41,7 @@ class SettingsFormRest extends RestCall {
     }
     
     protected function baseUri(): string {
-        return 'dashboard/settings';
+        return 'dashboard/settings/form';
     }
     
     protected function catchException(\Exception $exception): void {

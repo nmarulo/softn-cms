@@ -69,7 +69,7 @@ abstract class RestCall {
      * @return mixed
      * @throws \Exception
      */
-    protected function put(int $id, $object, string $uri = '') {
+    protected function put(?int $id, $object, string $uri = '') {
         return $this->makeCall('put', $object, $this->buildUri($id, $uri));
     }
     
