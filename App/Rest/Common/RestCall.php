@@ -134,7 +134,7 @@ abstract class RestCall {
         
         if (is_int($object)) {
             $uri = "$uri/$object";
-        } elseif (is_array($object) && isset($object[0])) {
+        } elseif (is_array($object) && isset($object[0]) && strlen($uri) > 0) {
             if (is_int($object[0])) {
                 $uri = $this->buildUri($object, $uri);
             }
@@ -142,6 +142,10 @@ abstract class RestCall {
             $auxObject = $object;
             
             foreach ($auxObject as $key => $value) {
+                if (strpos($uri, ":$key") === FALSE) {
+                    continue;
+                }
+                
                 $uri = str_replace(":$key", $value, $uri);
                 unset($object[$key]);
             }
