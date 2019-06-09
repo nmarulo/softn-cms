@@ -9,6 +9,7 @@ use App\Facades\SearchFacade;
 use App\Models\SettingsModel;
 use App\Rest\Dto\SettingDTO;
 use App\Rest\Requests\SettingRequest;
+use App\Rest\Requests\Settings\SettingsFormRequest;
 use App\Rest\Responses\SettingResponse;
 use App\Rest\Responses\Settings\SettingsFormResponse;
 use App\Rest\Responses\SettingsResponse;
@@ -60,6 +61,24 @@ class SettingsApiController extends Controller {
         }
         
         return $response->toArray();
+    }
+    
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function putForm() {
+        $request    = SettingsFormRequest::parseOf(Request::all());
+        $properties = $request->getProperties();
+        
+        foreach ($properties as $key => $value) {
+            $model                = new SettingsModel();
+            $model->setting_name  = $key;
+            $model->setting_value = $value;
+            $model->saveByName();
+        }
+        
+        return $this->getForm();
     }
     
     /**
