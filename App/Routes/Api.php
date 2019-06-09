@@ -23,6 +23,7 @@ Route::group(['prefix' => 'api'], function() {
             Route::put('/password/{id?}', 'Api/Dashboard/Users/UsersApi@putPassword', 'users', 'api');
         });
         Route::group(['prefix' => 'settings'], function(){
+            Route::get('/form', 'Api/Dashboard/SettingsApi@getForm', 'settings', 'api');
             Route::get('/{id?}', 'Api/Dashboard/SettingsApi@get', 'settings', 'api');
             Route::put('/{id?}', 'Api/Dashboard/SettingsApi@put', 'settings', 'api');
         });
