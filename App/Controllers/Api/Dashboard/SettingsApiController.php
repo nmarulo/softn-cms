@@ -9,7 +9,9 @@ use App\Facades\SearchFacade;
 use App\Models\SettingsModel;
 use App\Rest\Dto\SettingDTO;
 use App\Rest\Requests\SettingRequest;
+use App\Rest\Requests\Settings\SettingsFormRequest;
 use App\Rest\Responses\SettingResponse;
+use App\Rest\Responses\Settings\SettingsFormResponse;
 use App\Rest\Responses\SettingsResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
@@ -28,21 +30,55 @@ class SettingsApiController extends Controller {
      */
     public function get($id) {
         if ($id) {
-            $settingDTO = SettingDTO::convertOfModel($this->getSettingById($id));
-            
-            return SettingResponse::parseOf($settingDTO->toArray())
-                                  ->toArray();
+            $response = $this->getById($id);
+        } else {
+            $response = $this->getAll();
         }
         
-        $response = new SettingsResponse();
-        $request  = SettingRequest::parseOf(Request::all());
-        $models   = SearchFacade::init(SettingsModel::class)
-                                ->search(SettingDTO::convertToModel($request))
-                                ->all();
+        return $response->toArray();
+    }
+    
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function getForm() {
+        //TODO: settingsForm, lista temporal.
+        $settingsForm = [
+                'title',
+                'description',
+                'siteUrl',
+                'emailAdmin',
+        ];
+        $response     = new SettingsFormResponse();
+        $models       = SettingsModel::all();
+        $models       = array_filter($models, function(SettingsModel $model) use ($settingsForm) {
+            return array_search($model->setting_name, $settingsForm, TRUE) !== FALSE;
+        });
         
-        $response->settings = SettingDTO::convertOfModel($models);
+        foreach ($models as $value) {
+            $response->{$value->setting_name} = SettingDTO::convertOfModel($value);
+        }
         
         return $response->toArray();
+    }
+    
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function putForm() {
+        $request    = SettingsFormRequest::parseOf(Request::all());
+        $properties = $request->getProperties();
+        
+        foreach ($properties as $key => $value) {
+            $model                = new SettingsModel();
+            $model->setting_name  = $key;
+            $model->setting_value = $value;
+            $model->saveByName();
+        }
+        
+        return $this->getForm();
     }
     
     /**
@@ -72,6 +108,33 @@ class SettingsApiController extends Controller {
         }
         
         throw new \RuntimeException("Configuración desconocida.");
+    }
+    
+    /**
+     * @return SettingsResponse
+     * @throws \Exception
+     */
+    private function getAll(): SettingsResponse {
+        $response           = new SettingsResponse();
+        $request            = SettingRequest::parseOf(Request::all());
+        $models             = SearchFacade::init(SettingsModel::class)
+                                          ->search(SettingDTO::convertToModel($request))
+                                          ->all();
+        $response->settings = SettingDTO::convertOfModel($models);
+        
+        return $response;
+    }
+    
+    /**
+     * @param int $id
+     *
+     * @return SettingResponse
+     * @throws \Exception
+     */
+    private function getById(int $id): SettingResponse {
+        $settingDTO = SettingDTO::convertOfModel($this->getSettingById($id));
+        
+        return SettingResponse::parseOf($settingDTO->toArray());
     }
     
 }

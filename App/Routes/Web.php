@@ -24,6 +24,10 @@ Route::group(['prefix' => 'dashboard'], function() {
         Route::post('/form/password/{id?}', 'Dashboard/Users@formPassword', 'users', 'dashboard');
         Route::post('/delete/{id?}', 'Dashboard/Users@delete', 'users', 'dashboard');
     });
+    Route::group(['prefix' => 'settings'], function() {
+        Route::get('/', 'Dashboard/Settings@index', 'settings', 'dashboard');
+        Route::post('/', 'Dashboard/Settings@form', 'settings', 'dashboard');
+    });
 });
 
 // Route for Login controller.
