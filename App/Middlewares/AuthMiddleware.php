@@ -13,13 +13,13 @@ namespace App\Middlewares;
 
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\SessionFacade;
+use App\Facades\TokenFacade;
 use App\Helpers\Api\ApiHelper;
 use Closure;
 use Silver\Core\Blueprints\MiddlewareInterface;
 use Silver\Http\Redirect;
 use Silver\Http\Request;
 use Silver\Http\Response;
-use Silver\Http\Session;
 use Silver\Http\View;
 
 class AuthMiddleware implements MiddlewareInterface {
@@ -52,7 +52,7 @@ class AuthMiddleware implements MiddlewareInterface {
         }
         
         //Si esta intentado acceder al panel de control y no ha iniciado sesión.
-        if ($middleware == 'dashboard' && !SessionFacade::isUserExists()) {
+        if ($middleware == 'dashboard' && $this->checkSessionToken()) {
             Redirect::to(URL . '/logout');
         }
         
@@ -64,6 +64,10 @@ class AuthMiddleware implements MiddlewareInterface {
         
         //Si es uno publico continua
         return $return;
+    }
+    
+    private function checkSessionToken() {
+        return !SessionFacade::isUserExists() || !TokenFacade::check(SessionFacade::getToken());
     }
     
 }
