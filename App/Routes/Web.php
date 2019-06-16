@@ -23,6 +23,12 @@ Route::group(['prefix' => 'dashboard'], function() {
         Route::post('/form/{id?}', 'Dashboard/Users@form', 'users', 'dashboard');
         Route::post('/form/password/{id?}', 'Dashboard/Users@formPassword', 'users', 'dashboard');
         Route::post('/delete/{id?}', 'Dashboard/Users@delete', 'users', 'dashboard');
+        Route::group(['prefix' => 'permissions'], function() {
+            Route::get('/', 'Dashboard/Users/Permissions@index', 'permissions', 'dashboard');
+            Route::post('/form/{id?}', 'Dashboard/Users/Permissions@form', 'permissions', 'dashboard');
+            Route::post('/delete/{id?}', 'Dashboard/Users/Permissions@delete', 'permissions', 'dashboard');
+            Route::post('/{id?}', 'Dashboard/Users/Permissions@index', 'permissions', 'dashboard');
+        });
     });
     Route::group(['prefix' => 'settings'], function() {
         Route::get('/', 'Dashboard/Settings@index', 'settings', 'dashboard');

@@ -1,7 +1,7 @@
 <div class="modal fade" id="modal-user-password" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form id="modal-user-password-form" class="form-horizontal form-control-label-left" action="{{ url('/dashboard/users/form/password/') }}{{$user->id}}" method="post">
+            <form id="modal-user-password-form" class="form-horizontal form-control-label-left" action="{{ url('/dashboard/users/form/password/') }}{{$component_user->id}}" method="post">
                 <div class="modal-header">
                     <h3 class="modal-title text-center">Modificar contraseña</h3>
                 </div>

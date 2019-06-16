@@ -1,13 +1,6 @@
 $(function () {
-    $('#btn-navbar-menu-toggle').click(function () {
-        navbarToggle();
-    });
+    callAjax();
 });
-
-function navbarToggle() {
-    $('#navbar-collapse-fixed-top').toggleClass('toggle');
-    $('.main-container').toggleClass('toggle');
-}
 
 function makeRequest(method, route, dataToSend, callback, parseJSON) {
     $.ajax({
@@ -123,4 +116,17 @@ function checkArray(array) {
     }
     
     return array;
+}
+
+function callAjax() {
+    $(document).on('click', '[data-call-ajax]', function () {
+        var element = $(this);
+        var callAjaxUrl = element.data('call-ajax');
+        var method = element.data('call-method');
+        var elementUpdate = getDataIdUpdateElement(element);
+        
+        makeRequest(method, callAjaxUrl, '', function (data) {
+            viewUpdate(data, elementUpdate);
+        });
+    });
 }
