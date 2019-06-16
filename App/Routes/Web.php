@@ -29,6 +29,12 @@ Route::group(['prefix' => 'dashboard'], function() {
             Route::post('/delete/{id?}', 'Dashboard/Users/Permissions@delete', 'permissions', 'dashboard');
             Route::post('/{id?}', 'Dashboard/Users/Permissions@index', 'permissions', 'dashboard');
         });
+        Route::group(['prefix' => 'profiles'], function() {
+            Route::get('/', 'Dashboard/Users/Profiles@index', 'profiles', 'dashboard');
+            Route::post('/form/{id?}', 'Dashboard/Users/Profiles@form', 'profiles', 'dashboard');
+            Route::post('/delete/{id?}', 'Dashboard/Users/Profiles@delete', 'profiles', 'dashboard');
+            Route::post('/{id?}', 'Dashboard/Users/Profiles@index', 'profiles', 'dashboard');
+        });
     });
     Route::group(['prefix' => 'settings'], function() {
         Route::get('/', 'Dashboard/Settings@index', 'settings', 'dashboard');
