@@ -11,9 +11,6 @@
 <li>
     <a href="#"><i class="fa fa-users"></i> Usuarios</a>
 </li>
-<li>
-    <a href="#"><i class="fa fa-user-circle"></i> Perfiles</a>
-</li>
 <li class="active">Permisos</li>
 #end
 
@@ -45,10 +42,10 @@
                     <td class="td-btn-actions">
                         <div class="btn-group">
                             <button type="button" class="btn btn-primary btn-xs" data-call-ajax="/dashboard/users/permissions/{{$permission->id}}" data-call-method="POST" data-update="#modal-manager-permission #messages" data-toggle="modal" data-target="#modal-manager-permission">
-                                <span class="fa fa-user-edit"></span>
+                                <span class="fa fa-edit"></span>
                             </button>
                             <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-delete" data-delete-action="/dashboard/users/permissions/delete/{{$permission->id}}">
-                                <span class="fa fa-user-minus"></span>
+                                <span class="fa fa-minus"></span>
                             </button>
                         </div>
                     </td>
