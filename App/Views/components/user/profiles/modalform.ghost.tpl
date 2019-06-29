@@ -3,7 +3,7 @@
         <div class="modal-content">
             <form id="modal-manager-profile-form" class="form-horizontal form-control-label-left" action="{{ url('/dashboard/users/profiles/form/') }}{{$component_profile->id}}" method="post">
                 <div class="modal-header">
-                    <h3 class="modal-title text-center">Gestionar permiso</h3>
+                    <h3 class="modal-title text-center">Gestionar perfil</h3>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
