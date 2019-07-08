@@ -7,6 +7,8 @@ namespace App\Controllers\Api\Dashboard\Users;
 
 use App\Facades\SearchFacade;
 use App\Models\ProfileModel;
+use App\Models\ProfilesPermissionsModel;
+use App\Rest\Dto\PermissionDTO;
 use App\Rest\Dto\ProfileDTO;
 use App\Rest\Requests\Users\ProfileRequest;
 use App\Rest\Requests\Users\ProfilesRequest;
@@ -14,7 +16,6 @@ use App\Rest\Responses\Users\ProfileResponse;
 use App\Rest\Responses\Users\ProfilesResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
-use Silver\Database\Model;
 
 /**
  * Class ProfilesApiController
@@ -30,10 +31,14 @@ class ProfilesApiController extends Controller {
      */
     public function get($id) {
         if ($id) {
-            $dto = ProfileDTO::convertOfModel($this->getProfileById($id));
+            $model          = $this->getProfileById($id);
+            $permissionsDTO = PermissionDTO::convertOfModel($model->getPermissions());
             
-            return ProfileResponse::parseOf($dto->toArray())
-                                  ->toArray();
+            $dto                   = ProfileDTO::convertOfModel($model);
+            $response              = ProfileResponse::parseOf($dto->toArray());
+            $response->permissions = $permissionsDTO;
+            
+            return $response->toArray();
         }
         
         $response = new ProfilesResponse();
@@ -42,7 +47,17 @@ class ProfilesApiController extends Controller {
                                 ->search($request->profiles)
                                 ->all();
         
-        $response->profiles = ProfileDTO::convertOfModel($models);
+        $profiles = [];
+        
+        array_walk($models, function(ProfileModel $model) use (&$profiles) {
+            $profile                      = ProfileDTO::convertOfModel($model);
+            $profileResponse              = ProfileResponse::parseOf($profile->toArray());
+            $profileResponse->permissions = PermissionDTO::convertOfModel($model->getPermissions());
+            
+            $profiles[] = $profileResponse;
+        });
+        
+        $response->profiles = $profiles;
         
         return $response->toArray();
     }
@@ -65,6 +80,11 @@ class ProfilesApiController extends Controller {
         return $this->save($id);
     }
     
+    /**
+     * @param $id
+     *
+     * @throws \Exception
+     */
     public function delete($id) {
         return $this->getProfileById($id)
                     ->delete();
@@ -77,26 +97,52 @@ class ProfilesApiController extends Controller {
      * @throws \Exception
      */
     private function save(?int $id = NULL): array {
-        $request = ProfileRequest::parseOf(Request::all());
+        $request       = ProfileRequest::parseOf(Request::all());
+        $permissionsId = [];
         
         if (!is_null($id)) {
-            $request->id = $id;
+            $request->id   = $id;
+            $permissionsId = $request->permissionsId;
         }
         
-        $model = ProfileDTO::convertToModel($request, FALSE);
-        $model = $this->getProfileById($model->save()->id);
-        $dto   = ProfileDTO::convertOfModel($model);
+        $model    = ProfileDTO::convertToModel($request, FALSE);
+        $model    = $this->getProfileById($model->save()->id);
+        $dto      = ProfileDTO::convertOfModel($model);
+        $response = ProfileResponse::parseOf($dto->toArray());
         
-        return ProfileResponse::parseOf($dto->toArray())
-                              ->toArray();
+        $this->updatePermissions($id, $permissionsId);
+        $response->permissions = $model->getPermissions();
+        
+        return $response->toArray();
     }
     
-    private function getProfileById($id): Model {
+    /**
+     * @param $id
+     *
+     * @return ProfileModel
+     * @throws \Exception
+     */
+    private function getProfileById($id): ProfileModel {
         if ($model = ProfileModel::find($id)) {
             return $model;
         }
         
-        throw new \RuntimeException("Perfil desconocido.");
+        throw new \Exception("Perfil desconocido.");
+    }
+    
+    private function updatePermissions(?int $id, ?array $permissionsId): void {
+        if (is_null($id) || empty($permissionsId)) {
+            return;
+        }
+        
+        ProfilesPermissionsModel::deleteProfiles($id);
+        $model             = new ProfilesPermissionsModel();
+        $model->profile_id = $id;
+        
+        foreach ($permissionsId as $id) {
+            $model->permission_id = $id;
+            $model->saveNew();
+        }
     }
     
 }
