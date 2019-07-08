@@ -10,7 +10,6 @@ use App\Facades\MessagesFacade;
 use App\Facades\Rest\PermissionsRestFacade;
 use App\Rest\Requests\Users\PermissionRequest;
 use App\Rest\Responses\Users\PermissionResponse;
-use App\Rest\Responses\Users\PermissionsResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
@@ -24,19 +23,22 @@ class PermissionsController extends Controller {
     
     private $urlPermissions = '/dashboard/users/permissions';
     
-    public function index($id = null) {
+    public function index($id = NULL) {
         $permission  = new PermissionResponse();
-        $permissions = new PermissionsResponse();
+        $permissions = [];
         
         if (RequestApiFacade::isPostRequest()) {
-            $permissions->permissions = [];
-            $permission               = PermissionsRestFacade::getById($id);
+            $permission = PermissionsRestFacade::getById($id);
         } else {
-            $permissions = PermissionsRestFacade::getAll();
+            $permissions = PermissionsRestFacade::getAll()->permissions;
+            
+            if (!is_array($permissions)) {
+                $permissions = [];
+            }
         }
         
         return View::make('dashboard.users.permissions.index')
-                   ->with('permissions', $permissions->permissions)
+                   ->with('permissions', $permissions)
                    ->withComponent($permission, 'permission');
     }
     
