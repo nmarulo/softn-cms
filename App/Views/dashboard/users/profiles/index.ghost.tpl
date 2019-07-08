@@ -41,7 +41,7 @@
                 <tr>
                     <td class="td-btn-actions">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-primary btn-xs" data-call-ajax="/dashboard/users/profiles/{{$profile->id}}" data-call-method="POST" data-update="#modal-manager-profile #messages" data-toggle="modal" data-target="#modal-manager-profile">
+                            <button type="button" class="btn btn-primary btn-xs" data-call-ajax="/dashboard/users/profiles/{{$profile->id}}" data-call-method="POST" data-update="#modal-manager-profile #span-modal-perfil-permissions #messages" data-execute="iCheckInputs" data-toggle="modal" data-target="#modal-manager-profile">
                                 <span class="fa fa-edit"></span>
                             </button>
                             <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-delete" data-delete-action="/dashboard/users/profiles/delete/{{$profile->id}}">
@@ -66,6 +66,9 @@
 </div>
 {{ include('includes.modaldelete') }}
 {{ component('user.profiles.modalform') }}
+<span id="span-modal-perfil-permissions">
+    {{ component('user.profiles.modalpermissions') }}
+</span>
 #end
 
 #set[scripts]

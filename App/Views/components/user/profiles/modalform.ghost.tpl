@@ -30,6 +30,15 @@
                             <textarea id="profile-description" class="form-control" name="profileDescription" placeholder="Descripción" cols="3">{{$component_profile->profileDescription}}</textarea>
                         </div>
                     </div>
+                    #if(!is_null($component_profile->id))
+                    <div class="row clearfix">
+                        <div class="col-md-10 col-md-offset-2">
+                            <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#modal-manager-profile-edit-permissions" data-dismiss="modal">
+                                    Gestionar permisos
+                            </button>
+                        </div>
+                    </div>
+                    #endif
                 </div>
                 <div class="modal-footer">
                     <div class="col-xs-6">

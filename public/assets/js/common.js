@@ -125,9 +125,14 @@ function callAjax() {
         var callAjaxUrl = element.data('call-ajax');
         var method = element.data('call-method');
         var elementUpdate = getDataIdUpdateElement(element);
+        var execute = element.data('execute');
         
         makeRequest(method, callAjaxUrl, '', function (data) {
             viewUpdate(data, elementUpdate);
+    
+            if (execute !== undefined && execute != null) {
+                eval(execute)()
+            }
         });
     });
 }

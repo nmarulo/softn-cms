@@ -7,10 +7,12 @@ namespace App\Controllers\Dashboard\Users;
 
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\MessagesFacade;
+use App\Facades\Rest\PermissionsRestFacade;
 use App\Facades\Rest\Users\ProfilesRestFacade;
+use App\Helpers\Views\PermissionView;
 use App\Rest\Requests\Users\ProfileRequest;
+use App\Rest\Responses\Users\PermissionResponse;
 use App\Rest\Responses\Users\ProfileResponse;
-use App\Rest\Responses\Users\ProfilesResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
@@ -25,19 +27,25 @@ class ProfilesController extends Controller {
     private $urlProfiles = '/dashboard/users/profiles';
     
     public function index($id = NULL) {
-        $profile  = new ProfileResponse();
-        $profiles = new ProfilesResponse();
+        $profile         = new ProfileResponse();
+        $permissionsView = [];
+        $profiles        = [];
         
         if (RequestApiFacade::isPostRequest()) {
-            $profiles->profiles = [];
-            $profile            = ProfilesRestFacade::getById($id);
+            $profile         = ProfilesRestFacade::getById($id);
+            $permissionsView = $this->getPermissionsView($profile->permissions);
         } else {
-            $profiles = ProfilesRestFacade::getAll();
+            $profiles = ProfilesRestFacade::getAll()->profiles;
+            
+            if (!is_array($profiles)) {
+                $profiles = [];
+            }
         }
         
         return View::make('dashboard.users.profiles.index')
-                   ->with('profiles', $profiles->profiles)
-                   ->withComponent($profile, 'profile');
+                   ->with('profiles', $profiles)
+                   ->withComponent($profile, 'profile')
+                   ->withComponent($permissionsView, 'permissions');
     }
     
     public function form($id) {
@@ -62,6 +70,29 @@ class ProfilesController extends Controller {
         if (ProfilesRestFacade::remove($id)) {
             MessagesFacade::addSuccess('Perfil borrado correctamente.');
         }
+    }
+    
+    private function getPermissionsView(?array $profilePermissions): array {
+        $allPermissions = PermissionsRestFacade::getAll()->permissions;
+        
+        if (!is_array($allPermissions)) {
+            $allPermissions = [];
+        }
+        
+        if (!is_array($profilePermissions)) {
+            $profilePermissions = [];
+        }
+        
+        return array_map(function(PermissionResponse $response) use ($profilePermissions) {
+            $permissionId = array_map(function(PermissionResponse $profilePermission) {
+                return $profilePermission->id;
+            }, $profilePermissions);
+            
+            $permissionView          = PermissionView::parseOf($response->toArray());
+            $permissionView->checked = array_search($response->id, $permissionId) !== FALSE;
+            
+            return $permissionView;
+        }, $allPermissions);
     }
     
 }
