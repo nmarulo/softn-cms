@@ -1,5 +1,6 @@
 $(function () {
     callAjax();
+    iCheckInputs();
 });
 
 function makeRequest(method, route, dataToSend, callback, parseJSON) {
@@ -129,4 +130,12 @@ function callAjax() {
             viewUpdate(data, elementUpdate);
         });
     });
+}
+
+function iCheckInputs() {
+    //iCheck for checkbox and radio inputs
+    $('input[type="checkbox"], input[type="radio"]').iCheck({
+        checkboxClass: 'icheckbox_minimal-blue',
+        radioClass: 'iradio_minimal-blue'
+    })
 }
