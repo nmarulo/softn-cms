@@ -6,7 +6,6 @@
 namespace App\Rest\Responses\Users;
 
 use App\Rest\Common\BaseRest;
-use App\Rest\Dto\PermissionDTO;
 
 /**
  * @property array $permissions
@@ -18,13 +17,13 @@ class PermissionsResponse {
     use BaseRest;
     
     /**
-     * @var PermissionDTO[]
+     * @var PermissionResponse[]
      */
     private $permissions;
     
     public static function getParseOfClasses(): array {
         return [
-                'PermissionDTO' => PermissionDTO::class,
+                'PermissionResponse' => PermissionResponse::class,
         ];
     }
     

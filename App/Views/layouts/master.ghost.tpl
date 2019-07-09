@@ -66,14 +66,5 @@
         <script src="{{ asset('js/modal-dialog.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/messages.js') }}" type="text/javascript"></script>
         #block(scripts)
-        <script>
-            $(function () {
-                //iCheck for checkbox and radio inputs
-                $('input[type="checkbox"], input[type="radio"]').iCheck({
-                    checkboxClass: 'icheckbox_minimal-blue',
-                    radioClass: 'iradio_minimal-blue'
-                })
-            });
-        </script>
     </body>
 </html>

@@ -6,6 +6,7 @@
 namespace App\Models;
 
 use Silver\Database\Model;
+use Silver\Database\Query;
 
 /**
  * @property int    $id
@@ -27,4 +28,15 @@ class ProfileModel extends Model {
             'id',
             'profile_name',
     ];
+    
+    public function getPermissions(): array {
+        return Query::select()
+                    ->from(PermissionModel::class)
+                    ->rightJoin(ProfilesPermissionsModel::class, [
+                            'permission_id',
+                            'id',
+                    ])
+                    ->where('profile_id', $this->id)
+                    ->fetchAll(PermissionModel::class);
+    }
 }

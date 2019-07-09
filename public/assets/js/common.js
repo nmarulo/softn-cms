@@ -1,5 +1,6 @@
 $(function () {
     callAjax();
+    iCheckInputs();
 });
 
 function makeRequest(method, route, dataToSend, callback, parseJSON) {
@@ -124,9 +125,22 @@ function callAjax() {
         var callAjaxUrl = element.data('call-ajax');
         var method = element.data('call-method');
         var elementUpdate = getDataIdUpdateElement(element);
+        var execute = element.data('execute');
         
         makeRequest(method, callAjaxUrl, '', function (data) {
             viewUpdate(data, elementUpdate);
+    
+            if (execute !== undefined && execute != null) {
+                eval(execute)()
+            }
         });
     });
+}
+
+function iCheckInputs() {
+    //iCheck for checkbox and radio inputs
+    $('input[type="checkbox"], input[type="radio"]').iCheck({
+        checkboxClass: 'icheckbox_minimal-blue',
+        radioClass: 'iradio_minimal-blue'
+    })
 }
