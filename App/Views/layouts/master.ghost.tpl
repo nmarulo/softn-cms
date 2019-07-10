@@ -8,11 +8,12 @@
         <link href="{{ asset('css/normalize.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('css/adminlte/AdminLTE.min.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('css/adminlte/skin-blue.min.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ asset('css/bootstrap-datepicker.min.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ asset('css/daterangepicker.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ asset('css/icheck/blue.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('css/adminlte/AdminLTE.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('css/adminlte/skin-blue.min.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css"/>
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -60,6 +61,7 @@
         <script src="{{ asset('js/bootstrap.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/icheck.min.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('js/select2/select2.full.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/adminlte.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/common.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/data-list.js') }}" type="text/javascript"></script>
