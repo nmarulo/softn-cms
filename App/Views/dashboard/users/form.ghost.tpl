@@ -64,6 +64,19 @@
                     </div>
                 </div>
                 #endif
+                <div class="form-group">
+                    <label for="select-user-profiles" class="control-label col-sm-4">
+                        Perfil
+                    </label>
+                    <div class="col-sm-8">
+                        <select id="select-user-profiles" class="form-control select2" name="profileId">
+                            #foreach($profilesView as $profile)
+                            <option {{$profile->selected ? 'selected' : ''}}
+                                    value="{{$profile->id}}">{{$profile->profileName}}</option>
+                            #endforeach
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="col-sm-6">
                 <div class="row">
