@@ -5,6 +5,7 @@ namespace App\Controllers\Api\Dashboard\Users;
 use App\Facades\SearchFacade;
 use App\Facades\UtilsFacade;
 use App\Models\Users;
+use App\Rest\Dto\ProfileDTO;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Requests\Users\UserRequest;
 use App\Rest\Requests\Users\UsersRequest;
@@ -25,14 +26,15 @@ class UsersApiController extends Controller {
      * @throws \Exception
      */
     public function get($id) {
-        $userResponse = new UsersResponse();
-        
         if ($id) {
-            $dto = UsersDTO::convertOfModel($this->getUserById($id));
+            $model    = $this->getUserById($id);
+            $response = $this->getResponse($model);
+            $this->setProfileResponse($response, $model);
             
-            return UserResponse::parseOf($dto->toArray())
-                               ->toArray();
+            return $response->toArray();
         }
+        
+        $usersResponse = new UsersResponse();
         
         //TODO: Hasta que no encuentre una forma de capturar la instancia del controlador desde el middleware tendré que seguir usando la clase "Request".
         $request   = UsersRequest::parseOf(Request::all());
@@ -40,11 +42,19 @@ class UsersApiController extends Controller {
                                  ->search($request->users, $request->strict)
                                  ->dataTable($request->dataTable)
                                  ->sort();
+        $users     = $userModel->all();
         
-        $userResponse->users      = UsersDTO::convertOfModel($userModel->all());
-        $userResponse->pagination = $userModel->getPagination();
+        $users = array_map(function(Users $model) {
+            $userResponse = $this->getResponse($model);
+            $this->setProfileResponse($userResponse, $model);
+            
+            return $userResponse;
+        }, $users);
         
-        return $userResponse->toArray();
+        $usersResponse->users      = $users;
+        $usersResponse->pagination = $userModel->getPagination();
+        
+        return $usersResponse->toArray();
     }
     
     /**
@@ -99,12 +109,12 @@ class UsersApiController extends Controller {
             $request->id = $id;
         }
         
-        $model = UsersDTO::convertToModel($request, FALSE);
-        $model = $this->getUserById($model->save()->id);
-        $dto   = UsersDTO::convertOfModel($model);
+        $model    = UsersDTO::convertToModel($request, FALSE);
+        $model    = $this->getUserById($model->save()->id);
+        $response = $this->getResponse($model);
+        $this->setProfileResponse($response, $model);
         
-        return UserResponse::parseOf($dto->toArray())
-                           ->toArray();
+        return $response->toArray();
     }
     
     /**
@@ -136,5 +146,28 @@ class UsersApiController extends Controller {
         }
         
         throw new \RuntimeException("La contraseña actual es incorrecta.");
+    }
+    
+    /**
+     * @param UserResponse $response
+     * @param Users        $users
+     *
+     * @throws \Exception
+     */
+    private function setProfileResponse(UserResponse &$response, Users $users): void {
+        $profileDTO        = ProfileDTO::convertOfModel($users->getProfile());
+        $response->profile = $profileDTO;
+    }
+    
+    /**
+     * @param Users $users
+     *
+     * @return UserResponse
+     * @throws \Exception
+     */
+    private function getResponse(Users $users): UserResponse {
+        $dto = UsersDTO::convertOfModel($users);
+        
+        return UserResponse::parseOf($dto->toArray());
     }
 }

@@ -1,6 +1,7 @@
 $(function () {
     callAjax();
     iCheckInputs();
+    $('.select2').select2();
 });
 
 function makeRequest(method, route, dataToSend, callback, parseJSON) {

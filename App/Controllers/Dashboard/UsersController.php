@@ -4,10 +4,14 @@ namespace App\Controllers\Dashboard;
 
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\MessagesFacade;
+use App\Facades\Rest\Users\ProfilesRestFacade;
 use App\Facades\Rest\UsersRestFacade;
 use App\Facades\UtilsFacade;
+use App\Helpers\Views\ProfileView;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Requests\Users\UserRequest;
+use App\Rest\Responses\Users\ProfileResponse;
+use App\Rest\Responses\Users\UserResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 use Silver\Http\Redirect;
@@ -39,23 +43,26 @@ class UsersController extends Controller {
     }
     
     public function form($id) {
-        $userDTO = new UsersDTO();
+        $userResponse = new UserResponse();
         
         if (RequestApiFacade::isPostRequest()) {
             $request = UserRequest::parseOf(Request::all());
             $this->create($id, $request);
-            $this->update($id, $request, $userDTO);
+            $this->update($id, $request, $userResponse);
         } elseif ($id) {
-            $userDTO = UsersRestFacade::getById($id);
+            $userResponse = UsersRestFacade::getById($id);
             
             if (UsersRestFacade::isError()) {
                 $this->redirectForm();
             }
         }
         
+        $profilesView = $this->getProfileView($userResponse->profile);
+        
         return View::make('dashboard.users.form')
-                   ->with('user', $userDTO)
-                   ->withComponent($userDTO, 'user');
+                   ->with('user', $userResponse)
+                   ->with('profilesView', $profilesView)
+                   ->withComponent($userResponse, 'user');
     }
     
     public function delete($id) {
@@ -102,6 +109,22 @@ class UsersController extends Controller {
     
     private function redirectForm($id = '') {
         Redirect::to(sprintf('%1$s/%2$s/form/%3$s', URL, $this->urlUsers, $id));
+    }
+    
+    private function getProfileView(?ProfileResponse $profileResponse): array {
+        $profiles  = ProfilesRestFacade::getAll()->profiles;
+        $profileId = $profileResponse ? $profileResponse->id : NULL;
+        
+        if (!is_array($profiles)) {
+            $profiles = [];
+        }
+        
+        return array_map(function(ProfileResponse $response) use ($profileId) {
+            $profileView           = ProfileView::parseOf($response->toArray());
+            $profileView->selected = $profileView->id == $profileId;
+            
+            return $profileView;
+        }, $profiles);
     }
     
 }

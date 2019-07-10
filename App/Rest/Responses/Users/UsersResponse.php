@@ -10,7 +10,7 @@ use App\Rest\Dto\UsersDTO;
 use App\Rest\Responses\PaginationResponse;
 
 /**
- * @property UsersDTO[]         $users
+ * @property array              $users
  * @property PaginationResponse $pagination
  * Class UserResponse
  * @author Nicolás Marulanda P.
@@ -20,7 +20,7 @@ class UsersResponse {
     use BaseRest;
     
     /**
-     * @var UsersDTO[]
+     * @var UserResponse[]
      */
     private $users;
     
@@ -31,7 +31,7 @@ class UsersResponse {
     
     public static function getParseOfClasses(): array {
         return [
-                'UsersDTO'           => UsersDTO::class,
+                'UserResponse'       => UserResponse::class,
                 'PaginationResponse' => PaginationResponse::class,
         ];
     }
