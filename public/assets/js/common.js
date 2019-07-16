@@ -1,7 +1,9 @@
 $(function () {
     callAjax();
     iCheckInputs();
-    $('.select2').select2();
+    $('.select2').select2({
+        width: '100%'
+    });
 });
 
 function makeRequest(method, route, dataToSend, callback, parseJSON) {
@@ -130,7 +132,7 @@ function callAjax() {
         
         makeRequest(method, callAjaxUrl, '', function (data) {
             viewUpdate(data, elementUpdate);
-    
+            
             if (execute !== undefined && execute != null) {
                 eval(execute)()
             }

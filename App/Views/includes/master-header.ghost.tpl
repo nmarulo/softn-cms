@@ -15,7 +15,7 @@
             <ul class="nav navbar-nav">
                 <li class="dropdown user user-menu">
                     <a id="link-navbar-user-menu" href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="{{ asset('images/default-50x50.gif') }}" class="user-image" alt="User Image">
+                        <img src="{{ \App\Facades\SessionFacade::getUser()->userUrlImage }}" class="user-image" alt="User Image">
                         <span class="hidden-xs">
                             {{\App\Facades\SessionFacade::getUser()->userLogin}}
                             <i class="fa fa-caret-down"></i>
@@ -23,7 +23,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li class="user-header">
-                            <img src="{{ asset('images/default-50x50.gif') }}" class="img-circle" alt="User Image">
+                            <img src="{{ \App\Facades\SessionFacade::getUser()->userUrlImage }}" class="img-circle" alt="User Image">
                             <p>
                                 {{\App\Facades\SessionFacade::getUser()->userName}}
                                 <small>{{\App\Facades\SessionFacade::getUser()->userRegistered}}</small>
