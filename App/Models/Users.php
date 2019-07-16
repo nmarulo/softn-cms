@@ -22,6 +22,7 @@ use Silver\Database\Query;
  * @property string $user_registered
  * @property string $user_password
  * @property int    $profile_id
+ * @property string $user_url_image
  */
 class Users extends Model {
     

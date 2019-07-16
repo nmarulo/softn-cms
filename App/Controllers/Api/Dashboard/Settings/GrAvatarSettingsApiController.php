@@ -5,7 +5,9 @@
 
 namespace App\Controllers\Api\Dashboard\Settings;
 
+use App\Helpers\GravatarHelper;
 use App\Models\SettingsModel;
+use App\Models\Users;
 use App\Rest\Dto\SettingDTO;
 use App\Rest\Requests\Settings\GrAvatarSettingsFormRequest;
 use App\Rest\Responses\Settings\GrAvatarSettingsFormResponse;
@@ -23,6 +25,38 @@ class GrAvatarSettingsApiController extends Controller {
      * @throws \Exception
      */
     public function getForm() {
+        return $this->get()
+                    ->toArray();
+    }
+    
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function putForm() {
+        $request                            = GrAvatarSettingsFormRequest::parseOf(Request::all());
+        $properties                         = $request->getProperties();
+        $properties['gravatarForceDefault'] = isset($properties['gravatarForceDefault']) ? $properties['gravatarForceDefault'] : FALSE;
+        
+        foreach ($properties as $key => $value) {
+            $model                = new SettingsModel();
+            $model->setting_name  = $key;
+            $model->setting_value = $value;
+            $model->saveByName();
+        }
+        
+        $grAvatarSettingsFormResponse = $this->get();
+        
+        $this->updateUserUrlImage($grAvatarSettingsFormResponse);
+        
+        return $grAvatarSettingsFormResponse->toArray();
+    }
+    
+    /**
+     * @return GrAvatarSettingsFormResponse
+     * @throws \Exception
+     */
+    private function get() {
         $grAvatarSettingsForm = [
                 'gravatarSize',
                 'gravatarImage',
@@ -38,25 +72,18 @@ class GrAvatarSettingsApiController extends Controller {
             $response->{$value->setting_name} = SettingDTO::convertOfModel($value);
         }
         
-        return $response->toArray();
+        return $response;
     }
     
-    /**
-     * @return array
-     * @throws \Exception
-     */
-    public function putForm() {
-        $request    = GrAvatarSettingsFormRequest::parseOf(Request::all());
-        $properties = $request->getProperties();
-        $properties['gravatarForceDefault'] = isset($properties['gravatarForceDefault']) ? $properties['gravatarForceDefault'] : false;
+    private function updateUserUrlImage(GrAvatarSettingsFormResponse $response) {
+        $users    = Users::all();
+        $gravatar = new GravatarHelper($response);
         
-        foreach ($properties as $key => $value) {
-            $model                = new SettingsModel();
-            $model->setting_name  = $key;
-            $model->setting_value = $value;
-            $model->saveByName();
-        }
-        
-        return $this->getForm();
+        array_walk($users, function(Users $user) use ($gravatar) {
+            $gravatar->setEmail($user->user_email);
+            
+            $user->user_url_image = $gravatar->get();
+            $user->save();
+        });
     }
 }
