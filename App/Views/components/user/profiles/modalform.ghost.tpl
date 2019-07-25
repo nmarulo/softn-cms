@@ -40,7 +40,7 @@
                     </div>
                     #endif
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer row">
                     <div class="col-xs-6">
                         <button type="button" class="btn btn-default btn-block" data-dismiss="modal">
                             Cancelar
