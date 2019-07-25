@@ -4,9 +4,11 @@ namespace App\Controllers\Dashboard;
 
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\MessagesFacade;
+use App\Facades\Rest\Settings\GrAvatarSettingsFormRestFacade;
 use App\Facades\Rest\Users\ProfilesRestFacade;
 use App\Facades\Rest\UsersRestFacade;
 use App\Facades\UtilsFacade;
+use App\Helpers\GravatarHelper;
 use App\Helpers\Views\ProfileView;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Requests\Users\UserRequest;
@@ -47,14 +49,21 @@ class UsersController extends Controller {
         
         if (RequestApiFacade::isPostRequest()) {
             $request = UserRequest::parseOf(Request::all());
-            $this->create($id, $request);
+            $gravatar = $this->getGrAvatar($request->userEmail);
+            $request->userUrlImage = $gravatar->get();
+            $this->create($id, $request, $userResponse);
             $this->update($id, $request, $userResponse);
+            $this->redirectForm($userResponse->id);
         } elseif ($id) {
             $userResponse = UsersRestFacade::getById($id);
             
             if (UsersRestFacade::isError()) {
                 $this->redirectForm();
             }
+            
+            $gravatar = $this->getGrAvatar($userResponse->userEmail);
+            $gravatar->setSize(GravatarHelper::DEFAULT_SIZE_128);
+            $userResponse->userUrlImage = $gravatar->get();
         }
         
         $profilesView = $this->getProfileView($userResponse->profile);
@@ -82,16 +91,15 @@ class UsersController extends Controller {
         $this->redirectForm($id);
     }
     
-    private function create($id, UserRequest $request) {
+    private function create($id, UserRequest $request, UsersDTO &$usersDTO) {
         if ($id) {
             return;
         }
-        
-        $userResponse = UsersRestFacade::create($request);
+    
+        $usersDTO = UsersRestFacade::create($request);
         
         if (!UsersRestFacade::isError()) {
             MessagesFacade::addSuccess('Usuario creado correctamente.');
-            $this->redirectForm($userResponse->id);
         }
     }
     
@@ -125,6 +133,12 @@ class UsersController extends Controller {
             
             return $profileView;
         }, $profiles);
+    }
+    
+    private function getGrAvatar(string $email = ''): GravatarHelper {
+        $gravatarResponse = GrAvatarSettingsFormRestFacade::getForm();
+        
+        return new GravatarHelper($gravatarResponse, $email);
     }
     
 }

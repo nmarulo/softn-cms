@@ -29,7 +29,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <li class="active">
-                        <a id="link-dashboard-setting-gravatar" href="{{ url('/dashboard/setting/gravatar') }}">
+                        <a id="link-dashboard-setting-gravatar" href="{{ url('/dashboard/settings/gravatar') }}">
                             <i class="fa fa-cog"></i>
                             <span>GrAvatar</span>
                         </a>

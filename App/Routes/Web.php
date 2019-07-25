@@ -37,6 +37,10 @@ Route::group(['prefix' => 'dashboard'], function() {
         });
     });
     Route::group(['prefix' => 'settings'], function() {
+        Route::group(['prefix' => 'gravatar'], function(){
+            Route::get('/', 'Dashboard/Settings/GrAvatarSettings@index', 'settings', 'dashboard');
+            Route::post('/', 'Dashboard/Settings/GrAvatarSettings@form', 'settings', 'dashboard');
+        });
         Route::get('/', 'Dashboard/Settings@index', 'settings', 'dashboard');
         Route::post('/', 'Dashboard/Settings@form', 'settings', 'dashboard');
     });

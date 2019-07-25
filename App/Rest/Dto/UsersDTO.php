@@ -16,6 +16,7 @@ use App\Rest\Common\BaseDTO;
  * @property \DateTime $userRegistered
  * @property string    $userPassword
  * @property int       $profileId
+ * @property string    $userUrlImage
  * Class UsersDTO
  * @author Nicolás Marulanda P.
  */
@@ -54,6 +55,9 @@ class UsersDTO extends BaseDTO {
     /** @var int */
     private $profileId;
     
+    /** @var string */
+    private $userUrlImage;
+    
     protected static function getComparisionNameDtoToModel(): array {
         return [
                 'id'             => 'id',
@@ -63,6 +67,7 @@ class UsersDTO extends BaseDTO {
                 'userRegistered' => 'user_registered',
                 'userPassword'   => 'user_password',
                 'profileId'      => 'profile_id',
+                'userUrlImage'   => 'user_url_image',
         ];
     }
     
