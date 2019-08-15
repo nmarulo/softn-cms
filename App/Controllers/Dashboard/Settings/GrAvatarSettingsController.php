@@ -23,14 +23,18 @@ class GrAvatarSettingsController extends Controller {
     private $urlGrAvatarSettings = 'dashboard/settings/gravatar';
     
     public function index() {
-        $gravatar = GrAvatarSettingsFormRestFacade::getForm();
+        $gravatar                = GrAvatarSettingsFormRestFacade::getForm();
+        $incrementGravatarImage  = 1;
+        $countGravatarImageValue = count($gravatar->gravatarImageValueList);
         
         return View::make('dashboard.settings.gravatar')
-                   ->with('gravatar', $gravatar);
+                   ->with('gravatar', $gravatar)
+                   ->with('incrementGravatarImage', $incrementGravatarImage)
+                   ->with('countGravatarImageValue', $countGravatarImageValue);
     }
     
     public function form() {
-        $request = GrAvatarSettingsFormRequest::parseOf(Request::all());
+        $request                       = GrAvatarSettingsFormRequest::parseOf(Request::all());
         $request->gravatarForceDefault = boolval($request->gravatarForceDefault);
         
         GrAvatarSettingsFormRestFacade::putForm($request);
