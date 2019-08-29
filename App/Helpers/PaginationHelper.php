@@ -5,6 +5,8 @@
 
 namespace App\Helpers;
 
+use App\Models\SettingsModel;
+use App\Rest\Requests\DataTable\DataTable;
 use App\Rest\Responses\PageResponse;
 use App\Rest\Responses\PaginationResponse;
 
@@ -14,17 +16,44 @@ use App\Rest\Responses\PaginationResponse;
  */
 class PaginationHelper extends PaginationResponse {
     
-    public function getInit(int $totalData, ?int $currentPageValue = NULL, int $maxNumberPagesShow = 3): PaginationHelper {
-        $this->currentPageValue   = is_null($currentPageValue) ? 1 : $currentPageValue;
+    public function getInit(int $totalData, ?DataTable $dataTable = NULL): PaginationHelper {
+        $settingNumRowsShowList = SettingsModel::where('setting_name', 'paginationNumberRowsShowList')
+                                               ->first();
+        $settingNumRowsDefault  = SettingsModel::where('setting_name', 'paginationNumberRowsDefault')
+                                               ->first();
+        
+        $currentPage        = 1;
+        $numberRowsShow     = $totalData;
+        $maxNumberPagesShow = 3;//TODO: obtener de base de datos, configuración.
+        
+        if ($settingNumRowsDefault) {
+            $numberRowsShow = intval($settingNumRowsDefault->setting_value);
+        }
+        
+        if ($dataTable != NULL) {
+            $currentPage    = is_null($dataTable->page) ? $currentPage : $dataTable->page;
+            $numberRowsShow = is_null($dataTable->numberRowsShow) ? $numberRowsShow : $dataTable->numberRowsShow;
+        }
+        
+        $this->currentPageValue   = $currentPage;
         $this->totalData          = $totalData;
         $this->maxNumberPagesShow = $maxNumberPagesShow;
         $this->pages              = [];
         $this->totalNumberPages   = 0;
         $this->rendered           = FALSE;
         $this->beginRow           = 0;
-        //TODO: configurar en base de datos.
-        $this->setNumberRowShow(2);
+        $this->setNumberRowShow($numberRowsShow);
         $this->initPagination();
+        
+        if ($settingNumRowsShowList) {
+            $numRows = explode(',', $settingNumRowsShowList->setting_value);
+            
+            if (array_search($this->numberRowShow, $numRows) === FALSE) {
+                $numRows[] = $this->numberRowShow;
+            }
+            
+            $this->numberRowsShowValueList = $numRows;
+        }
         
         return $this;
     }
@@ -34,7 +63,7 @@ class PaginationHelper extends PaginationResponse {
      */
     private function setNumberRowShow(int $numberRowShow): void {
         if ($numberRowShow <= 0) {
-            $numberRowShow = 1;
+            $numberRowShow = $this->totalData;
         }
         
         $this->numberRowShow = $numberRowShow;

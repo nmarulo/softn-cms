@@ -3,10 +3,11 @@
 namespace App\Facades;
 
 use App\Helpers\PaginationHelper;
+use App\Rest\Requests\DataTable\DataTable;
 use Silver\Support\Facade;
 
 /**
- * @method static PaginationHelper getInit(int $totalData, ?int $currentPageValue = NULL, int $maxNumberPagesShow = 3)
+ * @method static PaginationHelper getInit(int $totalData, DataTable $dataTable)
  */
 class PaginationFacade extends Facade {
     
