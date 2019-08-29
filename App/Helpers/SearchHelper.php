@@ -5,10 +5,10 @@ namespace App\Helpers;
 use App\Facades\PaginationFacade;
 use App\Facades\SearchDataTableFacade;
 use App\Facades\UtilsFacade;
+use App\Rest\Common\BaseSearch;
 use App\Rest\Common\ConvertModel;
 use App\Rest\Requests\DataTable\DataTable;
 use App\Rest\Requests\DataTable\SortColumn;
-use App\Rest\Common\BaseSearch;
 use Silver\Database\Model;
 use Silver\Database\Query;
 
@@ -137,11 +137,11 @@ class SearchHelper {
      * @return $this
      */
     public function dataTable(?DataTable $dataTable = NULL, $dataModelClosure = NULL) {
-        $this->dataTable = $dataTable;
-        
-        if ($this->dataTable == NULL) {
-            return $this;
+        if ($dataTable == NULL) {
+            $dataTable = new DataTable();
         }
+        
+        $this->dataTable = $dataTable;
         
         $this->hasPagination         = TRUE;
         $this->paginationDataClosure = $dataModelClosure;
@@ -181,25 +181,22 @@ class SearchHelper {
      * @return $this
      */
     public function sort() {
-        if ($this->dataTable == NULL) {
+        if ($this->dataTable == NULL || empty($this->dataTable->sortColumn)) {
             return $this;
         }
         
-        $sortColumn = $this->dataTable->sortColumn;
-        $query      = $this->query;
+        $query = $this->query;
         
-        if (!empty($sortColumn)) {
-            foreach ($sortColumn as $value) {
-                if (!($value instanceof SortColumn) && empty($value->name)) {
-                    continue;
-                }
-                
-                if (is_null($value->key)) {
-                    $value->key = 'asc';
-                }
-                
-                $query = $query->orderBy($value->name, $value->key);
+        foreach ($this->dataTable->sortColumn as $value) {
+            if (!($value instanceof SortColumn) && empty($value->name)) {
+                continue;
             }
+            
+            if (is_null($value->key)) {
+                $value->key = 'asc';
+            }
+            
+            $query = $query->orderBy($value->name, $value->key);
         }
         
         $this->setQuery($query);
@@ -215,12 +212,6 @@ class SearchHelper {
     }
     
     private function instancePagination() {
-        $currentPage = 1;
-        
-        if ($this->dataTable != NULL) {
-            $currentPage = $this->dataTable->page;
-        }
-        
         $totalData = $this->count;
         
         if ($totalData == -1) {
@@ -229,7 +220,7 @@ class SearchHelper {
                               ->single();
         }
         
-        $this->pagination = PaginationFacade::getInit($totalData, $currentPage);
+        $this->pagination = PaginationFacade::getInit($totalData, $this->dataTable);
         $this->paginationDataClosure($this->paginationDataClosure);
     }
     
