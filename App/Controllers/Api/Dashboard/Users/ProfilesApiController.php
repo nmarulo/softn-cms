@@ -41,15 +41,17 @@ class ProfilesApiController extends Controller {
             return $response->toArray();
         }
         
-        $response = new ProfilesResponse();
-        $request  = ProfilesRequest::parseOf(Request::all());
-        $models   = SearchFacade::init(ProfileModel::class)
-                                ->search($request->profiles)
-                                ->all();
+        $response      = new ProfilesResponse();
+        $request       = ProfilesRequest::parseOf(Request::all());
+        $models        = SearchFacade::init(ProfileModel::class)
+                                     ->search($request->profiles)
+                                     ->dataTable($request->dataTable)
+                                     ->sort();
+        $profileModels = $models->all();
         
         $profiles = [];
         
-        array_walk($models, function(ProfileModel $model) use (&$profiles) {
+        array_walk($profileModels, function(ProfileModel $model) use (&$profiles) {
             $profile                      = ProfileDTO::convertOfModel($model);
             $profileResponse              = ProfileResponse::parseOf($profile->toArray());
             $profileResponse->permissions = PermissionDTO::convertOfModel($model->getPermissions());
@@ -57,7 +59,8 @@ class ProfilesApiController extends Controller {
             $profiles[] = $profileResponse;
         });
         
-        $response->profiles = $profiles;
+        $response->profiles   = $profiles;
+        $response->pagination = $models->getPagination();
         
         return $response->toArray();
     }

@@ -9,6 +9,7 @@ use App\Facades\SearchFacade;
 use App\Models\PermissionModel;
 use App\Rest\Dto\PermissionDTO;
 use App\Rest\Requests\Users\PermissionRequest;
+use App\Rest\Requests\Users\PermissionsRequest;
 use App\Rest\Responses\Users\PermissionResponse;
 use App\Rest\Responses\Users\PermissionsResponse;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -35,13 +36,16 @@ class PermissionsApiController extends Controller {
                                      ->toArray();
         }
         
-        $response = new PermissionsResponse();
-        $request  = PermissionsResponse::parseOf(Request::all());
-        $models   = SearchFacade::init(PermissionModel::class)
-                                ->search($request->permissions)
-                                ->all();
+        $response         = new PermissionsResponse();
+        $request          = PermissionsRequest::parseOf(Request::all());
+        $models           = SearchFacade::init(PermissionModel::class)
+                                        ->search($request->permissions)
+                                        ->dataTable($request->dataTable)
+                                        ->sort();
+        $permissionModels = $models->all();
         
-        $response->permissions = PermissionDTO::convertOfModel($models);
+        $response->permissions = PermissionDTO::convertOfModel($permissionModels);
+        $response->pagination = $models->getPagination();
         
         return $response->toArray();
     }
