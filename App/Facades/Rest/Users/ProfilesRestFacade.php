@@ -7,12 +7,13 @@ namespace App\Facades\Rest\Users;
 
 use App\Rest\Calls\Users\ProfilesRest;
 use App\Rest\Requests\Users\ProfileRequest;
+use App\Rest\Requests\Users\ProfilesRequest;
 use App\Rest\Responses\Users\ProfileResponse;
 use App\Rest\Responses\Users\ProfilesResponse;
 use Silver\Support\Facade;
 
 /**
- * @method static ProfilesResponse getAll(ProfileRequest $request = NULL)
+ * @method static ProfilesResponse getAll(ProfilesRequest $request = NULL)
  * @method static ProfileResponse getById(int $id)
  * @method static ProfileResponse create(ProfileRequest $request)
  * @method static ProfileResponse update(int $id, ProfileRequest $request)

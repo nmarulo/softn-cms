@@ -8,7 +8,9 @@ namespace App\Controllers\Dashboard\Users;
 use App\Facades\Api\RequestApiFacade;
 use App\Facades\MessagesFacade;
 use App\Facades\Rest\PermissionsRestFacade;
+use App\Facades\UtilsFacade;
 use App\Rest\Requests\Users\PermissionRequest;
+use App\Rest\Requests\Users\PermissionsRequest;
 use App\Rest\Responses\Users\PermissionResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
@@ -26,11 +28,16 @@ class PermissionsController extends Controller {
     public function index($id = NULL) {
         $permission  = new PermissionResponse();
         $permissions = [];
+        $pagination  = NULL;
         
         if (RequestApiFacade::isPostRequest()) {
             $permission = PermissionsRestFacade::getById($id);
         } else {
-            $permissions = PermissionsRestFacade::getAll()->permissions;
+            $request            = new PermissionsRequest();
+            $request->dataTable = UtilsFacade::getDataTable();
+            $response           = PermissionsRestFacade::getAll($request);
+            $permissions        = $response->permissions;
+            $pagination         = $response->pagination;
             
             if (!is_array($permissions)) {
                 $permissions = [];
@@ -39,7 +46,8 @@ class PermissionsController extends Controller {
         
         return View::make('dashboard.users.permissions.index')
                    ->with('permissions', $permissions)
-                   ->withComponent($permission, 'permission');
+                   ->withComponent($permission, 'permission')
+                   ->withComponent($pagination, 'pagination');
     }
     
     public function form($id) {

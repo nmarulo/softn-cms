@@ -7,12 +7,13 @@ namespace App\Facades\Rest;
 
 use App\Rest\Calls\PermissionsRest;
 use App\Rest\Requests\Users\PermissionRequest;
+use App\Rest\Requests\Users\PermissionsRequest;
 use App\Rest\Responses\Users\PermissionResponse;
 use App\Rest\Responses\Users\PermissionsResponse;
 use Silver\Support\Facade;
 
 /**
- * @method static PermissionsResponse getAll(PermissionRequest $request = NULL)
+ * @method static PermissionsResponse getAll(PermissionsRequest $request = NULL)
  * @method static PermissionResponse getById(int $id)
  * @method static PermissionResponse create(PermissionRequest $request)
  * @method static PermissionResponse update(int $id, PermissionRequest $request)

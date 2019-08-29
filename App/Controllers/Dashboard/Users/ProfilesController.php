@@ -9,8 +9,10 @@ use App\Facades\Api\RequestApiFacade;
 use App\Facades\MessagesFacade;
 use App\Facades\Rest\PermissionsRestFacade;
 use App\Facades\Rest\Users\ProfilesRestFacade;
+use App\Facades\UtilsFacade;
 use App\Helpers\Views\PermissionView;
 use App\Rest\Requests\Users\ProfileRequest;
+use App\Rest\Requests\Users\ProfilesRequest;
 use App\Rest\Responses\Users\PermissionResponse;
 use App\Rest\Responses\Users\ProfileResponse;
 use Silver\Core\Bootstrap\Facades\Request;
@@ -30,12 +32,17 @@ class ProfilesController extends Controller {
         $profile         = new ProfileResponse();
         $permissionsView = [];
         $profiles        = [];
+        $pagination      = NULL;
         
         if (RequestApiFacade::isPostRequest()) {
             $profile         = ProfilesRestFacade::getById($id);
             $permissionsView = $this->getPermissionsView($profile->permissions);
         } else {
-            $profiles = ProfilesRestFacade::getAll()->profiles;
+            $request            = new ProfilesRequest();
+            $request->dataTable = UtilsFacade::getDataTable();
+            $response           = ProfilesRestFacade::getAll($request);
+            $pagination         = $response->pagination;
+            $profiles           = $response->profiles;
             
             if (!is_array($profiles)) {
                 $profiles = [];
@@ -45,7 +52,8 @@ class ProfilesController extends Controller {
         return View::make('dashboard.users.profiles.index')
                    ->with('profiles', $profiles)
                    ->withComponent($profile, 'profile')
-                   ->withComponent($permissionsView, 'permissions');
+                   ->withComponent($permissionsView, 'permissions')
+                   ->withComponent($pagination, 'pagination');
     }
     
     public function form($id) {
