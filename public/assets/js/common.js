@@ -1,9 +1,7 @@
 $(function () {
     callAjax();
     iCheckInputs();
-    $('.select2').select2({
-        width: '100%'
-    });
+    select2Inputs();
 });
 
 function makeRequest(method, route, dataToSend, callback, parseJSON) {
@@ -146,4 +144,13 @@ function iCheckInputs() {
         checkboxClass: 'icheckbox_minimal-blue',
         radioClass: 'iradio_minimal-blue'
     })
+}
+
+function select2Inputs(){
+    $('.select2').select2({
+        width: '100%'
+    });
+    $('.select2-dynamic').select2({
+        tags: true
+    });
 }

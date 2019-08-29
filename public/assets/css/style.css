@@ -22,6 +22,10 @@
     }
 }
 
+.table td.td-btn-actions {
+    width: 80px;
+}
+
 .table td.td-btn-actions > div {
     visibility: hidden;
 }
@@ -60,6 +64,14 @@ body {
         margin-top: 10px;
         float: none !important;
     }
+}
+
+.container-pagination .select-pagination {
+    width: 70px;
+}
+
+.container-pagination .select-pagination.pull-right {
+    margin-left: 20px;
 }
 
 /* DATA-TABLE =============================== */

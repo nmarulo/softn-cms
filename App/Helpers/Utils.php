@@ -158,7 +158,8 @@ class Utils {
             $dataTable->filter = $filter;
         }
         
-        $dataTable->page = Request::input('page', 1);
+        $dataTable->page           = Request::input('page');
+        $dataTable->numberRowsShow = Request::input('numberRowsShow');
         
         return $dataTable;
     }

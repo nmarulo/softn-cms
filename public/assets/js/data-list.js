@@ -66,6 +66,10 @@ function initTableDataPagination() {
         
         tableDataRequest(elementA);
     });
+    
+    $(document).on('change', '.container-pagination .select-pagination select', function () {
+        tableDataRequest($(this));
+    });
 }
 
 function initTableDataSortColumn() {
@@ -106,12 +110,21 @@ function initTableDataSortColumn() {
     });
 }
 
-function createDataToSendPagination(page, currentDataToSend) {
+function createDataToSendPagination(elementTrigger, currentDataToSend) {
+    var page = getActivePageNumber(elementTrigger);
+    currentDataToSend = createRepresentationDataToSendRequest('numberRowsShow', getNumberRowShow(elementTrigger), currentDataToSend);
+    
     if (page === undefined || page.length === 0) {
         return checkArray(currentDataToSend);
     }
     
     return createRepresentationDataToSendRequest('page', page, currentDataToSend);
+}
+
+function getNumberRowShow(elementTrigger) {
+    var containerPagination = getContainerPagination(elementTrigger);
+    
+    return containerPagination.find('.select-pagination').find('select').val();
 }
 
 function createDataToSendSortColumn(containerTableData, currentDataToSend) {
@@ -141,12 +154,18 @@ function createDataToSendSearch(elementForm, currentDataToSend) {
     return dataToSend.concat(element.serializeArray());
 }
 
-function getActivePageNumber(elementTrigger) {
+function getContainerPagination(elementTrigger) {
     var containerPagination = elementTrigger.closest('.container-pagination');
     
     if (containerPagination.length === 0) {
         containerPagination = getContainerTableData(elementTrigger).find('.container-pagination:eq(0)');
     }
+    
+    return containerPagination;
+}
+
+function getActivePageNumber(elementTrigger) {
+    var containerPagination = getContainerPagination(elementTrigger);
     
     return containerPagination.find('.pagination li.active > a').text();
 }
@@ -174,7 +193,7 @@ function dataListSpanGlyphicon(spanGlyphicon, sort) {
 
 function tableDataRequest(elementTrigger) {
     var containerTableData = getContainerTableData(elementTrigger);
-    var dataToSend = createDataToSendPagination(getActivePageNumber(elementTrigger));
+    var dataToSend = createDataToSendPagination(elementTrigger);
     //Obtener todas las columnas y su correspondiente orden
     dataToSend = createDataToSendSortColumn(containerTableData, dataToSend);
     dataToSend = createDataToSendSearch(elementTrigger, dataToSend);
@@ -183,6 +202,7 @@ function tableDataRequest(elementTrigger) {
     makeGetRequest(dataToSend, function (dataHTML) {
         viewUpdate(dataHTML, getDataIdUpdateElement(containerTableData));
         updateTableBodyHideColumns();
+        select2Inputs();
     });
 }
 

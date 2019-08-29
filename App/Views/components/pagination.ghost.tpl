@@ -1,6 +1,15 @@
 <div class="container-pagination clearfix">
-    #if(isset($component_pagination) && $component_pagination->rendered)
-    <nav>
+    #if(isset($component_pagination))
+    <nav class="clearfix">
+        <div class="select-pagination pull-right">
+            <select class="form-control select2-dynamic">
+                #foreach($component_pagination->numberRowsShowValueList as $value)
+                <option {{$value == $component_pagination->numberRowShow ? 'selected' : ''}}
+                        value="{{$value}}">{{$value}}</option>
+                #endforeach
+            </select>
+        </div>
+        #if($component_pagination->rendered)
         <ul class="pagination pull-right">
             <li class="{{$component_pagination->leftArrow->styleClass}}">
                 <a href="#" {{$component_pagination->leftArrow->attrData}}>
@@ -18,6 +27,7 @@
                 </a>
             </li>
         </ul>
+        #endif
     </nav>
     #endif
 </div>
