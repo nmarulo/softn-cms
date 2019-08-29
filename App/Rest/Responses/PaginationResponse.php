@@ -18,6 +18,7 @@ use App\Rest\Common\BaseRest;
  * @property int            $totalNumberPages
  * @property bool           $rendered
  * @property int            $beginRow
+ * @property array          $numberRowsShowValueList
  * Class PaginationResponse
  * @author Nicolás Marulanda P.
  */
@@ -54,6 +55,9 @@ class PaginationResponse {
     
     /** @var int */
     private $beginRow;
+    
+    /** @var array */
+    private $numberRowsShowValueList;
     
     public static function getParseOfClasses(): array {
         return [
