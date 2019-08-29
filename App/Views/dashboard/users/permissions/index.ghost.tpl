@@ -16,7 +16,7 @@
 
 #set[content]
 <div id="container-permissions-table" class="box container-table-data" data-update="#container-permissions-table:.container-pagination,tbody #messages">
-    <div class="box-header">
+    <div class="box-header row">
         <div class="col-sm-6">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-manager-permission" data-call-ajax="/dashboard/users/permissions" data-call-method="GET" data-update="#modal-manager-permission #messages">
                 <span class="fa fa-plus-circle"></span>

@@ -13,7 +13,7 @@
 
 #set[content]
 <div id="container-user-table" class="box container-table-data" data-update="#container-user-table:.container-pagination,tbody #messages">
-    <div class="box-header">
+    <div class="box-header row">
         <div class="col-sm-6">
             <a href="{{ url('/dashboard/users/form') }}" class="btn btn-primary">
                 <span class="fa fa-user-plus"></span>
