@@ -24,6 +24,23 @@ class SettingsModel extends Model {
             'setting_name',
     ];
     
+    public static function getPaginationNumberRowsShowList(): SettingsModel {
+        return self::getByName('paginationNumberRowsShowList');
+    }
+    
+    public static function getPaginationNumberRowsDefault(): SettingsModel {
+        return self::getByName('paginationNumberRowsDefault');
+    }
+    
+    public static function getPaginationMaxNumberPagesShow(): SettingsModel {
+        return self::getByName('paginationMaxNumberPagesShow');
+    }
+    
+    private static function getByName(string $name): SettingsModel {
+        return self::where('setting_name', $name)
+                   ->first();
+    }
+    
     public function getSettings() {
         return $this->select('settings')
                     ->all();
