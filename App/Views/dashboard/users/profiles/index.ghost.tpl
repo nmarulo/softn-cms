@@ -32,8 +32,8 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
+                    <th data-column="profile_name">Nombre</th>
+                    <th data-column="profile_description">Descripción</th>
                 </tr>
             </thead>
             <tbody>
