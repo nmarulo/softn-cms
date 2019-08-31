@@ -181,7 +181,7 @@ class SearchHelper {
      * @return $this
      */
     public function sort() {
-        if ($this->dataTable == NULL || empty($this->dataTable->sortColumn)) {
+        if ($this->dataTable == NULL || is_null($this->dataTable->sortColumn)) {
             return $this;
         }
         
