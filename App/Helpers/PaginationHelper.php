@@ -17,33 +17,21 @@ use App\Rest\Responses\PaginationResponse;
 class PaginationHelper extends PaginationResponse {
     
     public function getInit(int $totalData, ?DataTable $dataTable = NULL): PaginationHelper {
-        $settingNumRowsShowList = SettingsModel::where('setting_name', 'paginationNumberRowsShowList')
-                                               ->first();
-        $settingNumRowsDefault  = SettingsModel::where('setting_name', 'paginationNumberRowsDefault')
-                                               ->first();
-        
-        $currentPage        = 1;
-        $numberRowsShow     = $totalData;
-        $maxNumberPagesShow = 3;//TODO: obtener de base de datos, configuración.
-        
-        if ($settingNumRowsDefault) {
-            $numberRowsShow = intval($settingNumRowsDefault->setting_value);
-        }
-        
-        if ($dataTable != NULL) {
-            $currentPage    = is_null($dataTable->page) ? $currentPage : $dataTable->page;
-            $numberRowsShow = is_null($dataTable->numberRowsShow) ? $numberRowsShow : $dataTable->numberRowsShow;
-        }
-        
-        $this->currentPageValue   = $currentPage;
-        $this->totalData          = $totalData;
-        $this->maxNumberPagesShow = $maxNumberPagesShow;
-        $this->pages              = [];
-        $this->totalNumberPages   = 0;
-        $this->rendered           = FALSE;
-        $this->beginRow           = 0;
-        $this->setNumberRowShow($numberRowsShow);
+        $this->totalData        = $totalData;
+        $this->pages            = [];
+        $this->totalNumberPages = 0;
+        $this->rendered         = FALSE;
+        $this->beginRow         = 0;
+        $this->setMaxNumberPagesShow();
+        $this->setCurrentPageValue($dataTable);
+        $this->setNumberRowShow($totalData, $dataTable);
         $this->initPagination();
+        
+        return $this;
+    }
+    
+    private function setNumberRowsShowValueList(): void {
+        $settingNumRowsShowList = SettingsModel::getPaginationNumberRowsShowList();
         
         if ($settingNumRowsShowList) {
             $numRows = explode(',', $settingNumRowsShowList->setting_value);
@@ -54,19 +42,48 @@ class PaginationHelper extends PaginationResponse {
             
             $this->numberRowsShowValueList = $numRows;
         }
+    }
+    
+    private function setMaxNumberPagesShow(): void {
+        $maxNumberPagesShow        = 3;
+        $settingMaxNumberPagesShow = SettingsModel::getPaginationMaxNumberPagesShow();
         
-        return $this;
+        if ($settingMaxNumberPagesShow) {
+            $maxNumberPagesShow = $settingMaxNumberPagesShow->setting_value;
+        }
+        
+        $this->maxNumberPagesShow = $maxNumberPagesShow;
+    }
+    
+    private function setCurrentPageValue(?DataTable $dataTable = NULL): void {
+        $currentPage = 1;
+        
+        if ($dataTable != NULL && !is_null($dataTable->page)) {
+            $currentPage = $dataTable->page;
+        }
+        
+        $this->currentPageValue = $currentPage;
     }
     
     /**
-     * @param int $numberRowShow
+     * @param int            $totalData
+     * @param DataTable|null $dataTable
      */
-    private function setNumberRowShow(int $numberRowShow): void {
-        if ($numberRowShow <= 0) {
-            $numberRowShow = $this->totalData;
+    private function setNumberRowShow(int $totalData, ?DataTable $dataTable = NULL): void {
+        $numberRowsShow = $totalData;
+        
+        if ($dataTable == NULL || is_null($dataTable->numberRowsShow)) {
+            $settingNumRowsDefault = SettingsModel::getPaginationNumberRowsDefault();
+            
+            if ($settingNumRowsDefault) {
+                $numberRowsShow = intval($settingNumRowsDefault->setting_value);
+            }
+        } elseif ($dataTable->numberRowsShow > 0 && $dataTable->numberRowsShow < $totalData) {
+            $numberRowsShow = $dataTable->numberRowsShow;
         }
         
-        $this->numberRowShow = $numberRowShow;
+        $this->numberRowShow = $numberRowsShow;
+        $this->setNumberRowsShowValueList();
     }
     
     private function initPagination(): void {
