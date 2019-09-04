@@ -40,20 +40,22 @@
                     </div>
                     #endif
                 </div>
-                <div class="modal-footer row">
-                    <div class="col-xs-6">
-                        <button type="button" class="btn btn-default btn-block" data-dismiss="modal">
-                            Cancelar
-                        </button>
-                    </div>
-                    <div class="col-xs-6">
-                        <button id="button-profile-new-update" type="submit" class="btn btn-success btn-block">
-                            #if(is_null($component_profile->id))
-                                Crear
-                            #else
-                                Actualizar
-                            #endif
-                        </button>
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <button type="button" class="btn btn-default btn-block" data-dismiss="modal">
+                                Cancelar
+                            </button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button id="button-profile-new-update" type="submit" class="btn btn-success btn-block">
+                                #if(is_null($component_profile->id))
+                                    Crear
+                                #else
+                                    Actualizar
+                                #endif
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>
