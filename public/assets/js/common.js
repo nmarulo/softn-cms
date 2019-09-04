@@ -5,6 +5,9 @@ $(function () {
 });
 
 function makeRequest(method, route, dataToSend, callback, parseJSON) {
+    method = method === undefined ? 'GET' : method;
+    route = route === undefined ? getRoute() : route;
+    
     $.ajax({
         method: method,
         url: formatterURL(route),
@@ -146,7 +149,7 @@ function iCheckInputs() {
     })
 }
 
-function select2Inputs(){
+function select2Inputs() {
     $('.select2').select2({
         width: '100%'
     });

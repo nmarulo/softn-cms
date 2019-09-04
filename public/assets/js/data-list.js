@@ -82,11 +82,11 @@ function initTableDataSortColumn() {
         var sort = elementTH.data('sort');
         //Lo dejo asi hasta que se me ocurra otra forma.
         elementTH.children()
-                .filter(function (index, element) {
-                    return $(element).attr('class') === $(glyphiconTHBase).attr('class');
-                })
-                .first()
-                .remove();
+            .filter(function (index, element) {
+                return $(element).attr('class') === $(glyphiconTHBase).attr('class');
+            })
+            .first()
+            .remove();
         
         //Cuando es igual a desc lo quita
         if (elementTH.hasClass('active') && sort === sortAsc) {
@@ -193,17 +193,52 @@ function dataListSpanGlyphicon(spanGlyphicon, sort) {
 
 function tableDataRequest(elementTrigger) {
     var containerTableData = getContainerTableData(elementTrigger);
+    var method = getTableDataMethodRequest(containerTableData);
+    var route = getTableDataRoute(containerTableData);
     var dataToSend = createDataToSendPagination(elementTrigger);
     //Obtener todas las columnas y su correspondiente orden
     dataToSend = createDataToSendSortColumn(containerTableData, dataToSend);
     dataToSend = createDataToSendSearch(elementTrigger, dataToSend);
+    dataToSend = getCustomTableDataToSend(containerTableData, dataToSend);
     
     //realizar una petición para actualizar los datos de la tabla
-    makeGetRequest(dataToSend, function (dataHTML) {
+    makeRequest(method, route, dataToSend, function (dataHTML) {
         viewUpdate(dataHTML, getDataIdUpdateElement(containerTableData));
         updateTableBodyHideColumns();
         select2Inputs();
     });
+}
+
+function getTableDataMethodRequest(containerTableData) {
+    return containerTableData.data('call-method');
+}
+
+function getTableDataRoute(containerTableData) {
+    return containerTableData.data('call-url');
+}
+
+function getCustomTableDataToSend(containerTableData, dataToSend) {
+    var send = containerTableData.data('send');
+    
+    if (send === undefined || send.length <= 0) {
+        return dataToSend;
+    }
+    
+    send.split(',')
+        .filter(function (value) {
+            return value.search(':') >= 0;
+        })
+        .map(function (value) {
+            return value.split(':');
+        })
+        .filter(function (value) {
+            return value.length === 2
+        })
+        .forEach(function (value) {
+            dataToSend = createRepresentationDataToSendRequest(value[0], value[1], dataToSend);
+        });
+    
+    return dataToSend;
 }
 
 function updateTableBodyHideColumns() {
