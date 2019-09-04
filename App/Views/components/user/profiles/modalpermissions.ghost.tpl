@@ -49,15 +49,17 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="col-xs-6">
-                        <button type="button" class="btn btn-default btn-block" data-dismiss="modal" data-toggle="modal" data-target="#modal-manager-profile">
-                            Cancelar
-                        </button>
-                    </div>
-                    <div class="col-xs-6">
-                        <button id="button-profile-edit-permissions" type="submit" class="btn btn-success btn-block">
-                            Actualizar
-                        </button>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <button type="button" class="btn btn-default btn-block" data-dismiss="modal" data-toggle="modal" data-target="#modal-manager-profile">
+                                Cancelar
+                            </button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button id="button-profile-edit-permissions" type="submit" class="btn btn-success btn-block">
+                                Actualizar
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>

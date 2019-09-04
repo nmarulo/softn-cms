@@ -81,10 +81,10 @@ class ProfilesController extends Controller {
     }
     
     private function getPermissionsView(?array $profilePermissions): array {
-        $allPermissions = PermissionsRestFacade::getAll()->permissions;
+        $permissions = PermissionsRestFacade::getAll()->permissions;
         
-        if (!is_array($allPermissions)) {
-            $allPermissions = [];
+        if (!is_array($permissions)) {
+            $permissions = [];
         }
         
         if (!is_array($profilePermissions)) {
@@ -100,7 +100,7 @@ class ProfilesController extends Controller {
             $permissionView->checked = array_search($response->id, $permissionId) !== FALSE;
             
             return $permissionView;
-        }, $allPermissions);
+        }, $permissions);
     }
     
 }
