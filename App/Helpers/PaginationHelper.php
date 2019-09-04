@@ -75,7 +75,7 @@ class PaginationHelper extends PaginationResponse {
         if ($dataTable == NULL || is_null($dataTable->numberRowsShow)) {
             $settingNumRowsDefault = SettingsModel::getPaginationNumberRowsDefault();
             
-            if ($settingNumRowsDefault) {
+            if ($settingNumRowsDefault && intval($settingNumRowsDefault->setting_value) < $totalData) {
                 $numberRowsShow = intval($settingNumRowsDefault->setting_value);
             }
         } elseif ($dataTable->numberRowsShow > 0 && $dataTable->numberRowsShow < $totalData) {
