@@ -9,7 +9,7 @@ use App\Rest\Common\BaseRest;
 use App\Rest\Dto\ProfileDTO;
 
 /**
- * @property int $permissionsId
+ * @property array $permissionsId
  * Class ProfileRequest
  * @author Nicolás Marulanda P.
  */
@@ -17,7 +17,7 @@ class ProfileRequest extends ProfileDTO {
     
     use BaseRest;
     
-    /** @var int */
+    /** @var array */
     private $permissionsId;
     
 }

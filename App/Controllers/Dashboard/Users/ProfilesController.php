@@ -97,7 +97,7 @@ class ProfilesController extends Controller {
             }, $profilePermissions);
             
             $permissionView          = PermissionView::parseOf($response->toArray());
-            $permissionView->checked = array_search($response->id, $permissionId) !== FALSE;
+            $permissionView->selected = array_search($response->id, $permissionId) !== FALSE;
             
             return $permissionView;
         }, $permissions);
