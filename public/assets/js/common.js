@@ -135,7 +135,10 @@ function callAjax() {
             viewUpdate(data, elementUpdate);
             
             if (execute !== undefined && execute != null) {
-                eval(execute)()
+                execute.split(" ")
+                    .forEach(function (value) {
+                        eval(value)();
+                    });
             }
         });
     });
@@ -150,7 +153,7 @@ function iCheckInputs() {
 }
 
 function select2Inputs() {
-    $('.select2').select2({
+    $('.select2-default').select2({
         width: '100%'
     });
     $('.select2-dynamic').select2({
