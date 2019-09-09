@@ -78,7 +78,7 @@
                         Perfil
                     </label>
                     <div class="col-md-8">
-                        <select id="select-user-profiles" class="form-control select2" name="profileId">
+                        <select id="select-user-profiles" class="form-control select2-default" name="profileId">
                             #foreach($profilesView as $profile)
                             <option {{$profile->selected ? 'selected' : ''}}
                                     value="{{$profile->id}}">{{$profile->profileName}}</option>

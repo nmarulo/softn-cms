@@ -31,11 +31,18 @@
                         </div>
                     </div>
                     #if(!is_null($component_profile->id))
-                    <div class="row clearfix">
-                        <div class="col-md-10 col-md-offset-2">
-                            <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#modal-manager-profile-edit-permissions" data-dismiss="modal">
-                                    Gestionar permisos
-                            </button>
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="select-permissions-profile">
+                            Permisos
+                        </label>
+                        <div class="col-md-10">
+                            <select id="select-permissions-profile" class="form-control select2-default" name="permissionsId[]" multiple>
+                                #foreach($component_permissions as $permission)
+                                <option value="{{$permission->id}}" {{$permission->selected ? 'selected' : ''}}>
+                                    {{$permission->permissionName}}
+                                </option>
+                                #endforeach
+                            </select>
                         </div>
                     </div>
                     #endif

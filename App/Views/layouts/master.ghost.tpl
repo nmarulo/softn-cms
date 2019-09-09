@@ -23,8 +23,8 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
         <script type="application/javascript">
-        var globalURL = '{{ url('/') }}';
-    </script>
+            var globalURL = '{{ url('/') }}';
+        </script>
     </head>
     <body class="hold-transition skin-blue sidebar-mini fixed">
         <div class="wrapper">
@@ -61,7 +61,7 @@
         <script src="{{ asset('js/bootstrap.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/icheck.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('js/select2/select2.full.min.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('js/select2/select2.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/adminlte.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/common.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/data-list.js') }}" type="text/javascript"></script>
