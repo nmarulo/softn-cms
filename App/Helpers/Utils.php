@@ -160,6 +160,7 @@ class Utils {
         
         $dataTable->page           = Request::input('page');
         $dataTable->numberRowsShow = Request::input('numberRowsShow');
+        $dataTable->paginator      = TRUE;
         
         return $dataTable;
     }

@@ -12,6 +12,7 @@ use App\Rest\Common\BaseRest;
  * @property Filter $filter
  * @property int    $page
  * @property int    $numberRowsShow
+ * @property bool   $paginator
  * Class DataTable
  * @author Nicolás Marulanda P.
  */
@@ -33,6 +34,9 @@ class DataTable {
      * @var int
      */
     private $page;
+    
+    /** @var bool */
+    private $paginator;
     
     /** @var int */
     private $numberRowsShow;

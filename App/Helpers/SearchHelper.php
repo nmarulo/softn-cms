@@ -141,9 +141,8 @@ class SearchHelper {
             $dataTable = new DataTable();
         }
         
-        $this->dataTable = $dataTable;
-        
-        $this->hasPagination         = TRUE;
+        $this->dataTable             = $dataTable;
+        $this->hasPagination         = $dataTable->paginator;
         $this->paginationDataClosure = $dataModelClosure;
         
         if (!is_null($this->dataTable->filter)) {
