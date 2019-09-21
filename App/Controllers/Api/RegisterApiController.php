@@ -4,6 +4,7 @@ namespace App\Controllers\Api;
 
 use App\Facades\UtilsFacade;
 use App\Helpers\EMailerHelper;
+use App\Models\SettingsModel;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
 use App\Rest\Requests\RegisterUserRequest;
@@ -36,6 +37,7 @@ class RegisterApiController extends Controller {
         
         $request->userPassword   = UtilsFacade::encryptHash($request->userPassword);
         $request->userRegistered = UtilsFacade::dateNow();
+        $request->profileId      = SettingsModel::getProfileDefault()->setting_value;
         $user                    = UsersDTO::convertToModel($request, FALSE);
         $userDTO                 = UsersDTO::convertOfModel($user->save());
         

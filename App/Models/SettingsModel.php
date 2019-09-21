@@ -36,6 +36,10 @@ class SettingsModel extends Model {
         return self::getByName('paginationMaxNumberPagesShow');
     }
     
+    public static function getProfileDefault(): SettingsModel {
+        return self::getByName('profileDefault');
+    }
+    
     private static function getByName(string $name): SettingsModel {
         return self::where('setting_name', $name)
                    ->first();
