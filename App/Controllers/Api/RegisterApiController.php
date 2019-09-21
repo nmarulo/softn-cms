@@ -34,6 +34,7 @@ class RegisterApiController extends Controller {
             throw new \RuntimeException('Las contraseñas no son iguales.');
         }
         
+        $request->userPassword   = UtilsFacade::encryptHash($request->userPassword);
         $request->userRegistered = UtilsFacade::dateNow();
         $user                    = UsersDTO::convertToModel($request, FALSE);
         $userDTO                 = UsersDTO::convertOfModel($user->save());

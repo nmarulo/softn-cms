@@ -109,6 +109,10 @@ class UsersApiController extends Controller {
             $request->id = $id;
         }
         
+        if ($request->userPassword) {
+            $request->userPassword = UtilsFacade::encryptHash($request->userPassword);
+        }
+        
         $model    = UsersDTO::convertToModel($request, FALSE);
         $model    = $this->getUserById($model->save()->id);
         $response = $this->getResponse($model);
@@ -131,21 +135,17 @@ class UsersApiController extends Controller {
     }
     
     private function checkPassword(UserRequest $request) {
-        if ($request->userPassword == $request->userPasswordRe) {
-            return;
+        if ($request->userPassword != $request->userPasswordRe) {
+            throw new \RuntimeException("Las contraseñas no son coinciden.");
         }
-        
-        throw new \RuntimeException("Las contraseñas no son coinciden.");
     }
     
     private function checkUpdatePassword(UserRequest $request, Users $user) {
-        if ($request->userCurrentPassword == $user->user_password) {
-            $this->checkPassword($request);
-            
-            return;
+        if (!UtilsFacade::encryptVerify($request->userCurrentPassword, $user->user_password)) {
+            throw new \RuntimeException("La contraseña actual es incorrecta.");
         }
         
-        throw new \RuntimeException("La contraseña actual es incorrecta.");
+        $this->checkPassword($request);
     }
     
     /**

@@ -3,6 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Facades\TokenFacade;
+use App\Facades\UtilsFacade;
 use App\Helpers\ConstHelper;
 use App\Models\Users;
 use App\Rest\Dto\UsersDTO;
@@ -27,7 +28,7 @@ class LoginApiController extends Controller {
                         ->first();
         
         //Si el usuario existe y su contraseña es igual
-        if ($user && $this->checkPassword($user, $request)) {
+        if ($user && UtilsFacade::encryptVerify($request->userPassword, $user->user_password)) {
             $userDTO = UsersDTO::convertOfModel($user);
             TokenFacade::generate(function(Builder $builder) use ($userDTO) {
                 $builder->set(ConstHelper::USER_ID_STR, $userDTO->id);
@@ -40,11 +41,6 @@ class LoginApiController extends Controller {
         }
         
         throw new \RuntimeException('Usuario y/o contraseña incorrecto(s).');
-    }
-    
-    private function checkPassword(Users $user, UserRequest $request): bool {
-        //TODO: cifrar
-        return $user->user_password == $request->userPassword;
     }
     
 }
