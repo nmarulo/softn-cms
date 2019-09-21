@@ -37,9 +37,9 @@ class LoginApiController extends Controller {
             
             return UserResponse::parseOf($userDTO->toArray())
                                ->toArray();
-        } else {
-            throw new \RuntimeException('Usuario y/o contraseña incorrecto(s).');
         }
+        
+        throw new \RuntimeException('Usuario y/o contraseña incorrecto(s).');
     }
     
     private function checkPassword(Users $user, UserRequest $request): bool {

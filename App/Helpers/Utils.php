@@ -197,6 +197,38 @@ class Utils {
         return $this->castObjectTo($comparisionProps, $object, $classModel, $hideProps);
     }
     
+    public function isUseTrait($object, string $classTrait, bool $recursive = TRUE): bool {
+        $classUses = class_uses($object);
+        $result    = array_key_exists($classTrait, $classUses);
+        
+        if ($result || !$recursive) {
+            return $result;
+        }
+        
+        $objectClass = is_object($object) ? get_class($object) : $object;
+        
+        try {
+            $reflection = new \ReflectionClass($objectClass);
+            
+            if ($parentClass = $reflection->getParentClass()) {
+                $result = $this->isUseTrait($parentClass->getName(), $classTrait);
+            }
+            
+            if (!$result) {
+                foreach ($classUses as $class) {
+                    if ($result = $this->isUseTrait($class, $classTrait)) {
+                        break;
+                    }
+                }
+            }
+        } catch (\Exception $exception) {
+            //TODO: log
+            $result = FALSE;
+        }
+        
+        return $result;
+    }
+    
     private function getVarNameTypeDocument(string $document): string {
         $start         = 5;
         $len           = $start;
@@ -269,37 +301,5 @@ class Utils {
         }
         
         return $class;
-    }
-    
-    public function isUseTrait($object, string $classTrait, bool $recursive = TRUE): bool {
-        $classUses = class_uses($object);
-        $result    = array_key_exists($classTrait, $classUses);
-        
-        if ($result || !$recursive) {
-            return $result;
-        }
-        
-        $objectClass = is_object($object) ? get_class($object) : $object;
-        
-        try {
-            $reflection = new \ReflectionClass($objectClass);
-            
-            if ($parentClass = $reflection->getParentClass()) {
-                $result = $this->isUseTrait($parentClass->getName(), $classTrait);
-            }
-            
-            if (!$result) {
-                foreach ($classUses as $class) {
-                    if ($result = $this->isUseTrait($class, $classTrait)) {
-                        break;
-                    }
-                }
-            }
-        } catch (\Exception $exception) {
-            //TODO: log
-            $result = FALSE;
-        }
-        
-        return $result;
     }
 }
