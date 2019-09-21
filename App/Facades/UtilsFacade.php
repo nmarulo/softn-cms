@@ -18,6 +18,8 @@ use Silver\Support\Facade;
  * @method static mixed castModelToDto(array $comparisionProps, $model, string $classDto, bool $hideProps = TRUE)
  * @method static mixed castDtoToModel(array $comparisionProps, $dto, string $classModel, bool $hideProps = TRUE)
  * @method static bool isUseTrait($object, string $classTrait, bool $recursive = TRUE)
+ * @method static string encryptHash(string $value)
+ * @method static string encryptVerify(string $value, string $hash)
  */
 class UtilsFacade extends Facade {
     

@@ -13,6 +13,7 @@ use App\Rest\Common\Magic;
 use App\Rest\Common\ObjectToArray;
 use App\Rest\Common\ParseOfClass;
 use Silver\Core\Bootstrap\Facades\Request;
+use Silver\Core\Env;
 use Silver\Database\Model;
 
 /**
@@ -227,6 +228,21 @@ class Utils {
         }
         
         return $result;
+    }
+    
+    /**
+     * Método que realiza el HASH al valor pasado por parámetro.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    public function encryptHash(string $value): string {
+        return hash('sha256', $value . Env::get('app_key'));
+    }
+    
+    public function encryptVerify(string $value, string $hash):bool {
+        return $this->encryptHash($value) == $hash;
     }
     
     private function getVarNameTypeDocument(string $document): string {
