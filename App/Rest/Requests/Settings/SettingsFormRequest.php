@@ -26,4 +26,16 @@ class SettingsFormRequest {
     
     /** @var string */
     private $siteUrl;
+    
+    /** @var string */
+    private $paginationNumberRowsShowList;
+    
+    /** @var string */
+    private $paginationNumberRowsDefault;
+    
+    /** @var string */
+    private $paginationMaxNumberPagesShow;
+    
+    /** @var string */
+    private $profileDefault;
 }

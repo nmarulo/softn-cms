@@ -32,7 +32,8 @@ class SettingsController extends Controller {
     }
     
     public function form() {
-        $request = SettingsFormRequest::parseOf(Request::all());
+        $request                               = SettingsFormRequest::parseOf(Request::all());
+        $request->paginationNumberRowsShowList = implode(',', $request->paginationNumberRowsShowList);
         SettingsFormRestFacade::putForm($request);
         
         if (!SettingsFormRestFacade::isError()) {

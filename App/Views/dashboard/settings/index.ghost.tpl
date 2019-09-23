@@ -48,6 +48,46 @@
                         <input id="setting-name-url" type="url" class="form-control" placeholder="Dirección del sitio web" name="siteUrl" value="{{$settings->siteUrl->settingValue}}">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="setting-name-pagination-number-rows-show-list" class="control-label col-sm-4">
+                        Listado de números de registros por pagina
+                    </label>
+                    <div class="col-sm-8">
+                        <select id="setting-name-pagination-number-rows-show-list" class="form-control select2-dynamic" name="paginationNumberRowsShowList[]" multiple>
+                            #foreach($settings->paginationNumberRowsShowList->settingValue as $value)
+                                <option value="{{$value}}" selected>{{$value}}</option>
+                            #endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="setting-name-pagination-number-rows-default" class="control-label col-sm-4">
+                        Numero de registros por pagina por defecto
+                    </label>
+                    <div class="col-sm-8">
+                        <input id="setting-name-pagination-number-rows-default" type="number" class="form-control" placeholder="Numero de registros por pagina por defecto" name="paginationNumberRowsDefault" value="{{$settings->paginationNumberRowsDefault->settingValue}}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="setting-name-pagination-max-number-pages-show" class="control-label col-sm-4">
+                        Numero de paginas (Componente)
+                    </label>
+                    <div class="col-sm-8">
+                        <input id="setting-name-pagination-max-number-pages-show" type="number" class="form-control" placeholder="Numero de paginas (Componente)" name="paginationMaxNumberPagesShow" value="{{$settings->paginationMaxNumberPagesShow->settingValue}}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="setting-name-profile-default" class="control-label col-sm-4">
+                        Perfil por defecto
+                    </label>
+                    <div class="col-sm-8">
+                        <select id="setting-name-profile-default" class="form-control select2-default" name="profileDefault">
+                            #foreach($settings->profiles as $profile)
+                                <option value="{{$profile->id}}" {{$profile->id == $settings->profileDefault->settingValue ? 'selected' : ''}}>{{$profile->profileName}}</option>
+                            #endforeach
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="col-sm-6">
                 <div class="row">

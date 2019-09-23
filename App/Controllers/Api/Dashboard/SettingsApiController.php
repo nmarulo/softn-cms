@@ -6,6 +6,7 @@
 namespace App\Controllers\Api\Dashboard;
 
 use App\Facades\SearchFacade;
+use App\Models\ProfileModel;
 use App\Models\SettingsModel;
 use App\Rest\Dto\SettingDTO;
 use App\Rest\Requests\SettingRequest;
@@ -13,6 +14,7 @@ use App\Rest\Requests\Settings\SettingsFormRequest;
 use App\Rest\Responses\SettingResponse;
 use App\Rest\Responses\Settings\SettingsFormResponse;
 use App\Rest\Responses\SettingsResponse;
+use App\Rest\Responses\Users\ProfileResponse;
 use Silver\Core\Bootstrap\Facades\Request;
 use Silver\Core\Controller;
 
@@ -49,16 +51,21 @@ class SettingsApiController extends Controller {
                 'description',
                 'siteUrl',
                 'emailAdmin',
+                'paginationNumberRowsShowList',
+                'paginationNumberRowsDefault',
+                'paginationMaxNumberPagesShow',
+                'profileDefault',
         ];
         $response     = new SettingsFormResponse();
-        $models       = SettingsModel::all();
-        $models       = array_filter($models, function(SettingsModel $model) use ($settingsForm) {
-            return array_search($model->setting_name, $settingsForm, TRUE) !== FALSE;
-        });
+        $models       = SettingsModel::where('setting_name', 'in', $settingsForm)
+                                     ->all();
         
         foreach ($models as $value) {
             $response->{$value->setting_name} = SettingDTO::convertOfModel($value);
         }
+        
+        $response->profiles = ProfileResponse::convertOfModel(ProfileModel::all());
+        $response->paginationNumberRowsShowList->settingValue = explode(',', $response->paginationNumberRowsShowList->settingValue);
         
         return $response->toArray();
     }
